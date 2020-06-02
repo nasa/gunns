@@ -1,0 +1,8 @@
+# Copyright 2019 United States Government as represented by the Administrator of the
+# National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# This is a valgrind error suppression file to suppress errors
+# reported when building normal unit tests.  Ideally we should
+# have no suppressions in here, but this file exists for
+# consistency between the normal and ROSES makefiles
+

@@ -1,0 +1,94 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+/*************************************************************
+PURPOSE:
+  (Trick multithreading scalable architecture)
+*************************************************************/
+##include <iostream>
+#include "sim_objects/default_trick_sys.sm"
+
+// Create a class with a map of thread name and associated thread idx.
+
+class ChildThreadHandler : public Trick::SimObject
+{
+public:
+
+    ChildThreadHandler() :
+       mThreadCounter(0),
+       mIsPostConstruction(false)
+    {
+       // Add MAIN_THREAD to the map first so we can ensure that it's thread 0.
+       addThreadId("MAIN_THREAD");      // 0
+    }
+
+    // Ask the map for the thread id or assign one if we aren't done constructing sim objects
+
+    int getThreadId(std::string threadName)
+    {
+        // Protect against empty string argument
+
+        if(threadName.empty())
+           return -1;
+
+        if (mIsPostConstruction)
+        {
+           std::map<std::string, int>::iterator it = mThreadMap.find(threadName);
+
+           if (it == mThreadMap.end())
+           {
+              return -1;
+           }
+           else
+              return it->second;
+        }
+        else
+        {
+           return addThreadId(threadName);
+        }
+    }
+
+
+    // We need to tell ourselves that all the SimObject constructors have completed.
+    // Flip this flag in create_connections which runs after sim object instantiations.
+
+    void postConstructionComplete()
+    {
+        mIsPostConstruction = true;
+    }
+
+private:
+
+    // Insert a thread name into the map and return a numeric thread id.
+    int addThreadId(std::string threadName)
+    {
+        std::map<std::string, int>::iterator it = mThreadMap.find(threadName);
+
+        if (it == mThreadMap.end())
+        {
+           int threadIdx = mThreadCounter++;
+           mThreadMap[threadName] = threadIdx;
+           std::cout << "Thread '" << threadName << "' is thread #" << threadIdx << std::endl;
+           return threadIdx;
+        }
+        else
+        {
+           return it->second;
+        }
+    }
+
+    int  mThreadCounter;
+    bool mIsPostConstruction;
+
+    std::map<std::string, int> mThreadMap;
+};
+
+// The manager class definition above can be #included anywhere but the instantiation must happen 
+// before any sim object references it. Ideally, this is at the top of the S_define
+ChildThreadHandler CTH;
+
+void create_connections()
+{
+  CTH.postConstructionComplete();
+}
+

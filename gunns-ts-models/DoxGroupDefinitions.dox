@@ -1,0 +1,18 @@
+/**
+@defgroup  TSM_SIGNAL_EFFECTORS    TS21 Common Signal Aspect Effector Models
+@brief     TS21 Common Signal Aspect Effector Models
+
+@defgroup  TSM_CONTROLLER    TS21 Common Controller Models
+@brief     TS21 Common Controller Models
+
+@defgroup  TSM_MECH_MOTOR    TS21 Common Motor Models
+@brief     TS21 Common Motor Models
+
+@defgroup  TSM_SENSORS    TS21 Common Sensor Models 
+@brief     TS21 Common Sensor Models
+
+@dir aspects/signal/effectors    TS21 Common Signal Aspect Effector Models
+@dir common/controllers    TS21 Common Controller Models
+@dir common/effectors/mechanical/motor    TS21 Common Motor Models
+@dir common/sensors    TS21 Common Sensor Models
+*/

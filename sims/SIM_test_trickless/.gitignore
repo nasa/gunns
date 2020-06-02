@@ -1,0 +1,3 @@
+# ignore compiled objects and test main executable
+main
+*.o

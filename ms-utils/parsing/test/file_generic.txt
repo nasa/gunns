@@ -1,0 +1,14 @@
+
+# This might be a comment line 
+//This might be a comment line
+     This is line 1.    
+
+           
+ 		" This is line 2. "
+		  	   	    This is line 3.     
+    
+		  	
+	""" This is line 4. """	
+	This is more than 1/2 of a line.  		 
+		
+			

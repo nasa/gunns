@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <symbol>
+        <name>cap_circle_1</name>
+        <exp>cap_circle_2</exp>
+    </symbol>
+    <symbol>
+        <name>cap_circle_2</name>
+        <exp>cap_circle_1</exp>
+    </symbol>
+</list>
+

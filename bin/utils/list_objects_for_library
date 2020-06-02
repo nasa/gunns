@@ -1,0 +1,12 @@
+# This makes a list of .o files for all classes to be included in a GUNNS
+# compiled library.  Each line is formatted with a tab in front and a \ in back
+# for inclusion in a makefile rule, i.e:
+#
+#	./core/GunnsBasicSocket.o \
+#	./core/GunnsFluidConservationData.o \
+#
+# Each grep -v <folder> section omits any classes from that folder.  Add more
+# of these to add new folders to be omitted.
+#
+find . -name '*.cpp' | grep -v test/ | grep -v io_src/ | grep -v swig/ | grep -v gunnshow/ | grep -v sims/ | sed 's/.\//\t.\//' | sed 's/.cpp/.o \\/' > olist.out
+

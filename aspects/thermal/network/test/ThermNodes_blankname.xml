@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <node>
+        <name></name>
+        <temperature units='K'>296</temperature>
+        <capacitance units='J/K'>1100.00</capacitance>
+    </node>
+    <node>
+        <name>SPACE_1</name>
+        <temperature units='K'>0.0</temperature>
+        <capacitance units='J/K'>0.00</capacitance>
+    </node>
+</list>

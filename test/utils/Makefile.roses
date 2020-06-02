@@ -1,0 +1,90 @@
+# Copyright 2019 United States Government as represented by the Administrator of the
+# National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# This is the makefile for the GUNNS&ROSES unit tests.
+#
+# This should be identical to Makefile.default, for the regular GUNNS repository, but instead using
+# and testing the gunns/lib/test/libgunnsroses.a library and the GUNNS&ROSES functions.
+#
+# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with full output via:
+# $ make clean
+# $ make -f Makefile.roses
+#
+ifndef GUNNS_HOME
+$(error GUNNS_HOME variable must be set)
+endif
+
+CXXFLAGS = -g -Dno_TRICK_ENV=1 -I$(GUNNS_HOME) -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64
+extra_CXXFLAGS = -ftest-coverage -fprofile-arcs
+ROSESFLAGS += -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos -ldl -lpthread -lrt
+
+SOURCES := $(wildcard *.cpp)
+OBJECTS := $(addprefix build/,$(subst .cpp,.o,$(SOURCES)))
+OBJDIRS := $(sort $(dir $(OBJECTS)))
+test_exe := ./unit-tests
+
+test_dir = $(shell pwd)
+unit_test_html = ./output/unit_test.html
+unit_test_log = ./output/$(test_exe).log
+coverage_output_dir = ./output/coverage
+coverage_info = ./output/unit-tests.info
+coverage_html = $(coverage_output_dir)/index.html
+valgrind_html = ./output/valgrind.html
+valgrind_log = ./output/unit-tests-valgrind.log
+
+all: $(test_exe)
+	$(MAKE) -f Makefile.roses test
+
+.PHONY: lib
+lib:
+	cd ${GUNNS_HOME}/lib/test && $(MAKE) roses
+
+$(test_exe): $(OBJECTS) lib
+	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunnsroses -lcppunit -lgcov $(ROSESFLAGS) $(LDFLAGS)
+
+$(OBJECTS): build/%.o : %.cpp | $(OBJDIRS)
+	$(CXX) $(CXXFLAGS) $(extra_CXXFLAGS) -c $< -o $@
+
+$(OBJDIRS) output $(coverage_output_dir):
+	mkdir -p $@
+
+test: $(unit_test_html) $(coverage_html) $(valgrind_html)
+	@echo "Unit test output log at $(test_dir)/$(unit_test_html)"
+	@echo "Coverage output at $(test_dir)/$(coverage_html)"
+	@echo "Valgrind output log at $(test_dir)/$(valgrind_html)"
+
+$(unit_test_html): $(unit_test_log) | output
+	@echo -ne "<html>\n    <title>Unit Test Results generated `date`</title>\n    <body>\n" > $@ \
+	&& echo "        <h2>Unit Test Results generated `date`</h2>" >> $@ \
+	&& echo "        <hr>" >> $@ \
+	&& sed 's@.*@    <tt>&</tt><br>@' $(unit_test_log) >> $@ \
+	&& echo -ne "    </body>\n</html>\n" >> $@ \
+	|| rm -f $@
+
+$(unit_test_log): output
+	@$(test_exe) | tee $@
+
+$(coverage_html): $(coverage_info) | $(coverage_output_dir)
+	genhtml $(quiet) --frames $(coverage_info) --output-directory $(coverage_output_dir)
+
+$(coverage_info): $(unit_test_log)
+	${GUNNS_HOME}/test/utils/lcov-wrapper.pl $(realpath ..) ${GUNNS_HOME}/lib/test/buildroses $@
+
+$(valgrind_html): $(valgrind_log)
+	@echo -ne "<html>\n    <title>Valgrind memcheck results generated `date`</title>\n    <body>\n" > $@ \
+	&& echo "        <h2>Valgrind memcheck results generated `date`</h2>" >> $@ \
+	&& echo "        <hr>" >> $@ \
+	&& sed -e '/^==[0-9]\+==/!s@.*@<font color="gray">&</font>@' -e's@.*@    <tt>&</tt><br>@' $(valgrind_log) >> $@ \
+	&& echo -ne "    </body>\n</html>\n" >> $@ \
+	|| rm -f $@
+
+$(valgrind_log): $(test_exe) output
+	valgrind --leak-check=yes --suppressions=${GUNNS_HOME}/test/utils/roses.supp $(test_exe) 2>&1 | grep -v 'libcppunit' > $@
+	cat $@
+
+clean:
+	rm -rf build output $(test_exe)
+
+cleanlib:
+	cd ${GUNNS_HOME}/lib/test && $(MAKE) clean
+

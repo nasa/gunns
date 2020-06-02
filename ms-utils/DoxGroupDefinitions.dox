@@ -1,0 +1,45 @@
+/**
+@defgroup  TSM_UTILITIES    TS21 Common Utilities
+@brief TS21 Common Utilities
+
+@defgroup  TSM_UTILITIES_FILE_SEARCH    File Search
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities File Search
+
+@defgroup  TSM_UTILITIES_MATH           Math
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Math
+
+@defgroup  TSM_UTILITIES_PARSING        Parsing
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Parsing
+
+@defgroup  TSM_UTILITIES_PROPERTIES     Properties
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Properties
+
+@defgroup  TSM_UTILITIES_SIMULATION     Simulation
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Simulation
+
+@defgroup  TSM_UTILITIES_SOFTWARE       Software
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Software
+
+@defgroup  TSM_UTILITIES_STRINGS        Strings
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Strings
+
+@defgroup  TSM_UTILITIES_UNITS          Units Conversion (C)
+@ingroup   TSM_UTILITIES
+@brief TS21 Common Utilities Units Conversion (C)
+
+@dir fileSearch     TS21 Common Utilities File Search
+@dir math           TS21 Common Utilities Math
+@dir parsing        TS21 Common Utilities Parsing
+@dir properties     TS21 Common Utilities Properties
+@dir simulation     TS21 Common Utilities Simulation
+@dir software       TS21 Common Utilities Software
+@dir strings        TS21 Common Utilities Strings
+@dir units          TS21 Common Utilities Units Conversion (C)
+*/

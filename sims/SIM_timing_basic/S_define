@@ -1,0 +1,18 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+#define P_LOG P1
+#define HS_RATE    1.0
+
+// Needed for H&S multithreading
+#include "../S_modules/ChildThreadHandler.sm"
+
+// Default system classes
+#include "sim_objects/default_trick_sys.sm"
+
+// Health and status sim object.
+#include "../S_modules/hs.sm"
+
+// Test sim object.
+#include "../S_modules/TimingBasic.sm"
+TimingBasicSimObject timingBasic;

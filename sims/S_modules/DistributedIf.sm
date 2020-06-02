@@ -1,0 +1,73 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+##include "sims/networks/fluid/test/distributedIf/DistributedIfFluid.hh"
+##include "sims/networks/fluid/test/distributedIf/DistributedIfFluidLiquid.hh"
+##include "sims/networks/fluid/test/distributedIf/DistributedIfFluidAccum.hh"
+##include "core/test/GunnsFluidDistributedIfLagBuffer.hh"
+
+class TestDistributedIfSimObject: public Trick::SimObject
+{
+    public:
+        int                              threadIdFluid;          /**< (--) Thread ID for the fluid networks */
+        DistributedIfFluid               fluid;                  /**< (--) GUNNS fluid network */
+        DistributedIfFluid               fluid2;                 /**< (--) GUNNS fluid network */
+        DistributedIfFluidLiquid         fluidLiquid;            /**< (--) GUNNS fluid network - liquid (uses lag buffer to simulate HLA) */
+        DistributedIfFluidLiquid         fluidLiquid2;           /**< (--) GUNNS fluid network - liquid accumulator test (straight simbus connections) */
+        DistributedIfFluidAccum          fluidLiquidAccum;       /**< (--) GUNNS fluid network - liquid accumulator test (uses lag buffer to simulate HLA) */
+        DistributedIfFluidAccum          fluidLiquidAccum2;      /**< (--) GUNNS fluid network - liquid accumulator test (straight simbus connections) */
+	GunnsFluidDistributedIfLagBuffer lagBuffer;              /**< (--) Lag buffer */
+	GunnsFluidDistributedIfLagBuffer lagBufferLiquidSupply;  /**< (--) Lag buffer for liquid fluid network supply side */
+	GunnsFluidDistributedIfLagBuffer lagBufferLiquidReturn;  /**< (--) Lag buffer for liquid fluid network return side */
+	GunnsFluidDistributedIfLagBuffer lagBufferLiquidAccum;   /**< (--) Lag buffer for liquid fluid Accum network */
+        
+        TestDistributedIfSimObject(int thread_id_fluid = 0)
+            :
+            threadIdFluid(thread_id_fluid),
+            fluid("testDistributedIf.fluid"),
+            fluid2("testDistributedIf.fluid2"),
+            fluidLiquid("testDistributedIf.fluidLiquid"),
+            fluidLiquid2("testDistributedIf.fluidLiquid2"),
+            fluidLiquidAccum("testDistributedIf.fluidLiquidAccum"),
+            fluidLiquidAccum2("testDistributedIf.fluidLiquidAccum2"),
+            lagBuffer(),
+            lagBufferLiquidSupply(),
+	    lagBufferLiquidReturn(),
+	    lagBufferLiquidAccum()
+        {
+            ("initialization")                       fluid.initialize();
+            ("initialization")                       fluid2.initialize();
+            ("initialization")                       fluidLiquid.initialize();
+            ("initialization")                       fluidLiquid2.initialize();
+            ("initialization")                       fluidLiquidAccum.initialize();
+            ("initialization")                       fluidLiquidAccum2.initialize();
+            ("initialization")                       lagBuffer.initialize();
+            ("initialization")                       lagBufferLiquidSupply.initialize();
+            ("initialization")                       lagBufferLiquidReturn.initialize();
+            ("initialization")                       lagBufferLiquidAccum.initialize();
+            ("restart")                              fluid.restart();
+            ("restart")                              fluid2.restart();
+            ("restart")                              fluidLiquid.restart();
+            ("restart")                              fluidLiquid2.restart();
+            ("restart")                              fluidLiquidAccum.restart();
+            ("restart")                              fluidLiquidAccum2.restart();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") lagBuffer.step();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") lagBufferLiquidSupply.step();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") lagBufferLiquidReturn.step();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") lagBufferLiquidAccum.step();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluid.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluid2.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquid.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquid2.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquidAccum.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquidAccum2.update(ECLSS_LO);
+        }
+        
+        virtual ~TestDistributedIfSimObject() { /* nothing to do */ }
+        
+    private:
+        // Copy constructor unavailable since declared private and not implemented.
+        TestDistributedIfSimObject(const TestDistributedIfSimObject&);
+        // Assignment operator unavailable since declared private and not implemented.
+        TestDistributedIfSimObject operator = (const TestDistributedIfSimObject&);
+};

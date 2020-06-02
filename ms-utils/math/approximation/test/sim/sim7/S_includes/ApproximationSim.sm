@@ -1,0 +1,9 @@
+sim_object {
+
+    utilities/math/approximation/test/sim:                  ApproximationSim model;
+
+    (initialization) utilities/math/approximation/test/sim: approximationSim.model.initialize();
+
+    (1.0, scheduled) utilities/math/approximation/test/sim: approximationSim.model.update();
+    
+} approximationSim;

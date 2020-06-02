@@ -1,0 +1,97 @@
+#!/bin/bash
+# Copyright 2019 United States Government as represented by the Administrator of the
+# National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# Usage: . bashrc (source this file)
+# This bashrc is designed to produce a bash environment that fully emulates the environment
+# created by the cshrc that lives alongside it.  With this design, any changes to environment
+# can be made to the cshrc, and they will automatically be applied to bash environments
+#
+# Limitations: the ? is used as a delimeter, which means if theres a ? anywhere in the env
+# something is going to go wrong.  I tried multi-character delimiters (,,) but it still seemed
+# to split on single ,'s. If multicharacter delims would work this problem would go away
+#
+
+# Ensure variables to be used are empty
+unset bashExportLines;
+unset fullTcshEnv;
+unset allOneLine;
+unset ADDR;
+
+# Global env exclusion list -- these will be not absorbed from tcsh env
+included=1; 
+excludeList[0]='module=';
+excludeList[1]='DISPLAY';
+excludeList[2]='TERM';
+excludeList[3]='^HOME=';
+excludeList[4]='.*SSH.*';
+excludeList[5]='SHELL';
+excludeList[6]='WINDOWID';
+excludeList[7]='LS_COLORS';
+excludeList[8]='GNOME_KEYRING_SOCKET';
+excludeList[9]='DESKTOP_SESSION';
+excludeList[10]='^MAIL=';
+excludeList[11]='^PWD=';
+excludeList[12]='^DBUS_SESSION_BUS_ADDRESS=';
+excludeList[13]='^guid=';
+excludeList[14]='^MODULES_HOME=';
+excludeList[15]='^BASH_FUNC_module';
+
+
+# This function sets included to be true if the argument
+# passed does not contain any regular expressions stored in
+# the excludList array
+function isNotInExcludeList {
+    included=1
+    for reg in "${excludeList[@]}"; do
+       if [[ $1 =~ $reg ]]; then
+           #echo "excluded!"
+           included=0
+           break
+       fi
+    done
+} 
+# Get the full environment from a tcsh shell that sourced the bin/cshrc, then
+# add quotes to the env lines so that var=bleh blah becomes var="bleh blah"
+# and replace every line ending with a ? as a delimeter
+fullTcshEnv=`tcsh -f  -c "source bin/cshrc $@; env | sed 's/=/=\"/' | sed 's/$/\"?/'"`;
+
+# Collapse newlines to make all variables on one line
+#echo "$fullTcshEnv"
+allOneLine=`echo $fullTcshEnv`
+#echo "alloneline $allOneLine"
+
+# Split environment by newline and match to VAR= form
+# Then store the variable as an export line to be executed later
+regex="^ *[a-zA-Z].*="
+# Turn off fileglobbing, to preserve * characters
+set -f
+IFS='?' read -ra ADDR <<< "$allOneLine"
+j=0
+for line in "${ADDR[@]}"; do
+   #echo "line is $line"
+   # Check to see if this variable is in exclude list
+   isNotInExcludeList $line
+   #echo "included is $included"
+   #echo "line is $line"
+   #echo "regex is $regex"
+   if [[ $line =~ $regex ]]; then
+       if [[ $included == 1 ]]; then
+          #echo "STORING line $line"
+          bashExportLines[j]="export $line"
+          j=`expr $j + 1` 
+       fi
+   fi
+
+done
+unset IFS
+
+# Now bashExportLines contains every 'export VAR="value"' line we need
+# just eval each line and walk away in slow motion like a boss
+for line in "${bashExportLines[@]}"; do
+   #echo "Evaling $line"
+   eval $line
+done
+
+# Turn  fileglobbing back on
+set +o noglob

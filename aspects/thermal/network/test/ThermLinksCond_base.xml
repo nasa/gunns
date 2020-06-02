@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <conduction>
+        <node0>CECLSS_46</node0>
+        <node1>CECLSS_161</node1>
+        <conductivity units='W/K'>0.400000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CECLSS_26</node0>
+        <node1>CPV_5380</node1>
+        <conductivity units='W/K'>0.810000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CMAFTGUS_30</node0>
+        <node1>CMWEB_1113</node1>
+        <conductivity units='W/K'>4.010000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CMAFTGUS_31</node0>
+        <node1>CMWEB_1113</node1>
+        <conductivity units='W/K'>4.010000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CMPRPHET_1</node0>
+        <node1>CMPRPHET_100</node1>
+        <conductivity units='W/K'>0.130000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CMPRPHYT_2</node0>
+        <node1>CMPRPHYT_20</node1>
+        <conductivity units='W/K'>0.400000</conductivity>
+    </conduction>
+    <conduction>
+        <name>hydrazine tank bracket</name>
+        <node0>CMPRPHYT_1</node0>
+        <node1>CMPRPHYT_10</node1>
+        <conductivity units='W/K'>0.400000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>CECLSS_1001</node0>
+        <node1>CPV_5380</node1>
+        <conductivity units='W/K'>0.810000</conductivity>
+    </conduction>
+    <conduction>
+        <node0>badnode</node0>
+        <node1>badnode</node1>
+        <conductivity units='W/K'>6.000000</conductivity>
+    </conduction>
+</list>

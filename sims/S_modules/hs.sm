@@ -1,0 +1,87 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+//=============================================================================
+// SIM_OBJECT: hs
+// This sim object creates a manager for the Health and Status messaging system
+//
+// Note that HS_USE_TIME_FROM_BUS should be defined before this sim object is
+// included, If env time models exist and are providing time data via the ICD
+// table ts/icd/HS.txt.
+//
+// LIBRARY DEPENDENCY:
+//    (
+//     (simulation/timer/TS_timer.c)
+//    )
+//=============================================================================
+
+##include "simulation/hs/TsHsStdMngr.hh"
+##include "simulation/timer/TS_timer.h"
+##include "sims/Modified_data/TS_TIMER_TYPEDefaultData.hh"
+
+// Debug
+//##include <iostream>
+//##include "simulation/hs/TsHsMsg.hh"
+
+class HsSimObject : public Trick::SimObject 
+{
+public:
+
+   unsigned int thread_id;
+   TsHsStdMngr   hsMngr;
+   TS_TIMER_TYPE mTimer;
+
+   // Default Data classes
+   TS_TIMER_TYPEDefaultData mTimerData;
+
+   // Wrapper to allow timer init to be done from the input file.
+   void tsTimerInit()
+   {
+       TS_timer_init(&mTimer);
+   }
+
+// Debug - make the sim object itself log some messages for test purposes.
+//   void messageTest()
+//   {
+//       std::cout << "\nHsSimObject::messageTest()\n" << std::endl;
+//       hsSendMsg(TS_HS_WARNING, "HS", "this is a test log message 1");
+//   }
+
+   HsSimObject(unsigned int thread_id_in)
+   {
+       thread_id = thread_id_in;
+       ("default_data") mTimerData.initialize(&mTimer);
+       ("default_data") TS_timer_init(&mTimer);
+
+       P_LOG  ("initialization") hsMngr.init();
+       P61001 ("initialization") hsMngr.post_init();
+
+       P_LOG ("restart")        hsMngr.restart();
+
+// Debug - log some messages before cutting a checkpoint for test purposes.
+//    ("checkpoint") messageTest();
+
+       #ifndef HS_USE_TIME_FROM_BUS
+       (HS_RATE, "scheduled") TS_timer_update(&mTimer, HS_RATE);
+       #endif
+       (HS_RATE, "scheduled") hsMngr.update();
+
+       // H&S write thread
+       Cthread_id (HS_RATE, "scheduled") hsMngr.inputOutputThread();
+
+       ("shutdown") hsMngr.shutdown();
+   }
+
+private:
+   // This object is not copyable
+   const HsSimObject& operator=(const HsSimObject&);
+   HsSimObject(const HsSimObject&);
+};
+
+//Instantiate
+HsSimObject hs(CTH.getThreadId("HS_WRITE_THREAD"));
+
+// Thread type set here, not in "thread_setup.py" because not all sims use the latter.
+void create_connections() {
+   exec_set_thread_process_type(hs.thread_id, Trick::PROCESS_TYPE_ASYNC_CHILD);
+}

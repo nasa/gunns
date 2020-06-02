@@ -1,0 +1,17 @@
+/* Trick System Executive */
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+
+sim_object {
+
+  /* ======================================================================= -
+   -  This is the Trick executive model, this model should be basically the  -
+   -  same for all Trick applications                                        -
+   - ======================================================================= */
+
+  sim_services/include: EXECUTIVE  exec (sim_services/include/executive.d) ;
+
+  sim_services/input_processor: input_processor(
+                                    inout INPUT_PROCESSOR * IP = &sys.exec.ip ) ;
+
+} sys ;

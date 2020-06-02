@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <symbol>
+        <name>cap_circ_fan_TEST</name>
+        <exp>
+            <mass units="kg">77.000</mass>
+            <specHeat units="J/K/kg">896.0</specHeat>
+        </exp>
+        <info>specHeat assumed, based on Al6061</info>
+    </symbol>
+    <symbol>
+        <name>cond_circ_fan_TEST</name>
+        <exp>1</exp>
+    </symbol>
+    <symbol>
+        <name>unicode_expression</name>
+        <exp>1000 — 1</exp>
+    </symbol>
+    <symbol>
+        <name>cap_dpa</name>
+        <exp>
+            <mass units="kg">0.316 * mass_shell_CL_cyl</mass>
+            <specHeat units="J/K/kg">Cp_shell</specHeat>
+        </exp>
+        <des>[J/K]</des>
+        <mat>Al2219</mat>
+        <ref>xxxx</ref>
+        <group>Struct::AL</group>
+        <network>AL</network>
+    </symbol>
+    <symbol>
+        <name>cap_valid</name>
+        <exp>1000</exp>
+    </symbol>
+    <symbol>
+        <name>cond_dpa_TEST_1</name>
+        <exp>1</exp>
+    </symbol>
+    <symbol>
+        <name>cond_valid</name>
+        <exp>1</exp>
+    </symbol>
+    <symbol>
+        <name>cap_GOOD_EXPLICIT_12</name>
+        <exp>
+            <mass units="kg">15.432</mass>
+            <specHeat units="J/K/kg">800.0</specHeat>
+        </exp>
+    </symbol>
+        <symbol>
+        <name>cap_negative</name>
+        <exp>
+            <mass units="kg">-1.0</mass>
+            <specHeat units="J/K/kg">800.0</specHeat>
+        </exp>
+    </symbol>
+    <symbol>
+        <name>noexptag</name>
+    </symbol>
+    <symbol>
+        <name>mass_shell_AL</name>
+        <exp>1699.83</exp>
+        <des>[kg] ref. 683-52103-2 (SPIDER)</des>
+        <group>Struct::AL</group>
+        <network>AL</network>
+    </symbol>
+    <symbol>
+        <name>mass_shell_CL_cyl</name>
+        <exp>0.22 * mass_shell_AL</exp>
+        <des>[kg]</des>
+        <group>Struct::AL</group>
+        <network>AL</network>
+    </symbol>
+    <symbol>
+        <exp>cap_valid</exp>
+    </symbol>
+    <symbol>
+        <name>Cp_shell</name>
+        <exp>864.0</exp>
+        <des>[J/kg/K] Al-2219-T8XX</des>
+        <group>generic</group>
+        <network>xxxx</network>
+    </symbol>
+</list>

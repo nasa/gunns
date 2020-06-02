@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <node name='CECLSS_26'>
+        <initTemp units='K'>12.34</initTemp>
+    </node>
+    <node name='CECLSS_46'>
+        <initTemp units='K'>56.78</initTemp>
+    </node>
+    <node name='CECLSS_161'>
+        <initTemp units='K'>910.0</initTemp>
+    </node>
+    <node name='INVALID_NODE'>
+        <initTemp units='K'>100.0</initTemp>
+    </node>
+    <node name='CMBCKSHL_13330'>
+        <somethingIrrevelant units='Joes'>100.0</somethingIrrevelant>
+    </node>
+    <node name='CMAFTGUS_31'>
+        <initTemp units='K'>hello</initTemp>
+    </node>
+</list>
+

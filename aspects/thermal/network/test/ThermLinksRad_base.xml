@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <radiation>
+        <name>shell radiate to space</name>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>SPACE_1</node1>
+        <coefficient units='m2'>0.050000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CECLSS_26</node0>
+        <node1>CMBCKSHL_13330</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CECLSS_46</node0>
+        <node1>CMBCKSHL_13330</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CECLSS_1001</node0>
+        <node1>CMBCKSHL_13330</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMAFTGUS_30</node0>
+        <node1>CMBCKSHL_13330</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMAFTGUS_31</node0>
+        <node1>CMBCKSHL_13330</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMHS_48233</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMHS_62803</node1>
+        <coefficient units='m2'>53.100000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMPRPHET_100</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMPRPHYT_10</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMPRPHYT_20</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>badnode</node0>
+        <node1>badnode</node1>
+        <coefficient units='m2'>6.000000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMRCSNR1_20</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMRCSNR2_20</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CMWEB_1113</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CPV_5380</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CRRMECH_200</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+    <radiation>
+        <node0>CMBCKSHL_13330</node0>
+        <node1>CRRMECH_300</node1>
+        <coefficient units='m2'>25.500000</coefficient>
+    </radiation>
+</list>

@@ -1,0 +1,10 @@
+0 0.0 1 ECLSS:JEOD:MECH 0 3800
+1 1 1 logs/TS_Health_and_Status.out
+0 0 0 logs/TS_Health_and_Status.sqlite
+0 0
+1 1
+1 3 20
+0 0 0 0 0
+
+Health & Status Logging Default Initialization File
+(See TS21 Wiki "Architecture/TS21 Health and Status Logging" page for file format and details).

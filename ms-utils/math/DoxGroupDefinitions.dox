@@ -1,0 +1,27 @@
+/**
+@defgroup  TSM_UTILITIES_MATH_APPROXIMATION Interpolations and Curve Fits
+@ingroup   TSM_UTILITIES_MATH
+@brief TS21 Common Utilities Math Interpolations and Curve Fits
+
+@defgroup  TSM_UTILITIES_MATH_INTERSECT Line Segment Intersection
+@ingroup   TSM_UTILITIES_MATH
+@brief TS21 Common Utilities Math Line Segment Intersection
+
+@defgroup  TSM_UTILITIES_MATH_LINEAR_ALGEBRA Choleski LDU Solver
+@ingroup   TSM_UTILITIES_MATH
+@brief TS21 Common Utilities Math Choleski LDU Solver
+
+@defgroup  TSM_UTILITIES_MATH_ROOT_FINDING Root Finding
+@ingroup   TSM_UTILITIES_MATH
+@brief TS21 Common Utilities Math Root Finding
+
+@defgroup  TSM_UTILITIES_MATH_TIME Time of Day
+@ingroup   TSM_UTILITIES_MATH
+@brief TS21 Common Utilities Math Time of Day
+
+@dir ts-models/utilities/math/approximation      Interpolations and Curve Fits
+@dir ts-models/utilities/math/intersect          Segment Intersection
+@dir ts-models/utilities/math/linear_algebra     Choleski LDU Solver
+@dir ts-models/utilities/math/root_finding       Root Finding
+@dir ts-models/utilities/math/time               Time of Day
+*/

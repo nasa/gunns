@@ -1,0 +1,22 @@
+/**
+@defgroup  TSM_UTILITIES_SOFTWARE_EXCEPTIONS Exceptions
+@ingroup   TSM_UTILITIES_SOFTWARE
+@brief     TS21 Utilities Exceptions
+
+@defgroup  TSM_UTILITIES_SOFTWARE_SIMBUS Sim Bus Utilities
+@ingroup   TSM_UTILITIES_SOFTWARE
+@brief     TS21 Utilities Sim Bus Utilities
+
+@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY Sim Compatibility Macros
+@ingroup   TSM_UTILITIES_SOFTWARE
+@brief     TS21 Utilities Simulation Compatibility Macros
+
+@defgroup  TSM_UTILITIES_SOFTWARE_UNIT_TEST Unit Test Asserts
+@ingroup   TSM_UTILITIES_SOFTWARE
+@brief     TS21 Utilities Unit Test Asserts
+
+@dir ts-models/utilities/software/exceptions                 Exceptions
+@dir ts-models/utilities/software/SimBus                     Sim Bus Utilities
+@dir ts-models/utilities/software/SimCompatibility           Sim Compatibility Macros
+@dir ts-models/utilities/software/unit_test                  Unit Test Asserts
+*/

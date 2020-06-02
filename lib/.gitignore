@@ -1,0 +1,4 @@
+# ignore compile objects and libraries:
+*.o
+*.a
+obj

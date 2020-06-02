@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <source name='N2 air thermal dissipation'>
+        <node>CMHS_48233</node>
+        <scalar>1.0</scalar>
+    </source>
+    <source name='multi-node source'>
+        <node>CMAFTGUS_30<frac>0.3</frac></node>
+        <node>CMAFTGUS_31<frac>0.3</frac></node>
+        <node>CRRMECH_200<frac>0.2</frac></node>
+        <node>CRRMECH_300<frac>0.2</frac></node>
+        <initFlux units='W'>100.0</initFlux>
+        <heatFlux>
+            <rate>TEST_RATE</rate>
+            <simObject>TestSimObject testSim</simObject>
+            <simVarName>test.testFlux</simVarName>
+        </heatFlux>
+    </source>
+    <source name='doesnt matter'>
+        <node>BADNODE</node>
+        <initFlux units='W'>15.0</initFlux>
+        <scalar>1.0</scalar>
+    </source>
+    <heater name='eclss heater'>
+        <node>CECLSS_46<frac>0.46</frac></node>
+        <node>CECLSS_26<frac>0.46</frac></node>
+        <node>CECLSS_161<frac>0.08</frac></node>
+        <scalar>0.93</scalar>
+        <control type='MDM'>
+            <lower>/</lower>
+            <upper>/</upper>
+        </control>
+        <elec isRegistered='true'>
+            <powerSource>rpcm AL1A4A B</powerSource>
+            <rpc>7</rpc>
+            <ohms>41.46</ohms>
+        </elec>
+        <info>RTD 1: W031RT001; RTD 2: W031RT002</info>
+    </heater>
+    <heater name='struct heater'>
+        <node>CMWEB_1113</node>
+        <scalar>0.99</scalar>
+        <control type='MDM'>
+            <lower>/</lower>
+            <upper>/</upper>
+        </control>
+        <elec isRegistered='true'>
+            <powerSource>rpcm AL1A4A B</powerSource>
+            <rpc>8</rpc>
+            <ohms>58</ohms>
+        </elec>
+        <info>RTD 1: W031RT003; RTD 2: W031RT004</info>
+    </heater>
+    <heater name='tank heater'>
+        <node>CMPRPHET_1<frac>0.50</frac></node>
+        <node>CMPRPHET_100<frac>0.50</frac></node>
+        <scalar>0.99</scalar>
+    </heater>
+    <heater name='bad heater A'>
+        <node>BADNODE</node>
+        <scalar>0.90</scalar>
+    </heater>
+    <heater name='empty node'>
+        <node></node>
+        <node>CMPRPHET_1<frac>0.50</frac></node>
+        <scalar>0.92</scalar>
+    </heater>
+    <heater name='bad heater B'>
+        <node>CMHS_48233<frac>0.50</frac></node>
+        <node>BADNODE<frac>0.50</frac></node>
+        <scalar>0.97</scalar>
+    </heater>
+</list>    

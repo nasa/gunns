@@ -1,0 +1,40 @@
+//=============================================================================
+// SIM_OBJECT: hs
+// This sim object creates a manager for the Health and Status messaging system
+//=============================================================================
+#define HS_RATE 1.0
+
+##include "simulation/hs/TsHsStdMngr.hh"
+##include "math/approximation/test/sim/sim10/data/TsHsStdMngrDefaultData.hh"
+
+class HsSimObject : public Trick::SimObject {
+
+  public:
+   TsHsStdMngr hsMngr;
+
+   TsHsStdMngrDefaultData hsData;
+
+   HsSimObject( ){
+
+       ("default_data") hsData.initialize(&hsMngr);
+
+       P_LOG ("initialization") hsMngr.registerSelf();
+       P_LOG ("initialization") hsMngr.init();
+
+       P_LOG ("restart") hsMngr.registerSelf();
+       P_LOG ("restart") hsMngr.init();
+
+       (HS_RATE, "scheduled") hsMngr.update();
+
+
+       ("shutdown") hsMngr.shutdown();
+   }
+
+  private:
+   // This object is not copyable
+   HsSimObject operator =(const HsSimObject &);
+
+};
+
+//Instantiate
+HsSimObject hs;

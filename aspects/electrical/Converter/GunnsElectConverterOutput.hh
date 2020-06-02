@@ -1,0 +1,366 @@
+#ifndef GunnsElectConverterOutput_EXISTS
+#define GunnsElectConverterOutput_EXISTS
+
+/**
+@file
+@brief    GUNNS Electrical Converter Output Link declarations
+
+@defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
+@ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
+
+@copyright Copyright 2019 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
+@details
+PURPOSE:
+- (Classes for the GUNNS Electrical Converter Output link.)
+
+REFERENCE:
+- (TBD)
+
+ASSUMPTIONS AND LIMITATIONS:
+- (TBD)
+
+LIBRARY DEPENDENCY:
+- ((GunnsElectConverterOutput.o))
+
+PROGRAMMERS:
+- ((Jason Harvey) (CACI) (2019-10) (Initial))
+
+@{
+*/
+
+#include "core/GunnsBasicLink.hh"
+#include "aspects/electrical/Converter/GunnsElectConverterInput.hh"
+#include "core/GunnsSensorAnalogWrapper.hh"
+#include "aspects/electrical/TripLogic/GunnsTripLogic.hh"
+#include "software/SimCompatibility/TsSimCompatibility.hh"
+
+// Forward-declaration of types.
+class GunnsElectConverterOutputConfigData;
+class GunnsElectConverterOutputInputData;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Electrical Converter Output link.
+///
+/// @details  This models the output side of a DC-DC converter.  This pairs with a
+///           GunnsElectConverterInput link, which may be in the same network, a different network
+///           or even a different sim.  Such a pair can model many things, such as:
+///           - DC-DC converter,
+///           - Transformer,
+///           - Battery charger,
+///           - Short-circuit or normal load between networks,
+///           - A general supply-demand interface between networks or models.
+///
+///           This receives supplied voltage from the input side link (mInputVoltage), and returns a
+///           power load (mInputPower) in response.  It can control the output node in several ways
+///           (mRegulatorType and mSetpoint):
+///           - VOLTAGE: regulates the output voltage to a commandable mSetpoint as a voltage
+///                 source, like an adjustable DC-DC converter.
+///           - TRANSFORMER: regulates the output voltage to mInputVoltage * mSetpoint as a voltage
+///                 source, like a fixed-coil voltage transformer.  mSetpoint is the output:input
+///                 winding ratio.
+///           - CURRENT: regulates output current to mSetpoint as a current source.
+///           - POWER: regulates output power to mSetpoint as a current source.
+///
+///           This link can be connected to the Ground node for storage as a spare.  When connected
+///           to the Ground node, it does nothing.  A converter input-output pair can be used to
+///           simulate a short-circuit between separate networks.
+///
+///           This contains optional trip logic for output over-volt and over-current trips.  These
+///           can be associated with optional sensors in the network, or use 'truth' values.
+///
+///           This has an optional pointer to a paired GunnsElectConverterInput link.  This should
+///           be used when and only when both links are in the same network.  This causes the two
+///           links to share input voltage and load values between the network minor steps, for less
+///           latency in the supply-demand loop.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class GunnsElectConverterOutput : public GunnsBasicLink
+{
+    TS_MAKE_SIM_COMPATIBLE(GunnsElectConverterOutput);
+
+    public:
+        /// @brief  Enumeration of the load types.
+        enum RegulatorType {
+            VOLTAGE     = 0, ///< Controls output voltage to setpoint as a voltage source.
+            TRANSFORMER = 1, ///< Controls output to input voltage ratio setpoint as a voltage source.
+            CURRENT     = 2, ///< Controls output current to setpoint as a current source.
+            POWER       = 3  ///< Controls output power to setpoint as a current source.
+        };
+        /// @brief  Default Constructor.
+        GunnsElectConverterOutput();
+        /// @brief  Default Destructor.
+        virtual ~GunnsElectConverterOutput();
+        /// @brief  Initialize the link with config data and port assignments.
+        void initialize(      GunnsElectConverterOutputConfigData& configData,
+                        const GunnsElectConverterOutputInputData&  inputData,
+                        std::vector<GunnsBasicLink*>&              networkLinks,
+                        const int                                  port0);
+        /// @brief  Checks if the given node list is the same as this link's node list.
+        void checkNodeList(GunnsNodeList* nodeList);
+        /// @brief  Updates the link contributions to the system of equations.
+        virtual void step(const double dt);
+        /// @brief  Minor step method for non-linear iterations.
+        virtual void minorStep(const double dt, const int minorStep);
+        /// @brief  Calculates flows across the link.
+        virtual void computeFlows(const double);
+        /// @brief  Returns the link's assessment of the network solution.
+        virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
+                                                         const int absoluteStep);
+        /// @brief Resets the link back to the previous minor step iteration.
+        virtual bool resetLastMinorStep(const int convergedStep, const int absoluteStep);
+        /// @brief  Computes and returns the input channel load.
+        double computeInputPower();
+        /// @brief  Returns if the link is non-linear.
+        virtual bool isNonLinear();
+        /// @brief  Resets any trips.
+        void resetTrips();
+        /// @brief  Sets the enabled flag.
+        void setEnabled(const bool enabled);
+        /// @brief  Sets the input voltage.
+        void setInputVoltage(const double inputVoltage);
+        /// @brief  Sets the commanded setpoint.
+        void setSetpoint(const double setpoint);
+        /// @brief  Returns the commanded setpoint.
+        double getSetpoint() const;
+        /// @brief  Returns the input power.
+        double getInputPower() const;
+        /// @brief  Returns the output over-voltage trip logic.
+        GunnsTripLogic* getOutputOverVoltageTrip();
+        /// @brief  Returns the output over-current trip logic.
+        GunnsTripLogic* getOutputOverCurrentTrip();
+
+    protected:
+        GunnsElectConverterOutput::RegulatorType mRegulatorType;         /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
+        double                                   mOutputConductance;     /**<    (1/ohm) trick_chkpnt_io(**) The output conductance. */
+        double                                   mConverterEfficiency;   /**<    (1)     trick_chkpnt_io(**) The conversion efficiency (0-1). */
+        SensorAnalog*                            mOutputVoltageSensor;   /**<    (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor. */
+        SensorAnalog*                            mOutputCurrentSensor;   /**<    (1)     trick_chkpnt_io(**) Pointer to the output current sensor. */
+        GunnsElectConverterInput*                mInputLink;             /**< *o (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
+        bool                                     mEnabled;               /**<    (1)                         Operation is enabled. */
+        double                                   mInputVoltage;          /**<    (V)                         Input voltage received from the input side. */
+        double                                   mSetpoint;              /**<    (1)                         Commanded regulation setpoint. */
+        bool                                     mResetTrips;            /**<    (1)     trick_chkpnt_io(**) Input command to reset trips. */
+        double                                   mInputPower;            /**<    (W)                         Power load sent to the input side. */
+        double                                   mOutputChannelLoss;     /**<    (W)     trick_chkpnt_io(**) Power loss through the output channel resistance. */
+        double                                   mTotalPowerLoss;        /**<    (W)                         Total power loss through converter efficiency and output channel resistance. */
+        GunnsTripGreaterThan                     mOutputOverVoltageTrip; /**<    (1)                         Output over-voltage trip function. */
+        GunnsTripGreaterThan                     mOutputOverCurrentTrip; /**<    (1)                         Output over-current trip function. */
+        bool                                     mLeadsInterface;        /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
+        bool                                     mReverseBiasState;      /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
+        bool                                     mSolutionReset;         /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
+        /// @brief  Validates the configuration and input data.
+        void validate(const GunnsElectConverterOutputConfigData& configData,
+                      const GunnsElectConverterOutputInputData&  inputData) const;
+        /// @brief  Virtual method for derived links to perform their restart functions.
+        virtual void restartModel();
+        /// @brief  Updates the output current of this link.
+        void computeFlux();
+
+    private:
+        /// @details Define the number of ports this link class has.  All objects of the same link
+        ///          class always have the same number of ports.  We use an enum rather than a
+        ///          static const int so that we can reuse the NPORTS name and allow each class to
+        ///          define its own value.
+        enum {NPORTS = 1};
+        /// @brief  Copy constructor unavailable since declared private and not implemented.
+        GunnsElectConverterOutput(const GunnsElectConverterOutput& that);
+        /// @brief  Assignment operator unavailable since declared private and not implemented.
+        GunnsElectConverterOutput& operator =(const GunnsElectConverterOutput& that);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Electrical Converter Output link configuration data.
+///
+/// @details  This is a data structure for the Electrical Converter Output link configuration data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class GunnsElectConverterOutputConfigData: public GunnsBasicLinkConfigData
+{
+    public:
+        GunnsElectConverterOutput::RegulatorType mRegulatorType;              /**< (1)     trick_chkpnt_io(**) The type of output regulation. */
+        double                                   mOutputConductance;          /**< (1/ohm) trick_chkpnt_io(**) The output conductance. */
+        double                                   mConverterEfficiency;        /**< (1)     trick_chkpnt_io(**) The voltage conversion efficiency (0-1). */
+        GunnsSensorAnalogWrapper*                mOutputVoltageSensor;        /**< (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor spotter. */
+        GunnsSensorAnalogWrapper*                mOutputCurrentSensor;        /**< (1)     trick_chkpnt_io(**) Pointer to the output current sensor spotter. */
+        unsigned int                             mTripPriority;               /**< (1)     trick_chkpnt_io(**) Priority of trips in the network. */
+        float                                    mOutputOverVoltageTripLimit; /**< (V)     trick_chkpnt_io(**) Output over-voltage trip limit. */
+        float                                    mOutputOverCurrentTripLimit; /**< (amp)   trick_chkpnt_io(**) Output over-current trip limit. */
+        GunnsElectConverterInput*                mInputLink;                  /**< (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
+        /// @brief  Default constructs this Electrical Converter Output configuration data.
+        GunnsElectConverterOutputConfigData(
+                const std::string&                             name                       = "",
+                GunnsNodeList*                                 nodes                      = 0,
+                const GunnsElectConverterOutput::RegulatorType regulatorType              = GunnsElectConverterOutput::VOLTAGE,
+                const double                                   outputConductance          = 0.0,
+                const double                                   converterEfficiency        = 0.0,
+                GunnsSensorAnalogWrapper*                      outputVoltageSensor        = 0,
+                GunnsSensorAnalogWrapper*                      outputCurrentSensor        = 0,
+                const unsigned int                             tripPriority               = 0,
+                const float                                    outputOverVoltageTripLimit = 0.0,
+                const float                                    outputOverCurrentTripLimit = 0.0,
+                GunnsElectConverterInput*                      inputLink                  = 0);
+        /// @brief  Default destructs this Electrical Converter Output configuration data.
+        virtual ~GunnsElectConverterOutputConfigData();
+        /// @brief  Copy constructs this Electrical Converter Output configuration data.
+        GunnsElectConverterOutputConfigData(const GunnsElectConverterOutputConfigData& that);
+
+    private:
+        /// @brief  Assignment operator unavailable since declared private and not implemented.
+        GunnsElectConverterOutputConfigData& operator =(const GunnsElectConverterOutputConfigData&);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Electrical Converter Output link input data.
+///
+/// @details  This is a data structure for the Electrical Converter Output link input data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class GunnsElectConverterOutputInputData : public GunnsBasicLinkInputData
+{
+    public:
+        bool   mEnabled;            /**< (1) trick_chkpnt_io(**) Initial operation enabled state. */
+        double mInputVoltage;       /**< (V) trick_chkpnt_io(**) Initial input voltage. */
+        double mInputPower;         /**< (W) trick_chkpnt_io(**) Initial input power load. */
+        double mSetpoint;           /**< (1) trick_chkpnt_io(**) Initial commanded setpoint. */
+        /// @brief  Default constructs this Electrical Converter Output input data.
+        GunnsElectConverterOutputInputData(const bool   malfBlockageFlag  = false,
+                                           const double malfBlockageValue = 0.0,
+                                           const bool   enabled           = false,
+                                           const double inputVoltage      = 0.0,
+                                           const double inputPower        = 0.0,
+                                           const double setpoint          = 0.0);
+        /// @brief  Default destructs this Electrical Converter Output input data.
+        virtual ~GunnsElectConverterOutputInputData();
+        /// @brief  Copy constructs this Electrical Converter Output input data.
+        GunnsElectConverterOutputInputData(const GunnsElectConverterOutputInputData& that);
+
+    private:
+        /// @brief  Assignment operator unavailable since declared private and not implemented.
+        GunnsElectConverterOutputInputData& operator =(const GunnsElectConverterOutputInputData&);
+};
+
+/// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (1)  Always returns true.
+///
+/// @details  The link is always non-linear.  Even though the load type may be linear, we still use
+///           minor steps to run the trip logic.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::isNonLinear()
+{
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  convergedStep  (1)  Not used.
+/// @param[in]  absoluteStep   (1)  Not used.
+///
+/// @returns  bool  (1)  Always returns true.
+///
+/// @details  Sets a flag indicating that the last minor step solution was invalid, so we can't
+///           compute outputs from it.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep __attribute__((unused)),
+                                                          const int absoluteStep __attribute__((unused)))
+{
+    mSolutionReset = true;
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Updates mFlux as the output current.  Enters the reverse bias state if resulting
+///           current is negative, and then zeroes mFlux.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::computeFlux()
+{
+    mFlux = mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0];
+    if (mFlux < 0.0) {
+        mReverseBiasState = true;
+        mFlux             = 0.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  enabled  (--)  Enabled flag value to use.
+///
+/// @details  Sets mEnabled to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::setEnabled(const bool enabled)
+{
+    mEnabled = enabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  inputVoltage  (V)  Input voltage value to use.
+///
+/// @details  Sets mInputVoltage to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::setInputVoltage(const double inputVoltage)
+{
+    mInputVoltage = inputVoltage;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  setpoint  (--)  Setpoint value to use.
+///
+/// @details  Sets mSetpoint to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::setSetpoint(const double setpoint)
+{
+    mSetpoint = setpoint;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (--)  The controller setpoint value.
+///
+/// @details  Returns the value of the mSetpoint attribute.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::getSetpoint() const
+{
+    return mSetpoint;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (W)  The power load on the input side of the interface.
+///
+/// @details  Returns the value of mInputPower.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::getInputPower() const
+{
+    return mInputPower;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Resets the tripped state of the contained trip logic functions.  If we have a pointer
+///           to the other side, reset its trips as well.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::resetTrips()
+{
+    mOutputOverVoltageTrip.resetTrip();
+    mOutputOverCurrentTrip.resetTrip();
+    if (mInputLink) {
+        mInputLink->resetTrips();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  GunnsTripLogic*  (--)  Pointer to the output over-voltage trip logic.
+///
+/// @details  Returns the address of the mOutputOverVoltageTrip attribute;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
+{
+    return &mOutputOverVoltageTrip;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  GunnsTripLogic*  (--)  Pointer to the output over-current trip logic.
+///
+/// @details  Returns the address of the mOutputOverCurrentTrip attribute;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverCurrentTrip()
+{
+    return &mOutputOverCurrentTrip;
+}
+
+#endif

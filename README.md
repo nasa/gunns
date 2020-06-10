@@ -20,6 +20,17 @@ GUNNS can also be extended to model other domains besides the above flow systems
 
 GUNNS does not provide a complete simulation environment, as it is intended to be run in external environments.  GUNNS is optimized for the [NASA Trick](https://github.com/nasa/trick) simulation environment, but can be run in other environments with some additional work.
 
+# The Gunnsmiths
+
+GUNNS is managed by the [Simulation & Robotics Division, Simulation & Graphics Branch](https://www.nasa.gov/centers/johnson/engineering/robotics_simulation/index.html) at NASA Johnson Space Center.
+
+GUNNS is developed by [CACI International Inc.](https://www.caci.com) under contract to NASA.  Contact info for our team can be found in the wiki.
+
+<p align=left>
+<img src="https://raw.github.com/nasa/gunns/master/ER7_logo.png" alt="ER7 Logo" height=75px>
+<img src="https://raw.github.com/nasa/gunns/master/CACI_International_logo.png" alt="CACI Logo" height=75px>
+</p>
+
 # Wiki
 
 (TBD)

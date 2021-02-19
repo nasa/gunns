@@ -255,6 +255,15 @@ void UtGunnsElectUserLoadSwitch::testNominalInitialization()
     CPPUNIT_ASSERT(tArticle->mSwitch.isInitialized());
     CPPUNIT_ASSERT(tArticle->mInitFlag);
 
+    /// @test    Nominal initialization with Trip priority zero.
+    GunnsElectUserLoadSwitchConfigData articleConfig("article", &tNodeList, 10.0, 0);
+    CPPUNIT_ASSERT(false                   == articleConfig.mSwitch.mOverCurrentProtection);
+    CPPUNIT_ASSERT_EQUAL(1,                   articleConfig.mSwitch.mTripPriority);
+    FriendlyGunnsElectUserLoadSwitch article;
+    CPPUNIT_ASSERT_NO_THROW(article.initialize(articleConfig, *tInputData, tLinks, tPorts[0], tPorts[1]));
+    CPPUNIT_ASSERT(article.mSwitch.isInitialized());
+    CPPUNIT_ASSERT(article.mInitFlag);
+
     UT_PASS;
 }
 

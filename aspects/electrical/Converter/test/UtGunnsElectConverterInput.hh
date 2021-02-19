@@ -113,6 +113,7 @@ class UtGunnsElectConverterInput: public CppUnit::TestFixture
         GunnsElectConverterInputInputData*   tInputData;          /**< (--) Pointer to input data. */
         FriendlyGunnsElectConverterInput*    tArticle;            /**< (--) Pointer to article under test. */
         GunnsSensorAnalogWrapper             tSensorVin;          /**< (--) Sensor object. */
+        GunnsSensorAnalogWrapper             tSensorIin;          /**< (--) Sensor object. */
         unsigned int                         tTripPriority;       /**< (--) Nominal config data. */
         double                               tInOverVoltageTrip;  /**< (V)  Nominal config data. */
         double                               tInUnderVoltageTrip; /**< (V)  Nominal config data. */

@@ -252,3 +252,54 @@ void GunnsThermalMultiPanel::updateState(const double dt)
     /// - Find the total flux.
     mDemandedFlux = fluxPerArea * mSurfaceArea;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]   index  (--)  Array index for absorptivity
+///
+/// @return      double (--)  Current value of absorptivity with a specified array index.
+///
+/// @details  Returns the absorptivity with a specified array index.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsThermalMultiPanel::getAbsorptivity(const int index) const
+{
+    if (Math::isInRange(0, index, 4)) {
+        return mAbsorptivity[index];
+    } else {
+        TS_PTCS_WARNING ("Array index out of bounds. First element returned.");
+        return mAbsorptivity[0];
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]   index  (--)  Array index for mViewScalar
+///
+/// @return      double (--)  Current value of mViewScalar with a specified array index.
+///
+/// @details  Returns the mViewScalar with a specified array index.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsThermalMultiPanel::getViewScalar(const int index) const
+{
+    if (Math::isInRange(0, index, 4)) {
+        return mViewScalar[index];
+    } else {
+        TS_PTCS_WARNING ("Array index out of bounds. First element returned.");
+        return mViewScalar[0];
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]   index  (--)   Array index for mIncidentFlux
+///
+/// @return      double (W/m2) Current value of mIncidentFlux with a specified array index.
+///
+/// @details  Returns the mIncidentFlux with a specified array index.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsThermalMultiPanel::getIncidentFlux(const int index) const
+{
+    if (Math::isInRange(0, index, 4)) {
+        return mIncidentFlux[index];
+    } else {
+        TS_PTCS_WARNING ("Array index out of bounds. First element returned.");
+        return mIncidentFlux[0];
+    }
+}

@@ -225,7 +225,7 @@ void GunnsElectPvArray::initialize(const GunnsElectPvArrayConfigData&  configDat
     }
 
     /// - Initialize class attributes.
-    mOpenCircuitSide     = false;
+    mOpenCircuitSide     = true;
     mCommonStringsOutput = true;
     mPercentInsolation   = 0.0;
     mShortCircuitCurrent = 0.0;
@@ -273,7 +273,7 @@ void GunnsElectPvArray::restartModel()
     GunnsBasicLink::restartModel();
 
     /// - Reset non-config and non-checkpointed data.
-    mOpenCircuitSide     = false;
+    mOpenCircuitSide     = true;
     mPercentInsolation   = 0.0;
     mShortCircuitCurrent = 0.0;
     mOpenCircuitVoltage  = 0.0;
@@ -284,26 +284,51 @@ void GunnsElectPvArray::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] dt (s) Not used.
+/// @param[in] dt (s) Integration time step.
 ///
 /// @throws   TsOutOfBoundsException
 ///
 /// @details  Computes this link's contributions to the network system of equations prior to the
 ///           network major step solution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectPvArray::step(const double dt __attribute__((unused)))
+void GunnsElectPvArray::step(const double dt)
 {
     processUserPortCommand();
-    updateArray();
-    buildAdmittanceMatrix();
-    buildSourceVector();
+    updateArray(dt);
+    minorStep(dt, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  dt         (s)   Not used.
+/// @param[in]  minorStep  (--)  Not used.
+///
+/// @details  Updates this link's contributions to the network system of equations for minor steps.
+///           If the strings are not tied to a common output, then they are being individually
+///           loaded by a downstream regulator and the output node of this link isn't used, so zero
+///           this link's effects on it.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::minorStep(const double dt __attribute__((unused)),
+                                  const int    minorStep __attribute__((unused)))
+{
+    if (mCommonStringsOutput) {
+        buildAdmittanceMatrix();
+        buildSourceVector();
+    } else {
+        mSourceVector[0] = 0.0;
+        if (mAdmittanceMatrix[0] != 0.0) {
+            mAdmittanceMatrix[0] = 0.0;
+            mAdmittanceUpdate    = true;
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Integration time step.
+///
 /// @details  Updates the photovoltaic sections in their environment, and from their outputs
 ///           computes the average array performance parameters for this time step.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectPvArray::updateArray()
+void GunnsElectPvArray::updateArray(const double dt)
 {
     /// - Update the sections, loop over the strings and sum up their short-circuit currents, and
     ///   find the highest string open-circuit voltage and maximum power.  The voltage will also be
@@ -315,7 +340,7 @@ void GunnsElectPvArray::updateArray()
     double impp              = 0.0;
     double pmpp              = 0.0;
     for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
-        mSections[section].update();
+        mSections[section].update(dt);
         percentInsolation += mSections[section].getPercentInsolation();
         for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
             isc += mSections[section].mStrings[string].getShortCircuitCurrent();
@@ -381,23 +406,25 @@ void GunnsElectPvArray::buildAdmittanceMatrix()
 ///
 /// @returns  SolutionResult  (--)  Whether this link confirms or rejects the network solution.
 ///
-/// @details  This link will reject whenever the terminal voltage moves from one line segment of the
-///           array I-V curve to the other.  In this case, the link admittance matrix and source
-///           vector are updated for the new line segment before returning.
+/// @details  This link only directly contributes to the network system of equations when the array
+///           strings are tied to the common output node.  In that case, check if the output voltage
+///           has moved between the open- or short-circuit sides.  If so, reject the solution and
+///           start over.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsBasicLink::SolutionResult GunnsElectPvArray::confirmSolutionAcceptable(
         const int convergedStep __attribute__((unused)),
         const int absoluteStep __attribute__((unused)))
 {
-    const bool lastOpenCircuitSide = mOpenCircuitSide;
-    mOpenCircuitSide = (mPotentialVector[0] >= mIvCornerVoltage);
-    if (lastOpenCircuitSide != mOpenCircuitSide) {
-        buildAdmittanceMatrix();
-        buildSourceVector();
-        return REJECT;
-    } else {
-        return CONFIRM;
+    if (mCommonStringsOutput) {
+        if (mOpenCircuitSide and mPotentialVector[0] < mIvCornerVoltage) {
+            mOpenCircuitSide = false;
+            return REJECT;
+        } else if (not mOpenCircuitSide and mPotentialVector[0] >= mIvCornerVoltage) {
+            mOpenCircuitSide = true;
+            return REJECT;
+        }
     }
+    return CONFIRM;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

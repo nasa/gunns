@@ -308,7 +308,7 @@ void UtGunnsElectPvArray::testNominalInitialization()
     CPPUNIT_ASSERT(expectedSectionNumStrings         == sectionPtr[2]->mNumStrings);
 
     /// @test    Nominal state data.
-    CPPUNIT_ASSERT(false == tArticle->mOpenCircuitSide);
+    CPPUNIT_ASSERT(true  == tArticle->mOpenCircuitSide);
     CPPUNIT_ASSERT(true  == tArticle->mCommonStringsOutput);
     CPPUNIT_ASSERT(0.0   == tArticle->mPercentInsolation);
     CPPUNIT_ASSERT(0.0   == tArticle->mShortCircuitCurrent);
@@ -386,7 +386,7 @@ void UtGunnsElectPvArray::testCustomStringsInitialization()
     CPPUNIT_ASSERT(numStringsBySection[2]            == sectionPtr[2]->mNumStrings);
 
     /// @test    Nominal state data.
-    CPPUNIT_ASSERT(false == tArticle->mOpenCircuitSide);
+    CPPUNIT_ASSERT(true  == tArticle->mOpenCircuitSide);
     CPPUNIT_ASSERT(true  == tArticle->mCommonStringsOutput);
     CPPUNIT_ASSERT(0.0   == tArticle->mPercentInsolation);
     CPPUNIT_ASSERT(0.0   == tArticle->mShortCircuitCurrent);
@@ -455,15 +455,15 @@ void UtGunnsElectPvArray::testRestart()
     tArticle->mIvCornerVoltage     = 1.0;
     tArticle->mIvCornerCurrent     = 1.0;
     tArticle->restart();
-    CPPUNIT_ASSERT(false == tArticle->mOpenCircuitSide);
-    CPPUNIT_ASSERT(true  == tArticle->mCommonStringsOutput);
-    CPPUNIT_ASSERT(0.0   == tArticle->mPercentInsolation);
-    CPPUNIT_ASSERT(0.0   == tArticle->mShortCircuitCurrent);
-    CPPUNIT_ASSERT(0.0   == tArticle->mOpenCircuitVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mMpp.mVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mTerminal.mVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mIvCornerVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mIvCornerCurrent);
+    CPPUNIT_ASSERT(true == tArticle->mOpenCircuitSide);
+    CPPUNIT_ASSERT(true == tArticle->mCommonStringsOutput);
+    CPPUNIT_ASSERT(0.0  == tArticle->mPercentInsolation);
+    CPPUNIT_ASSERT(0.0  == tArticle->mShortCircuitCurrent);
+    CPPUNIT_ASSERT(0.0  == tArticle->mOpenCircuitVoltage);
+    CPPUNIT_ASSERT(0.0  == tArticle->mMpp.mVoltage);
+    CPPUNIT_ASSERT(0.0  == tArticle->mTerminal.mVoltage);
+    CPPUNIT_ASSERT(0.0  == tArticle->mIvCornerVoltage);
+    CPPUNIT_ASSERT(0.0  == tArticle->mIvCornerCurrent);
 
     UT_PASS;
 }
@@ -484,6 +484,7 @@ void UtGunnsElectPvArray::testStep()
         ///          link outputs to solver on short-circuit side of the array I-V curve.
         tArticle->mUserPortSelect     = 0;
         tArticle->mUserPortSetControl = GunnsBasicLink::GROUND;
+        tArticle->mOpenCircuitSide    = false;
 
         tArticle->step(0.0);
 
@@ -508,7 +509,7 @@ void UtGunnsElectPvArray::testStep()
         const double expectedPmpp = tNumStrings * tArticle->mSections[0].mStrings[0].getMpp().mPower;
         const double expectedGmpp = expectedImpp / expectedVmpp;
         const double expectedA    = (expectedIsc - expectedIivc) / expectedVivc;
-        const double expectedW    = expectedIsc;
+        const double expectedW    = expectedA * expectedVivc;
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSol,  tArticle->mPercentInsolation,   DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,  tArticle->mShortCircuitCurrent, FLT_EPSILON);
@@ -675,30 +676,35 @@ void UtGunnsElectPvArray::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
 
     /// - Step the article to update a realistic state.
+    tArticle->setCommonStringsOutput(true);
+    tArticle->mOpenCircuitSide = false;
     tArticle->step(0.0);
     CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
     double admittance = tArticle->mAdmittanceMatrix[0];
     double source     = tArticle->mSourceVector[0];
 
     /// @test    When solution voltage remains on the previous side of the I-V corner, the link
-    ///          confirms and doesn't update its outputs to solver.
+    ///          confirms.
     tArticle->mPotentialVector[0] = tArticle->mIvCornerVoltage * 0.99;
 
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(0, 1));
     CPPUNIT_ASSERT(!tArticle->mOpenCircuitSide);
-    CPPUNIT_ASSERT(!tArticle->needAdmittanceUpdate());
-    CPPUNIT_ASSERT(admittance == tArticle->mAdmittanceMatrix[0]);
-    CPPUNIT_ASSERT(source     == tArticle->mSourceVector[0]);
 
-    /// @test    When solution voltage moves to other side of the I-V curve, the link rejects and
-    ///          updates its outputs to solver.
+    /// @test    When solution voltage moves to other side of the I-V curve, the link rejects.
     tArticle->mPotentialVector[0] = tArticle->mIvCornerVoltage * 1.01;
 
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 2));
     CPPUNIT_ASSERT(tArticle->mOpenCircuitSide);
-    CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
-    CPPUNIT_ASSERT(admittance != tArticle->mAdmittanceMatrix[0]);
-    CPPUNIT_ASSERT(source     != tArticle->mSourceVector[0]);
+
+    /// @test    Link rejects when moving back the original side of the I-V curve.
+    tArticle->mPotentialVector[0] = tArticle->mIvCornerVoltage * 0.99;
+
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 3));
+    CPPUNIT_ASSERT(!tArticle->mOpenCircuitSide);
+
+    /// @test    Always confirms when strings aren't tied to common output.
+    tArticle->setCommonStringsOutput(false);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(0, 1));
 
     UT_PASS;
 }

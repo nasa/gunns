@@ -149,6 +149,7 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool                                     mLeadsInterface;        /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
         bool                                     mReverseBiasState;      /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
         bool                                     mSolutionReset;         /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
+        double                                   mSourceVoltage;         /**M    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterOutputConfigData& configData,
                       const GunnsElectConverterOutputInputData&  inputData) const;
@@ -156,6 +157,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         virtual void restartModel();
         /// @brief  Updates the output current of this link.
         void computeFlux();
+        /// @brief  Updates the forward/reverse bias state of the converter.
+        bool updateBias();
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link
@@ -268,16 +271,11 @@ inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedSte
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Updates mFlux as the output current.  Enters the reverse bias state if resulting
-///           current is negative, and then zeroes mFlux.
+/// @details  Updates mFlux as the output current.  Does not allow negative output current.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsElectConverterOutput::computeFlux()
 {
-    mFlux = mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0];
-    if (mFlux < 0.0) {
-        mReverseBiasState = true;
-        mFlux             = 0.0;
-    }
+    mFlux = fmax(0.0, mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

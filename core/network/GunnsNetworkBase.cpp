@@ -91,13 +91,13 @@ const std::vector<GunnsBasicLink*>* GunnsNetworkBase::getLinks() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name (--) Unused here, kept for backwards compatibility.
+/// @param[in]  name (--) Optional override value for the network name for backwards compatibility.
 ///
 /// @details  Initializes this GUNNS Base Network.  This should be called by the Trick
 ///           initialization job.  The node, links, spotters & solver are initialized with their
 ///           config and input data objects.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsNetworkBase::initialize(const std::string& name __attribute__((unused)))
+void GunnsNetworkBase::initialize(const std::string& name)
 {
     /// - This only functions when the network is a standalone network.  When this is a sub-network
     ///   in a super-network, initialization functions are called separately by the super so this
@@ -106,7 +106,11 @@ void GunnsNetworkBase::initialize(const std::string& name __attribute__((unused)
 
     /// - Catch exceptions and send a fatal H&S error.
     try {
-        initNodes(mName);
+        if (name.empty()) {
+            initNodes(mName);
+        } else {
+            initNodes(name);
+        }
         initNetwork();
 
     } catch (TsInitializationException& e) {

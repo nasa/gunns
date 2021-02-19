@@ -144,7 +144,9 @@ class SwitchElect: public GunnsBasicConductor {
     {
         return true;
     }
- 
+    /// @brief Minor Step method for the non-linear link.
+    virtual void minorStep(const double dt, const int minorStep);
+
     // setters and getters for controlling the switch object through the switchElect
     bool isSwitchTripped();
     bool isSwitchPosTrip();
@@ -178,4 +180,19 @@ class SwitchElect: public GunnsBasicConductor {
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt        (s)  Frame delta time
+/// @param[in] minorStep (--) The minor step number that the network is on
+///
+/// @details  For each network minor step, this simply passes execution on to the base class step
+///           method.  This allows the link admittance matrix to be updated on minor steps after it
+///           has tripped open, during the same major frame.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void SwitchElect::minorStep(const double dt,
+                                   const int    minorStep __attribute__((unused)))
+{
+    step(dt);
+}
+
 #endif

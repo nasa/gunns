@@ -117,10 +117,13 @@ ThermalNetworkInputData::~ThermalNetworkInputData()
 /* ThermalNetwork class */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details    Default ThermalNetwork constructor. Defaults all pointers to zero.
-///             Stores the name of the network.
+///             Stores the name of the network.  The base network is constructed with zero node
+///             count and null pointer to the nodes array -- these must be set during network
+///             initialization.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-ThermalNetwork::ThermalNetwork()
+ThermalNetwork::ThermalNetwork(const std::string& name)
     :
+    GunnsNetworkBase(name, 0, 0),
     mConfig(),
     mInput(),
     mCapacitanceLinks(0),
@@ -132,20 +135,14 @@ ThermalNetwork::ThermalNetwork()
     mSources(0),
     mMalfHtrMiswireFlag(false),
     mMalfHtrIndexValue(0),
-    mName(),
-    mInitialized(0),
     mHtrPowerElectrical(0),
-    parser(),
-    netIslandAnalyzer(mNodeList),
+    parser(name + ".parser"),
+    netIslandAnalyzer(netNodeList),
     numCapEditGroups(0),
     mCapEditScaleFactor(0),
     mCapEditScalePrev(0),
-    mGunnsSolver(),
-    vLinks(0),
     pNodes(0),
-    mNodeList(),
     indexSpaceNode(0),
-    numNodes(0),
     numLinksCap(0),
     numLinksCond(0),
     numLinksRad(0),
@@ -180,97 +177,77 @@ ThermalNetwork::~ThermalNetwork()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name  (--)  string representing the name of this thermal network
 ///
-/// @details  Initializes the ThermalNetwork class. Tells the network's ThermFileParser
-///           object to parse the configuration files and populate its vectors with the data found.
-///           The appropriate space on the heap is allocated based on the number of links of each
-///           type. Gunns Config/Input data objects are constructed with the corresponding data
-///           from the config-files. Then, each actual link object is initialized with its
-///           its appropriate port numbers and Config/Input data.
+/// @details  Tells the network's ThermFileParser object to parse the configuration files and
+///           populate its vectors with the data found.  The appropriate space on the heap is
+///           allocated based on the number of links of each type.  Config/Input data objects are
+///           constructed with the corresponding data from the config-files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void ThermalNetwork::initialize(const std::string& name)
+void ThermalNetwork::initNodes(const std::string& name)
 {
-    /// - Repeat initialization causes a memory leak within Gunns.
-    if (true == mInitialized)
-    {
-        TS_PTCS_WARNING("Request to re-initialize() denied.");
-        return;
+    /// - For backward compatibility with old sims that don't pass the network name in the
+    ///   constructor, we reset the name to this method's argument.  This argument only overrides
+    ///   the network name if it was previously empty.
+    if ("" == mName and "" != name) {
+        mName = name;
     }
 
-    /// - Reset the initialization complete flag.
-    mInitialized = false;
+    /// - Clear any allocated memory.
+    cleanUp();
 
-    try
-    {
-        /// - Validate and initialize object name.
-        TS_PTCS_NAME_FATAL("ThermalNetwork");
+    /// - Set file names in the ThermFileParser object.
+    parser.mNodeFile          = mConfig.cNodeFile;
+    parser.mCondFile          = mConfig.cCondFile;
+    parser.mRadFile           = mConfig.cRadFile;
+    parser.mHtrFile           = mConfig.cHtrFile;
+    parser.mPanFile           = mConfig.cPanFile;
+    parser.mEtcFile           = mConfig.cEtcFile;
+    parser.mThermInputFile    = mInput.iThermInputFile;
+    parser.mThermInputFileRad = mInput.iInputRadFile;
 
-        /// - Clear any allocated memory.
-        cleanUp();
+    /// - Populate the parser's C++ vectors with data from the config-files.
+    parser.initialize(mName + ".parser");
 
-        /// - Set file names in the ThermFileParser object.
-        parser.mNodeFile = mConfig.cNodeFile;
-        parser.mCondFile = mConfig.cCondFile;
-        parser.mRadFile  = mConfig.cRadFile;
-        parser.mHtrFile  = mConfig.cHtrFile;
-        parser.mPanFile  = mConfig.cPanFile;
-        parser.mEtcFile  = mConfig.cEtcFile;
-        parser.mThermInputFile = mInput.iThermInputFile;
-        parser.mThermInputFileRad  = mInput.iInputRadFile;
+    /// - Set the number of capacitance-edit groups.
+    numCapEditGroups = parser.vCapEditGroupList.size();
 
-        /// - Populate the parser's C++ vectors with data from the config-files.
-        parser.initialize(name);
+    /// - Allocate and initialize the GunnsBasicNode pointer and all the node objects.
+    buildNodes();
 
-        /// - Set the number of capacitance-edit groups.
-        numCapEditGroups = parser.vCapEditGroupList.size();
+    /// - Use TS_NEW macros to allocate the links and config/input data.
+    allocate();
 
-        /// - Allocate and initialize the GunnsBasicNode pointer and all the node objects.
-        buildNodes();
+    /// - Validate initial state.
+    validate();
 
-        /// - Use TS_NEW macros to allocate the links and config/input data.
-        allocate();
+    /// - Construct the config/input data objects with data from the config-files.
+    buildConfig(mName);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Initializes the links with their node map assignments and Config/Input data, and
+///           initializes the built-in network island analyzer spotter.  If this is not a sub-
+///           network in a super-network the network solver is initialized with default Config data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void ThermalNetwork::initNetwork()
+{
+    /// - Initialize the link objects at their ports with correct config/input data.
+    buildLinks();
 
-        /// - Validate initial state.
-        validate();
+    /// - Initialize the island analyzer spotter.
+    GunnsBasicIslandAnalyzerConfigData config(mName + ".netIslandAnalyzer");
+    GunnsBasicIslandAnalyzerInputData input;
+    netIslandAnalyzer.initialize(&config, &input);
 
-        /// - Construct the config/input data objects with data from the config-files.
-        buildConfig(name);
-
-        /// - Initialize the link objects at their ports with correct config/input data.
-        buildLinks();
-
-        /// - Initialize the island analyzer spotter.
-        GunnsBasicIslandAnalyzerConfigData config(mName + ".netIslandAnalyzer");
-        GunnsBasicIslandAnalyzerInputData input;
-        netIslandAnalyzer.initialize(&config, &input);
-        
+    if (not netIsSubNetwork) {
         /// - Construct the Gunns network config.
-        GunnsConfigData NetworkConfig(mName,  // network name
-                                        1.0,  // convergenceTolerance
-                                        1.0,  // minLinearizationP
-                                         10,  // minorStepLimit
-                                          1); // decompositionLimit
+        GunnsConfigData NetworkConfig(mName, // network name
+                                      1.0,   // convergenceTolerance
+                                      1.0,   // minLinearizationP
+                                      1,     // minorStepLimit
+                                      1);    // decompositionLimit
 
         /// - Initialize the solver after all link objects have been initialized.
-        mGunnsSolver.initialize(NetworkConfig, vLinks);
-
-        /// - At successful initialization, set the init flag to true.
-        mInitialized = true;
-
-    /// - error catching
-    } catch(TsParseException& e)
-    {
-        /// - Report error.
-        TS_PTCS_FATAL( "TsParseException while initializing.");
-
-    } catch(TsInitializationException& e)
-    {
-        /// - Report error.
-        TS_PTCS_FATAL( "TsInitializationException while initializing.");
-
-    } catch(...)
-    {
-        /// - Report error.
-        TS_PTCS_FATAL( "Other Exception while initializing.");
+        netSolver.initializeNodes(netNodeList);
+        netSolver.initialize(NetworkConfig, netLinks);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,12 +268,20 @@ void ThermalNetwork::preloadCheckpoint()
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details    Restarts the ThermalNetwork by calling the GUNNS restart() function.
+///
+/// @note   Super-networks will not call this function when they restart, so the only way to get the
+///         restartCapacitanceGroups() function to run is to add a separate restart job for each
+///         ThermalNetwork sub-network.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ThermalNetwork::restart()
 {
     try
     {
-        mGunnsSolver.restart();
+        if (not netIsSubNetwork) {
+            /// - In a sub-network, this network's solver restart is skipped since this solver isn't
+            ///   used.
+            netSolver.restart();
+        }
         restartCapacitanceGroups();
 
     } catch(TsInitializationException& e)
@@ -317,30 +302,16 @@ void ThermalNetwork::restart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ThermalNetwork::update(const double timeStep)
 {
-    if (!isInitialized())
-    {
-        /// - Report error.
-        TS_PTCS_ERROR("ThermalNetwork not initialized.");
-        return;
-    }
-
     try
     {
-        /// - Set the electrical power of each heater in the network.
-        setHeaterPowers();
-
-        /// - Perform capacitor group edits.
-        editCapacitanceGroups();
-
-        /// - Call the island analyzer pre-solultion update.
-        netIslandAnalyzer.stepPreSolver(timeStep);
-
-        /// - Call the Gunns step() function to solve for the temperatures in the networks.
-        mGunnsSolver.step(timeStep);
-
-        /// - Call the island analyzer post-solultion update.
-        netIslandAnalyzer.stepPostSolver(timeStep);
-
+        /// - If not a sub-network, then step the pre-solution funcitons, then the solver, then the
+        ///   post-solution functions.  When this is a sub-network, the super-network will call the
+        ///   pre- & post- solution functions and step its own solver.
+        if (not netIsSubNetwork) {
+            stepSpottersPre(timeStep);
+            netSolver.step(timeStep);
+            stepSpottersPost(timeStep);
+        }
     } catch(TsInitializationException& e)
     {
         /// - Report error.
@@ -353,30 +324,56 @@ void ThermalNetwork::update(const double timeStep)
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  timeStep  (s)  integration time step
+///
+/// @details    Updates the pre-solution functions including heater power, capacitor group edits,
+///             and spotters.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void ThermalNetwork::stepSpottersPre(const double timeStep)
+{
+    /// - Set the electrical power of each heater in the network.
+    setHeaterPowers();
+
+    /// - Perform capacitor group edits.
+    editCapacitanceGroups();
+
+    /// - Call the island analyzer pre-solultion update.
+    netIslandAnalyzer.stepPreSolver(timeStep);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  timeStep  (s)  integration time step
+///
+/// @details    Updates the post-solution functions including spotters.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void ThermalNetwork::stepSpottersPost(const double timeStep)
+{
+    /// - Call the island analyzer post-solultion update.
+    netIslandAnalyzer.stepPostSolver(timeStep);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Allocates and initializes the network's nodes objects.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ThermalNetwork::buildNodes()
 {
     /// - Store the number of nodes from the ThermFileParser object.
-    numNodes = parser.numNodes;
-    indexSpaceNode = numNodes - 1;
+    netNumLocalNodes = parser.numNodes;
 
-    /// - Allocate the pNodes array with the correct size.
-    TS_NEW_CLASS_ARRAY_EXT(pNodes, numNodes, GunnsBasicNode, (), std::string(mName) + ".pNodes");
+    if (not netIsSubNetwork) {
+        /// - Allocate the pNodes array with the correct size.
+        TS_NEW_CLASS_ARRAY_EXT(pNodes, netNumLocalNodes, GunnsBasicNode, (), std::string(mName) + ".pNodes");
 
-    /// - Set the nodeList attributes.
-    mNodeList.mNumNodes = numNodes;
-    mNodeList.mNodes    = pNodes;
+        /// - Set the nodeList attributes.
+        netNodeList.mNumNodes = netNumLocalNodes;
+        netNodeList.mNodes    = pNodes;
+    }
+    indexSpaceNode = netNodeList.mNumNodes - 1;
 
     /// - Loop through all the nodes.
-    for(int i = 0; i < numNodes; ++i)
+    for(int i = 0; i < netNumLocalNodes; ++i)
     {
         /// - Call initialize() on every GunnsBasicNode.
-        pNodes[i].initialize( parser.vNodeNames.at(i) );
+        netNodeList.mNodes[i + netSuperNodesOffset].initialize( parser.vNodeNames.at(i) );
     }
-
-    /// - Tell the solver to initializeNodes().
-    mGunnsSolver.initializeNodes(mNodeList);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Allocates arrays for each link-object type.
@@ -661,7 +658,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mCapacitanceConfigData[i] = new GunnsThermalCapacitorConfigData(
                                   name,       /// name of Gunns link
-                                  &mNodeList, /// nodes list for this network
+                                  &netNodeList, /// nodes list for this network
                                   groupId);   /// identifier for capacitance edit grouping
         /// - Construct InputData.
         mCapacitanceInputData[i] = new GunnsThermalCapacitorInputData(
@@ -684,7 +681,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mConductionConfigData[i] = new GunnsBasicConductorConfigData(
                                   name,       /// name of Gunns link
-                                  &mNodeList, /// nodes list for this network
+                                  &netNodeList, /// nodes list for this network
                                   cond);      /// conductivity
         /// - Construct InputData.
         mConductionInputData[i] = new GunnsBasicConductorInputData(
@@ -705,7 +702,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mRadiationConfigData[i] = new GunnsThermalRadiationConfigData(
                                   name,       /// name of Gunns link
-                                  &mNodeList, /// nodes list for this network
+                                  &netNodeList, /// nodes list for this network
                                   cond);      /// conductivity
 
         /// - If the optional radiation thermal input XML file has been used then it has read view
@@ -737,7 +734,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mHeaterConfigData[i] = new GunnsThermalHeaterConfigData(
                              name,          /// name of Gunns link of Gunns link
-                             &mNodeList,    /// nodes list for this network
+                             &netNodeList,    /// nodes list for this network
                              scalar,        /// heater electrical-to-thermal tuning scalar
                              fracs);        /// fraction of power distributed to each node
         /// - Construct InputData.
@@ -763,7 +760,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mPanelConfigData[i] = new GunnsThermalPanelConfigData(
                                   name,       /// name of Gunns link
-                                  &mNodeList, /// nodes list for this network
+                                  &netNodeList, /// nodes list for this network
                                   scalar,     /// tuning scalar, defaulted to 1.0
                                   fracs,      /// fraction of power distributed to each node
                                   alpha,      /// absorptivity
@@ -791,7 +788,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mPotentialConfigData[i] = new GunnsThermalPotentialConfigData(
                                   name,       /// name of Gunns link
-                                  &mNodeList, /// nodes list
+                                  &netNodeList, /// nodes list
                                   cond);      /// conductivity
         /// - Construct InputData.
         mPotentialInputData[i] = new GunnsThermalPotentialInputData(
@@ -815,7 +812,7 @@ void ThermalNetwork::buildConfig(const std::string& networkName)
         /// - Construct ConfigData.
         mSourceConfigData[i] = new GunnsThermalSourceConfigData(
                                 name,          /// name of Gunns link of Gunns link
-                                &mNodeList,    /// nodes list for this network
+                                &netNodeList,    /// nodes list for this network
                                 scalar,        /// tuning scalar
                                 fracs);        /// fraction of power distributed to each node
         /// - Construct InputData.
@@ -891,7 +888,7 @@ void ThermalNetwork::buildLinkType(const char* linkType,             // name of 
 void ThermalNetwork::initializeCap(int i)
 {
     /// - Get the node number of the link's port0.
-    const int port0 = parser.vCapPorts.at(i);
+    const int port0 = parser.vCapPorts.at(i) + netSuperNodesOffset;
 
     /// - Capacitance links have a port1 always at SPACE (the very last node).
     const int port1 = indexSpaceNode;
@@ -899,7 +896,7 @@ void ThermalNetwork::initializeCap(int i)
     /// - Initialize the link with its corresponding data.
     mCapacitanceLinks[i].initialize(*mCapacitanceConfigData[i],
                                     *mCapacitanceInputData[i],
-                                    vLinks,
+                                    netLinks,
                                     port0,
                                     port1);
 }
@@ -911,13 +908,13 @@ void ThermalNetwork::initializeCap(int i)
 void ThermalNetwork::initializeCond(int i)
 {
     /// - Get the node number of the link's port0 and port1.
-    const int port0 = parser.vCondPorts0.at(i);
-    const int port1 = parser.vCondPorts1.at(i);
+    const int port0 = parser.vCondPorts0.at(i) + netSuperNodesOffset;
+    const int port1 = parser.vCondPorts1.at(i) + netSuperNodesOffset;
 
     /// - Initialize the link with its corresponding data.
     mConductionLinks[i].initialize(*mConductionConfigData[i],
                                    *mConductionInputData[i],
-                                   vLinks,
+                                   netLinks,
                                    port0,
                                    port1);
 }
@@ -929,13 +926,13 @@ void ThermalNetwork::initializeCond(int i)
 void ThermalNetwork::initializeRad(int i)
 {
     /// - Get the node number of the link's port0 and port1.
-    const int port0 = parser.vRadPorts0.at(i);
-    const int port1 = parser.vRadPorts1.at(i);
+    const int port0 = parser.vRadPorts0.at(i) + netSuperNodesOffset;
+    const int port1 = parser.vRadPorts1.at(i) + netSuperNodesOffset;
 
     /// - Initialize the link with its corresponding data.
     mRadiationLinks[i].initialize(*mRadiationConfigData[i],
                                   *mRadiationInputData[i],
-                                  vLinks,
+                                  netLinks,
                                   port0,
                                   port1);
 }
@@ -951,11 +948,14 @@ void ThermalNetwork::initializeHtr(int i)
 {
     /// - Create a temporary ports vector from the heater port numbers at index i.
     std::vector<int>* ports = &parser.vHtrPorts.at(i);
+    for (unsigned int j=0; j<parser.vHtrPorts.at(i).size(); ++j) {
+        parser.vHtrPorts.at(i).at(j) += netSuperNodesOffset;
+    }
 
     /// -Initialize the link with its corresponding data.
     mHeaters[i].initialize(*mHeaterConfigData[i],
                            *mHeaterInputData[i],
-                           vLinks,
+                           netLinks,
                            ports);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -967,11 +967,14 @@ void ThermalNetwork::initializePan(int i)
 {
     /// - Create a temporary ports vector from the panel port numbers at index i.
     std::vector<int>* ports = &parser.vPanPorts.at(i);
+    for (unsigned int j=0; j<parser.vPanPorts.at(i).size(); ++j) {
+        parser.vPanPorts.at(i).at(j) += netSuperNodesOffset;
+    }
 
     /// - Initialize the link with its corresponding data.
     mPanels[i].initialize(*mPanelConfigData[i],
                           *mPanelInputData[i],
-                          vLinks,
+                          netLinks,
                           ports);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -985,12 +988,12 @@ void ThermalNetwork::initializePot(int i)
     const int port0 = indexSpaceNode;
 
     /// - Get the node number of the link's port1.
-    const int port1 = parser.vPotPorts.at(i);
+    const int port1 = parser.vPotPorts.at(i) + netSuperNodesOffset;
 
     /// - Initialize the link with its corresponding data.
     mPotentialLinks[i].initialize(*mPotentialConfigData[i],
                                   *mPotentialInputData[i],
-                                  vLinks,
+                                  netLinks,
                                   port0,
                                   port1);
 }
@@ -1003,11 +1006,14 @@ void ThermalNetwork::initializeSrc(int i)
 {
     /// - Create a temporary ports vector from the heater port numbers at index i.
     std::vector<int>* ports = &parser.vSrcPorts.at(i);
+    for (unsigned int j=0; j<parser.vSrcPorts.at(i).size(); ++j) {
+        parser.vSrcPorts.at(i).at(j) += netSuperNodesOffset;
+    }
 
     /// - Initialize the link with its corresponding data.
     mSources[i].initialize(*mSourceConfigData[i],
                            *mSourceInputData[i],
-                           vLinks,
+                           netLinks,
                            ports);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1017,13 +1023,17 @@ void ThermalNetwork::initializeSrc(int i)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ThermalNetwork::validate()
 {
+    /// - Throw an exception if numberOf nodes is not > 0.
+    TS_PTCS_IF_ERREX(netNodeList.mNumNodes <= 0, TsInitializationException,
+            "invalid init data,", "netNodeList.mNumNodes <= 0.");
+
     /// - Throw an exception if null pointer to the Basic Node object.
-    TS_PTCS_IF_ERREX(0 == pNodes, TsInitializationException,
+    TS_PTCS_IF_ERREX(0 == netNodeList.mNodes, TsInitializationException,
                 "allocation error,", "Null pointer to BasicNode array.");
 
     /// - Throw an exception if numberOf nodes is not > 0.
-    TS_PTCS_IF_ERREX(numNodes <= 0, TsInitializationException,
-            "invalid init data,", "numNodes <= 0.");
+    TS_PTCS_IF_ERREX(netNumLocalNodes <= 0, TsInitializationException,
+            "invalid init data,", "netNumLocalNodes <= 0.");
 
     /// - Throw an exception if numCapEditGroups is not >= 0.
     TS_PTCS_IF_ERREX(numCapEditGroups < 0, TsInitializationException,
@@ -1263,4 +1273,18 @@ void ThermalNetwork::setMalfHtrMiswire(const bool flag, const int* index)
             mMalfHtrIndexValue[i] = i;
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   TsParseException
+///
+/// @details  This calls the file parser to do a pre-count of the number of nodes, stores it in
+///           the base network's number of nodes, and finally returns the value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+int ThermalNetwork::getNumLocalNodes()
+{
+    parser.mNodeFile = mConfig.cNodeFile;
+    parser.preCountNodes();
+    netNumLocalNodes = parser.numNodes;
+    return netNumLocalNodes;
 }

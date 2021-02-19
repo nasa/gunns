@@ -28,10 +28,10 @@ const int ThermFileParser::NOT_FOUND  = -99;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Constructs the ThermFileParser with the name of the network as an argument.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-ThermFileParser::ThermFileParser()
+ThermFileParser::ThermFileParser(const std::string name)
     :
     areNodesRegistered(false),
-    mName(),
+    mName(name),
     mNodeFile(),
     mCondFile(),
     mRadFile(),
@@ -95,6 +95,26 @@ ThermFileParser::~ThermFileParser()
     // nothing to do
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throw    TsParseException
+///
+/// @details  This is intended to be called prior to the intialize method, to count and store the
+///           number of nodes for a ThermalNetwork to access prior to its initialization when used
+///           in a super-network.
+///
+/// @note  This leaves numNodes != 0, so the readNodeFile method must reset it to zero prior to
+///        counting nodes again.
+///
+/// @note  Since this function is intended to be called prior to initialization, H&S errors thrown
+///        from the call to readFile won't have an instance name.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void ThermFileParser::preCountNodes()
+{
+    /// - Reset number of nodes for a fresh count.
+    numNodes = 0;
+    /// - Cause the node file to be parsed and node elements counted in numNodes.
+    readFile(mNodeFile, "node", &ThermFileParser::countNode);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name  (--)  Name of object, usually the same as the associated ThermalNetwork.
 ///
 /// @details  Parses thermal xml files and builds data vectors.
@@ -104,8 +124,17 @@ void ThermFileParser::initialize(const std::string& name)
     /// - File names should be set previously by the parser's ThermalNetwork owner.
     try
     {
-        /// - Validate and initialize object name.
-        TS_PTCS_NAME_FATAL("ThermFileParser");
+        /// - For backward compatibility with old sims that don't pass the network name in the
+        ///   constructor, we reset the name to this method's argument.  This argument only overrides
+        ///   the network name if it was previously empty.
+        if ("" == mName and "" != name) {
+            mName = name;
+        }
+
+        /// - Validate the object name.
+        if ("" == mName) {
+            TS_PTCS_ERREX(TsInitializationException, "initialization error", "a ThermFileParser has empty object name.")
+        }
 
         /// - Read each file and build data vectors.
         readNodeFile();
@@ -693,6 +722,17 @@ void ThermFileParser::registerCapEditGroups(TiXmlElement* capEditing)
         /// - Advance to the next element.
         elem = elem->NextSiblingElement("group");
     }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  node  (--)  TiXmlElement pointer to a set of <node> data, not used.
+///
+/// @details  This increments the node count each time this is called.  The node argument isn't used
+///           here but provides the function signature needed to be used as a function pointer in
+///           the readFile method.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void ThermFileParser::countNode(TiXmlElement* node __attribute__((unused)))
+{
+    numNodes++;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  node  (--)  TiXmlElement pointer to a set of <node> data

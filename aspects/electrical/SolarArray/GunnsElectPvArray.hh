@@ -147,6 +147,8 @@ class GunnsElectPvArray : public GunnsBasicLink
                         const int                           port0);
         /// @brief Updates the link in run-time and first minor step in non-linear systems.
         virtual void step(const double dt);
+        /// @brief Minor Step method for non-linear systems.
+        virtual void minorStep(const double dt, const int minorStep);
         /// @brief Compute Flows.
         virtual void computeFlows(const double dt);
         /// @brief Boolean for telling the solver this is a non-linear link.
@@ -197,7 +199,7 @@ class GunnsElectPvArray : public GunnsBasicLink
         /// @brief Updates the link source vector.
         void buildSourceVector();
         /// @brief Updates the array state for current input conditions.
-        void updateArray();
+        void updateArray(const double dt);
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link
@@ -322,7 +324,7 @@ inline void GunnsElectPvArray::buildSourceVector()
     if (mOpenCircuitSide) {
         mSourceVector[0] = mAdmittanceMatrix[0] * mOpenCircuitVoltage;
     } else {
-        mSourceVector[0] = mShortCircuitCurrent;
+        mSourceVector[0] = mAdmittanceMatrix[0] * mIvCornerVoltage;
     }
 }
 

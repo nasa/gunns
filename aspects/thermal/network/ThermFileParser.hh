@@ -57,7 +57,7 @@ class ThermFileParser
 
     public:
         /// @brief  Default constructor for the ThermFileParser xml reader.
-        ThermFileParser();
+        ThermFileParser(const std::string name = "");
         /// @brief  Default destructor for the ThermFileParser xml reader.
         virtual ~ThermFileParser();
 
@@ -137,6 +137,8 @@ class ThermFileParser
         std::vector< std::vector<int> >    vSrcPorts;                /**< ** (--)                      vector of src port number vectors */
         std::vector< std::vector<double> > vSrcFracs;                /**< ** (--)                      vector of src flux-application-fraction vectors */
 
+        /// @brief  Parses the node xml file and counts the number of node elements in it.
+        void preCountNodes();
         /// @brief  Parses thermal xml files and builds data vectors. Only ThermalNetwork may call this
         ///         method, so it is protected (ThermalNetwork is a friend).
         void initialize(const std::string& name);
@@ -183,6 +185,8 @@ class ThermFileParser
 
         /// @brief  Populates vector of cap-edit group names.
         void registerCapEditGroups(TiXmlElement* capEditing);
+        /// @brief  Counts the nodes.
+        void countNode(TiXmlElement* node);
         /// @brief  Populates Node & Capacitance link data vectors.
         void registerNode(TiXmlElement* node);
         /// @brief  Populates Conduction link data vectors.

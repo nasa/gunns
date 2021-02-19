@@ -62,6 +62,7 @@ PROGRAMMERS:
 #include "aspects/thermal/GunnsThermalPotential.hh"
 #include "aspects/thermal/GunnsThermalSource.hh"
 #include "core/GunnsBasicIslandAnalyzer.hh"
+#include "core/network/GunnsNetworkBase.hh"
 #include <string>
 #include <vector>
 class ThermalNetworkWingMan;
@@ -135,7 +136,7 @@ class ThermalNetworkInputData
 ///           with their Config/Input data and connects them to their respective nodes in the
 ///           GUNNS network.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class ThermalNetwork
+class ThermalNetwork : public GunnsNetworkBase
 {
     TS_MAKE_SIM_COMPATIBLE(ThermalNetwork);
 
@@ -168,20 +169,26 @@ class ThermalNetwork
         /// @}
 
         /// @brief  Constructs the object with the name of the network as an argument.
-        ThermalNetwork();
+        ThermalNetwork(const std::string& name = "");
         /// @brief  Default destructs this ThermalNetwork.
         virtual ~ThermalNetwork();
 
-        /// @brief  Builds config/input data and hooks links to their respective nodes.
-        virtual void initialize(const std::string& name);
+        /// @brief  Returns the number of nodes defined in this network.
+        virtual int  getNumLocalNodes();
+        /// @brief  Parses config files, initializes the nodes and allocates memory for links.
+        virtual void initNodes(const std::string& name);
+        /// @brief  Initializes the links, spotter and solver.
+        virtual void initNetwork();
         /// @brief  Simulation preload checkpoint task.
         virtual void preloadCheckpoint();
         /// @brief  Simulation restart task.
         virtual void restart();
         /// @brief  Simulation update task.
         virtual void update(const double timeStep);
-        /// @brief    Is this network initialized?
-        bool isInitialized() const;
+        /// @brief  Update network spotters before the solver solution.
+        virtual void stepSpottersPre(const double timeStep);
+        /// @brief  Update network spotters after the solver solution.
+        virtual void stepSpottersPost(const double timeStep);
         /// @brief Sets the GUNNS solver to NORMAL mode.
         void setNormalMode();
         /// @brief Sets the GUNNS solver to DUMMY mode.
@@ -194,9 +201,6 @@ class ThermalNetwork
         void setMalfHtrMiswire(const bool flag = false, const int* index = 0);
 
    protected:
-        std::string mName;                   /**< *o (--) trick_chkpnt_io(**) name of the thermal network */
-        bool  mInitialized;                  /**< *o (--) trick_chkpnt_io(**) initialization status flag */
-
         /// @details  The mHtrPowerElectrical array will be set by the simbus with values from EPS.
         double* mHtrPowerElectrical;         /**<    (W)  trick_chkpnt_io(**) array of power values to set to heaters */
 
@@ -214,15 +218,11 @@ class ThermalNetwork
 
         /// - GUNNS core network objects
         /////////////////////////////////////////////////////////////////////////////////////////////
-        Gunns mGunnsSolver;                  /**<    (--)                     network's General-Use Nodal Network Solver (GUNNS) */
-        std::vector<GunnsBasicLink*> vLinks; /**< ** (--) trick_chkpnt_io(**) vector of links for this network */
         GunnsBasicNode* pNodes;              /**<    (--) trick_chkpnt_io(**) array of nodes for this network */
-        GunnsNodeList   mNodeList;           /**<    (--)                     this network's GunnsNodeList object */
         int indexSpaceNode;                  /**< *o (--) trick_chkpnt_io(**) index of the Gunns space/ground/vacuum node */
 
         /// - Counts of the different link-types
         /////////////////////////////////////////////////////////////////////////////////////////////
-        int numNodes;                        /**< *o (--) trick_chkpnt_io(**) number of total nodes in the network    */
         int numLinksCap;                     /**< *o (--) trick_chkpnt_io(**) number of GunnsThermalCapacitor objects */
         int numLinksCond;                    /**< *o (--) trick_chkpnt_io(**) number of GunnsBasicConductor objects   */
         int numLinksRad;                     /**< *o (--) trick_chkpnt_io(**) number of GunnsThermalRadiation objects */
@@ -303,21 +303,11 @@ class ThermalNetwork
 /// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   bool  (--)  True if initialization completed successfully, false otherwise.
-///
-/// @details  Gets the initialization complete flag for this ThermalNetwork.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool ThermalNetwork::isInitialized() const
-{
-    return mInitialized;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method sets the network solver mode to NORMAL.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void ThermalNetwork::setNormalMode()
 {
-    mGunnsSolver.setNormalMode();
+    netSolver.setNormalMode();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +315,7 @@ inline void ThermalNetwork::setNormalMode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void ThermalNetwork::setDummyMode()
 {
-    mGunnsSolver.setDummyMode();
+    netSolver.setDummyMode();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,7 +323,7 @@ inline void ThermalNetwork::setDummyMode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void ThermalNetwork::setSlaveMode()
 {
-    mGunnsSolver.setSlaveMode();
+    netSolver.setSlaveMode();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +331,7 @@ inline void ThermalNetwork::setSlaveMode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void ThermalNetwork::setIslandMode(const Gunns::IslandMode mode)
 {
-    mGunnsSolver.setIslandMode(mode);
+    netSolver.setIslandMode(mode);
 }
 
 #endif // ThermalNetwork_EXISTS

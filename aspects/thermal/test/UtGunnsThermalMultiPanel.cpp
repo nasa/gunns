@@ -543,6 +543,46 @@ void UtGunnsThermalMultiPanel::testRestart()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test the accessor methods.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsThermalMultiPanel::testAccessors()
+{
+    std::cout << "\n UtGunnsThermalMultiPanel . 09: testAccessors ....................";
+
+    /// - Manually set mIncidentHeatFluxPerArea, to simulate it being set by the SimBus.
+    setupIncidentFluxes();
+
+    /// - @test getAbsorptivity method.
+    for (int i = 0; i < 5; i++) {
+        CPPUNIT_ASSERT_EQUAL(tAbsorptivity[i], tArticle1->getAbsorptivity(i));
+    }
+    /// - @test getAbsorptivity method with out of bounds index.
+    CPPUNIT_ASSERT_EQUAL(tAbsorptivity[0], tArticle1->getAbsorptivity(5));
+    CPPUNIT_ASSERT_EQUAL(tAbsorptivity[0], tArticle1->getAbsorptivity(-1));
+
+    /// - @test getSurfaceArea method.
+    CPPUNIT_ASSERT_EQUAL(tSurfaceArea, tArticle1->getSurfaceArea());
+
+    /// - @test getViewScalar method.
+    for (int i = 0; i < 5; i++) {
+        CPPUNIT_ASSERT_EQUAL(tViewScalar[i], tArticle1->getViewScalar(i));
+    }
+    /// - @test getViewScalar method with out of bounds index.
+    CPPUNIT_ASSERT_EQUAL(tViewScalar[0], tArticle1->getViewScalar(5));
+    CPPUNIT_ASSERT_EQUAL(tViewScalar[0], tArticle1->getViewScalar(-1));
+    
+    /// - @test getIncidentFlux method.
+    for (int i = 0; i < 5; i++) {
+        CPPUNIT_ASSERT_EQUAL(tIncidentFlux[i], tArticle1->getIncidentFlux(i));
+    }
+    /// - @test getIncidentFlux method with out of bounds index.
+    CPPUNIT_ASSERT_EQUAL(tIncidentFlux[0], tArticle1->getIncidentFlux(5));
+    CPPUNIT_ASSERT_EQUAL(tIncidentFlux[0], tArticle1->getIncidentFlux(-1));
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Sets the test articles' incident fluxes to test values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsThermalMultiPanel::setupIncidentFluxes()

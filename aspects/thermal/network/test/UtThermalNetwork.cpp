@@ -14,6 +14,7 @@
 #include "software/exceptions/TsParseException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "simulation/hs/TsHsUtMacro.hh" // needed for TEST_HS macro
+#include "core/network/GunnsBasicSuperNetwork.hh"
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtThermalNetwork class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +100,7 @@ void UtThermalNetwork::setUp()
     tTimeStep = 30.0;
 
     /// - Instantiate a test article.
-    tArticle = new FriendlyThermalNetwork();
+    tArticle = new FriendlyThermalNetwork(tName);
 
     /// - Simulate default_data job.
     tArticle->mConfig.cNodeFile = tNodeFile;
@@ -110,7 +111,7 @@ void UtThermalNetwork::setUp()
     tArticle->mConfig.cEtcFile = tEtcFile;
 
     /// - Initialize the test article.
-    tArticle->initialize(tName);
+    tArticle->initialize();
 
     /// - Load the Friendly parser with the same files as the test article, so we can
     ///   compare the two (we only have access to parserFriendly).
@@ -201,11 +202,10 @@ void UtThermalNetwork::testNominalConstruction()
     TEST_HS(test);
 
     /// - default construct an article
-    FriendlyThermalNetwork article;
+    FriendlyThermalNetwork article(tName);
 
     /// @test  Default-constructed article's pointers are successfully initialized to zero
-    CPPUNIT_ASSERT("" == article.mName);
-    CPPUNIT_ASSERT(0 == article.isInitialized());
+    CPPUNIT_ASSERT(tName == article.mName);
     CPPUNIT_ASSERT(0 == article.mHtrPowerElectrical);
     CPPUNIT_ASSERT(false == article.mMalfHtrMiswireFlag);
     CPPUNIT_ASSERT(0 == article.mMalfHtrIndexValue);
@@ -235,7 +235,7 @@ void UtThermalNetwork::testNominalConstruction()
     CPPUNIT_ASSERT(0 == article.mSourceInputData);
     CPPUNIT_ASSERT(0 == article.mHeaterInputData);
     CPPUNIT_ASSERT(0 == article.mPanelInputData);
-    CPPUNIT_ASSERT(0 == article.numNodes);
+    CPPUNIT_ASSERT(0 == article.netNumLocalNodes);
     CPPUNIT_ASSERT(0 == article.numLinksCap);
     CPPUNIT_ASSERT(0 == article.numLinksPot);
     CPPUNIT_ASSERT(0 == article.numLinksCond);
@@ -281,31 +281,22 @@ void UtThermalNetwork::testInitialize()
     CPPUNIT_ASSERT_EQUAL(-1, tArticle->netIslandAnalyzer.getAttachedNode());
 
     /// @test  Initialization of GUNNS solver.
-    FriendlyGunnsSolver* solver = static_cast<FriendlyGunnsSolver*>(&tArticle->mGunnsSolver);
+    FriendlyGunnsSolver* solver = static_cast<FriendlyGunnsSolver*>(&tArticle->netSolver);
     CPPUNIT_ASSERT_EQUAL(1, solver->mDecompositionLimit);
 
     /// @test  Repeat initialization doesn't cause an explosion.
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("repeat initialize", tArticle->initialize(tName) );
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("repeat initialize", tArticle->initialize() );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct a test article
-    FriendlyThermalNetwork article0;
-
-    /// @test  The init flag should NOT be set.
-    CPPUNIT_ASSERT(!article0.isInitialized());
+    FriendlyThermalNetwork article0("article0");
 
     /// - Call initialize() with zero config-files.
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("initialize(), no config-files", article0.initialize(tName) );
-
-    /// @test  The init flag should be NOT set. The network cannot initialize with no nodes.
-    CPPUNIT_ASSERT(!article0.isInitialized());
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("initialize(), no config-files", article0.initialize() );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct a test article
-    FriendlyThermalNetwork article1;
-
-    /// @test  The init flag should NOT be set.
-    CPPUNIT_ASSERT(!article1.isInitialized());
+    FriendlyThermalNetwork article1("article1");
 
     /// - Simulate default_data job, only setting some files.
     article1.mConfig.cNodeFile = tNodeFile;
@@ -313,10 +304,7 @@ void UtThermalNetwork::testInitialize()
     article1.mConfig.cRadFile = tRadFile;
 
     /// - Call initialize().
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article1.initialize(tName) );
-
-    /// @test  The init flag should be set.
-    CPPUNIT_ASSERT(article1.isInitialized());
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article1.initialize() );
 
     /// @test  The internal-link only test article should have the correct link counts.
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksCap,  article1.numLinksCap);
@@ -329,10 +317,7 @@ void UtThermalNetwork::testInitialize()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct a test article
-    FriendlyThermalNetwork article2;
-
-    /// @test  The init flag should NOT be set.
-    CPPUNIT_ASSERT(!article2.isInitialized());
+    FriendlyThermalNetwork article2("article2");
 
     /// - Simulate default_data job, only setting some files.
     article2.mConfig.cNodeFile = tNodeFile;
@@ -343,10 +328,7 @@ void UtThermalNetwork::testInitialize()
     article2.numCapEditGroups = 2;
 
     /// - Call initialize().
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article2.initialize(tName) );
-
-    /// @test  The init flag should now be set.
-    CPPUNIT_ASSERT(article2.isInitialized());
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article2.initialize() );
 
     /// @test  The internal/htr test article should have the correct link counts.
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksCap,  article2.numLinksCap);
@@ -359,10 +341,7 @@ void UtThermalNetwork::testInitialize()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct another test article
-    FriendlyThermalNetwork article3;
-
-    /// @test  The init flag should NOT be set.
-    CPPUNIT_ASSERT(!article3.isInitialized());
+    FriendlyThermalNetwork article3("article3");
 
     /// - Simulate default_data job, only setting some files.
     article3.mConfig.cNodeFile = tNodeFile;
@@ -371,10 +350,7 @@ void UtThermalNetwork::testInitialize()
     article3.mConfig.cPanFile = tPanFile;
 
     /// - Call initialize().
-    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article3.initialize(tName) );
-
-    /// @test  The init flag should now be set.
-    CPPUNIT_ASSERT(article3.isInitialized());
+    CPPUNIT_ASSERT_NO_THROW_MESSAGE("nominal initialize()", article3.initialize() );
 
     /// @test  The internal/pan test article should have the correct link counts.
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksCap, article3.numLinksCap);
@@ -387,12 +363,12 @@ void UtThermalNetwork::testInitialize()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct another test article
-    FriendlyThermalNetwork article4;
+    FriendlyThermalNetwork article4("article4");
 
     /// - Initialize with a node-file that contains temperatures below absolute zero.
     article4.mConfig.cNodeFile = "ThermNodes_nonnumeric.xml";
     /// - Make sure the TsInitializationException is caught.
-    CPPUNIT_ASSERT_NO_THROW( article4.initialize(tName) );
+    CPPUNIT_ASSERT_NO_THROW( article4.initialize() );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Default construct another test article
@@ -401,7 +377,8 @@ void UtThermalNetwork::testInitialize()
     /// - Initialize with a node-file that does not define a <capEditing> groups.
     article5.mConfig.cNodeFile = "ThermNodes_noCapEditing.xml";
     /// - Make sure nothing blows up.
-    CPPUNIT_ASSERT_NO_THROW( article5.initialize(tName) );
+    CPPUNIT_ASSERT_NO_THROW( article5.initialize("article5") );
+    CPPUNIT_ASSERT("article5" == article5.mName);
     CPPUNIT_ASSERT_NO_THROW( article5.update(tTimeStep) );
 
     std::cout << "... Pass";
@@ -741,7 +718,7 @@ void UtThermalNetwork::testLinksBuild()
 
         /// @test Capacitance links: port 1
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Capacitance port1, index: " + out.str(),
-            tArticle->numNodes-1,
+            tArticle->netNumLocalNodes-1,
             tArticle->mCapacitanceLinks[i].getNodeMap()[1]);
     }
     /// - Potential links
@@ -753,7 +730,7 @@ void UtThermalNetwork::testLinksBuild()
 
         /// @test Potential links: port 0
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Potential port0, index: " + out.str(),
-            tArticle->numNodes-1,
+            tArticle->netNumLocalNodes-1,
             tArticle->mPotentialLinks[i].getNodeMap()[0]);
 
         /// @test Potential links: port 1
@@ -859,17 +836,22 @@ void UtThermalNetwork::testValidate()
     std::cout << "\n " << test;
     TEST_HS(test);
 
-    /// @test  Null pointer to Network's BasicNode object
-    tNodes = tArticle->pNodes;
-    tArticle->pNodes = 0;
+    /// @test  Zero for node list number of nodes
+    const int numNodes = tArticle->netNodeList.mNumNodes;
+    tArticle->netNodeList.mNumNodes = 0;
     CPPUNIT_ASSERT_THROW(tArticle->validate(), TsInitializationException);
-    tArticle->pNodes = tNodes;
+    tArticle->netNodeList.mNumNodes = numNodes;
+
+    /// @test  Null pointer to Network's BasicNode object
+    tArticle->netNodeList.mNodes = 0;
+    CPPUNIT_ASSERT_THROW(tArticle->validate(), TsInitializationException);
+    tArticle->netNodeList.mNodes = tArticle->pNodes;
 
     /// @test  Nonpositive node count
-    tNumberNodes = tArticle->numNodes;
-    tArticle->numNodes = 0;
+    tNumberNodes = tArticle->netNumLocalNodes;
+    tArticle->netNumLocalNodes = 0;
     CPPUNIT_ASSERT_THROW(tArticle->validate(), TsInitializationException);
-    tArticle->numNodes = tNumberNodes;
+    tArticle->netNumLocalNodes = tNumberNodes;
 
     std::cout << "... Pass";
 }
@@ -955,7 +937,7 @@ void UtThermalNetwork::testUpdate()
     TEST_HS(test);
 
     /// - Default construct a test article.
-    FriendlyThermalNetwork article;
+    FriendlyThermalNetwork article(tName);
 
     /// - Check that exception is caught if network not first initialized.
     CPPUNIT_ASSERT_NO_THROW_MESSAGE("update before initialize", article.update(tTimeStep) );
@@ -1027,7 +1009,7 @@ void UtThermalNetwork::testAccess()
     TEST_HS(test);
 
     /// - Construct a test article that is not friendly.
-    ThermalNetwork article;
+    ThermalNetwork article(tName);
 
     /// - Simulate default_data job.
     article.mConfig.cNodeFile = tNodeFile;
@@ -1038,7 +1020,7 @@ void UtThermalNetwork::testAccess()
     article.mConfig.cEtcFile = tEtcFile;
 
     /// - Initialize the test article.
-    article.initialize(tName);
+    article.initialize();
 
     /// @test  You should be able to access the temperature of each capacitor.
     CPPUNIT_ASSERT_NO_THROW_MESSAGE("access to getTemperature()", article.mCapacitanceLinks[0].getTemperature() );
@@ -1047,7 +1029,7 @@ void UtThermalNetwork::testAccess()
 //    article.numLinksCap;
 
     /// @test  GUNNS access to solver mode setter methods.
-    FriendlyGunnsSolver* solver = static_cast<FriendlyGunnsSolver*>(&tArticle->mGunnsSolver);
+    FriendlyGunnsSolver* solver = static_cast<FriendlyGunnsSolver*>(&tArticle->netSolver);
     tArticle->setDummyMode();
     CPPUNIT_ASSERT(Gunns::DUMMY == solver->mSolverMode);
     tArticle->setSlaveMode();
@@ -1175,6 +1157,87 @@ void UtThermalNetwork::testCapacitanceEdit()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mCapacitanceLinks[i].getCapacitance(),
                 originalCapacitance[i], tTolerance);
     }
+
+    std::cout << "... Pass";
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the ThermalNetwork as a sub-network in a super-network.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtThermalNetwork::testSuperNetwork()
+{
+    const char* test = "ThermalNetwork 13: Test in super-network..........................";
+    std::cout << "\n " << test;
+    TEST_HS(test);
+
+    /// - Configure 2 instances of the test network.
+    FriendlyThermalNetwork article1("article1");
+    article1.mConfig.cNodeFile = tNodeFile;
+    article1.mConfig.cCondFile = tCondFile;
+    article1.mConfig.cRadFile  = tRadFile;
+    article1.mConfig.cHtrFile  = tHtrFile;
+    article1.mConfig.cPanFile  = tPanFile;
+    article1.mConfig.cEtcFile  = tEtcFile;
+
+    FriendlyThermalNetwork article2("article2");
+    article2.mConfig.cNodeFile = tNodeFile;
+    article2.mConfig.cCondFile = tCondFile;
+    article2.mConfig.cRadFile  = tRadFile;
+    article2.mConfig.cHtrFile  = tHtrFile;
+    article2.mConfig.cPanFile  = tPanFile;
+    article2.mConfig.cEtcFile  = tEtcFile;
+
+    /// - Add these to the super-network.
+    GunnsBasicSuperNetwork superNet("superNet");
+    superNet.addSubNetwork(&article1);
+    superNet.addSubNetwork(&article2);
+    superNet.registerSuperNodes();
+
+    /// @test  Super-network initialization.
+    superNet.initialize();
+
+    const int expectedSubNetCaps = parserFriendly.numLinksCap;
+    const int expectedNumNodes = 2 * (expectedSubNetCaps + 1) + 1;
+    CPPUNIT_ASSERT_EQUAL(expectedNumNodes, superNet.netNodeList.mNumNodes);
+    CPPUNIT_ASSERT_EQUAL(0,                              article1.getNodeOffset());
+    CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksCap + 1, article2.getNodeOffset());
+    CPPUNIT_ASSERT(superNet.netNodeList.mNodes[0].isInitialized());
+    CPPUNIT_ASSERT(superNet.netNodeList.mNodes[expectedNumNodes-1].isInitialized());
+    FriendlyGunnsSolver* solver = static_cast<FriendlyGunnsSolver*>(&superNet.netSolver);
+    CPPUNIT_ASSERT(solver->mInitFlag);
+    CPPUNIT_ASSERT_EQUAL(expectedNumNodes - 1, solver->getNetworkSize());
+    const int expectedNumLinks = 2 * (parserFriendly.numLinksCap
+                                    + parserFriendly.numLinksCond
+                                    + parserFriendly.numLinksRad
+                                    + parserFriendly.numLinksHtr
+                                    + parserFriendly.numLinksPan
+                                    + parserFriendly.numLinksPot
+                                    + parserFriendly.numLinksSrc);
+    CPPUNIT_ASSERT_EQUAL(expectedNumLinks, solver->getNumLinks());
+    CPPUNIT_ASSERT_EQUAL(0,                      article1.mCapacitanceLinks[0].getNodeMap()[0]);
+    CPPUNIT_ASSERT_EQUAL(expectedSubNetCaps - 1, article1.mCapacitanceLinks[expectedSubNetCaps - 1].getNodeMap()[0]);
+    CPPUNIT_ASSERT_EQUAL(expectedSubNetCaps + 1, article2.mCapacitanceLinks[0].getNodeMap()[0]);
+    CPPUNIT_ASSERT_EQUAL(expectedNumNodes   - 3, article2.mCapacitanceLinks[expectedSubNetCaps - 1].getNodeMap()[0]);
+
+    /// @test  Super-network update.
+    solver->setIslandMode(Gunns::SOLVE);
+    article1.netIslandAnalyzer.setAttachedNode(0);
+    article2.netIslandAnalyzer.setAttachedNode(0);
+    superNet.update(tTimeStep);
+    CPPUNIT_ASSERT(0   < article1.netIslandAnalyzer.getIslandSize());
+    CPPUNIT_ASSERT(0   < article2.netIslandAnalyzer.getIslandSize());
+    CPPUNIT_ASSERT(0.0 < solver->mPotentialVector[0]);
+    CPPUNIT_ASSERT_EQUAL(1, solver->mMajorStepCount);
+
+    /// @test  Super-network and sub-network restart.
+    article1.mCapEditScaleFactor[0] = -1.0;
+    article2.mCapEditScaleFactor[0] = -1.0;
+    CPPUNIT_ASSERT(0 < article1.numCapEditGroups);
+    CPPUNIT_ASSERT(0 < article2.numCapEditGroups);
+    CPPUNIT_ASSERT_NO_THROW(superNet.restart());
+    CPPUNIT_ASSERT_NO_THROW(article1.restart());
+    CPPUNIT_ASSERT_NO_THROW(article2.restart());
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(DBL_EPSILON, article1.mCapEditScaleFactor[0], 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(DBL_EPSILON, article2.mCapEditScaleFactor[0], 0.0);
 
     std::cout << "... Pass";
 }

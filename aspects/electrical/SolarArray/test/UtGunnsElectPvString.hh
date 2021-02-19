@@ -18,6 +18,21 @@
 #include "aspects/electrical/SolarArray/GunnsElectPvString.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from GunnsElectPvStringInputData and befriend UtGunnsElectPvString.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyGunnsElectPvStringInputData : public GunnsElectPvStringInputData
+{
+    public:
+        FriendlyGunnsElectPvStringInputData() {;}
+        virtual ~FriendlyGunnsElectPvStringInputData() {;}
+        friend class UtGunnsElectPvString;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsElectPvString and befriend UtGunnsElectPvString.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
@@ -63,6 +78,8 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         void testConfig();
         /// @brief  Tests input data.
         void testInput();
+        /// @brief  Tests input data overrides.
+        void testInputOverrides();
         /// @brief  Tests construction methods.
         void testConstruction();
         /// @brief  Tests the initialization method with nominal values.
@@ -92,6 +109,7 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         CPPUNIT_TEST(testLoadState);
         CPPUNIT_TEST(testConfig);
         CPPUNIT_TEST(testInput);
+        CPPUNIT_TEST(testInputOverrides);
         CPPUNIT_TEST(testConstruction);
         CPPUNIT_TEST(testNominalInitialization);
         CPPUNIT_TEST(testInitializationErrors);

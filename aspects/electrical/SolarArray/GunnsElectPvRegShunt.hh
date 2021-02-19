@@ -129,10 +129,12 @@ class GunnsElectPvRegShuntInputData : public GunnsBasicLinkInputData
         double mVoltageSetpoint; /**< (V)  trick_chkpnt_io(**) Initial setpoint for the regulated output voltage. */
         bool   mPowered;         /**< (--) trick_chkpnt_io(**) Initial state of power on flag. */
         bool   mEnabled;         /**< (--) trick_chkpnt_io(**) Initial state of enabled, powered and commanded on, etc. */
+        double mMinOperatePower; /**< (W)  trick_chkpnt_io(**) Initial minimum bulk power available from array to operate. */
         /// @brief Default constructs this Photovoltaic Array Shunting Regulator input data.
         GunnsElectPvRegShuntInputData(const double voltageSetpoint = 0.0,
                                       const bool   powered         = false,
-                                      const bool   enabled         = false);
+                                      const bool   enabled         = false,
+                                      const double minOperatePower = 0.0);
         /// @brief Default destructs this Photovoltaic Array Shunting Regulator input data.
         virtual ~GunnsElectPvRegShuntInputData();
 
@@ -166,18 +168,22 @@ class GunnsElectPvRegShuntInputData : public GunnsBasicLinkInputData
 ///           - Port 0 is the input node, shared with the array output.
 ///           - Port 1 is the output node to the downstream circuit, whose voltage is controlled.
 ///
-///           This link has 3 operating states, which it automatically switches between:
+///           This link has 2 operating states, which it automatically switches between:
 ///           - REG: when the array can meet the demanded power load from the downstream circuit,
 ///                  the output voltage is regulated and the above string loading & shunting scheme
 ///                  is used.  This link acts like a potential source on the output node, loads the
 ///                  array strings individually, a total load is placed on the input node that
 ///                  approximates the average array load, and the two nodes are not directly
 ///                  connected.
-///           - SAG: when the array can't meet the demanded power load at the regulated voltage,
-///                  then the array is connected directly to the output node thru this link, and
-///                  the output voltage will drop below the regulated value.
 ///           - OFF: when the link is disabled by command input.  All strings are shunted and the
 ///                  output node is isolated and unregulated.
+///
+///           A 3rd state, SAG, used to be modeled:
+///           - SAG: when the array can't meet the demanded power load at the regulated voltage,
+///                  then the array is connected directly to the output node thru this link, and
+///                  the output voltage will drop below the regulated value.  We've stopped modeling
+///                  this condition because of instabilities in complicated networks, and instead
+///                  just transition to OFF mode when the array can't meet the demanded power.
 ///
 ///           This link allows optional sensors for input and output voltage and current.  Optional
 ///           trip functions can also be used with or without the sensors.
@@ -201,7 +207,7 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
         enum PvRegStates {
             OFF = 0,    ///< Powered off or otherwise inactive.
             REG = 1,    ///< On and actively regulating output voltage and PV load.
-            SAG = 2     ///< On but at reduced output voltage because insufficient PV power.
+            SAG = 2     ///< (No longer used.)
         };
 
         /// @brief Default Constructor.
@@ -227,20 +233,30 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
                                                          const int absoluteStep);
         /// @brief Sets the regulated voltage setpoint value.
         void   setVoltageSetpoint(const double voltage);
-        /// @brief Sets the regulator enabled flag.
+        /// @brief Sets the regulator enabled flag to the given value.
         void   setEnabled(const bool flag);
         /// @brief Returns the maximum current that can be output at the regulated voltage.
         double getMaxRegCurrent() const;
+        /// @brief Returns the minimum power available from the array before regulator can operate.
+        double getMinOperatePower() const;
+        /// @brief Sets the minimum power available from the array before regulator can operate.
+        void   setMinOperatePower(const double value);
+        /// @brief Returns the current regulated voltage setpoint.
+        double getVoltageSetpoint() const;
+        /// @brief Returns a pointer to the trip logic group.
+        GunnsElectPvRegTrips* getTrips();
 
     protected:
         typedef std::vector<GunnsElectPvStringLoadOrder> LoadOrder;    // for readability below
         double                 mOutputConductance; /**<    (1/ohm) trick_chkpnt_io(**) Conductance of the regulated output. */
         double                 mShuntConductance;  /**<    (1/ohm) trick_chkpnt_io(**) Conductance of each string shunt. */
         GunnsElectPvArray*     mArray;             /**<    (--)    trick_chkpnt_io(**) Pointer to the PV array link. */
+        unsigned int           mTripPriority;      /**<    (--)    trick_chkpnt_io(**) Trip network step priority. */
         LoadOrder              mStringLoadOrder;   /**< ** (--)    trick_chkpnt_io(**) String loading order. */
         double                 mVoltageSetpoint;   /**<    (V)                         Setpoint value for the regulated output voltage. */
         bool                   mPowered;           /**<    (--)                        Input power on flag. */
         bool                   mEnabled;           /**<    (--)                        Regulator is enabled, powered and commanded on, etc. */
+        double                 mMinOperatePower;   /**<    (W)                         Minimum bulk power available from array to operate. */
         bool                   mResetTrips;        /**<    (--)                        Input command to reset all trips. */
         GunnsElectPvRegSensors mSensors;           /**<    (--)                        Sensors package. */
         GunnsElectPvRegTrips   mTrips;             /**<    (--)                        Trip logic. */
@@ -253,6 +269,7 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
         double                 mWasteHeat;         /**<    (W)     trick_chkpnt_io(**) Total waste heat. */
         double                 mPvBulkPowerAvail;  /**<    (W)     trick_chkpnt_io(**) Available power from the PV array bulk model. */
         double                 mMaxRegCurrent;     /**<    (amp)   trick_chkpnt_io(**) Maximum current that can be output at regulated voltage. */
+        bool                   mOffToRegOccurred;  /**<    (--)    trick_chkpnt_io(**) Transition from OFF to REG states has occurred this major frame. */
         /// @brief Validates the initialization of this Gunns Photovoltaic Array Shunting Regulator.
         void validate(const GunnsElectPvRegShuntConfigData& configData,
                       const GunnsElectPvRegShuntInputData&  inputData) const;
@@ -328,6 +345,46 @@ inline double GunnsElectPvRegShunt::getMaxRegCurrent() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (W)  The minimum power available from the array before regulator can operate.
+///
+/// @details  Returns the mMinOperatePower value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectPvRegShunt::getMinOperatePower() const
+{
+    return mMinOperatePower;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  value  (W)  The minimum power available from the array before regulator can operate.
+///
+/// @details  Sets the mMinOperatePower attribute to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvRegShunt::setMinOperatePower(const double value)
+{
+    mMinOperatePower = value;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (V)  The current regulated voltage setpoint.
+///
+/// @details  Returns the mVoltageSetpoint value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectPvRegShunt::getVoltageSetpoint() const
+{
+    return mVoltageSetpoint;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  GunnsElectPvRegTrips*  (--)  Pointer to the trips logic object.
+///
+/// @details  Returns the address of the mTrips object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsElectPvRegTrips* GunnsElectPvRegShunt::getTrips()
+{
+    return &mTrips;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Computes the active regulated voltage level for this pass including the setpoint
 ///           command and biases.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,6 +412,24 @@ inline void GunnsElectPvRegShunt::buildSourceVector()
             mSourceVector[1] = 0.0;
     }
     mSourceVector[0] = 0.0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Computes the output flux resulting from the network solution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvRegShunt::computeFlux()
+{
+    switch (mState) {
+        case REG: {
+            mFlux = (mRegulatedVoltage - mPotentialVector[1]) * mAdmittanceMatrix[3];
+        } break;
+        case SAG: {
+            ; // do nothing, SAG no longer modeled
+        } break;
+        default: { // OFF or invalid
+            mFlux = 0.0;
+        } break;
+    }
 }
 
 #endif

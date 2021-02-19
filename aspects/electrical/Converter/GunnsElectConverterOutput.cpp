@@ -164,7 +164,8 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mOutputOverCurrentTrip(),
     mLeadsInterface(false),
     mReverseBiasState(false),
-    mSolutionReset(false)
+    mSolutionReset(false),
+    mSourceVoltage(0.0)
 {
     // nothing to do
 }
@@ -236,7 +237,7 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
     mOutputChannelLoss = 0.0;
     mTotalPowerLoss    = 0.0;
     mLeadsInterface    = false;
-    mReverseBiasState  = false;
+    mReverseBiasState  = (VOLTAGE == mRegulatorType) and (mSetpoint < mNodes[0]->getPotential());
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -348,6 +349,7 @@ void GunnsElectConverterOutput::step(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)), const int minorStep __attribute__((unused)))
 {
+    mSourceVoltage = 0.0;
     if (mNodeMap[0] == getGroundNodeIndex()) {
         /// - Skip processing when on the Ground node.
         mInputVoltage        = 0.0;
@@ -355,11 +357,8 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
         mSourceVector[0]     = 0.0;
 
     } else {
-        /// - Only update the input power if the last minor step solution was valid.  Reset the flag
-        ///   so that we only skip once.
-        if (not mSolutionReset) {
-            computeInputPower();
-        }
+        computeInputPower();
+        /// - Reset the last step solution invalid flag so that we only skip once.
         mSolutionReset = false;
 
         /// - If we precede the pointed-to input link, drive the interface with it.  Otherwise we
@@ -371,7 +370,6 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
 
         /// - Set link conductance and source effects based on the load type.
         double conductance   = 0.0;
-        double sourceVoltage = 0.0;
         double sourceCurrent = 0.0;
         if (mEnabled and (mInputVoltage > 0.0)
                 and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped())) {
@@ -383,12 +381,12 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
                     sourceCurrent = mSetpoint / fmax(DBL_EPSILON, mPotentialVector[0]);
                     break;
                 case (TRANSFORMER) :
-                    conductance   = mOutputConductance;
-                    sourceVoltage = mInputVoltage * mSetpoint;
+                    conductance    = mOutputConductance;
+                    mSourceVoltage = mInputVoltage * mSetpoint;
                     break;
                 default :    // VOLTAGE
-                    conductance   = mOutputConductance;
-                    sourceVoltage = mSetpoint;
+                    conductance    = mOutputConductance;
+                    mSourceVoltage = mSetpoint;
                     break;
             }
         }
@@ -399,11 +397,6 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
             const double scalar = 1.0 - Math::limitRange(0.0, mMalfBlockageValue, 1.0);
             conductance   *= scalar;
             sourceCurrent *= scalar;
-        }
-
-        /// - Leave the reverse bias state if voltage bias goes forward.
-        if (sourceVoltage > mPotentialVector[0]) {
-            mReverseBiasState = false;
         }
 
         /// - When in the reverse bias state, zero conductance to prevent negative current.
@@ -417,7 +410,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
             mAdmittanceMatrix[0] = conductance;
             mAdmittanceUpdate    = true;
         }
-        mSourceVector[0] = sourceVoltage * conductance + sourceCurrent;
+        mSourceVector[0] = mSourceVoltage * conductance + sourceCurrent;
     }
 }
 
@@ -447,7 +440,7 @@ void GunnsElectConverterOutput::computeFlows(const double dt __attribute__((unus
 ///
 /// @returns  SolutionResult  (--)  Whether this link confirms or rejects the network solution.
 ///
-/// @details  This method determines whether to accept or reject the converged network solution.
+/// @details  This method determines whether to accept or reject the network solution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAcceptable(
         const int convergedStep, const int absoluteStep __attribute__((unused)))
@@ -455,42 +448,64 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
     GunnsBasicLink::SolutionResult result = CONFIRM;
     mSolutionReset = false;
 
-    /// - We only check for solution rejection and state change after the network has converged.
     ///   Always confirm when on the Ground node.
-    if ( (mNodeMap[0] != getGroundNodeIndex()) and (convergedStep > 0) ) {
+    if (mNodeMap[0] != getGroundNodeIndex()) {
 
         /// - If the voltage bias switched states in either direction, reject the solution and
-        ///   start over.
-        const bool lastBias = mReverseBiasState;
-        computeInputPower();
-        if (lastBias != mReverseBiasState) {
-            result = REJECT;
+        ///   start over.  Zero the input power for the next minor step because this power value
+        ///   was invalid.
+        if (updateBias()) {
+            mInputPower = 0.0;
+            result      = REJECT;
         }
 
-        /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
-        ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVout = mPotentialVector[0];
-        float sensedIout = mFlux;
+        /// - After the network as converged, compute currents, powers and check for trips.
+        if ((convergedStep > 0) and (REJECT != result)) {
+            computeInputPower();
 
-        /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
-        ///   integrated.  This is because we don't have the time-step in this function, and we must
-        ///   update the sensor multiple times per major network step, which would repeat the drift
-        ///   integration too many times.  The result of all this is that drift lags behind by one
-        ///   major step for causing trips.
-        if (mOutputVoltageSensor) {
-            sensedVout = mOutputVoltageSensor->sense(0.0, true, sensedVout);
-        }
-        if (mOutputCurrentSensor) {
-            sensedIout = mOutputCurrentSensor->sense(0.0, true, sensedIout);
-        }
+            /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
+            ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
+            float sensedVout = mPotentialVector[0];
+            float sensedIout = mFlux;
 
-        /// - Check all trip logics for trips.  If any trip, reject the solution.
-        if (mEnabled) {
-            mOutputOverVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
-            mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
+            /// - Note that since we step the sensors without a time-step, its drift malfunction
+            ///   isn't integrated.  This is because we don't have the time-step in this function,
+            ///   and we must update the sensor multiple times per major network step, which would
+            ///   repeat the drift integration too many times.  The result of all this is that drift
+            ///   lags behind by one major step for causing trips.
+            if (mOutputVoltageSensor) {
+                sensedVout = mOutputVoltageSensor->sense(0.0, true, sensedVout);
+            }
+            if (mOutputCurrentSensor) {
+                sensedIout = mOutputCurrentSensor->sense(0.0, true, sensedIout);
+            }
+
+            /// - Check all trip logics for trips.  If any trip, reject the solution.
+            if (mEnabled) {
+                mOutputOverVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
+                mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
+            }
         }
     }
     return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool (--) True if the bias changed direction during this update.
+///
+/// @details  Updates the forward/reverse bias state of this converter and returns true if it
+///           changed.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GunnsElectConverterOutput::updateBias()
+{
+    const bool lastBias = mReverseBiasState;
+    if (CURRENT == mRegulatorType or POWER == mRegulatorType or
+            mSourceVoltage >= mPotentialVector[0]) {
+        mReverseBiasState = false;
+    } else {
+        mReverseBiasState = true;
+    }
+    return (lastBias != mReverseBiasState);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -501,16 +516,16 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsElectConverterOutput::computeInputPower()
 {
-    if (mNodeMap[0] == getGroundNodeIndex()) {
-        /// - Skip processing when on the Ground node.
+    /// - Zero outputs if the last minor step solution was invalid or we are on the Ground node.
+    if (mSolutionReset or (mNodeMap[0] == getGroundNodeIndex())) {
         mPower             = 0.0;
         mOutputChannelLoss = 0.0;
         mInputPower        = 0.0;
         mTotalPowerLoss    = 0.0;
 
     } else {
-        /// - mPower is the power delivered to the downstream node, and doesn't include losses in
-        ///   the voltage converter or through converter output channel resistance.
+        /// - mPower is the power delivered to the downstream node, and doesn't include losses
+        ///   in the voltage converter or through converter output channel resistance.
         computeFlux();
         mPower = mFlux * mPotentialVector[0];
 

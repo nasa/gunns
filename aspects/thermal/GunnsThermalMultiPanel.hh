@@ -142,6 +142,19 @@ class GunnsThermalMultiPanel : public GunnsThermalSource
         /// @brief  Updates the link during a frame.
         virtual void updateState(const double dt);
 
+        /// @brief  Get absorptivity with index.
+        virtual double getAbsorptivity(const int index) const;
+
+        /// @brief  Get surface area.
+        virtual double getSurfaceArea() const;
+
+        /// @brief  Get view scalar with index.
+        virtual double getViewScalar(const int index) const;
+
+        /// @brief  Get incident flux with index.
+        virtual double getIncidentFlux(const int index) const;
+
+
     protected:
         double mAbsorptivity[5]; /**< (--)   trick_chkpnt_io(**) Absorptivity (0-1) of exterior panel to each radiant source */
         double mSurfaceArea;     /**< (m2)   trick_chkpnt_io(**) Surface area of exterior panel */
@@ -160,5 +173,15 @@ class GunnsThermalMultiPanel : public GunnsThermalSource
         GunnsThermalMultiPanel& operator =(const GunnsThermalMultiPanel& that);
 };
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double  (m2)  Surface area.
+///
+/// @details  Returns the mSurfaceArea value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsThermalMultiPanel::getSurfaceArea() const
+{
+    return mSurfaceArea;
+}
 
 #endif

@@ -355,7 +355,7 @@ void UtGunnsElectPvSection::testUpdate()
 
     {
         /// @test    Nominal outputs.
-        tArticle->update();
+        tArticle->update(0.0);
 
         const double expectedFacing = pow(cos(tSourceAngle), tSourceAngleExponent);
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction;
@@ -366,12 +366,14 @@ void UtGunnsElectPvSection::testUpdate()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tTemperature,           tArticle->mStringsInput.mTemperature,           DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInsol,          tArticle->mPercentInsolation,                   DBL_EPSILON);
     } {
-        /// @test    Outputs with edge-on source angle, back-lit, and 0 reference soure flux mag.
+        /// @test    Outputs with edge-on source angle, back-lit, 0 reference soure flux mag, and
+        ///          string input temperature override.
         tConfigData->mSourceAngleEdgeOn      = true;
         tConfigData->mRefSourceFluxMagnitude = 0.0;
         tArticle->mInput.mSourceAngle        = -1.5;
         tArticle->mPercentInsolation         = 0.0;
-        tArticle->update();
+        tArticle->mStringsInput.setMalfTemperature(true, 400.0);
+        tArticle->update(0.0);
 
         const double expectedFacing = pow(sin(1.5), tSourceAngleExponent);
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction
@@ -380,7 +382,7 @@ void UtGunnsElectPvSection::testUpdate()
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,           tArticle->mStringsInput.mPhotoFlux,             DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceExposedFraction, tArticle->mStringsInput.mSourceExposedFraction, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(tTemperature,           tArticle->mStringsInput.mTemperature,           DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(400.0,                  tArticle->mStringsInput.mTemperature,           DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInsol,          tArticle->mPercentInsolation,                   DBL_EPSILON);
     }
 

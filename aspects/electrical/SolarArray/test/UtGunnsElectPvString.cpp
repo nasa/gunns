@@ -275,15 +275,125 @@ void UtGunnsElectPvString::testInput()
     UT_RESULT;
 
     /// @test    Input data nominal construction.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux,             tInputData->mPhotoFlux,             0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceExposedFraction, tInputData->mSourceExposedFraction, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tTemperature,           tInputData->mTemperature,           0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux,             tInputData->mPhotoFlux,                0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceExposedFraction, tInputData->mSourceExposedFraction,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tTemperature,           tInputData->mTemperature,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tInputData->mMalfPhotoFluxMagnitude,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tInputData->mMalfPhotoFluxDuration,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tInputData->mMalfPhotoFluxRampTime,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tInputData->mMalfExposedFractionValue, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tInputData->mMalfTemperatureValue,     0.0);
+    CPPUNIT_ASSERT(false == tInputData->mMalfPhotoFluxFlag);
+    CPPUNIT_ASSERT(false == tInputData->mMalfExposedFractionFlag);
+    CPPUNIT_ASSERT(false == tInputData->mMalfTemperatureFlag);
 
     /// @test    Input data default construction.
     GunnsElectPvStringInputData defaultInput;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mPhotoFlux,             0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mSourceExposedFraction, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mTemperature,           0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mPhotoFlux,                0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mSourceExposedFraction,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mTemperature,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfPhotoFluxMagnitude,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfPhotoFluxDuration,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfPhotoFluxRampTime,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfExposedFractionValue, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfTemperatureValue,     0.0);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfPhotoFluxFlag);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfExposedFractionFlag);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfTemperatureFlag);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests for Photovoltaic String model input data applyOverrides method.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectPvString::testInputOverrides()
+{
+    UT_RESULT;
+
+    const double dt = 0.1;
+    FriendlyGunnsElectPvStringInputData* stringInput =
+            static_cast<FriendlyGunnsElectPvStringInputData*>(tInputData);
+
+    /// @test    Photo flux override malf.
+    stringInput->setMalfPhotoFlux(true, 1.0, 90.0, 30.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,  stringInput->mMalfPhotoFluxMagnitude, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(90.0, stringInput->mMalfPhotoFluxDuration,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(30.0, stringInput->mMalfPhotoFluxRampTime,  0.0);
+    CPPUNIT_ASSERT(true == stringInput->mMalfPhotoFluxFlag);
+
+    /// @test    Photo flux override malf start.
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(dt,         stringInput->mPhotoFluxElapsedTime,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux, stringInput->mPhotoFluxStartMagnitude, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux, stringInput->mPhotoFlux,               0.0);
+
+    /// @test    Photo flux override malf ramp in.
+    stringInput->mPhotoFluxElapsedTime = 15.0;
+    double expectedFlux = tPhotoFlux + 0.5 * (1.0 - tPhotoFlux);
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL((15.0 + dt),  stringInput->mPhotoFluxElapsedTime, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, stringInput->mPhotoFlux,            DBL_EPSILON);
+
+    /// @test    Photo flux override malf hold.
+    stringInput->mPhotoFluxElapsedTime = 45.0;
+    expectedFlux = 1.0;
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL((45.0 + dt),  stringInput->mPhotoFluxElapsedTime, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, stringInput->mPhotoFlux,            DBL_EPSILON);
+
+    /// @test    Photo flux override malf ramp out.
+    stringInput->mPhotoFlux = 20.0;
+    stringInput->mPhotoFluxElapsedTime = 75.0;
+    expectedFlux = 20.0 + 0.5 * (1.0 - 20.0);
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL((75.0 + dt),  stringInput->mPhotoFluxElapsedTime, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, stringInput->mPhotoFlux,            DBL_EPSILON);
+    stringInput->mPhotoFlux = tPhotoFlux;
+
+    /// @test    Photo flux override malf switches off.
+    stringInput->mPhotoFluxElapsedTime = 90.0;
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux, stringInput->mPhotoFlux,            DBL_EPSILON);
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT(false == stringInput->mMalfPhotoFluxFlag);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(dt,         stringInput->mPhotoFluxElapsedTime, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPhotoFlux, stringInput->mPhotoFlux,            DBL_EPSILON);
+
+    /// @test    Photo flux malf limits ramp time to 1/2 duration.
+    stringInput->setMalfPhotoFlux(true, 1.0, 40.0, 30.0);
+    stringInput->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, stringInput->mMalfPhotoFluxRampTime, DBL_EPSILON);
+
+    stringInput->setMalfPhotoFlux();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, stringInput->mMalfPhotoFluxMagnitude, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, stringInput->mMalfPhotoFluxDuration,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, stringInput->mMalfPhotoFluxRampTime,  0.0);
+    CPPUNIT_ASSERT(false == stringInput->mMalfPhotoFluxFlag);
+
+    /// @test    Exposed fraction override malf.
+    tInputData->setMalfExposedFraction(true, 0.5);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tInputData->mMalfExposedFractionValue, 0.0);
+    CPPUNIT_ASSERT(true == tInputData->mMalfExposedFractionFlag);
+
+    tInputData->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tInputData->mSourceExposedFraction, 0.0);
+
+    tInputData->setMalfExposedFraction();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tInputData->mMalfExposedFractionValue, 0.0);
+    CPPUNIT_ASSERT(false == tInputData->mMalfExposedFractionFlag);
+
+    /// @test    Temperature override malf.
+    tInputData->setMalfTemperature(true, 310.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(310.0, tInputData->mMalfTemperatureValue, 0.0);
+    CPPUNIT_ASSERT(true == tInputData->mMalfTemperatureFlag);
+
+    tInputData->applyOverrides(dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(310.0, tInputData->mTemperature, 0.0);
+
+    tInputData->setMalfTemperature();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tInputData->mMalfTemperatureValue, 0.0);
+    CPPUNIT_ASSERT(false == tInputData->mMalfTemperatureFlag);
 
     UT_PASS;
 }

@@ -63,6 +63,8 @@ class UtGunnsThermalMultiPanel: public CppUnit::TestFixture
         void testStep();
         /// @brief  Test the restart() method.
         void testRestart();
+        /// @brief    Tests accessor methods.
+        void testAccessors();
 
     private:
         CPPUNIT_TEST_SUITE(UtGunnsThermalMultiPanel);
@@ -74,6 +76,7 @@ class UtGunnsThermalMultiPanel: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateState);
         CPPUNIT_TEST(testStep);
         CPPUNIT_TEST(testRestart);
+        CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
 
         std::string  tName;  /**< (--) Test Article name */

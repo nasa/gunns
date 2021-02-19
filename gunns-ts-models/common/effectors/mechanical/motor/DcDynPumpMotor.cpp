@@ -159,7 +159,7 @@ DcDynPumpMotorInputData& DcDynPumpMotorInputData::operator =(const DcDynPumpMoto
     if (this != &that)
     {
         mVoltage                = that.mVoltage;
-        mCurrentLimit           = that.mCurrentLimit,
+        mCurrentLimit           = that.mCurrentLimit;
         mMotorSpeed             = that.mMotorSpeed;
         mLoadTorque1            = that.mLoadTorque1;
         mLoadTorque2            = that.mLoadTorque2;

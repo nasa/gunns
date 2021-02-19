@@ -406,7 +406,7 @@ for link in linkDataModels:
         link.portMap += (portMap + ', ')
     link.portMap = link.portMap[:-2] + ']'
 
-data_model = dict([('functionName', baseFileName + 'Setup'),
+data_model = dict([('functionName', baseFileName),
                    ('subNets',      subNets),
                    ('links',        linkDataModels),
                    ('solverConfig', getConfigData(superConfig).split(','))

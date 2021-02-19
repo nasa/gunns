@@ -121,6 +121,7 @@ class GunnsElectConverterInput : public GunnsBasicLink
 
     protected:
         SensorAnalog*              mInputVoltageSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input voltage sensor. */
+        SensorAnalog*              mInputCurrentSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input current sensor. */
         GunnsElectConverterOutput* mOutputLink;            /**< *o (1) trick_chkpnt_io(**) Pointer to the converter output side link. */
         bool                       mEnabled;               /**<    (1)                     Operation is enabled. */
         double                     mInputPower;            /**<    (W)                     Input channel power load received from the output side. */
@@ -130,6 +131,7 @@ class GunnsElectConverterInput : public GunnsBasicLink
         GunnsTripGreaterThan       mInputOverVoltageTrip;  /**<    (1)                     Input over-voltage trip function. */
         bool                       mLeadsInterface;        /**< *o (1) trick_chkpnt_io(**) This precedes the mOutputLink in the network. */
         bool                       mOverloadedState;       /**<    (1) trick_chkpnt_io(**) Network can't supply the power load. */
+        bool                       mLastOverloadedState;   /**<    (1) trick_chkpnt_io(**) Last pass value of mOverloadedState. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterInputConfigData& configData,
                       const GunnsElectConverterInputInputData&  inputData) const;
@@ -157,6 +159,7 @@ class GunnsElectConverterInputConfigData: public GunnsBasicLinkConfigData
 {
     public:
         GunnsSensorAnalogWrapper* mInputVoltageSensor;         /**< (1) trick_chkpnt_io(**) Pointer to the input voltage sensor spotter. */
+        GunnsSensorAnalogWrapper* mInputCurrentSensor;         /**< (1) trick_chkpnt_io(**) Pointer to the input current sensor spotter. */
         unsigned int              mTripPriority;               /**< (1) trick_chkpnt_io(**) Priority of trips in the network. */
         float                     mInputUnderVoltageTripLimit; /**< (V) trick_chkpnt_io(**) Input under-voltage trip limit. */
         float                     mInputOverVoltageTripLimit;  /**< (V) trick_chkpnt_io(**) Input over-voltage trip limit. */
@@ -165,6 +168,7 @@ class GunnsElectConverterInputConfigData: public GunnsBasicLinkConfigData
                 const std::string&        name                       = "",
                 GunnsNodeList*            nodes                      = 0,
                 GunnsSensorAnalogWrapper* inputVoltageSensor         = 0,
+                GunnsSensorAnalogWrapper* inputCurrentSensor         = 0,
                 const unsigned int        tripPriority               = 0,
                 const float               inputUnderVoltageTripLimit = 0.0,
                 const float               inputOverVoltageTripLimit  = 0.0);

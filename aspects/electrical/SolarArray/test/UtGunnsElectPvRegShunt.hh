@@ -121,6 +121,7 @@ class UtGunnsElectPvRegShunt: public CppUnit::TestFixture
         double                          tVoltageSetpoint;     /**< (v)     Nominal input data. */
         bool                            tPowered;             /**< (--)    Nominal input data. */
         bool                            tEnabled;             /**< (--)    Nominal input data. */
+        double                          tMinOperatePower;     /**< (W)     Nominal input data. */
         static int                      TEST_ID;              /**< (--)    Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.

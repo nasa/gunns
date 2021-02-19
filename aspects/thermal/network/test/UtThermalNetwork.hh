@@ -24,11 +24,11 @@
 class FriendlyThermalNetwork : public ThermalNetwork
 {
     public:
-        FriendlyThermalNetwork();
+        FriendlyThermalNetwork(const std::string name = "");
         virtual ~FriendlyThermalNetwork();
         friend class UtThermalNetwork;
 };
-inline FriendlyThermalNetwork::FriendlyThermalNetwork() : ThermalNetwork() {};
+inline FriendlyThermalNetwork::FriendlyThermalNetwork(const std::string name) : ThermalNetwork(name) {};
 inline FriendlyThermalNetwork::~FriendlyThermalNetwork() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +89,8 @@ class UtThermalNetwork: public CppUnit::TestFixture
         void testAccess();
         /// @brief  Tests the capacitor link group edits.
         void testCapacitanceEdit();
+        /// @brief  Tests the network in a super-network.
+        void testSuperNetwork();
 
     private:
         CPPUNIT_TEST_SUITE(UtThermalNetwork);
@@ -104,6 +106,7 @@ class UtThermalNetwork: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdate);
         CPPUNIT_TEST(testAccess);
         CPPUNIT_TEST(testCapacitanceEdit);
+        CPPUNIT_TEST(testSuperNetwork);
         CPPUNIT_TEST_SUITE_END();
 
         FriendlyThermalNetwork*  tArticle; /**< (--)  pointer to test article */

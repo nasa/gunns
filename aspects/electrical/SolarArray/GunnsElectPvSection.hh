@@ -118,6 +118,7 @@ class GunnsElectPvSection
         /// @{
         /// @details Embedded objects are public to allow access from the Trick events processor.
         GunnsElectPvString*                  mStrings;            /**<    (--) trick_chkpnt_io(**) Array of strings in this section. */
+        GunnsElectPvStringInputData          mStringsInput;       /**<    (--) trick_chkpnt_io(**) Input data for the strings. */
         /// @}
         /// @brief Default constructor for this Photovoltaic Section.
         GunnsElectPvSection();
@@ -130,7 +131,7 @@ class GunnsElectPvSection
                           const GunnsElectPvSectionInputData& inputData,
                           const unsigned int                  numStrings);
         /// @brief Updates this Photovoltaic Section state.
-        void   update();
+        void   update(const double dt);
         /// @brief Gets the number of strings in this Photovoltaic Section.
         unsigned int getNumStrings() const;
         /// @brief Gets the percentage of actual light incident on string relative to reference.
@@ -149,13 +150,12 @@ class GunnsElectPvSection
         const GunnsElectPvSectionConfigData* mConfig;             /**< ** (--) trick_chkpnt_io(**) Pointer to common section config data. */
         unsigned int                         mNumStrings;         /**< *o (--) trick_chkpnt_io(**) The number of strings in this section. */
         GunnsElectPvSectionInputData         mInput;              /**<    (--)                     This section's unique input data and environment model interface. */
-        GunnsElectPvStringInputData          mStringsInput;       /**<    (--) trick_chkpnt_io(**) Input data for the strings. */
         double                               mPercentInsolation;  /**<    (--) trick_chkpnt_io(**) Percentage of actual light incident on string relative to reference source flux magnitude. */
         static const double                  mMaxAngleExponent;   /**< ** (--) trick_chkpnt_io(**) Upper limit on light source angle exponent. */
         /// @brief Validates the initialization of this Photovoltaic Section.
         void validate() const;
         /// @brief Updates the environment inputs to the strings.
-        void updateEnvironment();
+        void updateEnvironment(const double dt);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

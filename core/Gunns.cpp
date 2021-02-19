@@ -121,6 +121,7 @@ Gunns::Gunns()
     mLinks                 (0),
     mNodes                 (0),
     mFlowOrchestrator      (0),
+    mOwnsFlowOrchestrator  (false),
     mAdmittanceMatrix      (0),
     mAdmittanceMatrixIsland(0),
     mSourceVector          (0),
@@ -192,10 +193,7 @@ Gunns::Gunns()
     mLastIslandMode        (OFF),
     mLastRunMode           (RUN)
 {
-    mSolverCpu = new CholeskyLdu();
 #ifdef GUNNS_CUDA_ENABLE
-    mSolverGpuDense  = new CudaDenseDecomp();
-    mSolverGpuSparse = new CudaSparseSolve();
     mGpuEnabled      = true;
 #endif
 }
@@ -207,8 +205,11 @@ Gunns::~Gunns()
 {
     cleanup();
     {
-        delete mFlowOrchestrator;
-        mFlowOrchestrator = 0;
+        if (mFlowOrchestrator and mOwnsFlowOrchestrator) {
+            delete mFlowOrchestrator;
+            mFlowOrchestrator     = 0;
+            mOwnsFlowOrchestrator = false;
+        }
     } {
         delete [] mNodes;
         mNodes = 0;
@@ -332,6 +333,13 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     mNetworkSize          = mNumNodes - 1;
     validateConfigData(configData);
 
+    /// - Allocate linear algebra solvers.
+    mSolverCpu = new CholeskyLdu();
+#ifdef GUNNS_CUDA_ENABLE
+    mSolverGpuDense  = new CudaDenseDecomp();
+    mSolverGpuSparse = new CudaSparseSolve();
+#endif
+
     /// - Allocate system arrays based on network size.
     const int matrixSize = mNetworkSize * mNetworkSize;
     mAdmittanceMatrix       = new double[matrixSize];
@@ -450,6 +458,8 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     ///   the first pass after init, and flag this network as having successfully completed
     ///   initialization.
     outputPotentialVector();
+    saveMinorPotentialVector();
+    saveMajorPotentialVector();
 
     /// - Call the links to process special write data to the sim bus.
     for (int link = 0; link < mNumLinks; ++link) {
@@ -567,10 +577,16 @@ void Gunns::verifyNodeInitialization()
 ///
 /// @note     This method must be called before any link initialization and before Gunns::initialize
 ///
-/// @details  This method initializes the fluid nodes array for fluid networks.
+/// @details  This method initializes the fluid nodes array for fluid networks.  Only one call to
+///           initializeFluidNodes or initializeNodes is allowed, otherwise we throw exception.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Gunns::initializeFluidNodes(GunnsNodeList& nodeList)
 {
+    if (mNodes or mFlowOrchestrator) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "Node initialization attempted more than once.");
+    }
+
     /// - Load the fluid nodes array
     mNumNodes = nodeList.mNumNodes;
     mNodes = new GunnsBasicNode*[mNumNodes];
@@ -581,7 +597,8 @@ void Gunns::initializeFluidNodes(GunnsNodeList& nodeList)
         mNodes[node] = &(fluidNodes[node]);
     }
 
-    mFlowOrchestrator = new GunnsFluidFlowOrchestrator(mNumLinks, mNumNodes);
+    mFlowOrchestrator     = new GunnsFluidFlowOrchestrator(mNumLinks, mNumNodes);
+    mOwnsFlowOrchestrator = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -589,10 +606,16 @@ void Gunns::initializeFluidNodes(GunnsNodeList& nodeList)
 ///
 /// @note     This method must be called before any link initialization and before Gunns::initialize
 ///
-/// @details  This method initializes the basic nodes array for basic networks.
+/// @details  This method initializes the basic nodes array for basic networks.  Only one call to
+///           initializeFluidNodes or initializeNodes is allowed, otherwise we throw exception.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Gunns::initializeNodes(GunnsNodeList& nodeList)
 {
+    if (mNodes or mFlowOrchestrator) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "Node initialization attempted more than once.");
+    }
+
     /// - Load the basic nodes array
     mNumNodes = nodeList.mNumNodes;
     mNodes = new GunnsBasicNode*[mNumNodes];
@@ -601,7 +624,23 @@ void Gunns::initializeNodes(GunnsNodeList& nodeList)
         mNodes[node] = &(nodeList.mNodes[node]);
     }
 
-    mFlowOrchestrator = new GunnsBasicFlowOrchestrator(mNumLinks, mNumNodes);
+    mFlowOrchestrator     = new GunnsBasicFlowOrchestrator(mNumLinks, mNumNodes);
+    mOwnsFlowOrchestrator = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] orchestrator (--) Pointer to the orchestrator object to use.
+///
+/// @details  If this solver already owns its flow orchestrator, it is deleted.  Then we store the
+///           given orchestrator pointer in mFlowOrchestrator.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Gunns::setFlowOrchestrator(GunnsBasicFlowOrchestrator* orchestrator)
+{
+    if (mFlowOrchestrator and mOwnsFlowOrchestrator) {
+        delete mFlowOrchestrator;
+    }
+    mFlowOrchestrator     = orchestrator;
+    mOwnsFlowOrchestrator = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

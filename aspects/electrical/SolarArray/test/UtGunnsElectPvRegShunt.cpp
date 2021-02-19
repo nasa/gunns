@@ -46,7 +46,8 @@ UtGunnsElectPvRegShunt::UtGunnsElectPvRegShunt()
     tArrayInput(0),
     tVoltageSetpoint(0.0),
     tPowered(false),
-    tEnabled(false)
+    tEnabled(false),
+    tMinOperatePower(0.0)
 {
     // nothing to do
 }
@@ -138,9 +139,11 @@ void UtGunnsElectPvRegShunt::setUp()
     tVoltageSetpoint   = 10.0;
     tPowered           = true;
     tEnabled           = true;
+    tMinOperatePower   = 100.0;
     tInputData         = new GunnsElectPvRegShuntInputData(tVoltageSetpoint,
                                                            tPowered,
-                                                           tEnabled);
+                                                           tEnabled,
+                                                           tMinOperatePower);
 
     /// - Default construct the nominal test article.
     tArticle           = new FriendlyGunnsElectPvRegShunt;
@@ -226,14 +229,16 @@ void UtGunnsElectPvRegShunt::testInput()
 
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tVoltageSetpoint, tInputData->mVoltageSetpoint, 0.0);
-    CPPUNIT_ASSERT(tPowered == tInputData->mPowered);
-    CPPUNIT_ASSERT(tEnabled == tInputData->mEnabled);
+    CPPUNIT_ASSERT(tPowered         == tInputData->mPowered);
+    CPPUNIT_ASSERT(tEnabled         == tInputData->mEnabled);
+    CPPUNIT_ASSERT(tMinOperatePower == tInputData->mMinOperatePower);
 
     /// @test    Input data default construction.
     GunnsElectPvRegShuntInputData defaultInput;
     CPPUNIT_ASSERT(0.0   == defaultInput.mVoltageSetpoint);
     CPPUNIT_ASSERT(false == defaultInput.mPowered);
     CPPUNIT_ASSERT(false == defaultInput.mEnabled);
+    CPPUNIT_ASSERT(0.0   == defaultInput.mMinOperatePower);
 
     UT_PASS;
 }
@@ -255,6 +260,7 @@ void UtGunnsElectPvRegShunt::testConstruction()
     CPPUNIT_ASSERT(0.0                       == tArticle->mVoltageSetpoint);
     CPPUNIT_ASSERT(false                     == tArticle->mPowered);
     CPPUNIT_ASSERT(false                     == tArticle->mEnabled);
+    CPPUNIT_ASSERT(0.0                       == tArticle->mMinOperatePower);
     CPPUNIT_ASSERT(false                     == tArticle->mResetTrips);
     CPPUNIT_ASSERT(0                         == tArticle->mSensors.mInCurrent);
     CPPUNIT_ASSERT(0                         == tArticle->mSensors.mInVoltage);
@@ -305,6 +311,7 @@ void UtGunnsElectPvRegShunt::testNominalInitialization()
     CPPUNIT_ASSERT(tVoltageSetpoint          == tArticle->mVoltageSetpoint);
     CPPUNIT_ASSERT(tPowered                  == tArticle->mPowered);
     CPPUNIT_ASSERT(tEnabled                  == tArticle->mEnabled);
+    CPPUNIT_ASSERT(tMinOperatePower          == tArticle->mMinOperatePower);
 
     /// @test    Sensors package.
     CPPUNIT_ASSERT(&tSensorIin.mSensor       == tArticle->mSensors.mInCurrent);
@@ -438,6 +445,11 @@ void UtGunnsElectPvRegShunt::testInitializationErrors()
     tConfigData->addStringLoadOrder(0, 1);
     tConfigData->addStringLoadOrder(0, 0);
 
+    /// @test    Exception thrown from section for bad trip priority.
+    tConfigData->mTripPriority = 0;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1), TsInitializationException);
+    tConfigData->mTripPriority = tTripPriority;
+
     /// @test    Exception thrown from section for bad voltage setpoint.
     tInputData->mVoltageSetpoint = 0.0;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1), TsInitializationException);
@@ -493,8 +505,8 @@ void UtGunnsElectPvRegShunt::testStep()
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
 
     {
-        /// @test    Regulated voltage w/o setpoint malf, nominal max outputs, initial OFF->SAG
-        ///          transition, [A] & {w} outputs in SAG state.
+        /// @test    Regulated voltage w/o setpoint malf, nominal max outputs, initial OFF->REG
+        ///          transition, [A] & {w} outputs in REG state.
         tArray->step(0.0);
         tArticle->step(0.0);
 
@@ -503,22 +515,25 @@ void UtGunnsElectPvRegShunt::testStep()
         tArray->predictLoadAtVoltage(expectedPbulk, expectedGin, expectedVreg);
         const double expectedImax = tArrayConfig->mNumStrings
                                   * tArray->mSections[0].mStrings[0].getTerminal().mCurrent;
-        const double expectedA    = tOutputConductance;
-        const double expectedW    = 0.0;
+        const double expectedAin  = expectedGin;
+        const double expectedAout = tOutputConductance;
+        const double expectedW    = expectedVreg * expectedAout;
 
+        CPPUNIT_ASSERT(tMinOperatePower < tArticle->mPvBulkPowerAvail);
+        CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,  tArticle->mRegulatedVoltage,    DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPbulk, tArticle->mPvBulkPowerAvail,    DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance,    DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImax,  tArticle->mMaxRegCurrent,       FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA,    tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA,    tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA,    tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA,    tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAin,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAout,  tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,     tArticle->mSourceVector[1],     DBL_EPSILON);
         CPPUNIT_ASSERT(false                     == tArray->mSections[0].mStrings[0].isShunted());
-        CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
         CPPUNIT_ASSERT(true                      == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(true                      == tArticle->mOffToRegOccurred);
     } {
         /// @test    Regulated voltage with setpoint malf, transition to OFF when disabled,
         ///          [A] & {w} outputs in OFF state.
@@ -543,38 +558,18 @@ void UtGunnsElectPvRegShunt::testStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,     tArticle->mSourceVector[1],     DBL_EPSILON);
         CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
         CPPUNIT_ASSERT(true                      == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false                     == tArticle->mOffToRegOccurred);
     } {
-        /// @test    [A] & {w} outputs in REG state.
-        tArticle->mState   = GunnsElectPvRegShunt::REG;
-        tArticle->mEnabled = true;
-        tArticle->step(0.0);
-
-        double expectedPbulk, expectedGin;
-        const double expectedVreg = tVoltageSetpoint + 1.0;
-        tArray->predictLoadAtVoltage(expectedPbulk, expectedGin, expectedVreg);
-        const double expectedAin  = expectedGin;
-        const double expectedAout = tOutputConductance;
-        const double expectedW    = expectedVreg * expectedAout;
-
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAin,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAout,  tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,     tArticle->mSourceVector[1],     DBL_EPSILON);
-        CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
-        CPPUNIT_ASSERT(true                      == tArticle->needAdmittanceUpdate());
-    } {
-        /// @test    Transition from REG -> SAG.
+        /// @test    Transition from REG -> OFF due to low light.
         tArray->mSections[0].setSourceExposedFraction(0.5);
         tArray->mSections[1].setSourceExposedFraction(0.5);
         tArray->mSections[2].setSourceExposedFraction(0.5);
         tArray->step(0.0);
-
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
+        CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
         CPPUNIT_ASSERT(true                      == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false                     == tArticle->mOffToRegOccurred);
     } {
         /// @test    Array unlit, low-limit on regulated voltage.
         tArray->mSections[0].setSourceExposedFraction(0.0);
@@ -593,6 +588,7 @@ void UtGunnsElectPvRegShunt::testStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,  tArticle->mRegulatedVoltage,    DBL_EPSILON);
         CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
         CPPUNIT_ASSERT(true                      == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false                     == tArticle->mOffToRegOccurred);
     } {
         /// - Force a trip.
         GunnsBasicLink::SolutionResult result;
@@ -719,9 +715,9 @@ void UtGunnsElectPvRegShunt::testAccessors()
     /// @test    Link is non-linear.
     CPPUNIT_ASSERT(true == tArticle->isNonLinear());
 
-    /// @test    Can set voltage setpoint.
+    /// @test    Can set and get the voltage setpoint.
     tArticle->setVoltageSetpoint(5.0);
-    CPPUNIT_ASSERT(5.0 == tArticle->mVoltageSetpoint);
+    CPPUNIT_ASSERT(5.0 == tArticle->getVoltageSetpoint());
 
     /// @test    Can set the enabled flag.
     tArticle->setEnabled(true);
@@ -730,6 +726,13 @@ void UtGunnsElectPvRegShunt::testAccessors()
     /// @test    Can get maximum regulated current.
     tArticle->mMaxRegCurrent = 15.0;
     CPPUNIT_ASSERT(15.0 == tArticle->getMaxRegCurrent());
+
+    /// @test    Can set and get the minimum operate power.
+    tArticle->setMinOperatePower(1000.0);
+    CPPUNIT_ASSERT(1000.0 == tArticle->getMinOperatePower());
+
+    /// @test    Can get the trip logic object.
+    CPPUNIT_ASSERT(&tArticle->mTrips == tArticle->getTrips());
 
     UT_PASS;
 }
@@ -747,20 +750,15 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     /// - Step the article and array to update realistic states.
     tArray->step(0.0);
     tArticle->step(0.0);
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
-
-    /// @test    Transition from SAG -> REG, only after solution is converged.
-    double inputVolts = 11.0;
-    tArticle->mPotentialVector[0] = inputVolts;
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 1));
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
-    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(1, 2));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(true                      == tArticle->mOffToRegOccurred);
 
     /// @test    REG state loads the array strings, remains in REG state since the strings have
     ///          sufficient power, and remaining strings are shunted.
+    double inputVolts  = 11.0;
     double outputVolts = 9.9;
     double powerDemand = tVoltageSetpoint * tOutputConductance * (tVoltageSetpoint - outputVolts);
+    tArticle->mPotentialVector[0] = inputVolts;
     tArticle->mPotentialVector[1] = outputVolts;
 
     tArray->mSections[0].mStrings[0].loadAtVoltage(tVoltageSetpoint);
@@ -787,6 +785,7 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance, FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPsh,   tArticle->mShuntPower,       FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             FLT_EPSILON);
+    CPPUNIT_ASSERT(false == tArray->mCommonStringsOutput);
     CPPUNIT_ASSERT(true  == tArray->mSections[0].mStrings[0].isShunted());
     CPPUNIT_ASSERT(false == tArray->mSections[firstLoadedSection].mStrings[firstLoadedString].isShunted());
 
@@ -804,37 +803,42 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, FLT_EPSILON * expectedSensedVout);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, FLT_EPSILON);
 
-    /// @test    Transition from REG -> SAG due to insufficient array power, only after solution is
-    ///          converged, and all strings get loaded.
+    /// @test    Transition from REG -> OFF due to insufficient array power, only after solution is
+    ///          converged, and all strings are shunted.  This tests the scenario where
+    ///          vehicle load > PV available power > minimum operate power, which must be limited
+    ///          by the model from flipping between REG-OFF indefinitely.
+    tArray->step(0.0);
+    tArticle->step(0.0);
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(false                     == tArticle->mOffToRegOccurred);
     outputVolts = 9.0;
     powerDemand = tVoltageSetpoint * tOutputConductance * (tVoltageSetpoint - outputVolts);
     tArticle->mPotentialVector[1] = outputVolts;
 
-    expectedPin  = tArrayConfig->mNumStrings * loadedStringP;
-    expectedGin  = tArrayConfig->mNumStrings * loadedStringG;
-    expectedPsh  = 0.0;
-    expectedFlux = (inputVolts - outputVolts) * tOutputConductance;
-
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 1));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
-    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(1, 2));
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,   tArticle->mInputPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPsh,   tArticle->mShuntPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             FLT_EPSILON);
-    CPPUNIT_ASSERT(false == tArray->mSections[0].mStrings[0].isShunted());
-    CPPUNIT_ASSERT(false == tArray->mSections[firstLoadedSection].mStrings[firstLoadedString].isShunted());
-
-    /// @test    Transition from SAG -> OFF due to back-voltage, only after solution is converged.
-    inputVolts  = 9.0;
-    outputVolts = 9.01;
-    tArticle->mPotentialVector[0] = inputVolts;
-    tArticle->mPotentialVector[1] = outputVolts;
-
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 1));
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::SAG == tArticle->mState);
-    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(1, 2));
+    CPPUNIT_ASSERT(GunnsBasicLink::DELAY     == tArticle->confirmSolutionAcceptable(1, 2));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(2, 3));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 4));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::DELAY     == tArticle->confirmSolutionAcceptable(1, 5));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(2, 6));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(true                      == tArticle->mOffToRegOccurred);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 7));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::DELAY     == tArticle->confirmSolutionAcceptable(1, 8));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(2, 9));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 10));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(1, 11));
+    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(2, 12));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
 
     /// @test    Confirming in OFF state shunts all strings.
@@ -842,24 +846,16 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     expectedGin  = 0.0;
     expectedPsh  = tArrayConfig->mNumStrings * shuntedStringP;
     expectedFlux = 0.0;
-
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(2, 3));
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,   tArticle->mInputPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPsh,   tArticle->mShuntPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             FLT_EPSILON);
+    CPPUNIT_ASSERT(true == tArray->mCommonStringsOutput);
     CPPUNIT_ASSERT(true == tArray->mSections[0].mStrings[0].isShunted());
     CPPUNIT_ASSERT(true == tArray->mSections[firstLoadedSection].mStrings[firstLoadedString].isShunted());
 
-    /// @test    Transition from REG -> OFF due to back-voltage, only after solution is converged.
+    /// @test    Transition from REG -> OFF due to back-voltage.
     outputVolts = tVoltageSetpoint + 0.01;
     tArticle->mPotentialVector[1] = outputVolts;
     tArticle->mState = GunnsElectPvRegShunt::REG;
 
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(0, 1));
-    CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
-    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(1, 2));
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(0, 1));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
 
     /// @test    Delays, then rejects on trip from the output current sensor.
@@ -942,34 +938,6 @@ void UtGunnsElectPvRegShunt::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat, tArticle->mWasteHeat,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getOutflux(),   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[1].getInflux(),    DBL_EPSILON);
-    CPPUNIT_ASSERT(false == tArray->mCommonStringsOutput);
-
-    /// @test    Outputs in SAG state.
-    outputVolts = inputVolts - 1.0;
-    expectedPsh = 0.0;
-    tArticle->mPotentialVector[0] = inputVolts;
-    tArticle->mPotentialVector[1] = outputVolts;
-    tArticle->mState              = GunnsElectPvRegShunt::SAG;
-    expectedDp   = inputVolts - outputVolts;
-    expectedFlux = expectedDp * tOutputConductance;
-    expectedP    = -expectedFlux * expectedDp;
-    expectedPin  = expectedFlux * inputVolts;
-    expectedPout = expectedFlux * outputVolts;
-    expectedHeat = expectedPsh - expectedP;
-
-    tNodes[0].resetFlows();
-    tNodes[1].resetFlows();
-    tArticle->mFlux = expectedFlux;
-    tArticle->computeFlows(0.0);
-
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,   tArticle->mPotentialDrop, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,    tArticle->mPower,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout, tArticle->mOutputPower,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,  tArticle->mInputPower,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat, tArticle->mWasteHeat,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getOutflux(),   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[1].getInflux(),    DBL_EPSILON);
-    CPPUNIT_ASSERT(true == tArray->mCommonStringsOutput);
 
     /// @test    Outputs in OFF state.
     outputVolts = inputVolts + 1.0;
@@ -998,7 +966,6 @@ void UtGunnsElectPvRegShunt::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat, tArticle->mWasteHeat,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getOutflux(),   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[1].getInflux(),    DBL_EPSILON);
-    CPPUNIT_ASSERT(true == tArray->mCommonStringsOutput);
 
     UT_PASS_LAST;
 }

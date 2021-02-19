@@ -69,9 +69,9 @@ class GunnsNetworkBase
         /// @brief  Network initialization task, standalone.
         void         initialize(const std::string& name = "");
         /// @brief  Network restart task.
-        void         restart();
+        virtual void restart();
         /// @brief  Network update task.
-        void         update(const double timeStep);
+        virtual void update(const double timeStep);
         /// @brief  Pure virtual initialize nodes function.
         virtual void initNodes(const std::string& name) = 0;
         /// @brief  Pure virtual initialize remaining network objects function.
@@ -87,7 +87,7 @@ class GunnsNetworkBase
         /// @brief  Returns this network's name.
         const std::string& getName() const;
         /// @brief  Returns the number of nodes defined in this network.
-        int          getNumLocalNodes() const;
+        virtual int  getNumLocalNodes();
         /// @brief  Returns the super-network this network belongs to, if any.
         GunnsSuperNetworkBase* getSuperNetwork() const;
         /// @brief  Returns the index of this joint network in a visibility array.
@@ -186,9 +186,11 @@ inline const std::string& GunnsNetworkBase::getName() const
 /// @returns  int (--) The number of nodes defined in this network.
 ///
 /// @details  Returns the number of nodes this network defines, including its ground node.  This may
-///           be different than the netNodeList.mNumNodes when this is a sub-network.
+///           be different than the netNodeList.mNumNodes when this is a sub-network.  This is
+///           virtual and non-const to allow derived classes to compute and store their number of
+///           nodes if needed.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int GunnsNetworkBase::getNumLocalNodes() const
+inline int GunnsNetworkBase::getNumLocalNodes()
 {
     return netNumLocalNodes;
 }

@@ -182,6 +182,9 @@ class Gunns
         /// @brief Sets the solver worst-case timing flag.
         void setWorstCaseTiming(const bool flag);
 
+        /// @brief Points the solver to use the given flow orchestrator.
+        void setFlowOrchestrator(GunnsBasicFlowOrchestrator* orchestrator);
+
         /// @brief Gets the Admittance Matrix.
         double* getAdmittanceMatrix() const;
 
@@ -246,6 +249,7 @@ class Gunns
         GunnsBasicLink** mLinks;          /**< ** (--) trick_chkpnt_io(**) Pointers to the network links */
         GunnsBasicNode** mNodes;          /**< ** (--) trick_chkpnt_io(**) Pointers to the network nodes */
         GunnsBasicFlowOrchestrator* mFlowOrchestrator; /**< ** (--) trick_chkpnt_io(**) The flow orchestrator. */
+        bool mOwnsFlowOrchestrator;       /**< *o (--) trick_chkpnt_io(**) This solver owns and will delete the flow orchestrator when true. */
 
         /// @details  The admittance matrix [A] in the [A]{x} = {b} system of equations.  This is an
         ///           n X n symmetrical positive definite matrix representing the ability of the

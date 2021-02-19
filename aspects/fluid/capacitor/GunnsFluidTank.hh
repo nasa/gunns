@@ -131,6 +131,8 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
         virtual void   updateFluid(const double dt, const double);
         /// @brief  Returns the heat flux from the tank shell.
         virtual double getHeatFlux() const;
+        /// @brief  Returns the bias heat flux from the tank shell.
+        virtual double getBiasHeatFlux() const;
         /// @brief  Returns the delta pressure/delta time.
         double         getDpdt() const;
         /// @brief  Returns the constituent partial pressures.
@@ -220,6 +222,16 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
 inline double GunnsFluidTank::getHeatFlux() const
 {
     return mHeatFluxFromShell + mBiasHeatFlux;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double (W) Bias heat flux.
+///
+/// @details  This method returns the bias heat flux.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidTank::getBiasHeatFlux() const
+{
+    return mBiasHeatFlux;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

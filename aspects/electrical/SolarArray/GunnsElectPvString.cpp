@@ -234,7 +234,17 @@ GunnsElectPvStringInputData::GunnsElectPvStringInputData(const double stringPhot
     :
     mPhotoFlux(stringPhotoFlux),
     mSourceExposedFraction(stringSourceExposedFraction),
-    mTemperature(stringTemperature)
+    mTemperature(stringTemperature),
+    mMalfPhotoFluxFlag(false),
+    mMalfPhotoFluxMagnitude(0.0),
+    mMalfPhotoFluxDuration(0.0),
+    mMalfPhotoFluxRampTime(0.0),
+    mMalfExposedFractionFlag(false),
+    mMalfExposedFractionValue(0.0),
+    mMalfTemperatureFlag(false),
+    mMalfTemperatureValue(0.0),
+    mPhotoFluxElapsedTime(0.0),
+    mPhotoFluxStartMagnitude(0.0)
 {
     // nothing to do
 }
@@ -245,6 +255,72 @@ GunnsElectPvStringInputData::GunnsElectPvStringInputData(const double stringPhot
 GunnsElectPvStringInputData::~GunnsElectPvStringInputData()
 {
     // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Integration time step.
+///
+/// @details  Applies malfunctions to override the string input data values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvStringInputData::applyOverrides(const double dt)
+{
+    /// - The photo power flux malfunction overrides the flux from its starting value to a hold
+    ///   value, and back to the environment value over the given duration.  Ramping between the
+    ///   hold and start/end values is with a sinusoid function.  This can be used to mimic eclipse
+    ///   and subsequent insolation events by a planetary body.
+    if (mMalfPhotoFluxFlag and mMalfPhotoFluxDuration > 0.0) {
+        /// - Limit ramp time to 1/2 duration.
+        mMalfPhotoFluxRampTime = Math::limitRange(0.0, mMalfPhotoFluxRampTime, 0.5 * mMalfPhotoFluxDuration);
+        if (mPhotoFluxElapsedTime > mMalfPhotoFluxDuration) {
+            /// - Automatically switch off when full duration has elapsed.
+            mPhotoFluxElapsedTime = 0.0;
+            mMalfPhotoFluxFlag    = false;
+        } else if (0.0 == mPhotoFluxElapsedTime) {
+            /// - At the start, store the starting photo flux magnitude.
+            mPhotoFluxStartMagnitude = mPhotoFlux;
+        } else if (mPhotoFluxElapsedTime > (mMalfPhotoFluxDuration - mMalfPhotoFluxRampTime)) {
+            /// - Ramp out from the hold value to the input magnitude value from environment.
+            mPhotoFlux = rampPhotoFlux(mMalfPhotoFluxDuration - mPhotoFluxElapsedTime, mPhotoFlux);
+        } else if (mPhotoFluxElapsedTime > mMalfPhotoFluxRampTime) {
+            /// - Hold the value between ramp in/ramp out.
+            mPhotoFlux = mMalfPhotoFluxMagnitude;
+        } else {
+            /// - Ramp in from the starting magnitude to the hold value.
+            mPhotoFlux = rampPhotoFlux(mPhotoFluxElapsedTime, mPhotoFluxStartMagnitude);
+        }
+        mPhotoFluxElapsedTime += dt;
+    } else {
+        mPhotoFluxElapsedTime = 0.0;
+    }
+
+    /// - Apply the source exposed fraction malfunction.
+    if (mMalfExposedFractionFlag) {
+        mSourceExposedFraction = mMalfExposedFractionValue;
+    }
+
+    /// - Apply the temperature malfunction.
+    if (mMalfTemperatureFlag) {
+        mTemperature = mMalfTemperatureValue;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] time     (s)    Elapsed ramp time.
+/// @param[in] outValue (W/m2) Ramp-out value to ramp from/to.
+///
+/// @returns  double (W/m2) Photo power flux.
+///
+/// @details  Computes and returns the photo power flux as a sinusoid from the start value to the
+///           hold value over the given elapsed time.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsElectPvStringInputData::rampPhotoFlux(const double time, const double outValue)
+{
+    double rampFunction = 1.0;
+    if (mMalfPhotoFluxRampTime > 0.0) {
+        const double timeFraction = Math::limitRange(0.0, time / mMalfPhotoFluxRampTime, 1.0);
+        rampFunction = 0.5 * (1.0 + sin(UnitConversion::PI_UTIL * (timeFraction - 0.5)));
+    }
+    return outValue + rampFunction * (mMalfPhotoFluxMagnitude - outValue);
 }
 
 /// @details  This value is used as the ratio between forward and reverse bias conductance of the

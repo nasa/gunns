@@ -32,6 +32,9 @@ const GunnsDynUtils::QtoM_Element GunnsDynUtils::QtoMElement[] = {
 /// @details  This tolerance value comes from Trick's implementation in quat_norm.c.
 const double GunnsDynUtils::quatNormTolerance = 0.00000023842;
 
+/// @details  Minimum vector magnitude for normalization.
+const double GunnsDynUtils::vecNormTolerance = DBL_EPSILON;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[out] vA   (--) Pointer to the vector (an array) to be set.
 /// @param[in]  vB   (--) Pointer to the Vector (an array) to be set equal to.
@@ -403,6 +406,27 @@ void GunnsDynUtils::normalizeQ(double* q)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in,out] v (--) The vector.
+///
+/// @throws   TsNumericalException
+///
+/// @details  Normalizes the given vector to have a magnitude of 1.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsDynUtils::normalizeV(double* v)
+{
+    double factor;
+    const double mag2 = dotV(v, v, 3);
+    if (fabs(mag2) < vecNormTolerance) {
+        throw TsNumericalException();
+    } else {
+        factor = 1.0 / sqrt(mag2);
+    }
+    v[0] *= factor;
+    v[1] *= factor;
+    v[2] *= factor;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] v    (--) Pointer to the vector (an array) to get the magnitude of.
 /// @param[in] size (--) The number of elements in the vector.
 ///
@@ -417,6 +441,21 @@ double GunnsDynUtils::magV(const double* v, const unsigned int size)
         result += v[i]*v[i];
     }
     return sqrt(result);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] mA    (--) Pointer to the single-dimension array being set.
+/// @param[in]  mB    (--) Pointer to the single-dimnesion array used to set.
+/// @param[in]  size  (--) The number of rows of the square matrices, e.g. a 3x3 matrix is size 3.
+///
+/// @details  Sets mA to mB value by value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsDynUtils::setM(double* mA, double* mB, const unsigned int size)
+{
+    const unsigned int sizeSq = size*size;
+    for (unsigned int i=0; i<sizeSq; ++i) {
+        mA[i] = mB[i];
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

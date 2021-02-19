@@ -155,10 +155,10 @@ const double GunnsElectPvSection::mMaxAngleExponent = 10.0;
 GunnsElectPvSection::GunnsElectPvSection()
     :
     mStrings(0),
+    mStringsInput(),
     mConfig(0),
     mNumStrings(0),
     mInput(),
-    mStringsInput(),
     mPercentInsolation(0.0)
 {
     // nothing to do
@@ -172,10 +172,10 @@ GunnsElectPvSection::GunnsElectPvSection()
 GunnsElectPvSection::GunnsElectPvSection(const GunnsElectPvSectionConfigData* configData)
     :
     mStrings(0),
+    mStringsInput(),
     mConfig(configData),
     mNumStrings(0),
     mInput(),
-    mStringsInput(),
     mPercentInsolation(0.0)
 {
     // nothing to do
@@ -282,12 +282,14 @@ void GunnsElectPvSection::validate() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Integration time step.
+///
 /// @details  Updates this Photovoltaic Section Model's state, including the contained string
 ///           states.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectPvSection::update()
+void GunnsElectPvSection::update(const double dt)
 {
-    updateEnvironment();
+    updateEnvironment(dt);
 
     /// - Update the strings internal states.
     for (unsigned int string=0; string<mNumStrings; ++string) {
@@ -296,10 +298,12 @@ void GunnsElectPvSection::update()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Integration time step.
+///
 /// @details  This drives the environment interface to the contained strings, including lighting and
 ///           temperature.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectPvSection::updateEnvironment()
+void GunnsElectPvSection::updateEnvironment(const double dt)
 {
     /// - Fraction of ambient power absorbed by the section due to facing away from the light source.
     double trigAngle = 0.0;
@@ -318,6 +322,7 @@ void GunnsElectPvSection::updateEnvironment()
                                          * mInput.mSourceExposedFraction * facing;
     mStringsInput.mSourceExposedFraction = mInput.mSourceExposedFraction;
     mStringsInput.mTemperature           = mInput.mTemperature;
+    mStringsInput.applyOverrides(dt);
 
     /// - Update the percent insolation indicator.
     if (mConfig->mRefSourceFluxMagnitude > DBL_EPSILON) {

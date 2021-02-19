@@ -22,6 +22,7 @@ LIBRARY DEPENDENCY:
 /// @param[in] name                       (--) Link name
 /// @param[in] nodes                      (--) Network nodes array
 /// @param[in] inputVoltageSensor         (--) Pointer to the input voltage sensor spotter.
+/// @param[in] inputCurrentSensor         (--) Pointer to the input current sensor spotter.
 /// @param[in] tripPriority               (--) Priority of trips in the network.
 /// @param[in] inputUnderVoltageTripLimit (--) Input under-voltage trip limit.
 /// @param[in] inputOverVoltageTripLimit  (--) Input over-voltage trip limit.
@@ -32,12 +33,14 @@ GunnsElectConverterInputConfigData::GunnsElectConverterInputConfigData(
         const std::string&        name,
         GunnsNodeList*            nodes,
         GunnsSensorAnalogWrapper* inputVoltageSensor,
+        GunnsSensorAnalogWrapper* inputCurrentSensor,
         const unsigned int        tripPriority,
         const float               inputUnderVoltageTripLimit,
         const float               inputOverVoltageTripLimit)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mInputVoltageSensor(inputVoltageSensor),
+    mInputCurrentSensor(inputCurrentSensor),
     mTripPriority(tripPriority),
     mInputUnderVoltageTripLimit(inputUnderVoltageTripLimit),
     mInputOverVoltageTripLimit(inputOverVoltageTripLimit)
@@ -63,6 +66,7 @@ GunnsElectConverterInputConfigData::GunnsElectConverterInputConfigData(
     :
     GunnsBasicLinkConfigData(that),
     mInputVoltageSensor(that.mInputVoltageSensor),
+    mInputCurrentSensor(that.mInputCurrentSensor),
     mTripPriority(that.mTripPriority),
     mInputUnderVoltageTripLimit(that.mInputUnderVoltageTripLimit),
     mInputOverVoltageTripLimit(that.mInputOverVoltageTripLimit)
@@ -124,6 +128,7 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     :
     GunnsBasicLink(NPORTS),
     mInputVoltageSensor(0),
+    mInputCurrentSensor(0),
     mOutputLink(0),
     mEnabled(false),
     mInputPower(0.0),
@@ -132,7 +137,8 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     mInputUnderVoltageTrip(),
     mInputOverVoltageTrip(),
     mLeadsInterface(false),
-    mOverloadedState(false)
+    mOverloadedState(false),
+    mLastOverloadedState(false)
 {
     // nothing to do
 }
@@ -179,6 +185,11 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
         configData.mInputVoltageSensor->setStepPreSolverFlag(false);
         configData.mInputVoltageSensor->setStepPostSolverFlag(true);
     }
+    if (configData.mInputCurrentSensor) {
+        mInputCurrentSensor = &configData.mInputCurrentSensor->mSensor;
+        configData.mInputCurrentSensor->setStepPreSolverFlag(false);
+        configData.mInputCurrentSensor->setStepPostSolverFlag(true);
+    }
     mInputUnderVoltageTrip.initialize(configData.mInputUnderVoltageTripLimit, configData.mTripPriority, false);
     mInputOverVoltageTrip .initialize(configData.mInputOverVoltageTripLimit,  configData.mTripPriority, false);
     mEnabled      = inputData.mEnabled;
@@ -186,9 +197,10 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mInputPower   = inputData.mInputPower;
 
     /// - Initialize remaining state.
-    mResetTrips      = false;
-    mLeadsInterface  = false;
-    mOverloadedState = false;
+    mResetTrips          = false;
+    mLeadsInterface      = false;
+    mOverloadedState     = false;
+    mLastOverloadedState = false;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -242,8 +254,9 @@ void GunnsElectConverterInput::restartModel()
     GunnsBasicLink::restartModel();
 
     /// - Reset non-checkpointed and non-config data.
-    mResetTrips      = false;
-    mOverloadedState = false;
+    mResetTrips          = false;
+    mOverloadedState     = false;
+    mLastOverloadedState = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,9 +294,13 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
 {
     if (mNodeMap[0] == getGroundNodeIndex()) {
         /// - Skip processing when on the Ground node.
+        mInputVoltage        = 0.0;
         mInputPower          = 0.0;
         mAdmittanceMatrix[0] = 0.0;
         mSourceVector[0]     = 0.0;
+        mPotentialDrop       = 0.0;
+        mFlux                = 0.0;
+        mPower               = 0.0;
 
     } else {
         computeInputVoltage();
@@ -291,40 +308,37 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         /// - If we precede the pointed-to output link, drive the interface with it.  Otherwise we
         ///   expect the interface to be driven by the output link or by other means.
         if (mLeadsInterface) {
-            mInputPower = mOutputLink->getInputPower();
+            mInputPower = mOutputLink->computeInputPower();
             mOutputLink->setInputVoltage(mInputVoltage);
         }
 
         /// - Scale the input load by the blockage malfunction, however note that intermediate
-        ///   valud between 0 and 1 won't conserve energy between the input & output sides.  Use the
-        ///   output side blockage to conserve energy for intermediate values.
+        ///   values between 0 and 1 won't conserve energy between the input & output sides.  Use
+        ///   the output side blockage to conserve energy for intermediate values.
         double scaledInputLoad = mInputPower;
         if (mMalfBlockageFlag) {
             scaledInputLoad *= 1.0 - Math::limitRange(0.0, mMalfBlockageValue, 1.0);
         }
 
-        /// - Set link current source effect to create the input power load at the last input
-        ///   voltage.
         double current = 0.0;
-        if ((mInputVoltage > DBL_EPSILON) and not
-                (mOverloadedState or mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped())) {
-            current = scaledInputLoad / mInputVoltage;
+        if (mEnabled and not (mOverloadedState or mInputOverVoltageTrip.isTripped()
+                or mInputUnderVoltageTrip.isTripped())) {
+            if (mPotentialVector[0] < 0.0) {
+                /// - If node potential is negative, then hold the current source constant to allow
+                ///   the network to converge.  If the network ends up converging at negative
+                ///   voltage, then we'll either undervolt trip off, or enter the overloaded state.
+                current = -mSourceVector[0];
+            } else if (mInputVoltage > DBL_EPSILON) {
+                /// - For positive input voltage, set link current source effect to create the input
+                ///   power load at the input voltage.
+                current = scaledInputLoad / mInputVoltage;
+            }
         }
 
-        /// - If there is more power load demand than the network can supply, it will result in
-        ///   negative node voltage and the network probably won't converge.  In such a condition we
-        ///   replace the current source with a large conductance, which forces the network to
-        ///   converge to near-zero volts, which should trigger an under-volt or over-current trip
-        ///   upstream.
-        double conductance = 0.0;
-        if (mOverloadedState) {
-            conductance = mConductanceLimit;
-            current     = 0.0;
-        }
-
-        /// - Build the admittance matrix and source vector.
-        if (fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
-            mAdmittanceMatrix[0] = conductance;
+        /// - Build the admittance matrix and source vector.  Admittance is always forced to zero
+        ///   since this link is only ever a current source.
+        if (mAdmittanceMatrix[0] != 0.0) {
+            mAdmittanceMatrix[0] = 0.0;
             mAdmittanceUpdate    = true;
         }
         mSourceVector[0] = -current;
@@ -338,19 +352,16 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectConverterInput::computeFlows(const double dt __attribute__((unused)))
 {
-    if (mNodeMap[0] == getGroundNodeIndex()) {
-        /// - Skip processing when on the Ground node.
-        mInputVoltage  = 0.0;
-        mPotentialDrop = 0.0;
-        mFlux          = 0.0;
-        mPower         = 0.0;
-    } else {
+    if (mNodeMap[0] != getGroundNodeIndex()) {
         computeInputVoltage();
         mPotentialDrop = mPotentialVector[0];
-        mFlux          = mPotentialVector[0] * mAdmittanceMatrix[0] + mSourceVector[0];
+        mFlux          = mPotentialVector[0] * mAdmittanceMatrix[0] - mSourceVector[0];
         mPower         = -mFlux * mPotentialVector[0];
         if (mFlux > 0.0) {
             mNodes[0]->collectOutflux(mFlux);
+        }
+        if (mInputCurrentSensor) {
+            mInputCurrentSensor->sense(0.0, true, mFlux);
         }
     }
 }
@@ -396,10 +407,15 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         if (CONFIRM == result and not
                 (mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped() or mOverloadedState)) {
             computeInputVoltage();
-            if (mOverloadedState) {
-                result = REJECT;
+            if (mInputPower > 0.0 and mPotentialVector[0] <= 0.0) {
+                mOverloadedState = true;
+                result           = REJECT;
+                if (not mLastOverloadedState) {
+                    GUNNS_WARNING("entered overloaded state.");
+                }
             }
         }
+        mLastOverloadedState = mOverloadedState;
     }
     return result;
 }
@@ -409,27 +425,15 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
 ///
 /// @details  Sets the input channel voltage as the input node voltage if the converter isn't
 ///           disabled, blocked or tripped on the input side, otherwise the input channel voltage is
-///           zero.
+///           zero.  If the node voltage is negative, the input voltage is set to zero.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsElectConverterInput::computeInputVoltage()
 {
-    if (mNodeMap[0] == getGroundNodeIndex()) {
-        /// - Skip processing when on the Ground node.
+    if (not mEnabled or mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped()
+            or (mMalfBlockageFlag and (mMalfBlockageValue >= 1.0)) ) {
         mInputVoltage = 0.0;
-
     } else {
-        if (mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped() or not mEnabled
-                or (mMalfBlockageFlag and (mMalfBlockageValue >= 1.0)) ) {
-            mInputVoltage = 0.0;
-        } else {
-            mInputVoltage = mPotentialVector[0];
-        }
-        if (mInputVoltage < 0.0) {
-            /// - If after trips and blockage our input voltage is still negative then the network
-            ///   can't supply our previous demand, so go to the overloaded state.
-            mInputVoltage    = 0.0;
-            mOverloadedState = true;
-        }
+        mInputVoltage = fmax(0.0, mPotentialVector[0]);
     }
     return mInputVoltage;
 }

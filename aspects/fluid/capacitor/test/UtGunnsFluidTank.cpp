@@ -335,6 +335,12 @@ void UtGunnsFluidTank::testAccessors()
     mArticle->mDpdt = 4.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, mArticle->getDpdt(),   0.0);
 
+    /// @test    Get mBiasHeatFlux.
+    double tempBiasHeatFlux = mArticle->mBiasHeatFlux;
+    mArticle->mBiasHeatFlux = 2.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, mArticle->getBiasHeatFlux(),   0.0);
+    mArticle->mBiasHeatFlux = tempBiasHeatFlux;
+
     /// @test    Get Partial Pressure.
     mArticle->mPartialPressure[0] = 5.0;
     mArticle->mPartialPressure[1] = 7.0;

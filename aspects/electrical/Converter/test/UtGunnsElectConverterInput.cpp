@@ -29,6 +29,7 @@ UtGunnsElectConverterInput::UtGunnsElectConverterInput()
     tInputData(0),
     tArticle(0),
     tSensorVin(),
+    tSensorIin(),
     tTripPriority(0),
     tInOverVoltageTrip(0.0),
     tInUnderVoltageTrip(0.0),
@@ -70,6 +71,7 @@ void UtGunnsElectConverterInput::setUp()
     GunnsSensorAnalogWrapperConfigData sensorConfig("tSensorVin", 0.0, 1.0E10);
     GunnsSensorAnalogWrapperInputData  sensorInput;
     tSensorVin.initialize(&sensorConfig, &sensorInput);
+    tSensorIin.initialize(&sensorConfig, &sensorInput);
 
     /// - Define the nominal configuration data.
     tTripPriority       = 2;
@@ -78,6 +80,7 @@ void UtGunnsElectConverterInput::setUp()
     tConfigData         = new GunnsElectConverterInputConfigData(tName,
                                                                  &tNodeList,
                                                                  &tSensorVin,
+                                                                 &tSensorIin,
                                                                  tTripPriority,
                                                                  tInUnderVoltageTrip,
                                                                  tInOverVoltageTrip);
@@ -139,6 +142,7 @@ void UtGunnsElectConverterInput::testConfig()
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT(&tSensorVin         == tConfigData->mInputVoltageSensor);
+    CPPUNIT_ASSERT(&tSensorIin         == tConfigData->mInputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority       == tConfigData->mTripPriority);
     CPPUNIT_ASSERT(tInUnderVoltageTrip == tConfigData->mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(tInOverVoltageTrip  == tConfigData->mInputOverVoltageTripLimit);
@@ -146,6 +150,7 @@ void UtGunnsElectConverterInput::testConfig()
     /// @test    Configuration data default construction.
     GunnsElectConverterInputConfigData defaultConfig;
     CPPUNIT_ASSERT(0   == defaultConfig.mInputVoltageSensor);
+    CPPUNIT_ASSERT(0   == defaultConfig.mInputCurrentSensor);
     CPPUNIT_ASSERT(0   == defaultConfig.mTripPriority);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mInputOverVoltageTripLimit);
@@ -153,6 +158,7 @@ void UtGunnsElectConverterInput::testConfig()
     /// @test    Configuration data copy construction.
     GunnsElectConverterInputConfigData copyConfig(*tConfigData);
     CPPUNIT_ASSERT(&tSensorVin         == copyConfig.mInputVoltageSensor);
+    CPPUNIT_ASSERT(&tSensorIin         == copyConfig.mInputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority       == copyConfig.mTripPriority);
     CPPUNIT_ASSERT(tInUnderVoltageTrip == copyConfig.mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(tInOverVoltageTrip  == copyConfig.mInputOverVoltageTripLimit);
@@ -202,6 +208,7 @@ void UtGunnsElectConverterInput::testConstruction()
 
     /// @test    Default construction.
     CPPUNIT_ASSERT(0     == tArticle->mInputVoltageSensor);
+    CPPUNIT_ASSERT(0     == tArticle->mInputCurrentSensor);
     CPPUNIT_ASSERT(0     == tArticle->mOutputLink);
     CPPUNIT_ASSERT(false == tArticle->mEnabled);
     CPPUNIT_ASSERT(0.0   == tArticle->mInputPower);
@@ -210,6 +217,7 @@ void UtGunnsElectConverterInput::testConstruction()
     CPPUNIT_ASSERT(false == tArticle->mInputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+    CPPUNIT_ASSERT(false == tArticle->mLastOverloadedState);
     CPPUNIT_ASSERT(""    == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -239,6 +247,7 @@ void UtGunnsElectConverterInput::testNominalInitialization()
 
     /// @test    Sensors.
     CPPUNIT_ASSERT(&tSensorVin.mSensor == tArticle->mInputVoltageSensor);
+    CPPUNIT_ASSERT(&tSensorIin.mSensor == tArticle->mInputCurrentSensor);
 
     /// @test    Trips package.
     GunnsBasicLink::SolutionResult result;
@@ -258,12 +267,15 @@ void UtGunnsElectConverterInput::testNominalInitialization()
     CPPUNIT_ASSERT_NO_THROW(tArticle->registerOutputLink(&tOutputLink));
     CPPUNIT_ASSERT(&tOutputLink == tArticle->mOutputLink);
 
-    /// @test    Re-init with nominal output link provided, and no input voltage sensor.
+    /// @test    Re-init with nominal output link provided, and no input sensors.
     tConfigData->mInputVoltageSensor = 0;
+    tConfigData->mInputCurrentSensor = 0;
     tArticle->mInputVoltageSensor    = 0;
+    tArticle->mInputCurrentSensor    = 0;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
     CPPUNIT_ASSERT(false == tArticle->mLeadsInterface);
     CPPUNIT_ASSERT(0     == tArticle->mInputVoltageSensor);
+    CPPUNIT_ASSERT(0     == tArticle->mInputCurrentSensor);
 
     UT_PASS;
 }
@@ -306,11 +318,13 @@ void UtGunnsElectConverterInput::testRestart()
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
 
     /// @test    Restart method clears non-config and non-checkpointed data.
-    tArticle->mResetTrips      = true;
-    tArticle->mOverloadedState = true;
+    tArticle->mResetTrips          = true;
+    tArticle->mOverloadedState     = true;
+    tArticle->mLastOverloadedState = true;
     tArticle->restart();
     CPPUNIT_ASSERT(false == tArticle->mResetTrips);
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+    CPPUNIT_ASSERT(false == tArticle->mLastOverloadedState);
 
     UT_PASS;
 }
@@ -397,19 +411,25 @@ void UtGunnsElectConverterInput::testMinorStep()
     CPPUNIT_ASSERT(true == tArticle->mLeadsInterface);
 
     {
+        /// - Set output link state to generate the desired input power for the test.
+        double inV  = 120.0;
+        double outI = 0.1;
+        tOutputLink.mAdmittanceMatrix[0] = 0.0;
+        tOutputLink.mSourceVector[0]     = outI;
+        tOutputLink.mPotentialVector[0]  = inV;
+
         /// @test    Step and minorStep with normal input load from the output link.
-        double nodeV     = 120.0;
-        double outW      = 0.1;
-        double outP      = 12.0;
-        double expectedP = outP + outW * outW;
+        double outP      = inV * outI;
+        double outPloss  = outI * outI / tOutputConfigData->mOutputConductance;
+        double expectedP = (outP + outPloss) / tOutputConfigData->mConverterEfficiency;
         double expectedG = 0.0;
-        double expectedW = -(1.0 - tMalfBlockageValue) * expectedP / nodeV;
+        double expectedW = -(1.0 - tMalfBlockageValue) * expectedP / inV;
         tOutputLink.mInputPower       = expectedP;
-        tArticle->mPotentialVector[0] = nodeV;
+        tArticle->mPotentialVector[0] = inV;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT(expectedP == tArticle->mInputPower);
-        CPPUNIT_ASSERT(nodeV     == tOutputLink.mInputVoltage);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mInputPower,          DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(inV,       tOutputLink.mInputVoltage,      DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
@@ -426,23 +446,35 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
         /// @test    minorStep in the overloaded state.
-        expectedG = GunnsBasicLink::mConductanceLimit;
-        tArticle->mPotentialVector[0] = nodeV;
-        tArticle->mOverloadedState = true;
-        tArticle->minorStep(0.0, 0);
-
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
-        CPPUNIT_ASSERT(true == tArticle->mOverloadedState);
-
-        /// @test    Repeated admittance.
+        tArticle->mPotentialVector[0] = inV;
+        tArticle->mOverloadedState    = true;
         tArticle->minorStep(0.0, 0);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(true  == tArticle->mOverloadedState);
+
+        /// @test    minorStep when negative input voltage and not overloaded state.
+        expectedW                     = -1.0;
+        tArticle->mSourceVector[0]    = expectedW;
+        tArticle->mPotentialVector[0] = -1.0;
+        tArticle->mOverloadedState    = false;
+        tArticle->minorStep(0.0, 0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+
+        /// @test    minorStep zeroes admittance.
+        tArticle->mAdmittanceMatrix[0] = 1.0;
+        tArticle->minorStep(0.0, 0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     } {
         /// @test    step and minorStep when connected to the Ground node.
         tArticle->mUserPortSelect      = 0;
@@ -474,13 +506,11 @@ void UtGunnsElectConverterInput::testComputeInputVoltage()
     double nodeV = 120.0;
     tArticle->mPotentialVector[0] = nodeV;
     CPPUNIT_ASSERT(nodeV == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
     /// @test    Negative node voltage.
     nodeV = -1.0;
     tArticle->mPotentialVector[0] = nodeV;
     CPPUNIT_ASSERT(0.0  == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(true == tArticle->mOverloadedState);
 
     /// @test    Fully blocked.
     nodeV = 120.0;
@@ -488,7 +518,6 @@ void UtGunnsElectConverterInput::testComputeInputVoltage()
     tArticle->mMalfBlockageValue  = 1.0;
     tArticle->mOverloadedState    = false;
     CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     tArticle->mMalfBlockageFlag = false;
 
     /// @test    Disabled.
@@ -501,21 +530,12 @@ void UtGunnsElectConverterInput::testComputeInputVoltage()
     GunnsBasicLink::SolutionResult result;
     CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
     CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     tArticle->mInputOverVoltageTrip.resetTrip();
 
     /// @test    Under-volt tripped.
     CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
     CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     tArticle->mInputUnderVoltageTrip.resetTrip();
-
-    /// @test    On Ground node.
-    tArticle->mUserPortSelect     = 0;
-    tArticle->mUserPortSetControl = GunnsBasicLink::GROUND;
-    tArticle->step(0.0);
-    CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
-    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
     UT_PASS;
 }
@@ -607,10 +627,18 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(tArticle->mInputOverVoltageTrip.isTripped());
     tArticle->mInputOverVoltageTrip.resetTrip();
 
-    /// @test    Rejects due to entering overload state because the network converged on a negative
-    ///          voltage but the undervolt trip failed.
+    /// @test    Doesn't reject or enter overloaded state if the network converged on a negative
+    ///          voltage but we have no input power.
     tArticle->mPotentialVector[0] = -1.0;
+    tArticle->mInputPower         =  0.0;
     tArticle->mInputUnderVoltageTrip.mMalfInhibitTrip = true;
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT(!tArticle->mOverloadedState);
+
+    /// @test    Rejects due to entering overload state because the network converged on a negative
+    ///          voltage but the undervolt trip failed and we have input power.
+    tArticle->mInputPower         =  1.0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
     CPPUNIT_ASSERT(tArticle->mOverloadedState);
@@ -633,7 +661,7 @@ void UtGunnsElectConverterInput::testComputeFlows()
     double conductance = 0.0;
     double nodeV       = 120.0;
     double expectedP   = -flux * nodeV;
-    tArticle->mSourceVector[0]     = flux;
+    tArticle->mSourceVector[0]     = -flux;
     tArticle->mAdmittanceMatrix[0] = conductance;
     tArticle->mPotentialVector[0]  = nodeV;
 
@@ -643,6 +671,7 @@ void UtGunnsElectConverterInput::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tArticle->mFlux,          DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPower,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tNodes[0].getOutflux(),   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tArticle->mInputCurrentSensor->getSensedOutput(), FLT_EPSILON);
     tNodes[0].resetFlows();
 
     /// @test    Output as conductor.
@@ -660,14 +689,16 @@ void UtGunnsElectConverterInput::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tArticle->mFlux,          DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPower,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tNodes[0].getOutflux(),   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tArticle->mInputCurrentSensor->getSensedOutput(), FLT_EPSILON);
     tNodes[0].resetFlows();
 
-    /// @test    Doesn't transport negative flux.
+    /// @test    Doesn't transport negative flux, and update with no current sensor.
     conductance = 0.0;
     flux        = -1.0;
     expectedP   = -flux * nodeV;
-    tArticle->mSourceVector[0]     = flux;
+    tArticle->mSourceVector[0]     = -flux;
     tArticle->mAdmittanceMatrix[0] = conductance;
+    tArticle->mInputCurrentSensor  = 0;
 
     tArticle->computeFlows(0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux,      tArticle->mFlux,          DBL_EPSILON);

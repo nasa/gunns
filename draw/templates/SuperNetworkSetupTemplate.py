@@ -16,26 +16,26 @@ class SuperNetworkSetupTemplate:
     self.data = data
     return
 
-# TODO add some comments up top, revline, etc.
   def render(self):
     r = (
       'import trick\n'
       '\n'
-      'def ' + self.data['functionName'] + '(superNet,    # the super-network\n')
-    functionNameIndent = ' ' * (len(self.data['functionName']) + 1)
+      '# Add the given sub-networks to the given super-network.  The super-network is not finalized, and\n'
+      '# link port connections are not changed.\n'
+      'def ' + self.data['functionName'] + 'AddNetworks(superNet,    # the super-network\n')
+    functionNameIndent = ' ' * (len(self.data['functionName']) + len('AddNetworks') + 1)
     for subNet in self.data['subNets']:
       r = r + (
       '    ' + functionNameIndent + subNet[0] + ',' + subNet[3] + '    # sub-network type ' + subNet[2] + '\n')
     r = r + (
-      '    ' + functionNameIndent + '):\n'
-      '\n'
-      '    # Add sub-networks to the super-network.\n')
+      '    ' + functionNameIndent + '):\n')
     for subNet in self.data['subNets']:
       r = r + (
       '    superNet.addSubNetwork(' + subNet[0] + ')\n')
     r = r + (
       '\n'
-      '    # Configure the super-network.\n'
+      '# Finalize the super-network with its nodes and solver configuration data.\n'
+      'def ' + self.data['functionName'] + 'Finalize(superNet):\n'
       '    superNet.registerSuperNodes()\n'
       '    superNet.netSolverConfig.mConvergenceTolerance      = ' + self.data['solverConfig'][1] + '\n'
       '    superNet.netSolverConfig.mMinLinearizationPotential = ' + self.data['solverConfig'][2] + '\n'
@@ -43,8 +43,20 @@ class SuperNetworkSetupTemplate:
       '    superNet.netSolverConfig.mDecompositionLimit        = ' + self.data['solverConfig'][4] + '\n'
       '    superNet.netSolver.setIslandMode(trick.Gunns.SOLVE)\n'
       '\n'
+      '# Change the link port assignments to connect them between sub-networks.\n'
+      '# NOTE: sub-networks must be added to the super-network before this is called.\n'
+      'def ' + self.data['functionName'] + 'MoveLinks(')
+    subNet0 = self.data['subNets'][0]
+    r = r + (subNet0[0] + ',' + subNet0[3] + '    # sub-network type ' + subNet0[2] + '\n')
+    functionNameIndent = ' ' * (len(self.data['functionName']) + len('MoveLinks') + 1)
+    for subNet in self.data['subNets'][1:]:
+      r = r + (
+      '    ' + functionNameIndent + subNet[0] + ',' + subNet[3] + '    # sub-network type ' + subNet[2] + '\n')
+    r = r + (
+      '    ' + functionNameIndent + '):\n'
       '    # Get super-node number offset for each sub-network.\n'
-      '    super_ground = superNet.netNodeList.mNumNodes - 1\n')
+      '    superNetwork = ' + subNet0[0] + '.getSuperNetwork()\n'
+      '    super_ground = superNetwork.netNodeList.mNumNodes - 1\n')
     for subNet in self.data['subNets']:
       r = r + (
       '    offset_' + subNet[0] + subNet[3] + ' = ' + subNet[0] + '.getNodeOffset()\n')
@@ -59,5 +71,40 @@ class SuperNetworkSetupTemplate:
       '    map_' + link.subNetName + '_' + link.name + ' = ' + link.portMap + '\n'
       '    ' + link.subNetName + '.netInput.' + link.name + '.mInitialNodeMap = map_' + link.subNetName + '_' + link.name + '\n'
       '\n')
+    r = r + (
+      '\n'
+      '# This is the all-in-one call to configure and finalize this super-network and updated the link\n'
+      '# connections.  This should only be used if this super-network is not going to be added to a\n'
+      '# higher-level super-network.\n'
+      'def ' + self.data['functionName'] + 'Setup(superNet,    # the super-network\n')
+    functionNameIndent = ' ' * (len(self.data['functionName']) + len('Setup') + 1)
+    for subNet in self.data['subNets']:
+      r = r + (
+      '    ' + functionNameIndent + subNet[0] + ',' + subNet[3] + '    # sub-network type ' + subNet[2] + '\n')
+    r = r + (
+      '    ' + functionNameIndent + '):\n'
+      '    # Add the sub-networks.\n'
+      '    ' + self.data['functionName'] + 'AddNetworks(superNet,    # the super-network\n')
+    functionNameIndent = ' ' * (len(self.data['functionName']) + len('AddNetworks') + 1)
+    for subNet in self.data['subNets']:
+      r = r + (
+      '    ' + functionNameIndent + subNet[0] + ',' + subNet[3] + '    # sub-network type ' + subNet[2] + '\n')
+    r = r + (
+      '    ' + functionNameIndent + ')\n'
+      '\n'
+      '    # Configure the super-network.\n'
+      '    ' + self.data['functionName'] + 'Finalize(superNet)\n'
+      '\n'
+      '    # Change link connections.\n'
 
+      '    ' + self.data['functionName'] + 'MoveLinks(')
+    subNet0 = self.data['subNets'][0]
+    r = r + (subNet0[0] + ',' + subNet0[3] + '    # sub-network type ' + subNet0[2] + '\n')
+    functionNameIndent = ' ' * (len(self.data['functionName']) + len('MoveLinks') + 1)
+    for subNet in self.data['subNets'][1:]:
+      r = r + (
+      '    ' + functionNameIndent + subNet[0] + ',' + subNet[3] + '    # sub-network type ' + subNet[2] + '\n')
+    r = r + (
+      '    ' + functionNameIndent + ')\n'
+      '\n')
     return r

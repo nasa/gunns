@@ -75,8 +75,12 @@ class GunnsDynUtils
         static void   MtoQ(double* qA, const double* mA);
         /// @brief Normalize quaternion {q}.
         static void   normalizeQ(double* q);
-        /// @brief Returns magnitude of {v}.
+        /// @brief Normalize vector {v}.
+        static void   normalizeV(double* v);
+        /// @brief |{v}|.
         static double magV(const double* v, const unsigned int size);
+        /// @brief [mA] = [mB]
+        static void   setM(double* mA, double* mB, const unsigned int size);
         /// @brief [mA] = [mB] * [mC].
         static void   multiplyMM(double* mA, double* mB, double* mC, const unsigned int size);
         /// @brief Returns whether the vector has non-zero magnitude.
@@ -84,6 +88,7 @@ class GunnsDynUtils
 
     private:
         static const double quatNormTolerance; /**< ** (--) Tolerance for quaternion magnitude normalization. */
+        static const double vecNormTolerance;  /**< ** (--) Tolerance for vector magnitude normalization. */
         /// @brief Returns the [0][0] matrix element of the quaternion to matrix conversion.
         static double QtoM0(const double* q);
         /// @brief Returns the [0][1] matrix element of the quaternion to matrix conversion.

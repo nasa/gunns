@@ -21,6 +21,7 @@
 #include <cfloat>
 
 #include "UtGunns.hh"
+#include "core/GunnsBasicFlowOrchestrator.hh"
 
 //TODO catch-up for line coverage:
 //     - line 591, try to make a link throw during restart
@@ -386,14 +387,12 @@ void UtGunns::testDefaultConstruction()
     CPPUNIT_ASSERT(0             == tNetwork.mIslandCount);
     CPPUNIT_ASSERT(0             == tNetwork.mIslandMaxSize);
     CPPUNIT_ASSERT(Gunns::OFF    == tNetwork.mIslandMode);
-    CPPUNIT_ASSERT(0             != tNetwork.mSolverCpu);
+    CPPUNIT_ASSERT(0             == tNetwork.mSolverCpu);
+    CPPUNIT_ASSERT(0             == tNetwork.mSolverGpuDense);
+    CPPUNIT_ASSERT(0             == tNetwork.mSolverGpuSparse);
     if (tNetwork.isGpuEnabled()) {
-        CPPUNIT_ASSERT(0         != tNetwork.mSolverGpuDense);
-        CPPUNIT_ASSERT(0         != tNetwork.mSolverGpuSparse);
         CPPUNIT_ASSERT(true      == tNetwork.mGpuEnabled);
     } else {
-        CPPUNIT_ASSERT(0         == tNetwork.mSolverGpuDense);
-        CPPUNIT_ASSERT(0         == tNetwork.mSolverGpuSparse);
         CPPUNIT_ASSERT(false     == tNetwork.mGpuEnabled);
     }
     CPPUNIT_ASSERT(Gunns::NO_GPU == tNetwork.mGpuMode);
@@ -446,6 +445,16 @@ void UtGunns::testDefaultConstruction()
     CPPUNIT_ASSERT(Gunns::NORMAL == tNetwork.mLastSolverMode);
     CPPUNIT_ASSERT(Gunns::OFF    == tNetwork.mLastIslandMode);
     CPPUNIT_ASSERT(Gunns::RUN    == tNetwork.mLastRunMode);
+
+    /// - Test dynamic allocation of arrays of Gunns.
+    int ii;
+    Gunns* articles = 0;
+    articles = new Gunns[2];
+    for (ii=0; ii<2; ii++) {
+        new (&articles[ii]) Gunns();
+    }
+    delete [] articles;
+    articles = 0;
 
     std::cout << "... Pass";
 }
@@ -537,8 +546,8 @@ void UtGunns::testNominalInitialization()
 
     /// - Check initial system of equation values.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSourceVector[2],         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mMinorPotentialVector[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mMajorPotentialVector[2], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMinorPotentialVector[2], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMajorPotentialVector[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSlavePotentialVector[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mNetCapDeltaPotential[8], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(101.32501,  tNetwork.mPotentialVector[0],      DBL_EPSILON);
@@ -558,6 +567,15 @@ void UtGunns::testNominalInitialization()
     CPPUNIT_ASSERT(tNetwork.mRebuild       == true);
 
     /// - Check remaining state data.
+    if (tNetwork.isGpuEnabled()) {
+        CPPUNIT_ASSERT(0         != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0         != tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0         != tNetwork.mSolverGpuSparse);
+    } else {
+        CPPUNIT_ASSERT(0         != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0         == tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0         == tNetwork.mSolverGpuSparse);
+    }
     CPPUNIT_ASSERT(false         == tNetwork.mWorstCaseTiming);
     CPPUNIT_ASSERT(false         == tNetwork.mVerbose);
     CPPUNIT_ASSERT(Gunns::NORMAL == tNetwork.mSolverMode);
@@ -580,14 +598,21 @@ void UtGunns::testNonLinearInitialization()
     std::cout << "\n UtGunns ................ 06: testNonLinearInitialization ...........";
 
     /// - Initialize the basic nodes.
-    tBasicNodes[0].initialize("BasicNode1");
-    tBasicNodes[1].initialize("BasicNode2");
-    tBasicNodes[2].initialize("BasicNode3");
+    tBasicNodes[0].initialize("BasicNode1", 1.0);
+    tBasicNodes[1].initialize("BasicNode2", 2.0);
+    tBasicNodes[2].initialize("BasicNode3", 3.9);
     tNodeList.mNumNodes = 3;
     tNodeList.mNodes    = tBasicNodes;
 
     tNetwork.initializeNodes(tNodeList);
     CPPUNIT_ASSERT(std::string("BasicNode3") == tBasicNodes[2].mName);
+
+    /// - Test setting a new flow orchestrator.
+    const int newNumLinks = 3;
+    const int newNumNodes = 3;
+    GunnsBasicFlowOrchestrator newOrch(newNumLinks, newNumNodes);
+    tNetwork.setFlowOrchestrator(&newOrch);
+    CPPUNIT_ASSERT(&newOrch == tNetwork.mFlowOrchestrator);
 
     tConstantLoad1Config.mName     = "tConstantLoad1";
     tConstantLoad1Config.mNodeList = &tNodeList;
@@ -610,6 +635,12 @@ void UtGunns::testNonLinearInitialization()
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[0]);
     CPPUNIT_ASSERT(0                       != tNetwork.mNodesConvergence);
     CPPUNIT_ASSERT(0.0                     == tNetwork.mNodesConvergence[1]);
+
+    /// - Check saving initial potential vectors.
+    CPPUNIT_ASSERT(tBasicNodes[0].getPotential() == tNetwork.mMinorPotentialVector[0]);
+    CPPUNIT_ASSERT(tBasicNodes[1].getPotential() == tNetwork.mMinorPotentialVector[1]);
+    CPPUNIT_ASSERT(tBasicNodes[0].getPotential() == tNetwork.mMajorPotentialVector[0]);
+    CPPUNIT_ASSERT(tBasicNodes[1].getPotential() == tNetwork.mMajorPotentialVector[1]);
 
     std::cout << "... Pass";
 }
@@ -692,6 +723,9 @@ void UtGunns::testNodeInitException()
     tNodeList.mNumNodes = 4;
     tNodeList.mNodes    = tFluidNodes;
     tNetwork.initializeFluidNodes(tNodeList);
+
+    /// - Verify duplicate attempts to initialie nodes throws exception.
+    CPPUNIT_ASSERT_THROW(tNetwork.initializeFluidNodes(tNodeList), TsInitializationException);
 
     // Must have a non-zero size of tLinks to Pass to the network
     GunnsBasicPotentialConfigData mConfigData("NewLink", &tNodeList, 1.0);
@@ -2034,6 +2068,9 @@ void UtGunns::testGpuSparse()
 
     if (tNetwork.isGpuEnabled()) {
         setupNominalNonLinearNetwork(true);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuSparse);
 
         tNetwork.mGpuMode          = Gunns::GPU_SPARSE;
         tNetwork.mIslandMode       = Gunns::OFF;
@@ -2115,6 +2152,9 @@ void UtGunns::testGpuDense()
 
     if (tNetwork.isGpuEnabled()) {
         setupNominalNonLinearNetwork(true);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuSparse);
 
         tNetwork.mGpuMode          = Gunns::GPU_DENSE;
         tNetwork.mIslandMode       = Gunns::OFF;
@@ -2195,6 +2235,15 @@ void UtGunns::testGpuSparseIslands()
     std::cout << "\n UtGunns ................ 34: testGpuSparseIslands ..................";
 
     setupIslandNetwork();
+    if (tNetwork.isGpuEnabled()) {
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuSparse);
+    } else {
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 == tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 == tNetwork.mSolverGpuSparse);
+    }
 
     tNetwork.mGpuMode          = Gunns::GPU_SPARSE;
     tNetwork.mIslandMode       = Gunns::SOLVE;
@@ -2228,6 +2277,15 @@ void UtGunns::testGpuDenseIslands()
     std::cout << "\n UtGunns ................ 35: testGpuDenseIslands ...................";
 
     setupIslandNetwork();
+    if (tNetwork.isGpuEnabled()) {
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverGpuSparse);
+    } else {
+        CPPUNIT_ASSERT(0 != tNetwork.mSolverCpu);
+        CPPUNIT_ASSERT(0 == tNetwork.mSolverGpuDense);
+        CPPUNIT_ASSERT(0 == tNetwork.mSolverGpuSparse);
+    }
 
     tNetwork.mGpuMode          = Gunns::GPU_DENSE;
     tNetwork.mIslandMode       = Gunns::SOLVE;

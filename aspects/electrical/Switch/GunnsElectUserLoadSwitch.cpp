@@ -41,7 +41,7 @@ GunnsElectUserLoadSwitchConfigData::GunnsElectUserLoadSwitchConfigData(
         const int          switchTripPriority)
     :
     GunnsBasicConductorConfigData(name, nodes, 0.0),
-    mSwitch(switchResistance, (switchTripPriority > 0), false, 0.0, true, 1, switchTripPriority, false),
+    mSwitch(switchResistance, (switchTripPriority > 0), false, 0.0, true, 1, std::max(switchTripPriority, 1), false),
     mLoadsPowerRefV(0.0)
 {
     // nothing to do
@@ -144,8 +144,14 @@ void GunnsElectUserLoadSwitch::initialize(const GunnsElectUserLoadSwitchConfigDa
     /// - Initialize class attributes.  The user loads must be initialized by their owner, not here.
     mLoadsVoltage = 0.0;
 
-    /// - Initialize config & input data.
-    mSwitch.initialize(configData.mSwitch, inputData.mSwitch, configData.mName + ".mSwitch", 0);
+    /// - Initialize config & input data.  The switch object doesn't throw H&S errors or identify
+    ///   itself in its warnings, so we re-throw its exceptions.
+    try {
+        mSwitch.initialize(configData.mSwitch, inputData.mSwitch, configData.mName + ".mSwitch", 0);
+    } catch (TsInitializationException& e) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                "mSwitch failed to initialize.")
+    }
     mShort.initialize(inputData.mShort);
     mLoadsPowerRefV       = configData.mLoadsPowerRefV;
     mLoadsOverrideActive  = inputData.mLoadsOverrideActive;

@@ -168,15 +168,38 @@ class GunnsElectPvStringConfigData
 class GunnsElectPvStringInputData
 {
     public:
-        double mPhotoFlux;             /**< (W/m2) trick_chkpnt_io(**) Photo power flux incident on the string. */
-        double mSourceExposedFraction; /**< (--)   trick_chkpnt_io(**) Surface area fraction exposed to light source (0-1). */
-        double mTemperature;           /**< (K)    trick_chkpnt_io(**) Temperature of the string. */
+        double mPhotoFlux;                /**< (W/m2) Photo power flux incident on the string. */
+        double mSourceExposedFraction;    /**< (--)   Surface area fraction exposed to light source (0-1). */
+        double mTemperature;              /**< (K)    Temperature of the string. */
+        bool   mMalfPhotoFluxFlag;        /**< (--)   Photo power flux malfunction activation flag. */
+        double mMalfPhotoFluxMagnitude;   /**< (W/m2) Photo power flux malfunction magnitude. */
+        double mMalfPhotoFluxDuration;    /**< (s)    Photo power flux malfunction total duration. */
+        double mMalfPhotoFluxRampTime;    /**< (s)    Photo power flux malfunction ramp up/down duration. */
+        bool   mMalfExposedFractionFlag;  /**< (--)   Source exposed fraction malfunction activation flag. */
+        double mMalfExposedFractionValue; /**< (--)   Source exposed fraction malfunction value. */
+        bool   mMalfTemperatureFlag;      /**< (--)   Temperature malfunction activation flag. */
+        double mMalfTemperatureValue;     /**< (K)    Temperature malfunction value. */
         /// @brief Default constructs this Photovoltaic String Model input data.
         GunnsElectPvStringInputData(const double stringPhotoFlux             = 0.0,
                                     const double stringSourceExposedFraction = 0.0,
                                     const double stringTemperature           = 0.0);
         /// @brief Default destructs this Photovoltaic String Model input data.
         virtual ~GunnsElectPvStringInputData();
+        /// @brief Applies malfunctions to override this Photovoltaic String Model input data.
+        void applyOverrides(const double dt);
+        /// @brief Sets and clears the light level malfunction controls.
+        void setMalfPhotoFlux(const bool flag = false, const double magnitude = 0.0,
+                              const double duration = 0.0, const double ramptime = 0.0);
+        /// @brief Sets and clears the source exposed fraction malfunction controls.
+        void setMalfExposedFraction(const bool flag = false, const double value = 0.0);
+        /// @brief Sets and clears the temperature malfunction controls.
+        void setMalfTemperature(const bool flag = false, const double value = 0.0);
+
+    protected:
+        double mPhotoFluxElapsedTime;     /**< (s)    Elapsed time of the photo power flux malfunction. */
+        double mPhotoFluxStartMagnitude;  /**< (W/m2) Starting magnitude of the photo power flux malfunction. */
+        /// @brief Computes and returns the sinusoid ramped photo power flux.
+        double rampPhotoFlux(const double time, const double outValue);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -278,6 +301,50 @@ class GunnsElectPvString
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag      (--)   Malfunction activation flag.
+/// @param[in] magnitude (W/m2) Malfunction magnitude.
+/// @param[in] duration  (s)    Malfunction total duration.
+/// @param[in] ramptime  (s)    Malfunction ramp in & out duration.
+///
+/// @details  Sets the photo power flux malfunction controls to the given values.  Calling this with
+///           default arguments deactivates the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvStringInputData::setMalfPhotoFlux(const bool flag, const double magnitude,
+                                                          const double duration, const double ramptime)
+{
+    mMalfPhotoFluxFlag      = flag;
+    mMalfPhotoFluxMagnitude = magnitude;
+    mMalfPhotoFluxDuration  = duration;
+    mMalfPhotoFluxRampTime  = ramptime;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag  (--) Malfunction activation flag.
+/// @param[in] value (--) Malfunction value (0-1).
+///
+/// @details  Sets the source exposed fraction malfunction controls to the given values.  Calling
+///           this with default arguments deactivates the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvStringInputData::setMalfExposedFraction(const bool flag, const double value)
+{
+    mMalfExposedFractionFlag  = flag;
+    mMalfExposedFractionValue = value;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag  (--) Malfunction activation flag.
+/// @param[in] value (K)  Malfunction value.
+///
+/// @details  Sets the temperature malfunction controls to the given values.  Calling this with
+///           default arguments deactivates the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvStringInputData::setMalfTemperature(const bool flag, const double value)
+{
+    mMalfTemperatureFlag  = flag;
+    mMalfTemperatureValue = value;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This loads the string at its Maximum Power Point, and updates the corresponding

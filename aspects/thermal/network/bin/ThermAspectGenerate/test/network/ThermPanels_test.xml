@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <panel name='pan_GOOD_SHIELD_11'>
+        <node>GOOD_SHIELD_11</node>
+        <des>TEST shield fwd cone</des>
+        <area>4.1646</area>
+        <absorp>0.45</absorp>
+        <frame>MPLM</frame>
+        <position>
+            <x>20.2195</x>
+            <y>-1.285</y>
+            <z>1.0029</z>
+        </position>
+        <surfaceNormal>
+            <x>-0.935</x>
+            <y>-0.2718</y>
+            <z>0.228</z>
+        </surfaceNormal>
+        <incidentFlux isReadyForIcd='false'>
+            <rate>ENV_RATE</rate>
+            <simObject>EnvSimObject env</simObject>
+            <simVarName>group.panel[%s].wattsPerMeterSquared</simVarName>
+        </incidentFlux>
+    </panel>
+</list>
+

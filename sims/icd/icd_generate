@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+# Copyright 2019 United States Government as represented by the Administrator of the
+# National Aeronautics and Space Administration.  All Rights Reserved.
+#
+import sys, os, string, fnmatch
+
+from icdgen import icdgen
+from icdstub import icdstub
+
+global cdir, rdir, opt
+
+#-----------------------------------------------------------------------
+def icd_generate(icds, tgt) :
+   if opt == tgt or opt == '' :
+      icdgen(icds, tgt, rdir+'/simobj_to_thread_mapping.txt')
+
+#-----------------------------------------------------------------------
+#def icd_stubs_generate(icds, tgt) :
+#   if opt == tgt or opt == '' :
+#      icdstub(icds,
+#             tgt+'/S_define',
+#             tgt+'/icd_stubs.sm',
+#             tgt+'/icd_stub_data.hh',
+#             tgt+'/icd_stub_data.cpp')
+
+# store some directory info
+rdir = os.environ['ICD_HOME']
+print "\nICD for "+rdir+" . . .\n"
+
+# get the single argument is there is one
+opt = ''
+if len(sys.argv) == 2:
+   opt = sys.argv[1]
+
+# cd to the sims folder
+os.chdir("..")
+
+#########################################################################
+##     Common ICD lists can be placed here                             ##
+##     Note: please be careful when adjusting these lists, they may    ##
+##           be referenced in multiple places below                    ##
+#########################################################################
+example_icds = [
+   rdir+'/TEST_ICD.txt',
+]
+
+#########################################################################
+##     Pre icd processing goes here                                    ##
+#########################################################################
+
+#########################################################################
+##     Specific calls to tools go here                                 ##
+##     Note: Developers are free to adjust the calls below to meet     ##
+##           their needs                                               ##
+#########################################################################
+#-----------------------------------------------------------------------
+# SIM_simbus_example
+icds = [
+
+] + example_icds
+icd_generate(icds, 'SIM_simbus_example')
+#icd_stubs_generate(icds, 'SIM_simbus_example')
+
+# SIM_example_space_vehicle
+icds = [
+    rdir+'/EXAMPLE_SPACE_VEHICLE.txt'
+]
+icd_generate(icds, 'SIM_example_space_vehicle')
+
+# SIM_distributed_if
+icds = [
+    rdir+'/TEST_DISTRIBUTED_IF.txt',
+    rdir+'/TEST_DISTRIBUTED_IF_LIQUID.txt'
+]
+icd_generate(icds, 'SIM_distributed_if')
+
+# SIM_mass_overflow
+icds = [
+    rdir+'/TEST_OVERFLOW.txt'
+]
+icd_generate(icds, 'SIM_mass_overflow')

@@ -1,0 +1,233 @@
+PUI     SYS     BUS     SUBSYS  VAR_NAME        ACTION  RATE            SIM_OBJECT              SIM_VAR_NAME                            TYPE    UNITS   COMMENTS
+
+# Copyright 2019 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# Cabin air temperature and heat flux from shell:
+xxxx	gunns	simbus	test	cabinAirT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinVolume.mTemperature	double	(K)	Cabin air temperature
+xxxx	gunns	simbus	test	cabinAirT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.cabinAirTemperature.mSourcePotential	double	(K)	Cabin air temperature
+xxxx	gunns	simbus	test	cabinAirQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.cabinAirTemperature.mHeatFluxIntoNode	double	(W)	Shell heat flux to cabin air
+xxxx	gunns	simbus	test	cabinAirQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinVolume.mBiasHeatFlux	double	(W)	Shell heat flux to cabin air
+
+# Coldplate temperature and heat flux from coolant loop:
+xxxx	gunns	simbus	test	coldplateT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.coldplate.mTemperature	double	(K)	Coldplate temperature
+xxxx	gunns	simbus	test	coldplateT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.coldplate.mSegTemperature[0]	double	(K)	Coldplate temperature
+xxxx	gunns	simbus	test	coldplateQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.coldplate.mSegEnergyGain[0]	double	(W)	Coolant heat flux to coldplate
+xxxx	gunns	simbus	test	coldplateQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.coldplate.mExternalHeatFlux[0]	double	(W)	Coolant heat flux to coldplate
+
+# Radiator temperature and heat flux from coolant loop:
+xxxx	gunns	simbus	test	radiatorT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.radiator.mTemperature	double	(K)	Radiator temperature
+xxxx	gunns	simbus	test	radiatorT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.radiator.mSegTemperature[0]	double	(K)	Radiator temperature
+xxxx	gunns	simbus	test	radiatorQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.radiator.mSegEnergyGain[0]	double	(W)	Coolant heat flux to radiator
+xxxx	gunns	simbus	test	radiatorQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.radiator.mExternalHeatFlux[0]	double	(W)	Coolant heat flux to radiator
+
+# Cabin Fan temperature and heat flux from air loop:
+xxxx	gunns	simbus	test	cabinFanT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.cabinFan.mTemperature	double	(K)	Cabin fan temperature
+xxxx	gunns	simbus	test	cabinFanT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinFan.mWallTemperature	double	(K)	Cabin fan temperature
+xxxx	gunns	simbus	test	cabinFanQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinFan.mWallHeatFlux	double	(W)	Air heat flux to cabin fan
+xxxx	gunns	simbus	test	cabinFanQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.cabinFan.mExternalHeatFlux[0]	double	(W)	Air heat flux to cabin fan
+
+# Pump temperature and heat flux from coolant loop:
+xxxx	gunns	simbus	test	pumpT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.pump.mTemperature	double	(K)	Pump temperature
+xxxx	gunns	simbus	test	pumpT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.pump.mWallTemperature	double	(K)	Pump temperature
+xxxx	gunns	simbus	test	pumpQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.pump.mWallHeatFlux	double	(W)	Air heat flux to pump
+xxxx	gunns	simbus	test	pumpQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.pump.mExternalHeatFlux[0]	double	(W)	Air heat flux to pump
+
+# Cabin Heat Exchanger (chx) heat flow connections through thermal aspect:
+xxxx	gunns	simbus	test	chxSeg0T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg0.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg0T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[0]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg0T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[9]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg0ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg0ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg0.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg0HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[9]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg0HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg0.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg1T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg1.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg1T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[1]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg1T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[8]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg1ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[1]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg1ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg1.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg1HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[8]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg1HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg1.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg2T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg2.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg2T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[2]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg2T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[7]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg2ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[2]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg2ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg2.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg2HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[7]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg2HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg2.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg3T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg3.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg3T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[3]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg3T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[6]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg3ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[3]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg3ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg3.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg3HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[6]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg3HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg3.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg4T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg4.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg4T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[4]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg4T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[5]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg4ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[4]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg4ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg4.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg4HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[5]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg4HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg4.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg5T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg5.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg5T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[5]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg5T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[4]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg5ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[5]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg5ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg5.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg5HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[4]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg5HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg5.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg6T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg6.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg6T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[6]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg6T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[3]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg6ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[6]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg6ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg6.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg6HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[3]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg6HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg6.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg7T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg7.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg7T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[7]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg7T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[2]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg7ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[7]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg7ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg7.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg7HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[2]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg7HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg7.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg8T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg8.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg8T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[8]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg8T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[1]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg8ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[8]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg8ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg8.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg8HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[1]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg8HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg8.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+xxxx	gunns	simbus	test	chxSeg9T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg9.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg9T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegTemperature[9]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg9T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegTemperature[0]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	chxSeg9ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.chx.mSegEnergyGain[9]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg9ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg9.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg9HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.chx.mSegEnergyGain[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	chxSeg9HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.chxSeg9.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+# Ammonia Boiler System (abs) heat flow connections through thermal aspect:
+xxxx	gunns	simbus	test	absSeg0T	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.absSeg0.mTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	absSeg0T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.nh3BoilerHx.mSegTemperature[0]	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	absSeg0T	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.nh3BoilerSpray.mWallTemperature	double	(K)	Segment wall temperature
+xxxx	gunns	simbus	test	absSeg0ColdQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.nh3BoilerSpray.mWallHeatFlux	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	absSeg0ColdQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.absSeg0.mExternalHeatFlux[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	absSeg0HotQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.nh3BoilerHx.mSegEnergyGain[0]	double	(W)	Segment heat flux
+xxxx	gunns	simbus	test	absSeg0HotQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	hxThermal.absSeg0.mExternalHeatFlux[1]	double	(W)	Segment heat flux
+
+# Sensor model truth inputs:
+xxxx	gunns	simbus	test	chxExitT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorHxExitT.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	chxExitT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorHxExitT.mTruthInput	double	(K)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinP	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorsCabin.mPressure	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	cabinP	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinP.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorsCabin.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	cabinT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinT.mTruthInput	double	(K)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinPPO2	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorsCabin.mPartialPressure[4]	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	cabinPPO2	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinPPO2.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinPPCO2	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorsCabin.mPartialPressure[1]	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	cabinPPCO2	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinPPCO2.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinRH	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorCabinHumidity.mRelativeHumidity	double	(--)	Sensor truth input
+xxxx	gunns	simbus	test	cabinRH	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinRH.mTruthInput	double	(--)	Sensor truth input
+
+xxxx	gunns	simbus	test	cabinFanDp	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.sensorFanDp.mDeltaPressure	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	cabinFanDp	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorCabinFanDp.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	atcsMdot	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.sensorFlowRate.mFlowRate	double	(kg/s)	Sensor truth input
+xxxx	gunns	simbus	test	atcsMdot	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorAtcsFlow.mTruthInput	double	(kg/s)	Sensor truth input
+
+xxxx	gunns	simbus	test	atcsPumpDp	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.sensorPumpDp.mDeltaPressure	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	atcsPumpDp	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorAtcsPumpDp.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	atcsPumpInT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.sensorsPumpInlet.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	atcsPumpInT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorAtcsPumpInT.mTruthInput	double	(K)	Sensor truth input
+
+xxxx	gunns	simbus	test	atcsPumpInP	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.sensorsPumpInlet.mPressure	double	(kPa)	Sensor truth input
+xxxx	gunns	simbus	test	atcsPumpInP	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorAtcsPumpInP.mTruthInput	double	(kPa)	Sensor truth input
+
+xxxx	gunns	simbus	test	atcsRadInT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.sensorRadInletT.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	atcsRadInT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.sensorAtcsRadInT.mTruthInput	double	(K)	Sensor truth input
+
+xxxx	gunns	simbus	test	fwdShellT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.fwdShell.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	fwdShellT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.fwdShellThermostat.mTempSensor[0].mTruthInput	double	(K)	Sensor truth input
+
+xxxx	gunns	simbus	test	aftShellT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.aftShell.mTemperature	double	(K)	Sensor truth input
+xxxx	gunns	simbus	test	aftShellT	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.aftShellThermostat.mTempSensor[0].mTruthInput	double	(K)	Sensor truth input
+
+# Effector Signal-Fluid interfaces:
+xxxx	gunns	simbus	test	cabinFanSpeed	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.cabinFan.mMotor.mMotorSpeed	double	(revolution/min)	Actual shaft speed
+xxxx	gunns	simbus	test	cabinFanSpeed	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinFan.mMotorSpeed	double	(revolution/min)	Actual shaft speed
+xxxx	gunns	simbus	test	cabinFanTorque	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinFan.mImpellerTorque	double	(N*m)	Impeller shaft torque
+xxxx	gunns	simbus	test	cabinFanTorque	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.cabinFan.mMotor.mLoadTorques[0]	double	(N*m)	Impeller shaft torque
+
+xxxx	gunns	simbus	test	atcsPumpSpeed	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mMotor.mMotorSpeed	double	(revolution/min)	Actual shaft speed
+xxxx	gunns	simbus	test	atcsPumpSpeed	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.pump.mMotorSpeed	double	(revolution/min)	Actual shaft speed
+xxxx	gunns	simbus	test	atcsPumpTorque	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.pump.mImpellerTorque	double	(N*m)	Impeller shaft torque
+xxxx	gunns	simbus	test	atcsPumpTorque	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mMotor.mLoadTorques[0]	double	(N*m)	Impeller shaft torque
+
+xxxx	gunns	simbus	test	gasSelectPos	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.gasSelectValve.mFluidPosition	double	(--)	Actual valve position
+xxxx	gunns	simbus	test	gasSelectPos	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.gasSelectValve.mPosition	double	(--)	Actual valve position
+
+xxxx	gunns	simbus	test	tcvPos	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.tcv.mFluidPosition	double	(--)	Actual valve position
+xxxx	gunns	simbus	test	tcvPos	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.tcv.mPosition	double	(--)	Actual valve position
+
+xxxx	gunns	simbus	test	radBypassPos	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.radBypassValve.mFluidPosition	double	(--)	Actual valve position
+xxxx	gunns	simbus	test	radBypassPos	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	coolantLoopFluid.radBypassVlv.mPosition	double	(--)	Actual valve position
+
+# Effector Signal-Electric interfaces:
+xxxx	gunns	simbus	test	aftShellThermostat	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.aftShellThermostat.mCommandActual	bool	(--)	User load mode
+xxxx	gunns	simbus	test	aftShellThermostat	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.aftShellHeater.mLoad.mLoadOperMode	bool	(--)	User load mode
+
+xxxx	gunns	simbus	test	fwdShellThermostat	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.fwdShellThermostat.mCommandActual	bool	(--)	User load mode
+xxxx	gunns	simbus	test	fwdShellThermostat	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.fwdShellHeater.mLoad.mLoadOperMode	bool	(--)	User load mode
+
+xxxx	gunns	simbus	test	cabinFanV	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.cabinFan.mLoad.mVoltage	double	(V)	Supply voltage to effector
+xxxx	gunns	simbus	test	cabinFanV	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.cabinFan.mVoltage	double	(V)	Supply voltage to effector
+xxxx	gunns	simbus	test	cabinFanLoad	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.cabinFan.mTotalResistiveLoad	double	(ohm)	Resistive load on supply
+xxxx	gunns	simbus	test	cabinFanLoad	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.cabinFan.mLoad.mResistanceNormal	double	(ohm)	Resistive load on supply
+
+xxxx	gunns	simbus	test	pumpV	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.pump.mLoad.mVoltage	double	(V)	Supply voltage to effector
+xxxx	gunns	simbus	test	pumpV	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mVoltage	double	(V)	Supply voltage to effector
+xxxx	gunns	simbus	test	pumpLoad	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mTotalResistiveLoad	double	(ohm)	Resistive load on supply
+xxxx	gunns	simbus	test	pumpLoad	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.pump.mLoad.mResistanceNormal	double	(ohm)	Resistive load on supply
+
+xxxx	gunns	simbus	test	tcvV	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.tcv.mLoad.mPowerValid	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	tcvV	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.tcv.mSupplyVoltageFlag	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	tcvLoad	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.tcv.mResistance	double	(ohm)	Resistive load on supply
+xxxx	gunns	simbus	test	tcvLoad	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.tcv.mLoad.mResistanceNormal	double	(ohm)	Resistive load on supply
+
+xxxx	gunns	simbus	test	gasSelectValveV	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.gasSelectValve.mLoad.mPowerValid	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	gasSelectValveV	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.gasSelectValve.mSupplyVoltageFlag	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	gasSelectValveLoad	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.gasSelectValve.mResistance	double	(ohm)	Resistive load on supply
+xxxx	gunns	simbus	test	gasSelectValveLoad	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.gasSelectValve.mLoad.mResistanceNormal	double	(ohm)	Resistive load on supply
+
+xxxx	gunns	simbus	test	radBypassVlvV	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.radBypassVlv.mLoad.mPowerValid	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	radBypassVlvV	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.radBypassValve.mSupplyVoltageFlag	bool	(--)	Power valid to effector
+xxxx	gunns	simbus	test	radBypassVlvLoad	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.radBypassValve.mResistance	double	(ohm)	Resistive load on supply
+xxxx	gunns	simbus	test	radBypassVlvLoad	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.radBypassVlv.mLoad.mResistanceNormal	double	(ohm)	Resistive load on supply
+
+# Effector Electric-Thermal interfaces:
+xxxx	gunns	simbus	test	aftShellHeaterPwr	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.aftShellHeater.mLoad.mActualPower	double	(W)	Actual heater power
+xxxx	gunns	simbus	test	aftShellHeaterPwr	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.aftShellHeater.mPowerElectrical	double	(W)	Actual heater power
+
+xxxx	gunns	simbus	test	fwdShellHeaterPwr	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.fwdShellHeater.mLoad.mActualPower	double	(W)	Actual heater power
+xxxx	gunns	simbus	test	fwdShellHeaterPwr	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.fwdShellHeater.mPowerElectrical	double	(W)	Actual heater power
+
+# Effector Signal-Thermal interfaces:
+xxxx	gunns	simbus	test	cabinFanMotorQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.cabinFan.mTotalWasteHeat	double	(W)	Waste heat
+xxxx	gunns	simbus	test	cabinFanMotorQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.cabinFan.mExternalHeatFlux[1]	double	(W)	Waste heat
+
+xxxx	gunns	simbus	test	pumpMotorQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mTotalWasteHeat	double	(W)	Waste heat
+xxxx	gunns	simbus	test	pumpMotorQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.pump.mExternalHeatFlux[1]	double	(W)	Waste heat
+

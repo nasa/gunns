@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<trickView>
+    <cyclePeriod>0.5</cyclePeriod>
+    <variable>
+        <name>ptcs.test.therm.mRadiationLinks[0].mViewScalar</name>
+        <tvDouble>
+            <value>0</value>
+            <format>Decimal</format>
+        </tvDouble>
+    </variable>
+</trickView>

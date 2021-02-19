@@ -1,0 +1,32 @@
+/**
+@defgroup  TSM_GUNNS_FLUID_CAPACITOR   Capacitor Links
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect Capacitor Links
+
+@defgroup  TSM_GUNNS_FLUID_CONDUCTOR   Conductor Links
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect Conductor Links
+
+@defgroup  TSM_GUNNS_FLUID_FLUID       Fluid Models
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect Fluid Models
+
+@defgroup  TSM_GUNNS_FLUID_HIFI        High Fidelity Links
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect High Fidelity Links
+
+@defgroup  TSM_GUNNS_FLUID_POTENTIAL   Potential Links
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect Potential Links
+
+@defgroup  TSM_GUNNS_FLUID_SOURCE      Source Links
+@ingroup   TSM_GUNNS_FLUID
+@brief     GUNNS Fluid Aspect Source Links
+
+@dir  fluid/capacitor     Capacitor Links
+@dir  fluid/conductor     Conductor Links
+@dir  fluid/fluid         Fluids
+@dir  fluid/hi-fi         High Fidelity Links
+@dir  fluid/potential     Potential Links
+@dir  fluid/source        Source Links
+*/

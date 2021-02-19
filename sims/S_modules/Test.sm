@@ -1,0 +1,94 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+##include "sims/networks/fluid/test/TestFluidNetwork.hh"
+##include "sims/networks/basic/test/TestBasicNetwork.hh"
+##include "sims/networks/thermal/gunnshowThermalTest/GunnShowThermalTest.hh"
+##include "core/network/GunnsBasicSuperNetwork.hh"
+##include "core/network/GunnsFluidSuperNetwork.hh"
+
+class TestSimObject: public Trick::SimObject
+{
+    public:
+        int                    threadIdFluid;      /**< (--) Thread ID for the fluid networks */
+        int                    threadIdElect;      /**< (--) Thread ID for the elect networks */
+        int                    threadIdThermal;    /**< (--) Thread ID for the thermal networks */
+        TestFluidNetwork       fluid;              /**< (--) GUNNS fluid network */
+        TestFluidNetwork       subFluid1;          /**< (--) GUNNS fluid network */
+        TestFluidNetwork       subFluid2;          /**< (--) GUNNS fluid network */
+        TestBasicNetwork       elect;              /**< (--) GUNNS elect network */
+        TestBasicNetwork       subElect1;          /**< (--) GUNNS elect network */
+        TestBasicNetwork       subElect2;          /**< (--) GUNNS elect network */
+        GunnShowThermalTest    thermal;            /**< (--) GUNNS thermal network */
+        GunnShowThermalTest    subThermal1;        /**< (--) GUNNS thermal network */
+        GunnShowThermalTest    subThermal2;        /**< (--) GUNNS thermal network */
+        GunnsFluidSuperNetwork superFluid;         /**< (--) GUNNS fluid super network */
+        GunnsBasicSuperNetwork superElect;         /**< (--) GUNNS elect super network */
+        GunnsBasicSuperNetwork superThermal;       /**< (--) GUNNS thermal super network */
+
+        TestSimObject(int thread_id_fluid   = 0,
+                      int thread_id_elect   = 0,
+                      int thread_id_thermal = 0)
+            :
+            threadIdFluid(thread_id_fluid),
+            threadIdElect(thread_id_elect),
+            threadIdThermal(thread_id_thermal),
+            fluid("testSimObject.fluid"),
+            subFluid1("testSimObject.subFluid1"),
+            subFluid2("testSimObject.subFluid2"),
+            elect("testSimObject.elect"),
+            subElect1("testSimObject.subElect1"),
+            subElect2("testSimObject.subElect2"),
+            thermal("testSimObject.thermal"),
+            subThermal1("testSimObject.subThermal1"),
+            subThermal2("testSimObject.subThermal2"),
+            superFluid("testSimObject.superFluid"),
+            superElect("testSimObject.superElect"),
+            superThermal("testSimObject.superThermal")
+        {
+            ("initialization")      fluid.initialize();
+            ("initialization")      subFluid1.initialize();
+            ("initialization")      subFluid2.initialize();
+            ("initialization")      elect.initialize();
+            ("initialization")      subElect1.initialize();
+            ("initialization")      subElect2.initialize();
+            ("initialization")      thermal.initialize();
+            ("initialization")      subThermal1.initialize();
+            ("initialization")      subThermal2.initialize();
+            ("initialization")      superFluid.initialize();
+            ("initialization")      superElect.initialize();
+            ("initialization")      superThermal.initialize();
+            ("restart")             fluid.restart();
+            ("restart")             subFluid1.restart();
+            ("restart")             subFluid2.restart();
+            ("restart")             elect.restart();
+            ("restart")             subElect1.restart();
+            ("restart")             subElect2.restart();
+            ("restart")             thermal.restart();
+            ("restart")             subThermal1.restart();
+            ("restart")             subThermal2.restart();
+            ("restart")             superFluid.restart();
+            ("restart")             superElect.restart();
+            ("restart")             superThermal.restart();
+            CthreadIdFluid   (ECLSS_LO, "scheduled") fluid.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") subFluid1.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") subFluid2.update(ECLSS_LO);
+            CthreadIdElect   (ECLSS_LO, "scheduled") elect.update(ECLSS_LO);
+            CthreadIdElect   (ECLSS_LO, "scheduled") subElect1.update(ECLSS_LO);
+            CthreadIdElect   (ECLSS_LO, "scheduled") subElect2.update(ECLSS_LO);
+            CthreadIdThermal (ECLSS_LO, "scheduled") thermal.update(ECLSS_LO);
+            CthreadIdThermal (ECLSS_LO, "scheduled") subThermal1.update(ECLSS_LO);
+            CthreadIdThermal (ECLSS_LO, "scheduled") subThermal2.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") superFluid.update(ECLSS_LO);
+            CthreadIdElect   (ECLSS_LO, "scheduled") superElect.update(ECLSS_LO);
+            CthreadIdThermal (ECLSS_LO, "scheduled") superThermal.update(ECLSS_LO);
+        }
+        
+        virtual ~TestSimObject() { /* nothing to do */ }
+        
+    private:
+        // Copy constructor unavailable since declared private and not implemented.
+        TestSimObject(const TestSimObject&);
+        // Assignment operator unavailable since declared private and not implemented.
+        TestSimObject operator = (const TestSimObject&);
+};

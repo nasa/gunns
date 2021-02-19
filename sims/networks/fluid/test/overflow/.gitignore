@@ -1,0 +1,4 @@
+# Ignore outputs of netexport
+*.hh
+*.cpp
+*.bak

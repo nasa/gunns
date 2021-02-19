@@ -1,0 +1,36 @@
+/**
+@defgroup  TSM_GUNNS General-Use Nodal Network Solver (GUNNS) Models
+@brief     General-Use Nodal Network Solver (GUNNS) Models
+
+@defgroup  TSM_GUNNS_CORE        Core Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Core Components
+
+@defgroup  TSM_GUNNS_DYNAMICS    Dynamics Aspect Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Dynamics Aspect Components
+
+@defgroup  TSM_GUNNS_ELECTRICAL  Electrical Aspect Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Electrical Aspect Components
+
+@defgroup  TSM_GUNNS_FLUID       Fluid Aspect Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Fluid Aspect Components
+
+@defgroup  TSM_GUNNS_THERMAL     Thermal Aspect Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Thermal Aspect Components
+
+@defgroup  TSM_GUNNS_RADIATION   Radiation Aspect Components
+@ingroup   TSM_GUNNS
+@brief     GUNNS Radiation Aspect Components
+
+@dir gunns                        GUNNS
+@dir gunns/core                   GUNNS Core Components
+@dir gunns/aspects/dynamics       GUNNS Dynamics Aspect Components
+@dir gunns/aspects/electrical     GUNNS Electrical Aspect Components
+@dir gunns/aspects/fluid          GUNNS Fluid Aspect Components
+@dir gunns/aspects/thermal        GUNNS Thermal Aspect Components
+@dir gunns/aspects/radiation      GUNNS Radiation Aspect Components
+*/

@@ -1,0 +1,226 @@
+#ifndef TS_random_EXIST
+#define TS_random_EXIST
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @defgroup  TSM_UTILITIES_MATH_RANDOM  Random Number Generator (NOT YET TESTED OR CODE REVIEWED)
+/// @ingroup   TSM_UTILITIES_MATH
+///
+/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+///            National Aeronautics and Space Administration.  All Rights Reserved.
+///
+/// @details
+///  This class provides a set of generic random number generation methods, based upon the
+///  C++ rand() function.
+///
+/// PURPOSE:
+///
+/// REFERENCE:
+///    (TBD)
+///
+/// ASSUMPTIONS AND LIMITATIONS:
+///    ()
+///
+/// LIBRARY DEPENDENCY:
+///     (
+///     )
+///
+/// PROGRAMMERS:
+///   (
+///       ((Robert G. Phillips) (Tietronix) (March 2013) (TS21) (Initial version) )
+///   }
+///
+/// @{
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "software/SimCompatibility/TsSimCompatibility.hh"
+#include <vector>
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Defines parsed command msg from 1553 bus
+///////////////////////////////////////////////////////////////////////////////////////////////
+class TS_random
+{
+    TS_MAKE_SIM_COMPATIBLE( TS_random );
+
+public:
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random number in the range [0,1].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @return a pseudo-random number in the range [0,1].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static double randomDouble(
+        int & seed );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random double in the range [0,maxValue].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @param[in]    maxValue (--) maxValue maximum value for range
+///
+/// @return a pseudo-random double in the range [0,maxValue].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static double randomDouble(
+        int  & seed,
+        double maxValue );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random double in the range [minValue,maxValue].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @param[in]    minValue (--) minimum value for range
+/// @param[in]    maxValue (--) maximum value for range
+///
+/// @return a pseudo-random double in the range [minValue,maxValue].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static double randomDouble(
+        int  & seed,
+        double minValue,
+        double maxValue );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random integer in the range [0,RAND_MAX].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @return a pseudo-random integer in the range [0,RAND_MAX].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static int randomInt(
+        int & seed );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random integer in the range [0,maxValue].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @param[in]    maxValue (--) maxValue maximum value for range
+///
+/// @return a pseudo-random integer in the range [0,maxValue].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static int randomInt(
+        int  & seed,
+        int maxValue );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random integer in the range [minValue,maxValue].
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @param[in]    minValue (--) minValue minimum value for range
+/// @param[in]    maxValue (--) maxValue maximum value for range
+///
+/// @return a pseudo-random integer in the range [minValue,maxValue].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static int randomInt(
+        int  & seed,
+        int minValue,
+        int maxValue );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Generates a pseudo-random double in the range [minValue,maxValue]. that doesn't
+///  exist in values
+///
+/// @param[inout] seed     (--) seed for random numbers
+/// @param[in]    minValue (--) minimum value for range
+/// @param[in]    maxValue (--) maximum value for range
+/// @param[in]    values   (--) values that are not to be returned;
+///
+/// @return a pseudo-random double in the range [0,maxValue].
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static double uniqueRandomDouble(
+        int  & seed,
+        double              minValue,
+        double              maxValue,
+        std::vector<double> values );
+
+
+protected:
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Returns seed, bounded to the range of [0-RAND_CNT).
+///
+/// @param[in] seed (--) seed to be bounded
+/// @return         (--) bounded value
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static int boundSeed(
+        int seed );
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Returns bounded seed + 1, modulo RAND_CNT. This increments the seed, and keeps in
+/// the valid range of [0-RAND_CNT).
+///
+/// @param[in] seed (--) seed to be incremented
+/// @return         (--) incremented value
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static int incrementSeed(
+        int seed );
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Returns whether value is found in values.
+///
+/// @param (--) value value to be searched for
+/// @param (--) values values to be searched
+///////////////////////////////////////////////////////////////////////////////////////////////
+    static bool valueFound(
+        double              value,
+        std::vector<double> values );
+
+    static const double RAND_VALUES[];
+    static const int    RAND_CNT;
+
+private:
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Default constructor.
+///////////////////////////////////////////////////////////////////////////////////////////////
+    TS_random();
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Default destructor.
+///////////////////////////////////////////////////////////////////////////////////////////////
+    virtual ~TS_random() {};
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Copy Contstructor
+///
+/// @param other (--) TS_random to be copied
+///
+/// @return (--) this
+///////////////////////////////////////////////////////////////////////////////////////////////
+    TS_random( const TS_random & other );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Assignment operator. Copies data from another TS_random into this one.
+///
+/// @param other (--) TS_random to be copied
+///
+/// @return (--) this
+///////////////////////////////////////////////////////////////////////////////////////////////
+    TS_random & operator=( const TS_random & other );
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Equality operator. Returns true if this TS_random is identical to the other
+///
+/// @param other (--) TS_random to be compared
+///
+/// @return (--) true IFF TS_randoms are equal
+///////////////////////////////////////////////////////////////////////////////////////////////
+    bool         operator==( const TS_random & other );
+
+};
+
+
+#endif
+///@}
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <node>
+        <name>CECLSS_26</name>
+        <temperature units='K'>9e99999999</temperature>
+        <capacitance units='J/K'>string?really?</capacitance>
+    </node>
+    <node>
+        <name>CECLSS_negative</name>
+        <temperature units='K'>-15.2</temperature>
+        <capacitance units='J/K'>1564.0</capacitance>
+    </node>
+    <node>
+        <name>SPACE_1</name>
+        <temperature units='K'>2.93</temperature>
+        <capacitance units='J/K'>0.00</capacitance>
+    </node>
+</list>

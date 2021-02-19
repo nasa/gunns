@@ -1,0 +1,5 @@
+#define P_LOG P1
+
+#include "S_includes/trick_sys_simobj.sm"
+#include "S_includes/hs_simobj.sm"
+#include "S_includes/ApproximationSim.sm"

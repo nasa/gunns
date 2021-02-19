@@ -1,0 +1,77 @@
+### Common (for all trick projects) ###
+
+#TEST
+
+# build products
+*.[oa]
+*.gcno
+*.gcda
+*.gch
+*.pyc
+object_*
+S_library_list_ext
+.S_library_list_ext
+
+# editor temporary files
+*.swp
+*~
+
+# ctags tags files
+tags
+
+# Trick-generated files and folders
+# found in model and sim directories
+xml
+io_src
+swig
+# found only in sim directories
+.auto_checksums
+CP_out
+log_*.header
+log_*.trk
+Makefile_deps
+Makefile_temp_depends
+Makefile_swig
+Makefile_sim
+MAKE_out
+send_hs
+swig_src
+S_default.dat
+S_define_expnd*
+S_document.xml
+S_*.exe
+S_job_execution
+S_library_list
+S_sie.resource
+S_source.cpp
+S_source.hh
+S_run_summary
+trick
+common/stepahead/SaScalar.mk
+.S_library_swig*
+.icg_no_found
+varserver_log
+DP_Product
+
+# Eclipse specific files
+Debug
+.cproject
+.project
+
+# Ignore some unit test related files
+unit-tests
+unit-tests.log
+unit-tests.info
+unit-tests-valgrind.log
+main.d
+output/
+test/int_test/*/TEST_*
+test/int_test/*/RUN_LOG
+test/int_test/*/uit_setup.d
+test/int_test/*/uit_logdata.d
+test/ci/verification/verification
+*TestResults.xml
+
+# Ignore trick-generated makefiles for unit tests
+Makefile.trick
+

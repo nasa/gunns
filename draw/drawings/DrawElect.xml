@@ -1,0 +1,468 @@
+<mxGraphModel arrows="0" connect="1" dx="702" dy="1002" fold="1" grid="1" gridSize="10" guides="0" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="yyIIFE6Wr_zv9eaOOcSJ-1" parent="0" value="Notices" />
+    <object About="Notice of Copyright" id="5xh1K6Ib7SINsnavs5rp-1" label="Copyright 2019 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
+      <gunns subtype="copyright" type="Dox" />
+      <mxCell parent="yyIIFE6Wr_zv9eaOOcSJ-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" vertex="1">
+        <mxGeometry as="geometry" height="30" width="470" x="20" y="20" />
+      </mxCell>
+    </object>
+    <object About="Doxygen document data" defgroup="GUNNS_DRAWELECT DrawElect GUNNS Basic Network" id="5xh1K6Ib7SINsnavs5rp-2" ingroup="GUNNS" label="@doxygen">
+      <gunns subtype="data" type="Dox" />
+      <mxCell parent="yyIIFE6Wr_zv9eaOOcSJ-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=0;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="80" x="510" y="20" />
+      </mxCell>
+    </object>
+    <mxCell id="1" parent="0" value="Network" />
+    <object About="Network" c00.convergenceTolerance="0.001" c01.minLinearizationPotential="0.001" c02.minorStepLimit="20" c03.decompositionLimit="10" id="FsyXoUYgAMZMXtiNVPkq-1" label="DrawElect">
+      <gunns subtype="Sub" type="Network" />
+      <mxCell parent="1" style="swimlane;startSize=20;" vertex="1">
+        <mxGeometry as="geometry" height="400" width="700" x="20" y="60">
+          <mxRectangle as="alternateBounds" height="20" width="160" x="20" y="60" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="LywFiYjkdyNcLrU4SWqD-17" label="0">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="420" y="340" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-21" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="cl184UrhjxjfbnMy3DYb-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="480" y="390" />
+          <mxPoint as="targetPoint" x="520" y="350" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-23" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-43" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-17">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="350" y="350" />
+          <mxPoint as="targetPoint" x="400" y="360" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="LywFiYjkdyNcLrU4SWqD-24" label="1">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="180" y="340" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-25" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-43">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="220" y="310" />
+          <mxPoint as="targetPoint" x="270" y="310" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-27" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=0.05;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;" target="3DoJPlzQJvClEkqTPRkA-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.2">
+          <mxPoint as="sourcePoint" x="150" y="310" />
+          <mxPoint as="targetPoint" x="220" y="320" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="LywFiYjkdyNcLrU4SWqD-28" label="2">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="180" y="100" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-29" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="3DoJPlzQJvClEkqTPRkA-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=1;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.1667;exitDx=0;exitDy=0;" target="ataEg6mMLeBhzGLL35He-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="150" y="200" />
+          <mxPoint as="targetPoint" x="190" y="140" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-32" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-47" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-28">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="140" y="80" />
+          <mxPoint as="targetPoint" x="180" y="130" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-36" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="jRNEEjkk-1Uc3cU3PW3t-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="230" y="90" />
+          <mxPoint as="targetPoint" x="510" y="50" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-37" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="V4xHEeqqkjUf3fIBEIv2-4">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="200" y="140" />
+          <mxPoint as="targetPoint" x="510" y="120" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Ground Node" id="LywFiYjkdyNcLrU4SWqD-38" label="">
+      <gunns subtype="Ground" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#eeeeee;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.signal_sources.signal_ground;strokeColor=#36393d;rotation=-90;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="660" y="77" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-39" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="cl184UrhjxjfbnMy3DYb-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-38">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.8182">
+          <mxPoint as="sourcePoint" x="577" y="350" />
+          <mxPoint as="targetPoint" x="630" y="300" />
+          <Array as="points">
+            <mxPoint x="630" y="350" />
+            <mxPoint x="630" y="87" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-40" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="jRNEEjkk-1Uc3cU3PW3t-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-38">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6216">
+          <mxPoint as="sourcePoint" x="590" y="50" />
+          <mxPoint as="targetPoint" x="410" y="90" />
+          <Array as="points">
+            <mxPoint x="580" y="50" />
+            <mxPoint x="630" y="50" />
+            <mxPoint x="630" y="87" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-41" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="V4xHEeqqkjUf3fIBEIv2-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-38">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6216">
+          <mxPoint as="sourcePoint" x="590" y="120" />
+          <mxPoint as="targetPoint" x="500" y="170" />
+          <Array as="points">
+            <mxPoint x="630" y="120" />
+            <mxPoint x="630" y="87" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Conductor" Ports="0=in, 1=out" c00.defaultConductivity="0.1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="LywFiYjkdyNcLrU4SWqD-43" label="resistor_1">
+      <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsBasicConductor" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="80" x="270" y="340" />
+      </mxCell>
+    </object>
+    <object About="Basic Capacitor" Ports="0=in, 1=out" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="1.0e-4" i03.potential="100.0" id="LywFiYjkdyNcLrU4SWqD-47" label="capacitor">
+      <gunns numPorts="2" reqPorts="0" subtype="core/GunnsBasicCapacitor" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.capacitors.capacitor_1;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="40" x="90" y="100" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="bKiglGiRuQQwRJoSfMuK-2" label="3">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="420" y="40" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-3" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-28" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="bKiglGiRuQQwRJoSfMuK-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="220" y="130" />
+          <mxPoint as="targetPoint" x="250" y="110" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="bKiglGiRuQQwRJoSfMuK-4" label="4">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="420" y="110" />
+      </mxCell>
+    </object>
+    <object About="Selector Switch" Ports="0=in, 1+ =outs" c00.defaultConductance="1.0" c01.portLabels="{&quot;load_1&quot;, &quot;load_2&quot;}" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.selector="1" id="bKiglGiRuQQwRJoSfMuK-1" label="selector">
+      <gunns numPorts="0" reqPorts="0" subtype="aspects/electrical/Switch/GunnsElectSelector" type="Link" />
+      <gunnsShapeData source="c01" target="vector*std::string mPortLabels" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.electro-mechanical.selector_switch;" vertex="1">
+        <mxGeometry as="geometry" height="66" width="80" x="270" y="77" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-8" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.045;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="bKiglGiRuQQwRJoSfMuK-2">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6">
+          <mxPoint as="sourcePoint" y="440" />
+          <mxPoint as="targetPoint" x="20" y="420" />
+          <Array as="points">
+            <mxPoint x="380" y="80" />
+            <mxPoint x="380" y="50" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-9" label="2">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.35;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="bKiglGiRuQQwRJoSfMuK-4">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.5556">
+          <mxPoint as="sourcePoint" y="440" />
+          <mxPoint as="targetPoint" x="20" y="420" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Battery" Ports="0=in, 1=out" c00.numCells="1" c01.cellsInParallel="false" c02.cellResistance="0.01" c03.interconnectResistance="0.01" c04.maxCapacity="1.0" c05.socVocTable="&amp;network-&gt;batterySocVoc" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.soc="1.0" id="cl184UrhjxjfbnMy3DYb-1" label="battery">
+      <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/Batt/GunnsElectBattery" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#000000;strokeColor=#000000;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.miscellaneous.monocell_battery;flipH=1;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="40" x="530" y="330" />
+      </mxCell>
+    </object>
+    <object About="Data Table" id="hpSgkVCZxBd9YCXxPIVF-1" label="batterySocVoc">
+      <gunns subtype="2D" type="Data Table" />
+      <mxCell collapsed="1" parent="FsyXoUYgAMZMXtiNVPkq-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#e0e0e0;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="160" x="460" y="300">
+          <mxRectangle as="alternateBounds" height="100" width="160" x="460" y="300" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="hpSgkVCZxBd9YCXxPIVF-2" parent="hpSgkVCZxBd9YCXxPIVF-1" style="shape=partialRectangle;top=0;left=0;right=0;bottom=1;align=left;verticalAlign=top;fillColor=none;spacingLeft=80;spacingRight=0;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=5;fontSize=11;" value="Voc" vertex="1">
+      <mxGeometry as="geometry" height="20" width="160" y="20" />
+    </mxCell>
+    <mxCell connectable="0" id="hpSgkVCZxBd9YCXxPIVF-3" parent="hpSgkVCZxBd9YCXxPIVF-2" style="shape=partialRectangle;fontStyle=5;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" value="SoC" vertex="1">
+      <mxGeometry as="geometry" height="20" width="80" />
+    </mxCell>
+    <mxCell id="hpSgkVCZxBd9YCXxPIVF-4" parent="hpSgkVCZxBd9YCXxPIVF-1" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=80;spacingRight=0;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontSize=12;" value="0.0" vertex="1">
+      <mxGeometry as="geometry" height="20" width="160" y="40" />
+    </mxCell>
+    <mxCell connectable="0" id="hpSgkVCZxBd9YCXxPIVF-5" parent="hpSgkVCZxBd9YCXxPIVF-4" style="shape=partialRectangle;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=12;" value="0.0" vertex="1">
+      <mxGeometry as="geometry" height="20" width="80" />
+    </mxCell>
+    <mxCell id="hpSgkVCZxBd9YCXxPIVF-6" parent="hpSgkVCZxBd9YCXxPIVF-1" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=80;spacingRight=0;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontSize=12;" value="100.0" vertex="1">
+      <mxGeometry as="geometry" height="20" width="160" y="60" />
+    </mxCell>
+    <mxCell connectable="0" id="hpSgkVCZxBd9YCXxPIVF-7" parent="hpSgkVCZxBd9YCXxPIVF-6" style="shape=partialRectangle;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=12;" value="0.5" vertex="1">
+      <mxGeometry as="geometry" height="20" width="80" />
+    </mxCell>
+    <mxCell id="hpSgkVCZxBd9YCXxPIVF-8" parent="hpSgkVCZxBd9YCXxPIVF-1" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=80;spacingRight=0;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontSize=12;" value="120.0" vertex="1">
+      <mxGeometry as="geometry" height="20" width="160" y="80" />
+    </mxCell>
+    <mxCell connectable="0" id="hpSgkVCZxBd9YCXxPIVF-9" parent="hpSgkVCZxBd9YCXxPIVF-8" style="shape=partialRectangle;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=12;" value="1.0" vertex="1">
+      <mxGeometry as="geometry" height="20" width="80" />
+    </mxCell>
+    <object About="Basic Conductor" Ports="0=in, 1=out" c00.defaultConductivity="7.5e-7" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="Fb2ymC6kozOyreSzJwYg-2" label="load_3">
+      <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsBasicConductor" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="80" x="510" y="170" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="Fb2ymC6kozOyreSzJwYg-3" label="5">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="420" y="170" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-4" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="Fb2ymC6kozOyreSzJwYg-2">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="480" y="210" />
+          <mxPoint as="targetPoint" x="500" y="190" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-5" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="LywFiYjkdyNcLrU4SWqD-38">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.7143">
+          <mxPoint as="sourcePoint" x="580" y="250" />
+          <mxPoint as="targetPoint" x="600" y="230" />
+          <Array as="points">
+            <mxPoint x="630" y="180" />
+            <mxPoint x="630" y="87" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-6" label="3">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.65;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="Fb2ymC6kozOyreSzJwYg-3">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6923">
+          <mxPoint as="sourcePoint" x="360" y="210" />
+          <mxPoint as="targetPoint" x="380" y="190" />
+          <Array as="points">
+            <mxPoint x="400" y="120" />
+            <mxPoint x="400" y="180" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Conductor" Ports="0=in, 1=out" c00.defaultConductivity="1.0e-7" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="Fb2ymC6kozOyreSzJwYg-7" label="load_4">
+      <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsBasicConductor" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="80" x="510" y="240" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-8" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-9" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="Fb2ymC6kozOyreSzJwYg-7">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="310" y="260" />
+          <mxPoint as="targetPoint" x="330" y="240" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="Fb2ymC6kozOyreSzJwYg-9" label="6">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="420" y="240" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-10" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-7" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="LywFiYjkdyNcLrU4SWqD-38">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.8095">
+          <mxPoint as="sourcePoint" x="600" y="230" />
+          <mxPoint as="targetPoint" x="20" y="420" />
+          <Array as="points">
+            <mxPoint x="630" y="250" />
+            <mxPoint x="630" y="87" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-11" label="4">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.955;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" target="Fb2ymC6kozOyreSzJwYg-9">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" y="440" />
+          <mxPoint as="targetPoint" x="20" y="420" />
+          <Array as="points">
+            <mxPoint x="380" y="140" />
+            <mxPoint x="380" y="250" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Spotter" Class="core/GunnsSensorAnalogWrapper" ConstructorArgs="" c00.minRange="0.0" c01.maxRange="200.0" c02.offValue="0.0" c03.nominalBias="0.0" c04.nominalScale="1.0" c05.nominalNoiseScale="0.0" c06.nominalResolution="0.0" c07.noiseFunction="0" c08.unitConversion="UnitConversion::NO_CONVERSION" c09.nominalNoiseMult="0.0" i00.powerFlag="true" i01.truthInput="0.0" id="ga6ya7fbCPff_G99Ne6V-5" label="converterSenseVout">
+      <gunns type="Spotter" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="90" y="200" />
+      </mxCell>
+    </object>
+    <object About="Spotter" Class="core/GunnsSensorAnalogWrapper" ConstructorArgs="" c00.minRange="0.0" c01.maxRange="200.0" c02.offValue="0.0" c03.nominalBias="0.0" c04.nominalScale="1.0" c05.nominalNoiseScale="0.0" c06.nominalResolution="0.0" c07.noiseFunction="0" c08.unitConversion="UnitConversion::NO_CONVERSION" c09.nominalNoiseMult="0.0" i00.powerFlag="true" i01.truthInput="0.0" id="ga6ya7fbCPff_G99Ne6V-6" label="converterSenseIout">
+      <gunns type="Spotter" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="90" y="250" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="o404FeabMYnQmQ_9t9Wk-8" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;exitPerimeter=0;" target="Fb2ymC6kozOyreSzJwYg-3">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="460" y="210" />
+          <mxPoint as="targetPoint" x="190" y="120" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="o404FeabMYnQmQ_9t9Wk-10" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="Fb2ymC6kozOyreSzJwYg-9">
+        <mxGeometry as="geometry" height="50" relative="1" width="50">
+          <mxPoint as="sourcePoint" x="460" y="220" />
+          <mxPoint as="targetPoint" x="320" y="240" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Internal Power Supply" Ports="0+ =supplies" c00.backUpPowerImplemented="false" c01.powerConsumedOn="25.0" c02.auxillaryOnePowerOn="0.0" c03.auxillaryTwoPowerOn="0.0" c04.underVoltageLimit="56.0" c05.backUpVoltageThreshold="0.0" c06.potentialOnTolerance="0.5" c07.heatGeneratedOn="0.0" c08.backupVoltageMin="21.0" c09.backupVoltageMax="135.0" c10.conductanceTolerance="1.0e-15" c11.convergedFrameToCheckVoltage="1" c12.numberOfVoltageSwitchesInASolution="1" c13.commandOnUsed="false" c14.unselectedInputConductance="1.0e-4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="wTAYamTjfO6LtjOPV6Xt-2" label="testIps">
+      <gunns numPorts="0" reqPorts="0" subtype="aspects/electrical/IPS/GunnsElectIps" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(nZNRa4MwEMc/TV6HNRv0dWTd6IsMZOw51VhD9SJJWrt9+sVcNgzVogNB7nd6//8ld4QyU/NOkDThphOFJfSFpOmFa8kPjcOpy9QItwmGwFuB5O0jy3JH9u85pozV6iR6Wdrwj4RaaGkx24/r0B1Jnh0cHsoKBeDUpQITZUZ5V5tLsJGBDAt3TqMVVmikwec1RA9PGH+Ns69rZPJ/yGzWy3wukYl7CaKrZHYLZDYLZChzZO7iKDvw4nTU6gzlpDk9DNvNbPVxON30nJcZRcoqpcUdK5VsGpzcuZOsFFgjv4c18S/vg96bJCuuFhcCP/5bkdDSY9zTb8gbeQREhYDhcjy+jHgryzJs5sQZ3LTqKe64Bz8=);fontSize=12;strokeColor=#000000;fontColor=#000000;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="40" x="470" y="190" />
+      </mxCell>
+    </object>
+    <object About="Reference Node" id="ataEg6mMLeBhzGLL35He-1" label="2">
+      <gunns subtype="Reference" type="Node" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="180" y="160" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="V4xHEeqqkjUf3fIBEIv2-2" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="JmS6ekdguLnGR6STPLjl-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.2308">
+          <mxPoint as="sourcePoint" x="200" y="350" />
+          <mxPoint as="targetPoint" x="350" y="323" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" id="V4xHEeqqkjUf3fIBEIv2-3" label="1">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="JmS6ekdguLnGR6STPLjl-1">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.6471">
+          <mxPoint as="sourcePoint" x="350" y="260" />
+          <mxPoint as="targetPoint" x="330" y="220" />
+          <Array as="points">
+            <mxPoint x="400" y="180" />
+            <mxPoint x="400" y="276" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Constant-Power Load" Ports="0=in, 1=out" c00.defaultConductivity="0.0" c01.defaultPower="25.0" c02.minimumVoltageLimit="50.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="V4xHEeqqkjUf3fIBEIv2-4" label="load_2">
+      <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/ConstantPowerLoad/EpsConstantPowerLoad" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(pVTbboMwDP2avE6UrH2fsstLVVWa9gEZuMUaJCik0P39TEy1UkjFtCfwcexzbMcRUjWFrkGkiW5qyLyQzyJNW+1Qf5YEp+QpGEwTNo2ugJG3j93unRBlTeO18fS7tx04+m6tzvl44539gg5zP+RBU4BDz96OsU3ILV9E8iR6nkRIlVljSBFS8pHnyk+5NQbeX1FoOHNNJBV4UhPgQfx5ZH0P1sM62K9/4bEnv4BotYBIKkJi1Up1sA6Ozp5MPivP9VObDGno6+ONmpu671R9wLLk0cVO1Lqf6MRxcVe2hVjDV3HmS3iJBqLCF8SP6df/5N8sjg/DjLSGlu1uRz2cPW8M06j9djQ+Oasi0SUeDUMZmP4iBri9wivM82GdZ+7e5IYFlB+GAPwA);fontSize=12;fontColor=#000000;strokeColor=#000000;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="60" x="520" y="110" />
+      </mxCell>
+    </object>
+    <object About="Short Circuit" Ports="0=in, 1=out" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.malfMinimumVoltage="0.0" i03.malfConstantPowerFlag="false" i04.malfConstantPowerValue="0.0" i05.malfConstantCurrentFlag="false" i06.malfConstantCurrentValue="0.0" i07.malfInitialPowerFlag="false" i08.malfInitialPowerValue="0.0" i09.malfInitialCurrentFlag="false" i10.malfInitialCurrentValue="0.0" i11.malfResistanceFlag="true" i12.malfResistanceValue="1.0e8" id="JmS6ekdguLnGR6STPLjl-1" label="short1">
+      <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/resistive/GunnsElectShort" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=middle;shadow=0;align=right;fillColor=#ffffff;html=1;verticalAlign=middle;strokeWidth=2;shape=mxgraph.electrical.resistors.resistor_2;fontColor=#000000;strokeColor=#FF0000;direction=south;labelPosition=left;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="20" x="390" y="280" />
+      </mxCell>
+    </object>
+    <object About="Converter Input" Ports="0=in" c00.inputVoltageSensor="&amp;network-&gt;converterSenseVin" c01.tripPriority="3" c02.inputUnderVoltageTripLimit="100.0" c03.inputOverVoltageTripLimit="130.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.enabled="false" i03.inputVoltage="0.0" i04.inputPower="0.0" id="3DoJPlzQJvClEkqTPRkA-1" label="converterIn">
+      <gunns numPorts="1" reqPorts="0" subtype="aspects/electrical/Converter/GunnsElectConverterInput" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="pointerEvents=1;verticalLabelPosition=middle;shadow=0;dashed=0;align=left;fillColor=#EEEEEE;html=1;verticalAlign=middle;strokeWidth=1;shape=stencil(1VbBjoIwEP0ajhiggucN6+7Ni9kPGLFqY2mbUgX+fgeKWYpgNGYTTUjovMl7fTMpUzySFgdQ1IsCKBTNjEc+vSg6g2aw4QhHmDlYMAlsKCCnFvn+Wa3WiCx5w8R3ZagWwHG5PinFa0sojJZHWrKt6ZSYOFDNjM2WFpu36mTpBR8INg9JMykEKjMpCifTy6M2MGEcW0xYZYWb5BQtWTi0aGWjrpi6i2Zhkixa6GtgApEpHyTdQHbca3kS21GDCpqSrxKXdC7P9M/RYhY7nuJgxI8rwJnoCQxqmj/JT6b5bVeuimvRiY6QdCc1vdGqHeN8arOH2ugWET7aBBI/yged4YKD3lMf1/6Ow96xojvpTlnXTliUlKoeyT2mFzuVDxUrfC0NNOdwrNTofayS97F6x1f0KlafHRjP8m8MjHH+q028O/Z3Z03k+v//WTOw7/Jv7D8+sC85e0GPXn1XU7tF7T9DC/wC);strokeColor=#000000;direction=north;labelPosition=right;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="60" x="180" y="270" />
+      </mxCell>
+    </object>
+    <object About="Converter Output" Ports="0=out" c00.regulatorType="GunnsElectConverterOutput::VOLTAGE" c01.outputConductance="100.0" c02.converterEfficiency="0.99" c03.outputVoltageSensor="&amp;network-&gt;converterSenseVout" c04.outputCurrentSensor="&amp;network-&gt;converterSenseIout" c05.tripPriority="2" c06.outputOverVoltageTripLimit="122.0" c07.outputOverCurrentTripLimit="5.0" c08.inputLink="&amp;network-&gt;converterIn" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.enabled="false" i03.inputVoltage="0.0" i04.inputPower="0.0" i05.setpoint="100.0" id="3DoJPlzQJvClEkqTPRkA-2" label="converterOut">
+      <gunns numPorts="1" reqPorts="0" subtype="aspects/electrical/Converter/GunnsElectConverterOutput" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="pointerEvents=1;verticalLabelPosition=middle;shadow=0;dashed=0;align=left;fillColor=#EEEEEE;html=1;verticalAlign=middle;strokeWidth=1;shape=stencil(1VbBjoIwEP0ajhikyp43rO5l42WzHzBi1cbaktJV/PsdGM06AkbCRRMS2jd9b14HmBKItNhCLoM4giKXmQ/ERxDHB3AKlhrhGCNbApOIpgb2kpDPn8XiG5GZrph4L710BjQOvyysaHnhnd3Jo1r5s44yW+mUp+iRsEmtLWZB9I5gdYk0s8agrrKmYJGrOGqDMp6ZUoaUc0yyl2iI4DGhJZudaBaNxknyVkPzGxOIdPkQ6RKy3cbZX7NqNZhDteVG4BLe24P8dyTi0ZSZmkYthriCVuZKIY4YfzKQn3Tz67I0dlejHSUR6do6eadWa6V1V7JedZzwXYz7VmHalw4uw4EGt5EhjsO1hs35tSIpx5XdiU2Lo5R5k8Q5ZQilKkJnPVTvIVt5Yk/vBZyKl3H6wCf0JE6HNouh/DvNop3/dO3ugfw3DZvz+6Yf2qdu0t/J396tLzE6nlsPvkbLrlH6X6iBPw==);strokeColor=#000000;direction=north;labelPosition=right;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="60" x="180" y="220" />
+      </mxCell>
+    </object>
+    <object About="Spotter" Class="core/GunnsSensorAnalogWrapper" ConstructorArgs="" c00.minRange="0.0" c01.maxRange="200.0" c02.offValue="0.0" c03.nominalBias="0.0" c04.nominalScale="1.0" c05.nominalNoiseScale="0.0" c06.nominalResolution="0.0" c07.noiseFunction="0" c08.unitConversion="UnitConversion::NO_CONVERSION" c09.nominalNoiseMult="0.0" i00.powerFlag="true" i01.truthInput="0.0" id="3DoJPlzQJvClEkqTPRkA-3" label="converterSenseVin">
+      <gunns type="Spotter" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="90" y="300" />
+      </mxCell>
+    </object>
+    <object About="Basic Potential" Ports="0=in, 1=out" c00.defaultConductivity="1.0e-6" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.sourcePotential="0.0" id="jRNEEjkk-1Uc3cU3PW3t-1" label="load_1">
+      <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsBasicPotential" type="Link" />
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;align=center;html=1;verticalAlign=top;shape=stencil(pVTbboMwDP0aXqeS0O55YlvfqknTPiCj7rAWEpSkZfv7uQS0ZiyICIkXH+f4+IKd8dLWooWMbYRtoXIZf8wYuwiD4l0SzMhTe7DYeFOJBjyyfzscXgl50Q6UQyH9A+uM/oQOj25goqrBoPPezmO7Php/yjYPBF4/XlZaKcoBtbKB58ZPsQUqF6SBykduSaQBB8bDQ7pfgfU9WHfb3n5O0dFnt0AoXyDES0Ji1fLypA18GH1Wx3/TAymxtTCdTBeaY0J/Sp8p/IRS+unFXrTiOtSJY3Q3+gKxns8oj3SJCqKJL+CH8tuV+rtkfiW1jbaO8Ej3aAlnm367UDTl38ViM7NMmlTO17WKJfNDfX6/Tr9I5of6BQv4efw6RPRDPpu7Lun/Qc+ZHIUe9de7B34A);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#FFFFFF;direction=west;" vertex="1">
+        <mxGeometry as="geometry" height="40" width="60" x="520" y="30" />
+      </mxCell>
+    </object>
+  </root>
+</mxGraphModel>

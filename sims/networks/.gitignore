@@ -1,0 +1,2 @@
+# Ignore backup files from GunnsDraw netexport:
+*.xml.bak

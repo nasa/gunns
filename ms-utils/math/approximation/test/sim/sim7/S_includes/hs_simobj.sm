@@ -1,0 +1,18 @@
+#define HS_RATE 1.0
+
+sim_object {
+    utilities/simulation/hs: TsHsStdMngr hsMngr
+        (math/approximation/test/sim/sim7/data/TsHsStdMngr.d);
+
+//    P_LOG (initialization) utilities/simulation/hs: cmn_hs.hsMngr.registerSelf();
+    P_LOG (initialization) utilities/simulation/hs: cmn_hs.hsMngr.init();
+
+//    P_LOG (restart) utilities/simulation/hs: cmn_hs.hsMngr.registerSelf();
+    P_LOG (restart) utilities/simulation/hs: cmn_hs.hsMngr.init();
+
+    (HS_RATE, scheduled) utilities/simulation/hs: cmn_hs.hsMngr.update();
+
+    (shutdown) utilities/simulation/hs: cmn_hs.hsMngr.shutdown();
+} cmn_hs;
+
+#undef HS_RATE

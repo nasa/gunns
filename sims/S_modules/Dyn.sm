@@ -1,0 +1,34 @@
+/* @copyright Copyright 2019 United States Government as represented by the Administrator of the
+              National Aeronautics and Space Administration.  All Rights Reserved. */
+           
+##include "aspects/dynamics/GunnsDynSingleRigidEom.hh"
+##include "aspects/dynamics/GunnsDynEuler123.hh"
+
+class DynSimObject: public Trick::SimObject
+{
+    public:
+        GunnsDynSingleRigidEom          bodyEom;          /**< (--) GUNNS dynamics single rigid-body EOM */
+        GunnsDynSingleRigidEomInputData bodyEomInputData; /**< (--) GUNNS dynamics single rigid-body EOM input data */
+        GunnsDynAppliedForce            bodyForce;        /**< (--) GUNNS dynamics applied force */
+        GunnsDynAppliedTorque           bodyTorque;       /**< (--) GUNNS dynamics applied torque */
+
+        DynSimObject()
+            :
+            bodyEom(),
+            bodyEomInputData(),
+            bodyForce(),
+            bodyTorque()
+        {
+            ("initialization")          bodyEom.initialize("dyn.bodyEom", bodyEomInputData);
+            ("derivative")              bodyEom.update();
+            ("integration") trick_ret = bodyEom.integ();
+        }
+        
+        virtual ~DynSimObject() { /* nothing to do */ }
+        
+    private:
+        // Copy constructor unavailable since declared private and not implemented.
+        DynSimObject(const DynSimObject&);
+        // Assignment operator unavailable since declared private and not implemented.
+        DynSimObject operator = (const DynSimObject&);
+};

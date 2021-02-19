@@ -1,0 +1,72 @@
+/**
+@defgroup  GUNNS_ELECTRICAL_BATTERY               Battery Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Battery Components
+
+@defgroup  GUNNS_ELECTRICAL_CONSTANT_POWER_LOAD   Constant Power Load Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Constant Power Load Components
+
+@defgroup  GUNNS_ELECTRICAL_CONVERTER             Converter Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Converter Components
+
+@defgroup  GUNNS_ELECTRICAL_DIODE                 Diode Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Diode Components
+
+@defgroup  GUNNS_ELECTRICAL_FETSWITCH             Fet Switch Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Fet Switch Components
+
+@defgroup  GUNNS_ELECTRICAL_LOAD_SWITCH           Load Switch Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Load Switch Components
+
+@defgroup  GUNNS_ELECTRICAL_IPS                   Internal Power Supply Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Internal Power Supply Components
+
+@defgroup  GUNNS_ELECTRICAL_POWER_BUS             Power Bus Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Power Bus Components
+
+@defgroup  GUNNS_ELECTRICAL_RESISTIVE             Resistive Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Resistive Components
+
+@defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC          Photovoltaic Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Photovoltaic Components
+
+@defgroup  GUNNS_ELECTRICAL_SWITCH                Switch Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Switch Components
+
+@defgroup  GUNNS_ELECTRICAL_SWITCH_CARD           Switch Card Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical Switch Card Components
+
+@defgroup  GUNNS_ELECTRICAL_USER_LOAD             User Load Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Electrical User Load Components
+
+@defgroup  GUNNS_ELECTRICAL_TRIPS                 Trip Logic Components
+@ingroup   GUNNS_ELECTRICAL
+@brief     GUNNS Generic Trip Logic Components
+
+@dir  electrical/Batt                  Battery Components
+@dir  electrical/ConstantPowerLoad     Constant Power Load Components
+@dir  electrical/Converter             Converter Components
+@dir  electrical/Diode                 Diode Components
+@dir  electrical/FetSwitch             Fet  switch Components
+@dir  electrical/IPS                   Internal Power Supply Components
+@dir  electrical/LoadSwitches          Load Switch Components
+@dir  electrical/PowerBus              Power Bus Components
+@dir  electrical/resistive             Resistive Components
+@dir  electrical/SolarArray            Photovoltaic Components
+@dir  electrical/Switch                Switch Components
+@dir  electrical/SwitchCard            Switch Card Components
+@dir  electrical/UserLoad              User Load Components
+@dir  electrical/TripLogic             Trip Logic Components
+*/

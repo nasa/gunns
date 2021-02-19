@@ -1,0 +1,20 @@
+    <ellipse h="90" w="90" x="0" y="0"/>
+  </background>
+  <foreground>
+    <fillstroke/>
+    <path>
+      <move x="45" y="5"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="1" x="45" y="45"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="0" x="45" y="85"/>
+      <move x="73.3" y="16.7"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="1" x="45" y="45"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="0" x="16.7" y="73.3"/>
+      <move x="85" y="45"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="1" x="45" y="45"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="0" x="5" y="45"/>
+      <move x="73.3" y="73.3"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="1" x="45" y="45"/>
+      <arc large-arc-flag="0" rx="30" ry="30" sweep-flag="0" x="16.5" y="16.5"/>
+    </path>
+    <stroke/>
+    <ellipse h="6" w="6" x="42" y="42"/>

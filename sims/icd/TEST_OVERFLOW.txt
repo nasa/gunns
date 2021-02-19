@@ -1,0 +1,48 @@
+PUI	SYS	BUS	SUBSYS	VAR_NAME	ACTION	RATE	SIM_OBJECT	SIM_VAR_NAME	TYPE	UNITS	COMMENTS
+
+# Copyright 2019 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# fluid15 test network supply & demand interfaces
+#
+# sup12/dem12 interface
+xxxx	gunns	simbus	test	sup12supplyP	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mSupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	sup12supplyP	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mSupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	sup12supplyT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mSupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	sup12supplyT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mSupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	sup12supplyX[0-1]	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mSupplyMassFractions[0-1]	double	(--)	Supply mixture
+xxxx	gunns	simbus	test	sup12supplyX[0-1]	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mSupplyMassFractions[0-1]	double	(--)	Supply mixture
+
+xxxx	gunns	simbus	test	dem12demandF	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mFlowRate	double	(kg/s)	Demand flow rate
+xxxx	gunns	simbus	test	dem12demandF	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mFlowDemand	double	(kg/s)	Demand flow rate
+xxxx	gunns	simbus	test	dem12demandT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mDemandTemperature	double	(K)	Demand temperature
+xxxx	gunns	simbus	test	dem12demandT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mDemandTemperature	double	(K)	Demand temperature
+xxxx	gunns	simbus	test	dem12demandX[0-1]	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.dem12.mDemandMassFractions[0-1]	double	(--)	Demand mixture
+xxxx	gunns	simbus	test	dem12demandX[0-1]	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid15.sup12.mDemandMassFractions[0-1]	double	(--)	Demand mixture
+
+# fluid16 EQ conductor/demand link interfaces
+#
+# eq01 port0/dem2 interface
+xxxx	gunns	simbus	test	eq0supplyP	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort0SupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	eq0supplyP	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem2.mSupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	eq0supplyT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort0SupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	eq0supplyT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem2.mSupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	eq0supplyX[0-1]	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort0SupplyMassFractions[0-1]	double	(--)	Supply mixture
+xxxx	gunns	simbus	test	eq0supplyX[0-1]	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem2.mSupplyMassFractions[0-1]	double	(--)	Supply mixture
+
+xxxx	gunns	simbus	test	dem2demandF	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem2.mDemandFlux	double	(kg*mol/s)	Demand flux
+xxxx	gunns	simbus	test	dem2demandF	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort0DemandFlux	double	(kg*mol/s)	Demand flux
+xxxx	gunns	simbus	test	dem2demandT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem2.mDemandTemperature	double	(K)	Demand temperature
+xxxx	gunns	simbus	test	dem2demandT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort0DemandTemperature	double	(K)	Demand temperature
+
+# eq01 port1/dem3 interface
+xxxx	gunns	simbus	test	eq1supplyP	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort1SupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	eq1supplyP	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem3.mSupplyPressure	double	(kPa)	Supply pressure
+xxxx	gunns	simbus	test	eq1supplyT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort1SupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	eq1supplyT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem3.mSupplyTemperature	double	(K)	Supply temperature
+xxxx	gunns	simbus	test	eq1supplyX[0-1]	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort1SupplyMassFractions[0-1]	double	(--)	Supply mixture
+xxxx	gunns	simbus	test	eq1supplyX[0-1]	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem3.mSupplyMassFractions[0-1]	double	(--)	Supply mixture
+
+xxxx	gunns	simbus	test	dem3demandF	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem3.mDemandFlux	double	(kg*mol/s)	Demand flux
+xxxx	gunns	simbus	test	dem3demandF	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort1DemandFlux	double	(kg*mol/s)	Demand flux
+xxxx	gunns	simbus	test	dem3demandT	WRITE	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.dem3.mDemandTemperature	double	(K)	Demand temperature
+xxxx	gunns	simbus	test	dem3demandT	READ	ECLSS_LO	MassOverflowSimObject massOverflow	fluid16.eq01.mPort1DemandTemperature	double	(K)	Demand temperature

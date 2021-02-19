@@ -1,0 +1,383 @@
+
+/*
+ * $Id$
+ */
+
+#ifndef __DEFAULT_TRICK_SYS__
+#define __DEFAULT_TRICK_SYS__
+
+##include "sim_services/Executive/include/exec_proto.h"
+##include "sim_services/Executive/include/exec_proto.hh"
+##include "sim_services/Executive/include/Executive.hh"
+##include "sim_services/Environment/include/Environment.hh"
+##include "sim_services/Environment/include/env_proto.h"
+##include "sim_services/CommandLineArguments/include/CommandLineArguments.hh"
+##include "sim_services/CommandLineArguments/include/command_line_protos.h"
+##include "sim_services/MasterSlave/include/Master.hh"
+##include "sim_services/MasterSlave/include/Slave.hh"
+##include "sim_services/MasterSlave/include/MSSocket.hh"
+##include "sim_services/MasterSlave/include/master_proto.h"
+##include "sim_services/Message/include/MessagePublisher.hh"
+##include "sim_services/Message/include/MessageSubscriber.hh"
+##include "sim_services/Message/include/MessageCout.hh"
+##include "sim_services/Message/include/MessageLCout.hh"
+##include "sim_services/Message/include/MessageFile.hh"
+##include "sim_services/Message/include/MessageTCDevice.hh"
+##include "sim_services/Message/include/message_proto.h"
+##include "sim_services/MemoryManager/include/MemoryManager.hh"
+##include "sim_services/MemoryManager/include/memorymanager_c_intf.h"
+##include "sim_services/RealtimeSync/include/RealtimeSync.hh"
+##include "sim_services/RealtimeSync/include/realtimesync_proto.h"
+##include "sim_services/Clock/include/GetTimeOfDayClock.hh"
+##include "sim_services/Timer/include/ITimer.hh"
+##include "sim_services/Integrator/include/Integrator.hh"
+##include "sim_services/Integrator/include/IntegLoopScheduler.hh"
+##include "sim_services/InputProcessor/include/IPPython.hh"
+##include "sim_services/InputProcessor/include/InputProcessSimObject.hh"
+##include "sim_services/DataRecord/include/DRAscii.hh"
+##include "sim_services/DataRecord/include/DRBinary.hh"
+##include "sim_services/DataRecord/include/DRHDF5.hh"
+##include "sim_services/DataRecord/include/data_record_proto.hh"
+##include "sim_services/DataRecord/include/DataRecordDisk.hh"
+##include "sim_services/DataRecord/include/DataRecordRing.hh"
+##include "sim_services/DataRecord/include/DataRecordThreaded.hh"
+##include "sim_services/DataRecord/include/DataRecordDispatcher.hh"
+##include "sim_services/DebugPause/include/DebugPause.hh"
+##include "sim_services/DebugPause/include/debug_pause_proto.h"
+##include "sim_services/EchoJobs/include/EchoJobs.hh"
+##include "sim_services/EchoJobs/include/echojobs_proto.h"
+##include "sim_services/FrameLog/include/FrameLog.hh"
+##include "sim_services/FrameLog/include/framelog_proto.h"
+##include "sim_services/UnitTest/include/UnitTest.hh"
+##include "sim_services/UnitTest/include/trick_tests.h"
+##include "sim_services/VariableServer/include/VariableServer.hh"
+##include "sim_services/ExternalApplications/include/SimControlPanel.hh"
+##include "sim_services/ExternalApplications/include/TrickView.hh"
+##include "sim_services/ExternalApplications/include/MalfunctionsTrickView.hh"
+##include "sim_services/ExternalApplications/include/MonteMonitor.hh"
+##include "sim_services/ExternalApplications/include/StripChart.hh"
+##include "sim_services/ExternalApplications/include/external_application_c_intf.h"
+##include "sim_services/MemoryManagerWrapper/include/MemoryManagerWrapper.hh"
+##include "sim_services/MemoryManagerWrapper/include/MemoryManagerWrapper_c_intf.hh"
+##include "sim_services/MemoryManagerWrapper/include/collect_proto.hh"
+##include "sim_services/include/Flag.h"
+##include "trick_utils/units/include/Unit.hh"
+##include "sim_services/MonteCarlo/include/MonteCarlo.hh"
+##include "sim_services/MonteCarlo/include/montecarlo_c_intf.h"
+
+%{
+// This is a user code block.  Code here is copied without processing to S_source.cpp
+// exec_collect_init is defined in S_source.cpp
+void exec_collect_init( void ) ;
+
+%}
+
+/* CommandLineArguments */
+class CommandLineArgumentsSimObject : public Trick::SimObject {
+    public:
+        Trick::CommandLineArguments cmd_args;
+
+        CommandLineArgumentsSimObject() {
+        }
+}
+
+/* Memory Manager Wrapper  */
+class MemoryManagerSimObject : public Trick::SimObject {
+
+    public:
+        Trick::MemoryManagerWrapper mmw ;
+
+        MemoryManagerSimObject() {
+
+            {TRK} P0 ("default_data") exec_register_scheduler(&mmw) ;
+
+            {TRK} P0 ("default_data") mmw.load_default_data() ;
+            {TRK} P0 ("initialization") mmw.process_sim_args() ;
+            {TRK} P0 ("initialization") mmw.gather_checkpoint_jobs() ;
+            {TRK} P1 ("initialization") mmw.checkpoint("chkpnt_pre_init", mmw.pre_init_checkpoint) ;
+            {TRK} P65535 ("initialization") mmw.checkpoint("chkpnt_post_init", mmw.post_init_checkpoint) ;
+            {TRK} P0 ("end_of_frame") mmw.write_checkpoint() ;
+
+            {TRK} P0 ("shutdown") mmw.checkpoint("chkpnt_end", mmw.end_checkpoint) ;
+        }
+
+}
+
+/* Executive redone*/
+class SysSimObject : public Trick::SimObject {
+
+    public:
+        Trick::MonteCarlo sched ;
+        Trick::Environment env ;
+
+        SysSimObject() {
+
+            {TRK} ("default_data") sched.init_signal_handlers() ;
+            {TRK} ("default_data") exec_collect_init() ;
+
+            // model specific command line processing
+            {TRK} P0 ("initialization") sched.process_sim_args() ;
+
+            {TRK} P0 ("checkpoint") sched.checkpoint() ;
+            {TRK} P0 ("post_checkpoint") sched.post_checkpoint() ;
+            {TRK} P0 ("restart") sched.restart() ;
+
+            // model specific initialization
+
+            {TRK} P1 ("initialization") sched.post_init_signal_handlers() ;
+            {TRK} P65534 ("initialization") sched.write_s_job_execution(NULL) ;
+            {TRK} P65534 ("initialization") sched.write_s_run_summary(NULL) ;
+            {TRK} P65535 ("initialization") sched.check_all_jobs_handled() ;
+            {TRK} P65535 ("initialization") sched.create_threads() ;
+
+            // required job to advance sim time
+            {TRK} ("system_advance_sim_time") sched.advance_sim_time() ;
+        }
+
+    private:
+        // This object is not copyable
+        void operator =(const SysSimObject &) {};
+}
+
+class MessageSimObject : public Trick::SimObject {
+
+    public:
+        Trick::MessagePublisher mpublisher ;
+        Trick::MessageCout mcout ;
+        Trick::MessageFile mfile ;
+        Trick::MessageTCDevice mdevice ;
+
+        MessageSimObject() {
+
+            {TRK} ("default_data") mpublisher.subscribe(&mcout) ;
+            {TRK} ("default_data") mpublisher.subscribe(&mfile) ;
+            {TRK} ("default_data") mpublisher.subscribe(&mdevice) ;
+            {TRK} P1 ("initialization") mfile.init() ;
+            {TRK} P1 ("initialization") mdevice.init() ;
+
+        }
+
+    private:
+        // This object is not copyable
+        void operator =(const MessageSimObject &) {};
+}
+
+class InputProcessorSimObject : public Trick::SimObject {
+
+    public:
+        Trick::IPPython ip ;
+
+        InputProcessorSimObject() {
+
+            {TRK} P0 ("initialization") ip.process_sim_args() ;
+            {TRK} P0 ("initialization") ip.init() ;
+
+            // required jobs for processing events and read statements
+            {TRK} ("automatic") ip.process_event() ;
+            {TRK} ("instrumentation") ip.process_inserted_event(curr_job) ;
+            {TRK} ("system_moding") ip.process_moding() ;
+
+            {TRK} ("checkpoint") ip.checkpoint() ;
+            {TRK} ("restart") ip.restart() ;
+
+            {TRK} P65535 ("shutdown") ip.shutdown() ;
+        }
+}
+
+class MonteCarloSimObject : public Trick::SimObject {
+
+    public:
+        MonteCarloSimObject() {
+            {TRK} P0 ("initialization") mc_disable_slave_GUIs() ;
+            {TRK} P60000 ("initialization") dr_remove_files() ;
+
+        }
+}
+
+class VariableServerSimObject : public Trick::SimObject {
+
+    public:
+        Trick::VariableServer vs ;
+        Trick::SimControlPanel sim_control_panel ;
+        Trick::TrickView trick_view ;
+        Trick::MalfunctionsTrickView malfunctions_trick_view ;
+        Trick::MonteMonitor monte_monitor ;
+        Trick::StripChart stripchart ;
+
+        VariableServerSimObject() {
+
+            {TRK} P0 ("initialization") vs.process_sim_args() ;
+            {TRK} P0 ("initialization") vs.init() ;
+            {TRK} P0 ("initialization") sim_control_panel.launch() ;
+            {TRK} P65535 ("initialization") trick_view.launch() ;
+            {TRK} P65535 ("initialization") malfunctions_trick_view.launch() ;
+            {TRK} P65535 ("initialization") monte_monitor.launch() ;
+            {TRK} P65535 ("initialization") stripchart.launch() ;
+
+            {TRK} ("automatic_last") vs.copy_data() ;
+
+        }
+}
+
+class DataRecordDispatcherSimObject : public Trick::SimObject {
+
+    public:
+        Trick::DataRecordDispatcher drd ;
+        Trick::DataRecordThreaded dr_thread ;
+        Trick::DataRecordDisk dr_disk ;
+        Trick::DataRecordRing dr_ring ;
+
+        DataRecordDispatcherSimObject() {
+
+            {TRK} ("default_data") dr_remove_files() ;
+            {TRK} ("default_data") drd.add_recorder(&dr_thread) ;
+            {TRK} ("default_data") drd.add_recorder(&dr_disk) ;
+            {TRK} ("default_data") drd.add_recorder(&dr_ring) ;
+            {TRK} P0 ("initialization") drd.process_sim_args() ;
+            {TRK} P65534 ("initialization") drd.init() ;
+
+            // drd signals data recrding groups to save their data
+            {TRK} ("end_of_frame") drd.write_data() ;
+            {TRK} ("shutdown")     drd.shutdown() ;
+
+        }
+
+}
+
+class MasterSlaveSimObject : public Trick::SimObject {
+
+    public:
+
+        Trick::Master master ;
+        Trick::Slave slave ;
+
+        MasterSlaveSimObject() {
+
+            {TRK} P0 ("initialization") master.process_sim_args() ;
+            {TRK} P0 ("initialization") slave.process_sim_args() ;
+
+            {TRK} P65534 ("initialization") master.init() ;
+            {TRK} P65534 ("initialization") slave.init() ;
+
+            {TRK} P65533 ("end_of_frame")   master.end_of_frame() ;
+            {TRK} P65533 ("end_of_frame")   slave.end_of_frame() ;
+
+            {TRK} P65535 ("freeze_init")    master.freeze_init() ;
+            {TRK} P65535 ("freeze_init")    slave.freeze_init() ;
+
+            {TRK} P65535 ("freeze")         master.freeze() ;
+            {TRK} P65535 ("freeze")         slave.freeze() ;
+
+            {TRK} P65535 ("unfreeze")       master.unfreeze() ;
+            {TRK} P65535 ("unfreeze")       slave.unfreeze() ;
+
+            {TRK} P65534 ("shutdown")       master.shutdown() ;
+            {TRK} P65534 ("shutdown")       slave.shutdown() ;
+
+        }
+}
+
+class RTSyncSimObject : public Trick::SimObject {
+
+    public:
+
+        Trick::GetTimeOfDayClock gtod_clock ;
+        Trick::ITimer itimer ;
+        Trick::RealtimeSync rt_sync ;
+        Trick::FrameLog frame_log ;
+
+        RTSyncSimObject() : rt_sync(&gtod_clock, &itimer) {
+
+            {TRK} P65535 ("initialization") rt_sync.initialize(exec_get_time_tics(), exec_get_software_frame_tics()) ;
+            {TRK} P65535 ("initialization") rt_sync.start_realtime(exec_get_time_tics()) ;
+
+            {TRK} P65535 ("restart")        rt_sync.initialize(exec_get_time_tics(), exec_get_software_frame_tics()) ;
+            {TRK} P65535 ("restart")        rt_sync.start_realtime(exec_get_time_tics()) ;
+
+            {TRK} ("freeze_init")           rt_sync.freeze_init(exec_get_freeze_frame_tics()) ;
+            {TRK} P65535 ("freeze")         rt_sync.freeze_pause(exec_get_freeze_frame_tics()) ;
+            {TRK} ("unfreeze")              rt_sync.unfreeze(exec_get_time_tics(), exec_get_software_frame_tics()) ;
+
+            // Frame log Instrumentation class jobs.  Not scheduled by default
+            {TRK} ("instrumentation") frame_log.frame_clock_start(curr_job) ;
+            {TRK} ("instrumentation") frame_log.frame_clock_stop(curr_job) ;
+
+
+            // rt_monitor & frame_log_clear should be last end_of_frame jobs in sim
+            {TRK} P65534 ("end_of_frame")   rt_sync.rt_monitor(exec_get_time_tics()) ;
+            // frame_log_clear must be last end_of_frame job for frame logging to work properly !
+            {TRK} P65535 ("end_of_frame")   frame_log.frame_log_clear() ;
+
+            // the frame_log and rt_sync shutdown jobs should be last in sim
+            {TRK} P65535 ("shutdown")       frame_log.shutdown() ;
+            {TRK} P65535 ("shutdown")       rt_sync.shutdown() ;
+        }
+}
+
+class InstrumentationSimObject : public Trick::SimObject {
+
+    public:
+        Trick::EchoJobs echo_jobs ;
+        Trick::DebugPause debug_pause ;
+
+        InstrumentationSimObject() {
+            // Instrumentation class jobs.  Not scheduled by default
+            {TRK} ("instrumentation") echo_jobs.echo_job(curr_job) ;
+            {TRK} ("instrumentation") debug_pause.debug_pause(curr_job) ;
+        }
+}
+
+##include <cstdarg>
+
+class IntegLoopSimObject : public Trick::SimObject {
+
+    public:
+        Trick::IntegLoopScheduler integ_sched ;
+
+        IntegLoopSimObject(double in_cycle, Trick::SimObject* s_obj, ... ) : integ_sched(in_cycle) {
+
+            va_list ap ;
+            Trick::SimObject* next_sobj;
+
+            va_start(ap, s_obj);
+            next_sobj = s_obj;
+            while (next_sobj != (Trick::SimObject*)NULL) {
+                integ_sched.add_integ_jobs_from_sim_object( next_sobj );
+                next_sobj = va_arg(ap, Trick::SimObject*);
+            };
+
+            {TRK} P0 ("default_data") exec_register_scheduler(&integ_sched) ;
+
+            {TRK} P65535 ("initialization") integ_sched.call_deriv_jobs() ;
+            {TRK} (in_cycle, "integ_loop") integ_sched.integrate() ;
+
+        }
+
+}
+
+class UnitTestSimObject : public Trick::SimObject {
+    public:
+        Trick::UnitTest unit_tests ;
+        UnitTestSimObject() {
+            P65535 ("shutdown") unit_tests.write_output() ;
+        }
+} ;
+
+// Mandatory sim objects
+SysSimObject trick_sys ;
+MemoryManagerSimObject trick_mm ;
+CommandLineArgumentsSimObject trick_cmd_args ;
+
+// Optional sim objects
+MessageSimObject message ;
+InputProcessorSimObject trick_ip ;
+MonteCarloSimObject monte_carlo ;
+VariableServerSimObject trick_vs ;
+DataRecordDispatcherSimObject data_record ;
+MasterSlaveSimObject master_slave ;
+RTSyncSimObject real_time ;
+InstrumentationSimObject instruments ;
+UnitTestSimObject utest ;
+
+#endif
+

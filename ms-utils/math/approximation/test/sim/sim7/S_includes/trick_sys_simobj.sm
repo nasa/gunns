@@ -1,0 +1,14 @@
+/* Trick System Executive */
+sim_object {
+
+  /* ======================================================================= -
+   -  This is the Trick executive model, this model should be basically the  -
+   -  same for all Trick applications                                        -
+   - ======================================================================= */
+
+  sim_services/include: EXECUTIVE  exec (sim_services/include/executive.d) ;
+
+  sim_services/input_processor: input_processor(
+                                    inout INPUT_PROCESSOR * IP = &sys.exec.ip ) ;
+
+} sys ;

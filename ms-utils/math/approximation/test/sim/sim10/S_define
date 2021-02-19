@@ -1,0 +1,9 @@
+#define P_LOG P1
+
+#include "sim_objects/default_trick_sys.sm"
+#include "S_includes/hs.sm"
+#include "S_includes/ApproximationSim.sm"
+
+
+
+

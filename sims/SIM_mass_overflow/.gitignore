@@ -1,0 +1,5 @@
+# Ignore sim build products
+thread_safe_bus
+RUN_test/log_Log_Data.csv
+alloc_simbus.out
+icd_files.out

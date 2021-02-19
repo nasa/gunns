@@ -1,0 +1,528 @@
+/**
+@file
+@brief    GUNNS Electrical Converter Output Link implementation
+
+@copyright Copyright 2019 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
+LIBRARY DEPENDENCY:
+   ((core/GunnsBasicLink.o)
+    (aspects/electrical/Converter/GunnsElectConverterInput.o)
+    (core/GunnsSensorAnalogWrapper.o)
+    (aspects/electrical/TripLogic/GunnsTripLogic.o)
+    (software/exceptions/TsInitializationException.o))
+*/
+
+#include "GunnsElectConverterOutput.hh"
+#include "software/exceptions/TsInitializationException.hh"
+#include "math/Math.hh"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] name                       (--)    Link name.
+/// @param[in] nodes                      (--)    Network nodes array.
+/// @param[in] regulatorType              (--)    The type of output regulation.
+/// @param[in] outputConductance          (1/ohm) Conductance of the output channel.
+/// @param[in] converterEfficiency        (--)    The voltage conversion efficiency (0-1).
+/// @param[in] outputVoltageSensor        (--)    Pointer to the output voltage sensor spotter.
+/// @param[in] outputCurrentSensor        (--)    Pointer to the output current sensor spotter.
+/// @param[in] tripPriority               (--)    Priority of trips in the network.
+/// @param[in] outputOverVoltageTripLimit (V)     Output over-voltage trip limit.
+/// @param[in] outputOverCurrentTripLimit (amp)   Output over-current trip limit.
+/// @param[in] inputLink                  (--)    Pointer to the input side link.
+///
+/// @details  Default Electrical Converter Output link config data constructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
+        const std::string&                             name,
+        GunnsNodeList*                                 nodes,
+        const GunnsElectConverterOutput::RegulatorType regulatorType,
+        const double                                   outputConductance,
+        const double                                   converterEfficiency,
+        GunnsSensorAnalogWrapper*                      outputVoltageSensor,
+        GunnsSensorAnalogWrapper*                      outputCurrentSensor,
+        const unsigned int                             tripPriority,
+        const float                                    outputOverVoltageTripLimit,
+        const float                                    outputOverCurrentTripLimit,
+        GunnsElectConverterInput*                      inputLink)
+    :
+    GunnsBasicLinkConfigData(name, nodes),
+    mRegulatorType(regulatorType),
+    mOutputConductance(outputConductance),
+    mConverterEfficiency(converterEfficiency),
+    mOutputVoltageSensor(outputVoltageSensor),
+    mOutputCurrentSensor(outputCurrentSensor),
+    mTripPriority(tripPriority),
+    mOutputOverVoltageTripLimit(outputOverVoltageTripLimit),
+    mOutputOverCurrentTripLimit(outputOverCurrentTripLimit),
+    mInputLink(inputLink)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default Electrical Converter Output link config data destructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputConfigData::~GunnsElectConverterOutputConfigData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) Object to copy.
+///
+/// @details  Electrical Converter Output link config data copy constructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
+        const GunnsElectConverterOutputConfigData& that)
+    :
+    GunnsBasicLinkConfigData(that),
+    mRegulatorType(that.mRegulatorType),
+    mOutputConductance(that.mOutputConductance),
+    mConverterEfficiency(that.mConverterEfficiency),
+    mOutputVoltageSensor(that.mOutputVoltageSensor),
+    mOutputCurrentSensor(that.mOutputCurrentSensor),
+    mTripPriority(that.mTripPriority),
+    mOutputOverVoltageTripLimit(that.mOutputOverVoltageTripLimit),
+    mOutputOverCurrentTripLimit(that.mOutputOverCurrentTripLimit),
+    mInputLink(that.mInputLink)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] malfBlockageFlag  (--) Initial blockage malfunction activation flag.
+/// @param[in] malfBlockageValue (--) Initial blockage maflunction value.
+/// @param[in] enabled           (--) Initial operation enabled state.
+/// @param[in] inputVoltage      (V)  Initial input voltage.
+/// @param[in] inputPower        (W)  Initial input power load.
+/// @param[in] setpoint          (--) Initial commanded setpoint.
+///
+/// @details  Default Electrical Converter Output link input data constructor.  The base class
+///           blockage malfunction is disabled because it isn't used in this link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputInputData::GunnsElectConverterOutputInputData(const bool   malfBlockageFlag,
+                                                                       const double malfBlockageValue,
+                                                                       const bool   enabled,
+                                                                       const double inputVoltage,
+                                                                       const double inputPower,
+                                                                       const double setpoint)
+    :
+    GunnsBasicLinkInputData(malfBlockageFlag, malfBlockageValue),
+    mEnabled(enabled),
+    mInputVoltage(inputVoltage),
+    mInputPower(inputPower),
+    mSetpoint(setpoint)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default Electrical Converter Output link input data destructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputInputData::~GunnsElectConverterOutputInputData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) Object to copy.
+///
+/// @details  Electrical Converter Output link input data copy constructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutputInputData::GunnsElectConverterOutputInputData(
+        const GunnsElectConverterOutputInputData& that)
+    :
+    GunnsBasicLinkInputData(that),
+    mEnabled(that.mEnabled),
+    mInputVoltage(that.mInputVoltage),
+    mInputPower(that.mInputPower),
+    mSetpoint(that.mSetpoint)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Electrical Converter Output link default constructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutput::GunnsElectConverterOutput()
+    :
+    GunnsBasicLink(NPORTS),
+    mRegulatorType(),
+    mOutputConductance(0.0),
+    mConverterEfficiency(0.0),
+    mOutputVoltageSensor(0),
+    mOutputCurrentSensor(0),
+    mInputLink(0),
+    mEnabled(false),
+    mInputVoltage(0.0),
+    mSetpoint(0.0),
+    mResetTrips(false),
+    mInputPower(0.0),
+    mOutputChannelLoss(0.0),
+    mTotalPowerLoss(0.0),
+    mOutputOverVoltageTrip(),
+    mOutputOverCurrentTrip(),
+    mLeadsInterface(false),
+    mReverseBiasState(false),
+    mSolutionReset(false)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Electrical Converter Output link default destructor.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectConverterOutput::~GunnsElectConverterOutput()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]      configData   (--) Reference to the link config data.
+/// @param[in]      inputData    (--) Reference to the link input data.
+/// @param[in,out]  networkLinks (--) Reference to the network links vector.
+/// @param[in]      port0        (--) Port 0 default node mapping.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Initializes this Electrical Converter Output link with configuration data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfigData& configData,
+                                           const GunnsElectConverterOutputInputData&  inputData,
+                                           std::vector<GunnsBasicLink*>&              networkLinks,
+                                           const int                                  port0)
+{
+    /// - Initialize the parent class.
+    int ports[1] = {port0};
+    GunnsBasicLink::initialize(configData, inputData, networkLinks, ports);
+
+    /// - Reset init flag.
+    mInitFlag = false;
+
+    /// - Validate initialization.
+    validate(configData, inputData);
+
+    /// - Initialize from configuration and input data.
+    mRegulatorType       = configData.mRegulatorType;
+    mOutputConductance   = configData.mOutputConductance;
+    mConverterEfficiency = configData.mConverterEfficiency;
+    if (configData.mInputLink) {
+        mInputLink = configData.mInputLink;
+        mInputLink->registerOutputLink(this);
+        mInputLink->checkNodeList(mNodeList);
+    } else {
+        mInputLink = 0;
+    }
+    if (configData.mOutputVoltageSensor) {
+        mOutputVoltageSensor = &configData.mOutputVoltageSensor->mSensor;
+        configData.mOutputVoltageSensor->setStepPreSolverFlag(false);
+        configData.mOutputVoltageSensor->setStepPostSolverFlag(true);
+    }
+    if (configData.mOutputCurrentSensor) {
+        mOutputCurrentSensor = &configData.mOutputCurrentSensor->mSensor;
+        configData.mOutputCurrentSensor->setStepPreSolverFlag(false);
+        configData.mOutputCurrentSensor->setStepPostSolverFlag(true);
+    }
+    mOutputOverVoltageTrip.initialize(configData.mOutputOverVoltageTripLimit, configData.mTripPriority, false);
+    mOutputOverCurrentTrip.initialize(configData.mOutputOverCurrentTripLimit, configData.mTripPriority, false);
+
+    mEnabled      = inputData.mEnabled;
+    mInputVoltage = inputData.mInputVoltage;
+    mInputPower   = inputData.mInputPower;
+    mSetpoint     = inputData.mSetpoint;
+
+    /// - Initialize remaining state.
+    mResetTrips        = false;
+    mOutputChannelLoss = 0.0;
+    mTotalPowerLoss    = 0.0;
+    mLeadsInterface    = false;
+    mReverseBiasState  = false;
+
+    /// - Set init flag on successful validation.
+    mInitFlag = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  nodeList  (1)  Pointer to a node list.
+///
+/// @throws   TsInitializationException
+///
+/// @details  If this link has been initialized, then compare the given node list nodes array to
+///           ours, and throw an exception if they differ.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::checkNodeList(GunnsNodeList* nodeList)
+{
+    if (mInitFlag) {
+        if (nodeList->mNodes != mNodeList->mNodes) {
+            GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                        "input and output converter links are not in the same network.");
+        }
+        /// - Since we've already finished our initialization when this method was called, we lead
+        ///   the interface.
+        mLeadsInterface = true;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]      configData   (--) Reference to the link config data.
+/// @param[in]      inputData    (--) Reference to the link input data.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Validates this Electrical Converter Output link configuration and input data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::validate(const GunnsElectConverterOutputConfigData& configData,
+                                         const GunnsElectConverterOutputInputData&  inputData) const
+{
+    /// - Issue an error on output conductance too low.
+    if (configData.mOutputConductance < DBL_EPSILON) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "output conductance < DBL_EPSILON.");
+    }
+
+    /// - Issue an error on efficiency too low.
+    if (configData.mConverterEfficiency < DBL_EPSILON) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "converter efficiency < DBL_EPSILON.");
+    }
+
+    /// - Issue an error on efficiency too high.
+    if (configData.mConverterEfficiency > 1.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "converter efficiency > 1.");
+    }
+
+    /// - Issue an error on input voltage too low.
+    if (inputData.mInputVoltage < 0.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "input voltage < 0.");
+    }
+
+    /// - Issue an error on setpoint too low.
+    if (inputData.mSetpoint < 0.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "setpoint < 0.");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Derived classes should call their base class implementation too.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::restartModel()
+{
+    /// - Reset the base class.
+    GunnsBasicLink::restartModel();
+
+    /// - Reset non-checkpointed and non-config data.
+    mResetTrips        = false;
+    mOutputChannelLoss = 0.0;
+    mReverseBiasState  = false;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  dt  (s)  Integration time step.
+///
+/// @details  Updates the link admittance matrix and source vector contributions to the system of
+///           equations based on converter state, load and load type.  Update sensors with the
+///           timestep to advance their drift malfunction.  Then call minorStep for the main update
+///           functions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::step(const double dt)
+{
+    /// - Process user commands to dynamically re-map ports.
+    processUserPortCommand();
+
+    if (mResetTrips) {
+        mResetTrips = false;
+        resetTrips();
+    }
+
+    minorStep(0.0, 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  dt         (s)   Not used.
+/// @param[in]  minorStep  (--)  Not used.
+///
+/// @details  Repeats the step function for minor steps in a non-linear network.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)), const int minorStep __attribute__((unused)))
+{
+    if (mNodeMap[0] == getGroundNodeIndex()) {
+        /// - Skip processing when on the Ground node.
+        mInputVoltage        = 0.0;
+        mAdmittanceMatrix[0] = 0.0;
+        mSourceVector[0]     = 0.0;
+
+    } else {
+        /// - Only update the input power if the last minor step solution was valid.  Reset the flag
+        ///   so that we only skip once.
+        if (not mSolutionReset) {
+            computeInputPower();
+        }
+        mSolutionReset = false;
+
+        /// - If we precede the pointed-to input link, drive the interface with it.  Otherwise we
+        ///   expect the interface to be driven by the input link or by other means.
+        if (mLeadsInterface) {
+            mInputVoltage = mInputLink->computeInputVoltage();
+            mInputLink->setInputPower(mInputPower);
+        }
+
+        /// - Set link conductance and source effects based on the load type.
+        double conductance   = 0.0;
+        double sourceVoltage = 0.0;
+        double sourceCurrent = 0.0;
+        if (mEnabled and (mInputVoltage > 0.0)
+                and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped())) {
+            switch (mRegulatorType) {
+                case (CURRENT) :
+                    sourceCurrent = mSetpoint;
+                    break;
+                case (POWER) :
+                    sourceCurrent = mSetpoint / fmax(DBL_EPSILON, mPotentialVector[0]);
+                    break;
+                case (TRANSFORMER) :
+                    conductance   = mOutputConductance;
+                    sourceVoltage = mInputVoltage * mSetpoint;
+                    break;
+                default :    // VOLTAGE
+                    conductance   = mOutputConductance;
+                    sourceVoltage = mSetpoint;
+                    break;
+            }
+        }
+
+        /// - Blockage malfunction reduces conductance in voltage source modes, and current in
+        ///   current source modes.
+        if (mMalfBlockageFlag) {
+            const double scalar = 1.0 - Math::limitRange(0.0, mMalfBlockageValue, 1.0);
+            conductance   *= scalar;
+            sourceCurrent *= scalar;
+        }
+
+        /// - Leave the reverse bias state if voltage bias goes forward.
+        if (sourceVoltage > mPotentialVector[0]) {
+            mReverseBiasState = false;
+        }
+
+        /// - When in the reverse bias state, zero conductance to prevent negative current.
+        if (mReverseBiasState) {
+            conductance = 0.0;
+        }
+
+        /// - Build the admittance matrix and source vector.
+        conductance = Math::limitRange(0.0, conductance, mConductanceLimit);
+        if (fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
+            mAdmittanceMatrix[0] = conductance;
+            mAdmittanceUpdate    = true;
+        }
+        mSourceVector[0] = sourceVoltage * conductance + sourceCurrent;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Not used.
+///
+/// @details  Method for computing the flows across the link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::computeFlows(const double dt __attribute__((unused)))
+{
+    if (mNodeMap[0] == getGroundNodeIndex()) {
+        /// - Skip processing when on the Ground node.
+        mFlux          = 0.0;
+        mPotentialDrop = 0.0;
+    } else {
+        computeFlux();
+        mPotentialDrop = -mPotentialVector[0];
+        if (mFlux > 0.0) {
+            mNodes[0]->collectInflux(mFlux);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] convergedStep (--) The count of minor steps since the network last converged.
+/// @param[in] absoluteStep  (--) Not used.
+///
+/// @returns  SolutionResult  (--)  Whether this link confirms or rejects the network solution.
+///
+/// @details  This method determines whether to accept or reject the converged network solution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAcceptable(
+        const int convergedStep, const int absoluteStep __attribute__((unused)))
+{
+    GunnsBasicLink::SolutionResult result = CONFIRM;
+    mSolutionReset = false;
+
+    /// - We only check for solution rejection and state change after the network has converged.
+    ///   Always confirm when on the Ground node.
+    if ( (mNodeMap[0] != getGroundNodeIndex()) and (convergedStep > 0) ) {
+
+        /// - If the voltage bias switched states in either direction, reject the solution and
+        ///   start over.
+        const bool lastBias = mReverseBiasState;
+        computeInputPower();
+        if (lastBias != mReverseBiasState) {
+            result = REJECT;
+        }
+
+        /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
+        ///   truth parameter, otherwise the trip looks directly at the truth parameter.
+        float sensedVout = mPotentialVector[0];
+        float sensedIout = mFlux;
+
+        /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
+        ///   integrated.  This is because we don't have the time-step in this function, and we must
+        ///   update the sensor multiple times per major network step, which would repeat the drift
+        ///   integration too many times.  The result of all this is that drift lags behind by one
+        ///   major step for causing trips.
+        if (mOutputVoltageSensor) {
+            sensedVout = mOutputVoltageSensor->sense(0.0, true, sensedVout);
+        }
+        if (mOutputCurrentSensor) {
+            sensedIout = mOutputCurrentSensor->sense(0.0, true, sensedIout);
+        }
+
+        /// - Check all trip logics for trips.  If any trip, reject the solution.
+        if (mEnabled) {
+            mOutputOverVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
+            mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
+        }
+    }
+    return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (--)  Input channel load based on load value type.
+///
+/// @details  Updates output current, output power, power losses, input power and input load value
+///           based on the load value type.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsElectConverterOutput::computeInputPower()
+{
+    if (mNodeMap[0] == getGroundNodeIndex()) {
+        /// - Skip processing when on the Ground node.
+        mPower             = 0.0;
+        mOutputChannelLoss = 0.0;
+        mInputPower        = 0.0;
+        mTotalPowerLoss    = 0.0;
+
+    } else {
+        /// - mPower is the power delivered to the downstream node, and doesn't include losses in
+        ///   the voltage converter or through converter output channel resistance.
+        computeFlux();
+        mPower = mFlux * mPotentialVector[0];
+
+        /// - Power dissipated due to the output current through the output channel resistance.
+        mOutputChannelLoss = mFlux * mFlux / fmax(DBL_EPSILON, mOutputConductance);
+
+        /// - Input power due to efficiency of the voltage conversion.
+        mInputPower = (mPower + mOutputChannelLoss) / Math::limitRange(DBL_EPSILON, mConverterEfficiency, 1.0);
+
+        /// - Total power lost due to conversion and output channel resistance; this can also be
+        ///   used as the waste heat generated by the converter.
+        mTotalPowerLoss = mInputPower - mPower;
+    }
+    return mInputPower;
+}

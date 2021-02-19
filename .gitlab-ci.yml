@@ -1,0 +1,16 @@
+before_script:
+    - git fetch
+    - git submodule foreach --recursive git fetch -v
+    - git submodule update --init
+    - source ./test/CI/env_setup.profile
+    - source ./bin/bashrc
+    - cd ${GUNNS_HOME}
+
+SIM_test:
+  script:
+    - ./test/CI/sim_test.py
+    
+all_unit_tests:
+  script:
+    - ./test/make_all_ut.sh
+    - ./test/CI/scan_all_ut.py

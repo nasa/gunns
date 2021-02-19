@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <potential>
+        <name>pot_CECLSS_26</name>
+        <node>CECLSS_26</node>
+        <temperature units='K'>300.00</temperature>
+        <conductivity units='W/K'>1e12</conductivity>
+    </potential>
+    <potential>
+        <name>not good!</name>
+        <node></node>
+        <temperature units='K'>318.00</temperature>
+        <conductivity units='W/K'>1e12</conductivity>
+    </potential>
+    <potential>
+        <name>pressure vessel</name>
+        <node>CPV_5380</node>
+        <temperature units='K'>318.00</temperature>
+        <conductivity units='W/K'>1e12</conductivity>
+    </potential>
+    <source>
+        <name>N2 air thermal dissipation</name>
+        <node>CMHS_48233</node>
+        <flux units='W'>20.0</flux>
+    </source>
+    <source>
+        <name>multi-node source</name>
+        <node>CMAFTGUS_30<frac>0.3</frac></node>
+        <node>CMAFTGUS_31<frac>0.3</frac></node>
+        <node>CRRMECH_200<frac>0.2</frac></node>
+        <node>CRRMECH_300<frac>0.2</frac></node>
+        <flux units='W'>100.0</flux>
+    </source>
+    <source>
+        <name>doesn't matter</name>
+        <node>BADNODE</node>
+        <flux units='W'>15.0</flux>
+    </source>
+</list>

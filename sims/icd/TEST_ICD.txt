@@ -1,0 +1,7 @@
+PUI     SYS     BUS     SUBSYS  VAR_NAME        ACTION  RATE            SIM_OBJECT              SIM_VAR_NAME                            TYPE    UNITS   COMMENTS
+
+# Copyright 2019 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# Exchange tank shell temperature and heat flux between thermal & fluid networks:
+xxxx	gunns	simbus	test	tankShellT	WRITE	ECLSS_LO	TestSimObject testSimObject	thermal.capacitor.mTemperature	double	(K)	Tank shell temperature
+xxxx	gunns	simbus	test	tankShellT	READ	ECLSS_LO	TestSimObject testSimObject	fluid.tank.mShellTemperature	double	(K)	Tank shell temperature

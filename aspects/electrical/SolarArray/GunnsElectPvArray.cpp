@@ -1,0 +1,516 @@
+/**
+@file
+@brief    GUNNS Electrical Photovoltaic Array Link Model implementation
+
+@copyright Copyright 2019 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
+LIBRARY DEPENDENCY:
+  (
+   (core/GunnsBasicLink.o)
+   (core/GunnsBasicNode.o)
+   (software/exceptions/TsInitializationException.o)
+   (software/exceptions/TsOutOfBoundsException.o)
+  )
+*/
+
+#include "math/Math.hh"
+#include "GunnsElectPvArray.hh"
+#include "core/GunnsBasicNode.hh"
+#include "software/exceptions/TsInitializationException.hh"
+#include "software/exceptions/TsOutOfBoundsException.hh"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] arrayNumSections               (--)   Number of sections in the array.
+/// @param[in] arrayNumStrings                (--)   Default total number of strings in the array.
+/// @param[in] sectionSourceAngleExponent     (--)   Exponent on trig function of light source incident angle.
+/// @param[in] sectionBacksideReduction       (--)   Reduction fraction (0-1) when lit from back side.
+/// @param[in] sectionSourceAngleEdgeOn       (--)   Angle of light source to surface is edge-on instead of normal.
+/// @param[in] sectionRefSourceFluxMagnitude  (W/m2) Reference ambient flux magnitude of light source at the surface.
+/// @param[in] stringBlockingDiodeVoltageDrop (V)    Voltage drop across the diode at end of string.
+/// @param[in] stringBypassDiodeVoltageDrop   (V)    Voltage drop across each bypass diode.
+/// @param[in] stringBypassDiodeInterval      (--)   Number of cells per bypass diode.
+/// @param[in] stringNumCells                 (--)   Number of cells in this string.
+/// @param[in] cellSurfaceArea                (m2)   Cell surface area of one side.
+/// @param[in] cellEfficiency                 (--)   Cell photovoltaic efficiency (0-1).
+/// @param[in] cellSeriesResistance           (ohm)  Cell series resistance.
+/// @param[in] cellShuntResistance            (ohm)  Cell shunt resistance.
+/// @param[in] cellOpenCircuitVoltage         (V)    Cell open-circuit voltage.
+/// @param[in] cellRefTemperature             (K)    Cell Reference temperature for temperature effects.
+/// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on open-circuit voltage.
+/// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on source current.
+///
+/// @details  Default constructs this Photovoltaic Array Link config data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayConfigData::GunnsElectPvArrayConfigData(
+        const std::string& name,
+        GunnsNodeList*     nodes,
+        const unsigned int arrayNumSections,
+        const unsigned int arrayNumStrings,
+        const double       sectionSourceAngleExponent,
+        const double       sectionBacksideReduction,
+        const bool         sectionSourceAngleEdgeOn,
+        const double       sectionRefSourceFluxMagnitude,
+        const double       stringBlockingDiodeVoltageDrop,
+        const double       stringBypassDiodeVoltageDrop,
+        const unsigned int stringBypassDiodeInterval,
+        const unsigned int stringNumCells,
+        const double       cellSurfaceArea,
+        const double       cellEfficiency,
+        const double       cellSeriesResistance,
+        const double       cellShuntResistance,
+        const double       cellOpenCircuitVoltage,
+        const double       cellRefTemperature,
+        const double       cellTemperatureVoltageCoeff,
+        const double       cellTemperatureCurrentCoeff)
+    :
+    GunnsBasicLinkConfigData(name, nodes),
+    mNumSections(arrayNumSections),
+    mNumStrings(arrayNumStrings),
+    mNumStringsBySection(0),
+    mSectionConfig(sectionSourceAngleExponent,
+                   sectionBacksideReduction,
+                   sectionSourceAngleEdgeOn,
+                   sectionRefSourceFluxMagnitude,
+                   stringBlockingDiodeVoltageDrop,
+                   stringBypassDiodeVoltageDrop,
+                   stringBypassDiodeInterval,
+                   stringNumCells,
+                   cellSurfaceArea,
+                   cellEfficiency,
+                   cellSeriesResistance,
+                   cellShuntResistance,
+                   cellOpenCircuitVoltage,
+                   cellRefTemperature,
+                   cellTemperatureVoltageCoeff,
+                   cellTemperatureCurrentCoeff)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Photovoltaic Array Link config data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayConfigData::~GunnsElectPvArrayConfigData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) Reference to the object to be assigned from.
+///
+/// @details  Assignment operator for the Photovoltaic Array Link config data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayConfigData& GunnsElectPvArrayConfigData::operator =(const GunnsElectPvArrayConfigData& that)
+{
+    if (&that != this) {
+        mName                = that.mName;
+        mNodeList            = that.mNodeList;
+        mNumSections         = that.mNumSections;
+        mNumStrings          = that.mNumStrings;
+        mNumStringsBySection = that.mNumStringsBySection;
+        mSectionConfig       = that.mSectionConfig;
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] sectionSourceFluxMagnitude   (W/m2) Ambient flux magnitude of light source at the surface.
+/// @param[in] sectionSourceAngle           (r)    Angle of light source to surface.
+/// @param[in] sectionSourceExposedFraction (--)   Surface area fraction exposed to light source (0-1).
+/// @param[in] sectionTemperature           (K)    Temperature of the section.
+///
+/// @details  Default constructs this Photovoltaic Array Link input data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayInputData::GunnsElectPvArrayInputData(
+        const double sectionSourceFluxMagnitude,
+        const double sectionSourceAngle,
+        const double sectionSourceExposedFraction,
+        const double sectionTemperature)
+    :
+    GunnsElectPvSectionInputData(sectionSourceFluxMagnitude,
+                                 sectionSourceAngle,
+                                 sectionSourceExposedFraction,
+                                 sectionTemperature)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Photovoltaic Array Link input data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayInputData::~GunnsElectPvArrayInputData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Photovoltaic Array Link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArray::GunnsElectPvArray()
+    :
+    GunnsBasicLink(NPORTS),
+    mSections(0),
+    mConfig(),
+    mOpenCircuitSide(false),
+    mCommonStringsOutput(false),
+    mPercentInsolation(0.0),
+    mShortCircuitCurrent(0.0),
+    mOpenCircuitVoltage(0.0),
+    mMpp(),
+    mTerminal(),
+    mIvCornerVoltage(0.0),
+    mIvCornerCurrent(0.0)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Photovoltaic Array Link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArray::~GunnsElectPvArray()
+{
+    TS_DELETE_ARRAY(mSections);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]     configData   (--) Photovoltaic Array Config Data.
+/// @param[in]     inputData    (--) Photovoltaic Section Input Data.
+/// @param[in,out] networkLinks (--) Network links.
+/// @param[in]     port0        (--) Network port 0.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Initializes this Photovoltaic Array Link with configuration and input data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::initialize(const GunnsElectPvArrayConfigData&  configData,
+                                   const GunnsElectPvSectionInputData& inputData,
+                                   std::vector<GunnsBasicLink*>&       networkLinks,
+                                   const int                           port0)
+{
+    /// - Initialize the base class.
+    GunnsBasicLinkInputData baseInput(false, 0.0);
+    int ports[1] = {port0};
+    GunnsBasicLink::initialize(configData, baseInput, networkLinks, ports);
+
+    /// - Reset init flag.
+    mInitFlag = false;
+
+    /// - Initialize & validate config data.
+    mConfig = configData;
+    validate();
+
+    /// - Create and initialize the array of sections.
+    int numSections = mConfig.mNumSections;
+    TS_NEW_CLASS_ARRAY_EXT(mSections, numSections, GunnsElectPvSection, (&mConfig.mSectionConfig),
+                           std::string(mName) + ".mSections");
+
+    /// - By default, each section has the same number of strings.  However if the
+    ///   mNumStringsBySection list is provided, then each section will get its number of strings
+    ///   from the list, and the array's total number of strings will be changed to the list sum.
+    if (mConfig.mNumStringsBySection) {
+        mConfig.mNumStrings = 0;
+    }
+    for(int i=0; i<numSections; ++i) {
+        std::ostringstream stream;
+        stream << ".mSections_" << i;
+        unsigned int numStrings = 0;
+        if (mConfig.mNumStringsBySection) {
+            numStrings = mConfig.mNumStringsBySection[i];
+            mConfig.mNumStrings += numStrings;
+        } else {
+            numStrings = mConfig.mNumStrings / mConfig.mNumSections;
+        }
+        mSections[i].initialize(mName + stream.str(), inputData, numStrings);
+    }
+
+    /// - Initialize class attributes.
+    mOpenCircuitSide     = false;
+    mCommonStringsOutput = true;
+    mPercentInsolation   = 0.0;
+    mShortCircuitCurrent = 0.0;
+    mOpenCircuitVoltage  = 0.0;
+    mMpp.clear();
+    mTerminal.clear();
+    mIvCornerVoltage     = 0.0;
+    mIvCornerCurrent     = 0.0;
+    mInitFlag            = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   TsInitializationException
+///
+/// @details  Validates this GUNNS Photovoltaic Array configuration.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::validate() const
+{
+    /// - Throw an exception on # sections < 1.
+    if (mConfig.mNumSections < 1) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "number of sections < 1.");
+    }
+
+    /// - Throw an exception on # strings < # sections.
+    if (mConfig.mNumStrings < mConfig.mNumSections) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "number of strings < number of sections.");
+    }
+
+    /// - Throw an exception if # sections not evenly divisible in total # strings when the
+    ///   # of strings in each section custom list is not provided.
+    if (!mConfig.mNumStringsBySection and (0 != mConfig.mNumStrings % mConfig.mNumSections)) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "number of sections not evenly divisible in number of strings.");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Derived classes should call their base class implementation too.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::restartModel()
+{
+    /// - Reset the base class.
+    GunnsBasicLink::restartModel();
+
+    /// - Reset non-config and non-checkpointed data.
+    mOpenCircuitSide     = false;
+    mPercentInsolation   = 0.0;
+    mShortCircuitCurrent = 0.0;
+    mOpenCircuitVoltage  = 0.0;
+    mMpp.clear();
+    mTerminal.clear();
+    mIvCornerVoltage     = 0.0;
+    mIvCornerCurrent     = 0.0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Not used.
+///
+/// @throws   TsOutOfBoundsException
+///
+/// @details  Computes this link's contributions to the network system of equations prior to the
+///           network major step solution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::step(const double dt __attribute__((unused)))
+{
+    processUserPortCommand();
+    updateArray();
+    buildAdmittanceMatrix();
+    buildSourceVector();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Updates the photovoltaic sections in their environment, and from their outputs
+///           computes the average array performance parameters for this time step.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::updateArray()
+{
+    /// - Update the sections, loop over the strings and sum up their short-circuit currents, and
+    ///   find the highest string open-circuit voltage and maximum power.  The voltage will also be
+    ///   the same for the entire array.
+    double percentInsolation = 0.0;
+    double isc               = 0.0;
+    double voc               = 0.0;
+    double vmpp              = 0.0;
+    double impp              = 0.0;
+    double pmpp              = 0.0;
+    for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
+        mSections[section].update();
+        percentInsolation += mSections[section].getPercentInsolation();
+        for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
+            isc += mSections[section].mStrings[string].getShortCircuitCurrent();
+            voc  = std::max(voc, mSections[section].mStrings[string].getOpenCircuitVoltage());
+            pmpp = std::max(pmpp, mSections[section].mStrings[string].getMpp().mPower);
+        }
+    }
+
+    /// - Loop over the strings again and sum up the maximum power point current for all strings
+    ///   that match the string maximum power.
+    for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
+        for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
+            if (pmpp == mSections[section].mStrings[string].getMpp().mPower) {
+                vmpp  = mSections[section].mStrings[string].getMpp().mVoltage;
+                impp += mSections[section].mStrings[string].getMpp().mCurrent;
+            }
+        }
+    }
+
+    /// - Update average array performance.
+    mPercentInsolation   = percentInsolation / mConfig.mNumSections;
+    mShortCircuitCurrent = isc;
+    mOpenCircuitVoltage  = voc;
+    mIvCornerVoltage     = vmpp;
+    mIvCornerCurrent     = impp;
+
+    /// - Update the maximum power point for the array.
+    const double dI = isc - impp;
+    if (dI > DBL_EPSILON and vmpp > DBL_EPSILON) {
+        mMpp.mVoltage     = std::min(0.5 * isc * vmpp / dI, mIvCornerVoltage);
+        const double fluxMpp = isc - dI * mMpp.mVoltage / vmpp;
+        mMpp.mPower       = fluxMpp * mMpp.mVoltage;
+        mMpp.mCurrent     = mMpp.mPower / std::max(DBL_EPSILON, mMpp.mVoltage);
+        mMpp.mConductance = mMpp.mCurrent / std::max(DBL_EPSILON, mMpp.mVoltage);
+    } else {
+        mMpp.clear();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Builds the Admittance Matrix for the link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::buildAdmittanceMatrix()
+{
+    double admittance = 0.0;
+    if (mOpenCircuitSide) {
+        const double dV = mOpenCircuitVoltage - mIvCornerVoltage;
+        if (dV > DBL_EPSILON) {
+            admittance = mIvCornerCurrent / dV;
+        }
+    } else if (mIvCornerVoltage > DBL_EPSILON) {
+        admittance = (mShortCircuitCurrent - mIvCornerCurrent) / mIvCornerVoltage;
+    }
+    if (admittance != mAdmittanceMatrix[0]) {
+        mAdmittanceMatrix[0] = admittance;
+        mAdmittanceUpdate    = true;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] convergedStep (--) Not used.
+/// @param[in] absoluteStep  (--) Not used.
+///
+/// @returns  SolutionResult  (--)  Whether this link confirms or rejects the network solution.
+///
+/// @details  This link will reject whenever the terminal voltage moves from one line segment of the
+///           array I-V curve to the other.  In this case, the link admittance matrix and source
+///           vector are updated for the new line segment before returning.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsBasicLink::SolutionResult GunnsElectPvArray::confirmSolutionAcceptable(
+        const int convergedStep __attribute__((unused)),
+        const int absoluteStep __attribute__((unused)))
+{
+    const bool lastOpenCircuitSide = mOpenCircuitSide;
+    mOpenCircuitSide = (mPotentialVector[0] >= mIvCornerVoltage);
+    if (lastOpenCircuitSide != mOpenCircuitSide) {
+        buildAdmittanceMatrix();
+        buildSourceVector();
+        return REJECT;
+    } else {
+        return CONFIRM;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Not used.
+///
+/// @details  Computes the flows and final outputs resulting from the network solution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::computeFlows(const double dt __attribute__((unused)))
+{
+    mPotentialDrop = -mPotentialVector[0];
+
+    /// - Actual current and power delivered to the terminal node.
+    mFlux  = mSourceVector[0] - mAdmittanceMatrix[0] * mPotentialVector[0];
+    mPower = mFlux * mPotentialVector[0];
+
+    /// - Transport current to the terminal node.
+    mNodes[0]->collectInflux(mFlux);
+
+    /// - Load the strings at the output node voltage if they haven't already been loaded by a
+    ///   regulator model, so that their output states will always have some values.
+    if (mCommonStringsOutput) {
+        if (mNodeMap[0] == getGroundNodeIndex()) {
+            for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
+                for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
+                    mSections[section].mStrings[string].loadAtVoltage(mTerminal.mVoltage);
+                }
+            }
+        } else {
+            for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
+                for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
+                    mSections[section].mStrings[string].loadAtVoltage(mPotentialVector[0]);
+                }
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] power       (W)     Returned output load power at the given terminal voltage.
+/// @param[out] conductance (1/ohm) Returned output load conductance at the given terminal voltage.
+/// @param[in]  voltage     (V)     The terminal voltage to calculate outputs for.
+///
+/// @details  This computes the output power and load conductance that will place the array at the
+///           given terminal voltage on its I-V curve.  If the given terminal voltage exceeds the
+///           limits of the I-V curve, then zeroes are returned.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::predictLoadAtVoltage(
+        double&      power,
+        double&      conductance,
+        const double voltage) const
+{
+    if (not Math::isInRange(DBL_EPSILON, voltage, mOpenCircuitVoltage)) {
+        power       = 0.0;
+        conductance = 0.0;
+
+    } else if (voltage < mIvCornerVoltage) {
+        const double current = std::max(DBL_EPSILON, mShortCircuitCurrent
+                - (mShortCircuitCurrent - mIvCornerCurrent) * voltage / mIvCornerVoltage);
+        power       = current * voltage;
+        conductance = current * current / power;
+
+    } else {
+        const double current = std::max(DBL_EPSILON, mIvCornerCurrent
+                * (voltage - mOpenCircuitVoltage) / (mIvCornerVoltage - mOpenCircuitVoltage));
+        power       = current * voltage;
+        conductance = current * current / power;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  power      (W)   The output power load to apply.
+/// @param[in]  shortSide  (--)  True uses the solution on the short-circuit side of maximum power.
+///
+/// @details  This loads the array at the given power output and on the given side of the array's
+///           Maximum Power Point on its I-V performance curve.  If the given power exceeds the
+///           array's maximum power output then the terminal outputs are zeroed.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvArray::loadAtPower(const double power, const bool shortSide)
+{
+    if (power < DBL_EPSILON) {
+        mTerminal.mVoltage     = mOpenCircuitVoltage;
+        mTerminal.mConductance = 0.0;
+        mTerminal.mPower       = 0.0;
+        mTerminal.mCurrent     = 0.0;
+
+    } else if (power < mMpp.mPower) {
+        // Divisors can't be zero when mMppPower > 0.
+        double admittance = 0.0;
+        double source     = 0.0;
+        double rootSign   = 0.0;
+        if (shortSide) {
+            admittance = (mShortCircuitCurrent - mIvCornerCurrent) / mIvCornerVoltage;
+            source     = mShortCircuitCurrent;
+            rootSign   = -1.0;
+        } else {
+            admittance = mIvCornerCurrent / (mOpenCircuitVoltage - mIvCornerVoltage);
+            source     = admittance * mOpenCircuitVoltage;
+            rootSign   = 1.0;
+        }
+        /// - Solve voltage with the quadratic equation: v = (-b +/- sqrt(bb-4ac))/2/a,
+        ///   where a = admittance, b = -source, c = power.  Always use the + root for the
+        ///   open-circuit side and - root for short-circuit side.
+        const double bb4ac = source*source - 4.0*admittance*power;
+        if (bb4ac > 0.0) {
+            mTerminal.mVoltage     = std::max(DBL_EPSILON, 0.5 * (source + rootSign * sqrt(bb4ac))
+                                                           / admittance);
+            mTerminal.mPower       = power;
+            mTerminal.mCurrent     = mTerminal.mPower / mTerminal.mVoltage;
+            mTerminal.mConductance = mTerminal.mCurrent / mTerminal.mVoltage;
+        } else {
+            GUNNS_WARNING("cannot predict load.");
+        }
+    } else {
+        mTerminal.clear();
+    }
+}

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Default to 2 jobs - that's safe even on a single-core machine
+make_jobs=2
+
+if [ -e /proc/cpuinfo ]; then
+    if egrep --quiet "^physical id" /proc/cpuinfo; then
+        NUM_CPU=$(egrep "^physical id" /proc/cpuinfo | sort -u | wc -l)
+        NUM_CORE_PER_CPU=$(egrep "^cpu cores" /proc/cpuinfo | sort -u | awk '{print $NF}')
+    else
+        NUM_CPU=$(egrep "^processor" /proc/cpuinfo | sort -u | wc -l)
+        NUM_CORE_PER_CPU=1
+    fi
+
+    TOTAL_CPU_CORES=$(($NUM_CPU * $NUM_CORE_PER_CPU))
+
+    if [ $TOTAL_CPU_CORES -gt 1 ]; then
+        # limit to 8 CPU max
+        if [ $TOTAL_CPU_CORES -gt 8 ]; then
+            make_jobs=8
+        else
+            make_jobs=${TOTAL_CPU_CORES}
+        fi
+    fi
+fi
+
+echo $make_jobs

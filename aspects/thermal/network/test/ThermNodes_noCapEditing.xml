@@ -1,0 +1,127 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <node>
+        <name>CECLSS_26</name>
+        <temperature units='K'>300.00</temperature>
+        <capacitance units='J/K'>0.00</capacitance>
+    </node>
+    <node>
+        <name>CECLSS_46</name>
+        <temperature units='K'>301.00</temperature>
+        <capacitance units='J/K'>179.95</capacitance>
+        <closed>ok!</closed>
+    </node>
+    <node>
+        <name>CECLSS_161</name>
+        <temperature units='K'>302.00</temperature>
+        <capacitance units='J/K'>2256.10</capacitance>
+    </node>
+    <node>
+        <name>CECLSS_1001</name>
+        <temperature units='K'>303.00</temperature>
+        <capacitance units='J/K'>2494.67</capacitance>
+    </node>
+    <node>
+        <name>CMAFTGUS_30</name>
+        <temperature units='K'>304.00</temperature>
+        <capacitance units='J/K'>1053.32</capacitance>
+        <editGroup>etcsS1</editGroup>
+    </node>
+    <node>
+        <name>CMAFTGUS_31</name>
+        <temperature units='K'>305.00</temperature>
+        <capacitance units='J/K'>1053.32</capacitance>
+        <editGroup>etcsS1</editGroup>
+    </node>
+    <node>
+        <name>CMBCKSHL_13330</name>
+        <temperature units='K'>455.00</temperature>
+        <capacitance units='J/K'>4722.05</capacitance>
+        <editGroup>etcsP1</editGroup>
+    </node>
+    <node>
+        <name>CMHS_48233</name>
+        <temperature units='K'>307.00</temperature>
+        <capacitance units='J/K'>609.60</capacitance>
+    </node>
+    <node>
+        <name>CMHS_62803</name>
+        <temperature units='K'>308.00</temperature>
+        <capacitance units='J/K'>424.96</capacitance>
+    </node>
+    <node>
+        <name>CMHS_62803</name>
+        <temperature units='K'>308.00</temperature>
+        <capacitance units='J/K'>424.96</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHET_1</name>
+        <temperature units='K'>309.00</temperature>
+        <capacitance units='J/K'>11802.19</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHET_100</name>
+        <temperature units='K'>310.00</temperature>
+        <capacitance units='J/K'>342.31</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHYT_1</name>
+        <temperature units='K'>311.00</temperature>
+        <capacitance units='J/K'>40401.75</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHYT_2</name>
+        <temperature units='K'>312.00</temperature>
+        <capacitance units='J/K'>40401.75</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHYT_10</name>
+        <temperature units='K'>313.00</temperature>
+        <capacitance units='J/K'>793.06</capacitance>
+    </node>
+    <node>
+        <name>CMPRPHYT_20</name>
+        <temperature units='K'>314.00</temperature>
+        <capacitance units='J/K'>793.06</capacitance>
+    </node>
+    <node>
+        <name>CMRCSNR1_20</name>
+        <temperature units='K'>315.00</temperature>
+        <capacitance units='J/K'>520.50</capacitance>
+        <editGroup>invalidGroup</editGroup>
+    </node>
+    <node>
+        <name>CMRCSNR2_20</name>
+        <temperature units='K'>316.00</temperature>
+        <capacitance units='J/K'>520.50</capacitance>
+    </node>
+    <node>
+        <name>CMWEB_1113</name>
+        <temperature units='K'>317.00</temperature>
+        <capacitance units='J/K'>372.79</capacitance>
+    </node>
+    <node>
+        <name>CPV_5380</name>
+        <temperature units='K'>318.00</temperature>
+        <capacitance units='J/K'>0.00</capacitance>
+    </node>
+    <node>
+        <name>CRRMECH_200</name>
+        <temperature units='K'>319.00</temperature>
+        <capacitance units='J/K'>122.51</capacitance>
+        <editGroup>etcsP1</editGroup>
+    </node>
+    <node>
+        <name>CRRMECH_300</name>
+        <temperature units='K'>320.00</temperature>
+        <capacitance units='J/K'>122.51</capacitance>
+        <editGroup>etcsP1</editGroup>
+    </node>
+    <node>
+        <name>SPACE_1</name>
+        <temperature units='K'>0.00</temperature>
+        <capacitance units='J/K'>0.00</capacitance>
+    </node>
+</list>

@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<registry>
+    <expectedMass units='kg'>
+        <segment name='subModule1'>40000</segment>
+        <segment name='subModule2'>20000</segment>
+    </expectedMass>
+    <capEditing>
+        <editGroup>etcsP1</editGroup>
+        <editGroup>etcsS1</editGroup>
+    </capEditing>
+    <node name='GOOD_AIR_0'>
+        <des>TEST cabin air node (ThermalPotential link)</des>
+        <capacitor>
+            <capacitance units='J/K'>0</capacitance>
+        </capacitor>
+        <potential>
+            <temperature isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>EclssSimObject eclss</simObject>
+                <simVarName>cabin.fluid.netNodes[10].mContent.mTemperature</simVarName>
+            </temperature>
+            <heatflux isReadyForIcd='true'><!-->Alert me that my case might be incorrect!<-->
+                <rate>ECLSS_10HZ</rate>
+                <simObject>EclssSimObject eclss</simObject>
+                <simVarName>cabin.fluid.TESTCabin.mHeatfluxFromShell</simVarName>
+            </heatflux>
+            <heatFlux isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>EclssSimObject eclss</simObject>
+                <simVarName>cabin.fluid.TESTCabin.mHeatFluxFromShell</simVarName>
+            </heatFlux>
+        </potential>
+    </node>
+    <node name='BAD_POTENTIAL'>
+        <des>TEST cabin air node (ThermalPotential link)</des>
+        <potential>
+            <conductivity units='W/K'>$5</conductivity>
+        </potential>
+    </node>
+    <node name='GOOD_CIRC_FAN_1'>
+        <des>TEST Circulation Fan</des>
+        <loc>S1</loc>
+        <capacitor>
+            <capacitance units='J/K'>cap_circ_fan_TEST</capacitance>
+            <temperature isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>Eclss10HzSignalsSimObject Eclss10HzSignals</simObject>
+                <simVarName>mapper.mAtm.TESTCabFan.mModel.mController.mTemperature</simVarName>
+            </temperature>
+            <HEATFLUX isReadyForIcd='true'><!-->Alert me that my case might be incorrect!<-->
+                <rate>ECLSS_10HZ</rate>
+                <simObject>EclssSimObject eclss</simObject>
+                <simVarName>cabin.fluid.TESTCabin.mHeatfluxFromShell</simVarName>
+            </HEATFLUX>
+            <heatFlux isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>Eclss10HzSignalsSimObject Eclss10HzSignals</simObject>
+                <simVarName>mapper.mAtm.TESTCabFan.mModel.mController.mTotalWastHeat</simVarName>
+            </heatFlux>
+        </capacitor>
+        <conduction>
+            <to>GOOD_STRUCT_S_8</to>
+            <conductivity units='W/K'>cond_circ_fan_TEST</conductivity>
+        </conduction>
+        <conduction>
+            <to>GOOD_RAD_5</to>
+            <info>should be good, even though node isn't defined until later in the registry</info>
+            <conductivity units='W/K'>cond_circ_fan_TEST</conductivity>
+        </conduction>        
+        <conduction>
+            <conductivity units='W/K'>cond_circ_fan_TEST</conductivity>
+        </conduction>
+    </node>
+    <node name='GOOD_DPA_2'>
+        <des>TEST Depress Assembly 1</des>
+        <loc>--</loc>
+        <info>located on shell interface with N1</info>
+        <capacitor>
+            <capacitance units='J/K'>cap_dpa</capacitance>
+            <editGroup>etcsS1</editGroup>
+            <temperature isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>Eclss10HzSignalsSimObject Eclss10HzSignals</simObject>
+                <simVarName>mapper.mAtm.mMiscSensors.TESTDepressAssembly1Temp</simVarName>
+            </temperature>
+        </capacitor>
+        <conduction>
+            <to>GOOD_SHELL_7</to>
+            <conductivity units='W/K'>cond_dpa_TEST_1</conductivity>
+        </conduction>
+    </node>
+    <node name='GOOD_DPA_2'>
+        <des>duplicated name</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_dpa</capacitance>
+        </capacitor>
+        <conduction>
+            <to>GOOD_SHELL_7</to>
+            <conductivity units='W/K'>cond_dpa_TEST_1</conductivity>
+        </conduction>
+    </node>
+    <node name='BAD_NO_CAP'>
+        <des>node also defined in Thermal Desktop</des>
+        <capacitor>
+            <temperature isReadyForIcd='false'>
+                <rate>ECLSS_10HZ</rate>
+                <simObject>Eclss10HzSignalsSimObject Eclss10HzSignals</simObject>
+                <simVarName>mapper.mAtm.mMiscSensors.TESTDepressAssembly1Temp</simVarName>
+            </temperature>
+        </capacitor>
+    </node>
+    <node name='BAD_EDIT_GROUP'>
+        <capacitor>
+            <capacitance units='J/K'>cap_valid</capacitance>
+            <editGroup>invalid</editGroup>
+        </capacitor>
+    </node>
+    <node>
+        <des>node has no name</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+    </node>
+    <node name='BAD_CAP_VALUE'>
+        <des>cap symbol is not found in symbols file</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_invalid</capacitance>
+        </capacitor>
+    </node>
+    <node name='GOOD_WITH_INVALID_COND_VALUE_3'>
+        <des>cond symbol is not found in symbols file</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+        <conduction>
+            <to>GOOD_SHELL_7</to>
+            <conductivity units='W/K'>cond_invalid</conductivity>
+        </conduction>
+    </node>
+    <node name='GOOD_WITH_INVALID_COND_NODE_4'>
+        <des>to node is not previously defined</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+        <conduction>
+            <to>BAD_INVALID_NODE</to>
+            <conductivity units='W/K'>cond_valid</conductivity>
+        </conduction>
+    </node>
+    <node name='BAD_NEGATIVE_CAP_1'>
+        <des>symbol is negative</des>
+        <capacitor>
+            <capacitance units='J/K'>cap_negative</capacitance>
+        </capacitor>
+    </node>
+    <node name='BAD_NEGATIVE_CAP_2'>
+        <des>symbol is negative</des>
+        <capacitor>
+            <capacitance units='J/K'>-12.0</capacitance>
+        </capacitor>
+    </node>
+    <node name='BAD_INIT_VALUE'>
+        <initTemp>notafloat</initTemp>
+        <capacitor>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+        <conduction>
+            <to>GOOD_SHELL_7</to>
+            <conductivity units='W/K'>cond_valid</conductivity>
+        </conduction>
+    </node>
+    <!-->==================================== radiator ===<-->
+    <node name='GOOD_RAD_5'>
+        <des>Radiator panel</des>
+        <loc>S1</loc>
+        <capacitor>
+            <editGroup>etcsP1</editGroup>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+        <conduction>
+            <to>GOOD_SHIELD_11</to>
+            <conductivity units='W/K'>cond_valid</conductivity>
+        </conduction>
+        <radiation>
+            <to>SPACE_1</to>
+            <viewScalar isReadyForIcd='true'>
+                <fromOtherIcd>TEST_frac</fromOtherIcd>
+            </viewScalar>
+        </radiation>
+        <radiation>
+            <to>SPACE_1</to>
+            <coefficient units='m2'>invalid</coefficient>
+            <viewScalar isReadyForIcd='true'>
+                <fromOtherIcd>TEST_frac</fromOtherIcd>
+            </viewScalar>
+        </radiation>
+        <radiation>
+            <to>BAD_INVALID_NODE</to>
+            <coefficient units='m2'>20.0</coefficient>
+            <viewScalar isReadyForIcd='true'>
+                <fromOtherIcd>TEST_frac</fromOtherIcd>
+            </viewScalar>
+        </radiation>
+        <potential>
+            <conductivity units='W/K'>1e12</conductivity>
+        </potential>
+        <conduction>
+            <to>GOOD_SHIELD_11</to>
+            <conductivity units='W/K'>cond_valid</conductivity>
+        </conduction>
+    </node>
+    <node name='GOOD_TD_NODE_6'>
+        <des>node also defined in Thermal Desktop</des>
+        <capacitor>
+            <editGroup>etcsP1</editGroup>
+            <capacitance units='J/K'>cap_valid</capacitance>
+        </capacitor>
+        <radiation>
+            <to>SPACE_1</to>
+            <coefficient units='m2'>60.0</coefficient>
+            <viewScalar isReadyForIcd='true'>
+                <noIcdTags>noIcdTags</noIcdTags>
+            </viewScalar>
+        </radiation>
+    </node>
+</registry>
+

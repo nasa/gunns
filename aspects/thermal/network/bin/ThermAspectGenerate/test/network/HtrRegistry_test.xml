@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2019 United States Government as represented by the Administrator of the
+     National Aeronautics and Space Administration.  All Rights Reserved. -->
+<list>
+    <source name='src_GOOD_1'>
+        <node>GOOD_CIRC_FAN_1<frac>0.5</frac></node>
+        <node>GOOD_DPA_2<frac>0.25</frac></node>
+        <node>GOOD_SHELL_7<frac>0.25</frac></node>
+        <scalar>1.0</scalar>
+        <initFlux units='W'>100.0</initFlux>
+        <heatFlux>
+            <rate>GOOD_RATE</rate>
+            <simObject>TestSimObject testSim</simObject>
+            <simVarName>test.testFlux</simVarName>
+        </heatFlux>
+        <temperature>
+            <rate>GOOD_RATE</rate>
+            <simObject>TestSimObject testSim</simObject>
+            <simVarName>test.testAvgTemp</simVarName>
+        </temperature>
+    </source>
+    <source name='src_BAD'>
+        <node>BAD_INVALID_NODE<frac>0.5</frac></node>
+        <node>GOOD_DPA_2<frac>0.25</frac></node>
+        <node>GOOD_SHELL_7<frac>0.25</frac></node>
+        <scalar>1.0</scalar>
+        <initFlux units='W'>100.0</initFlux>
+    </source>
+    <heater name='htr_GOOD_1'>
+        <node>GOOD_CIRC_FAN_1<frac>0.5</frac></node>
+        <node>GOOD_DPA_2<frac>0.25</frac></node>
+        <node>GOOD_SHELL_7<frac>0.25</frac></node>
+        <scalar>1.0</scalar>
+        <control type='thermostat'>
+            <instance>xxxx</instance>
+            <lower>/</lower>
+            <upper>/</upper>
+        </control>
+        <elec>
+            <powerSource>/</powerSource>
+            <rpc>/</rpc>
+            <ohms>189.06</ohms>
+        </elec>
+    </heater>
+    <heater name='htr_BAD_NODE'>
+        <node>BAD_INVALID_NODE<frac>0.5</frac></node>
+        <node>GOOD_DPA_2<frac>0.25</frac></node>
+        <node>GOOD_SHELL_7<frac>0.25</frac></node>
+        <scalar>1.0</scalar>
+        <control type='thermostat'>
+            <instance>xxxx</instance>
+            <lower>/</lower>
+            <upper>/</upper>
+        </control>
+        <elec>
+            <powerSource>/</powerSource>
+            <rpc>/</rpc>
+            <ohms>189.06</ohms>
+        </elec>
+    </heater>
+    <heater name='htr_GOOD_1'>
+        <des>repeated node</des>
+        <node>GOOD_SHELL_7</node>
+        <scalar>1.0</scalar>
+    </heater>
+        <heater name='htr_BAD_SCALAR'>
+        <node>GOOD_SHELL_7</node>
+        <scalar>notafloat</scalar>
+    </heater>
+    <heater>
+        <node>GOOD_SHELL_7</node>
+        <scalar>1.0</scalar>
+    </heater>
+</list>
+

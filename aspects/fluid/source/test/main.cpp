@@ -1,0 +1,65 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @defgroup  UT_GUNNS_FLUID_SOURCE   Source Unit tests
+/// @ingroup   UT_GUNNS_FLUID
+/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+///            National Aeronautics and Space Administration.  All Rights Reserved.
+/// @details   Unit test classes for GUNNS fluid source link models.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <cppunit/ui/text/TestRunner.h>
+
+#include "UtGunnsFluidAdsorber.hh"
+#include "UtGunnsFluidAdsorptionCompound.hh"
+#include "UtGunnsFluidEvaporation.hh"
+#include "UtGunnsFluidHotAdsorber.hh"
+#include "UtGunnsFluidHeater.hh"
+#include "UtGunnsFluidHotReactor.hh"
+#include "UtGunnsFluidFireSource.hh"
+#include "UtGunnsFluidMetabolic.hh"
+#include "UtGunnsFluidMetabolic2.hh"
+#include "UtGunnsFluidMultiAdsorber.hh"
+#include "UtGunnsFluidReactor.hh"
+#include "UtGunnsFluidSeparatorGas.hh"
+#include "UtGunnsFluidSeparatorLiquid.hh"
+#include "UtGunnsFluidSublimator.hh"
+#include "UtGunnsGasDisplacementPump.hh"
+#include "UtGunnsLiquidDisplacementPump.hh"
+#include "UtGunnsFluidSimpleH2Redox.hh"
+#include "UtGunnsFluidSourceBoundary.hh"
+#include "UtGunnsFluidSelectiveMembrane.hh"
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/// @param    int     --  not used
+/// @param    char**  --  not used
+///
+/// @return    --  status (always 0)
+///
+/// @details  Main for Plumbing Reactor unit tests in the CPPUNIT framework.
+////////////////////////////////////////////////////////////////////////////////////////////
+int main(int, char**) {
+    CppUnit::TextTestRunner runner;
+
+    runner.addTest(UtGunnsFluidAdsorber::suite());
+    runner.addTest(UtGunnsFluidAdsorptionCompound::suite());
+    runner.addTest(UtGunnsFluidEvaporation::suite());
+    runner.addTest(UtGunnsFluidHotAdsorber::suite());
+    runner.addTest(UtGunnsFluidReactor::suite());
+    runner.addTest(UtGunnsFluidHotReactor::suite());
+    runner.addTest(UtGunnsFluidFireSource::suite());
+    runner.addTest(UtGunnsFluidMetabolic::suite());
+    runner.addTest(UtGunnsFluidMetabolic2::suite());
+    runner.addTest(UtGunnsFluidMultiAdsorber::suite());
+    runner.addTest(UtGunnsFluidSeparatorGas::suite());
+    runner.addTest(UtGunnsFluidSeparatorLiquid::suite());
+    runner.addTest(UtGunnsFluidSublimator::suite());
+    runner.addTest(UtGunnsFluidHeater::suite());
+    runner.addTest(UtGunnsGasDisplacementPump::suite());
+    runner.addTest(UtGunnsLiquidDisplacementPump::suite());
+    runner.addTest(UtGunnsFluidSimpleH2Redox::suite());
+    runner.addTest(UtGunnsFluidSourceBoundary::suite());
+    runner.addTest(UtGunnsFluidSelectiveMembrane::suite());
+
+    runner.run();
+
+    return 0;
+}

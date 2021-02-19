@@ -1,0 +1,314 @@
+PUI	SYS	BUS	SUBSYS	VAR_NAME	ACTION	RATE	SIM_OBJECT	SIM_VAR_NAME	TYPE	UNITS	COMMENTS
+
+# Copyright 2019 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+#
+# Fluid supply/demand interface between GunnsFluidDistributedIf links via an intervening GunnsFluidDistributedIfLagBuffer object
+#
+#
+#### Supply Interface
+#
+# Supply-Out writes to lag buffer 1 head
+xxxx	gunns	simbus	test	intfcSupplyOutModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutFrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutFrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutCapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutCapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutSourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutSourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutXIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyOutXIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead1->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Supply-In writes to lag buffer 2 head
+xxxx	gunns	simbus	test	intfcSupplyInModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInFrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInFrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInCapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInCapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInSourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInSourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInEnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInEnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInXIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyInXIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mHead2->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Supply-Out reads from lag buffer 2 tail
+xxxx	gunns	simbus	test	intfcSupplyOutModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutFrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutFrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutCapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutCapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutSourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutSourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutXOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail2->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyOutXOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyOut.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Supply-In reads from lag buffer 1 tail
+xxxx	gunns	simbus	test	intfcSupplyInModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInFrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInFrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInCapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInCapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInSourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInSourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInEnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInEnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInXOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidSupply.mTail1->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyInXOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcSupplyIn.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+#
+#
+#### Return Interface
+#
+# Return-Out writes to lag buffer 1 head
+xxxx	gunns	simbus	test	intfcReturnOutModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutFrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutFrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutCapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutCapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutSourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutSourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutEnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutEnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutXIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnOutXIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead1->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Return-In writes to lag buffer 2 head
+xxxx	gunns	simbus	test	intfcReturnInModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInFrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInFrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInLoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInLoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInCapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInCapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInSourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInSourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInEnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInEnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInXIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnInXIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mHead2->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Return-Out reads from lag buffer 2 tail
+xxxx	gunns	simbus	test	intfcReturnOutModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutFrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutFrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutCapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutCapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutSourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutSourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutEnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutEnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutXOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail2->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnOutXOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnOut.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Return-In reads from lag buffer 1 tail
+xxxx	gunns	simbus	test	intfcReturnInModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInFrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInFrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInLoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInLoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInCapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInCapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInSourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInSourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInEnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInEnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInXOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidReturn.mTail1->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnInXOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid.intfcReturnIn.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+
+# Fluid supply/demand interface directly between GunnsFluidDistributedIf links (fluid 2 network) with no extra lag
+#
+#
+# Supply-Out writes to Supply-In
+xxxx	gunns	simbus	test	intfcSupplyOutModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyOutFrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutFrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutLoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyOutCapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutCapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyOutSourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutSourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutEnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyOutXIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyOutXIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Supply-In writes to Supply-Out
+xxxx	gunns	simbus	test	intfcSupplyInModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcSupplyInFrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInFrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInLoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcSupplyInCapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInCapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcSupplyInSourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInSourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcSupplyInEnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInEnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcSupplyInXIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyIn.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcSupplyInXIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcSupplyOut.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Return-Out writes to Return-In
+xxxx	gunns	simbus	test	intfcReturnOutModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnOutFrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutFrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutLoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnOutCapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutCapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnOutSourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutSourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnOutEnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutEnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnOutXIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnOutXIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# Return-In writes to Return-Out
+xxxx	gunns	simbus	test	intfcReturnInModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcReturnInFrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInFrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcReturnInLoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInLoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcReturnInCapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInCapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcReturnInSourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInSourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcReturnInEnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInEnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcReturnInXIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnIn.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcReturnInXIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquid2.intfcReturnOut.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+
+# Fluid supply/demand interface between GunnsFluidDistributedIf links via an intervening GunnsFluidDistributedIfLagBuffer object
+#  (Fluid Accum network)
+#
+
+# intfcPair1 writes to lag buffer 1 head
+xxxx	gunns	simbus	test	intfcPair1ModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1ModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1FrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1FrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1LoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1LoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1CapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1CapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1SourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1SourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1EnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1EnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1XIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair1XIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead1->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# intfcPair2 writes to lag buffer 2 head
+xxxx	gunns	simbus	test	intfcPair2ModeIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2ModeIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2FrameIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2FrameIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2LoopbackIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2LoopbackIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2CapIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2CapIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2SourceIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2SourceIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2EnergyIn	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2EnergyIn	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2XIn[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair2XIn[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mHead2->mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# intfcPair1 reads from lag buffer 2 tail
+xxxx	gunns	simbus	test	intfcPair1ModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1ModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1FrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1FrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1LoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1LoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1CapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1CapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1SourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1SourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1EnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1EnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1XOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail2->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair1XOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair1.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+# intfcPair2 reads from lag buffer 1 tail
+xxxx	gunns	simbus	test	intfcPair2ModeOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2ModeOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2FrameOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2FrameOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2LoopbackOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2LoopbackOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2CapOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2CapOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2SourceOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2SourceOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2EnergyOut	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2EnergyOut	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2XOut[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	lagBufferLiquidAccum.mTail1->mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair2XOut[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum.intfcPair2.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+
+
+# Fluid supply/demand interface directly between GunnsFluidDistributedIf ACCUMULATOR NETWORK links (fluid 2 network) with no extra lag
+#
+#
+
+# intfcPair1 writes to intfcPair2
+xxxx	gunns	simbus	test	intfcPair1ModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1ModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair1FrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1FrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair1LoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1LoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair1CapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1CapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair1SourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1SourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair1EnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1EnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair1XIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair1XIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions
+#
+## intfcPair2 writes to intfcPair1
+xxxx	gunns	simbus	test	intfcPair2ModeIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2ModeIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mDemandMode	bool	(--)	Demand mode flag
+xxxx	gunns	simbus	test	intfcPair2FrameIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2FrameIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mFrameCount	uint32_t	(--)	Frame count
+xxxx	gunns	simbus	test	intfcPair2LoopbackIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2LoopbackIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mFrameLoopback	uint32_t	(--)	Frame loop back
+xxxx	gunns	simbus	test	intfcPair2CapIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2CapIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mCapacitance	double	(mol/Pa)	Capacitance
+xxxx	gunns	simbus	test	intfcPair2SourceIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2SourceIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mSource	double	(--)	Pressure or flux source
+xxxx	gunns	simbus	test	intfcPair2EnergyIn2	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2EnergyIn2	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mEnergy	double	(--)	Energy
+xxxx	gunns	simbus	test	intfcPair2XIn2[0-1]	WRITE	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair2.mOutData.mMoleFractions[0-1]	double	(--)	Mole fractions
+xxxx	gunns	simbus	test	intfcPair2XIn2[0-1]	READ	ECLSS_LO	TestDistributedIfSimObject testDistributedIf	fluidLiquidAccum2.intfcPair1.mInData.mMoleFractions[0-1]	double	(--)	Mole fractions

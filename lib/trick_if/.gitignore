@@ -1,0 +1,6 @@
+# ignore compile objects and libraries:
+*.a
+build
+python
+S_source.hh
+trick

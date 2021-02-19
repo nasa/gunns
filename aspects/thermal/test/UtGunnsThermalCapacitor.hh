@@ -30,6 +30,7 @@ class FriendlyGunnsThermalCapacitor : public GunnsThermalCapacitor
         FriendlyGunnsThermalCapacitor();
         virtual ~FriendlyGunnsThermalCapacitor();
         friend class UtGunnsThermalCapacitor;
+        friend class UtGunnsThermalCapacitorHeatQueues;
 };
 inline FriendlyGunnsThermalCapacitor::FriendlyGunnsThermalCapacitor() : GunnsThermalCapacitor() {};
 inline FriendlyGunnsThermalCapacitor::~FriendlyGunnsThermalCapacitor() {}

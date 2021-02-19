@@ -30,6 +30,7 @@ PROGRAMMERS:
 */
 
 #include <string>
+#include <pthread.h>
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "core/Gunns.hh"
 #include "core/GunnsBasicNode.hh"
@@ -92,6 +93,10 @@ class GunnsNetworkBase
         GunnsSuperNetworkBase* getSuperNetwork() const;
         /// @brief  Returns the index of this joint network in a visibility array.
         int          getJointIndex() const;
+        /// @brief  Returns a pointer to the contained mutex object.
+        pthread_mutex_t* getMutex();
+        /// @brief  Sets the mutex locking enable flag to the given value.
+        void         setMutexEnabled(const bool flag);
 
     protected:
         std::string                  mName;               /**< ** (--) trick_chkpnt_io(**) Network instance name for H&S messages. */
@@ -101,6 +106,8 @@ class GunnsNetworkBase
         int                          netJointIndex;       /**< *o (--) trick_chkpnt_io(**) Index of this joint network in a visibility array. */
         int                          netNumLocalNodes;    /**< ** (--) trick_chkpnt_io(**) Number of nodes defined in this network. */
         GunnsSuperNetworkBase*       netSuperNetwork;     /**< ** (--) trick_chkpnt_io(**) Pointer to the super-network this belongs to, if any. */
+        pthread_mutex_t              netMutex;            /**< ** (--) trick_chkpnt_io(**) The mutex. */
+        bool                         netMutexEnabled;     /**<    (--) trick_chkpnt_io(**) When true, mutex locking is enabled. */
         /// @brief  Returns a network node name containing the node number.
         const std::string createNodeName(const int node) const;
 
@@ -218,6 +225,26 @@ inline GunnsSuperNetworkBase* GunnsNetworkBase::getSuperNetwork() const
 inline int GunnsNetworkBase::getJointIndex() const
 {
     return netJointIndex;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  pthread_mutex_t* (--) Pointer to the contained mutex object.
+///
+/// @details  Returns the address of the netMutex object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline pthread_mutex_t* GunnsNetworkBase::getMutex()
+{
+    return &netMutex;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag (--) When true, enabled mutex locking.
+///
+/// @details  Sets the netMutexEnabled attribute to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsNetworkBase::setMutexEnabled(const bool flag)
+{
+    netMutexEnabled = flag;
 }
 
 #endif

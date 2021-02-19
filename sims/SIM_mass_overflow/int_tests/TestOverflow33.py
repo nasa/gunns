@@ -25,9 +25,8 @@ class TestOverflow33(Test):
         There are several examples below. See Test.py for more comparisons.
     """
     total_mass     = 0.0
-   # total_enthalpy = 0.0
+    total_enthalpy = 0.0
     total_mass_N2  = 0.0
-    total_mass_O2  = 0.0
     total_mass_H2O = 0.0
     total_mass_WATER = 0.0
 
@@ -53,63 +52,56 @@ class TestOverflow33(Test):
     def checkInitState(self):
        for node in range(0,self.getNumNodes()):
           mass       = self.nodeMass(node)
-       #   enthalpy   = mass * self.nodeEnthalpy(node)
+          enthalpy   = mass * self.nodeEnthalpy(node)
           mass_N2    = mass * self.nodeMassFraction(node, "GUNNS_N2")
-          mass_O2    = mass * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O   = mass * self.nodeMassFraction(node, "GUNNS_H2O")
           mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")
 
           self.total_mass       = self.total_mass       + mass
-       #   self.total_enthalpy   = self.total_enthalpy   + enthalpy
+          self.total_enthalpy   = self.total_enthalpy   + enthalpy
           self.total_mass_N2    = self.total_mass_N2    + mass_N2
-          self.total_mass_O2    = self.total_mass_O2    + mass_O2
           self.total_mass_H2O   = self.total_mass_H2O   + mass_H2O
           self.total_mass_WATER = self.total_mass_WATER + mass_WATER
 
        for fluid in self.accumFluids():
           self.total_mass       = self.total_mass       + fluid.getMass()
-       #   self.total_enthalpy   = self.total_enthalpy   + fluid.getMass() * fluid.getSpecificEnthalpy()
+          self.total_enthalpy   = self.total_enthalpy   + fluid.getMass() * fluid.getSpecificEnthalpy()
           self.total_mass_WATER = self.total_mass_WATER + fluid.getMass() * fluid.getMassFraction(fluidTypes["GUNNS_WATER"])
 
     # Tests final total fluid quantities in all nodes against the stored values from the start of
     # the test, for conservation of mass & energy.
     def checkFinalState(self):
        final_total_mass     = 0.0
-     #  final_total_enthalpy = 0.0
+       final_total_enthalpy = 0.0
        final_total_mass_N2  = 0.0
-       final_total_mass_O2  = 0.0
        final_total_mass_H2O = 0.0
        final_total_mass_WATER = 0.0
 
        for node in range(0,self.getNumNodes()):
           mass       = self.nodeMass(node)
-       #   enthalpy   = mass * self.nodeEnthalpy(node)
+          enthalpy   = mass * self.nodeEnthalpy(node)
           mass_N2    = mass * self.nodeMassFraction(node, "GUNNS_N2")
-          mass_O2    = mass * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O   = mass * self.nodeMassFraction(node, "GUNNS_H2O")
           mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER") 
 
           final_total_mass       = final_total_mass       + mass
-       #   final_total_enthalpy   = final_total_enthalpy   + enthalpy
+          final_total_enthalpy   = final_total_enthalpy   + enthalpy
           final_total_mass_N2    = final_total_mass_N2    + mass_N2
-          final_total_mass_O2    = final_total_mass_O2    + mass_O2
           final_total_mass_H2O   = final_total_mass_H2O   + mass_H2O
           final_total_mass_WATER = final_total_mass_WATER + mass_WATER
 
        for fluid in self.accumFluids():
           final_total_mass       = final_total_mass       + fluid.getMass()
-       #   final_total_enthalpy   = final_total_enthalpy   + fluid.getMass() * fluid.getSpecificEnthalpy()
+          final_total_enthalpy   = final_total_enthalpy   + fluid.getMass() * fluid.getSpecificEnthalpy()
           final_total_mass_WATER = final_total_mass_WATER + fluid.getMass() * fluid.getMassFraction(fluidTypes["GUNNS_WATER"])
 
        print("-------------------------------------------------------------------------------------------------")
        # Comparing relative error (final - start / start) to tolerance
        self.testNear(final_total_mass       - self.total_mass,       0.0, (1.0E-16 + tolerance * self.total_mass),       " mass error fraction ::")
-       #self.testNear(final_total_enthalpy   - self.total_enthalpy,   0.0, (1.0E-16 + tolerance * self.total_enthalpy),   " enthalpy error fraction ::")
+       self.testNear(final_total_enthalpy   - self.total_enthalpy,   0.0, (1.0E-16 + tolerance * self.total_enthalpy),   " enthalpy error fraction ::")
        self.testNear(final_total_mass_N2    - self.total_mass_N2,    0.0, (1.0E-16 + tolerance * self.total_mass_N2),    " mass N2 error fraction ::")
-       self.testNear(final_total_mass_O2    - self.total_mass_O2,    0.0, (1.0E-16 + tolerance * self.total_mass_O2),    " mass O2 error fraction ::")
-       #self.testNear(final_total_mass_H2O   - self.total_mass_H2O,   0.0, (1.0E-16 + tolerance * self.total_mass_H2O),   " mass H2O error fraction ::")
-       self.testNear((final_total_mass_H2O   - self.total_mass_H2O) + (final_total_mass_WATER - self.total_mass_WATER), 
-                                                                     0.0, (1.0E-16 + tolerance * self.total_mass_WATER), " mass Membrane Evaporation error fraction ::")
+       self.testNear((final_total_mass_H2O  - self.total_mass_H2O) + (final_total_mass_WATER - self.total_mass_WATER), 
+                                                                     0.0, (1.0E-16 + tolerance * self.total_mass_WATER), " mass H2O error fraction ::")
 
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
@@ -133,6 +125,5 @@ class TestOverflow33(Test):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
     # Get a list of accumulator fluid objects
     def accumFluids(self):
-        return [massOverflow.fluid33.accum3.getInternalFluid(),
-                massOverflow.fluid33.accum5.getInternalFluid()]
+        return [massOverflow.fluid33.liqAccum.getInternalFluid()]
 

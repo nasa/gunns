@@ -238,7 +238,7 @@ void GunnsFluidSeparatorGas::validate(const GunnsFluidSeparatorGasConfigData& co
     }
 
     /// - Throw an exception on mass exponent not (0.1 - 10)
-    if (!Math::isInRange(0.1, configData.mMassExponent, 10.0)) {
+    if (!MsMath::isInRange(0.1, configData.mMassExponent, 10.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Liquid mass exponent not in (0.1 to 10.0).");
     }

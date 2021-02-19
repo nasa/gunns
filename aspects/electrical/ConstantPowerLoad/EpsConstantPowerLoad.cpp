@@ -36,7 +36,7 @@ LIBRARY DEPENDENCY:
 
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                 (--) Link name
@@ -187,7 +187,7 @@ void EpsConstantPowerLoad::updateState(const double) {
         mEffectiveConductivity = 0.0;
     }
 
-    mEffectiveConductivity = Math::limitRange
+    mEffectiveConductivity = MsMath::limitRange
             (1.0/mConductanceLimit, mEffectiveConductivity, mConductanceLimit);
     mPowerDraw = -1.0 * mPower;
 }

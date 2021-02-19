@@ -185,7 +185,7 @@ void GunnsFluidHiFiValve::initialize(const GunnsFluidHiFiValveConfigData& config
 void GunnsFluidHiFiValve::validate() const
 {
     /// - Throw an exception if valve position < 0 or valve position > 1 .
-    if (!Math::isInRange(0.0, mPosition, 1.0)) {
+    if (!MsMath::isInRange(0.0, mPosition, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Position outside valid range (0-1).");
     }
@@ -255,7 +255,7 @@ void GunnsFluidHiFiValve::updateState(const double dt __attribute__((unused)))
             /// - The leak area is the desired initial mass rate divided by the valve's mass flux:
             ///   (m2) = (kg/s) / (kg/s/m2)
             if (massFlux > DBL_EPSILON) {
-                mLeakArea = Math::limitRange(0.0, mMalfLeakThruValue / massFlux, mThroatArea);
+                mLeakArea = MsMath::limitRange(0.0, mMalfLeakThruValue / massFlux, mThroatArea);
             }
         }
     } else {

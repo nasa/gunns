@@ -255,7 +255,7 @@ void GunnsFluidCondensingHx::validate(const GunnsFluidCondensingHxConfigData& co
     }
 
     /// - Throw an exception if the HTC exponent not in (0.05, 20).
-    if (!Math::isInRange(0.05, configData.mHtcExponent, 20.0)) {
+    if (!MsMath::isInRange(0.05, configData.mHtcExponent, 20.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                 "HTC exponent not in (0.05, 20).");
     }
@@ -329,9 +329,9 @@ void GunnsFluidCondensingHx::computeHeatTransferCoefficient()
     const double fabsMdot = std::min(10.0, fabs(mFlowRate));
     double htc = mHtcCoeff0;
     if (fabsMdot > FLT_EPSILON) {
-        htc += mHtcCoeff1 * powf(fabsMdot, Math::limitRange(0.05, mHtcExponent, 20.0));
+        htc += mHtcCoeff1 * powf(fabsMdot, MsMath::limitRange(0.05, mHtcExponent, 20.0));
     }
-    mSegmentHtc = Math::limitRange(0.0, htc, mHtcLimit) / mNumSegments;
+    mSegmentHtc = MsMath::limitRange(0.0, htc, mHtcLimit) / mNumSegments;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +402,7 @@ void GunnsFluidCondensingHx::updateHeatExchanger(const double dt)
 
                 /// - Segment wall temperature is limited to be above freezing and a warning message
                 ///   is issued as it indicates a network setup or tuning problem.
-                const double tSeg = Math::limitRange(273.15, mSegmentTemperature[i], 572.999);
+                const double tSeg = MsMath::limitRange(273.15, mSegmentTemperature[i], 572.999);
                 if (mSegmentTemperature[i] < 273.15 or mSegmentTemperature[i] > 572.999) {
                     GUNNS_WARNING("limited HX segment " << i << " temperature to valid range.");
                 }

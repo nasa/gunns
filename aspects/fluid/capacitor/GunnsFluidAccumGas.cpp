@@ -196,7 +196,7 @@ GunnsFluidAccumGas::~GunnsFluidAccumGas()
 void GunnsFluidAccumGas::buildGasConductance()
 {
     /// - Compute system conductance using effective conductivity.
-    double gasSystemConductance = Math::limitRange(0.0, mGasEffectiveConductivity, mConductanceLimit);
+    double gasSystemConductance = MsMath::limitRange(0.0, mGasEffectiveConductivity, mConductanceLimit);
     if (fabs(mAdmittanceMatrix[0] - gasSystemConductance) > 0.0) {
         /// - Set mAdmittanceMatrix[0] to flow between port 0 node and accumulator gas chamber.
         mAdmittanceMatrix[0]   =  gasSystemConductance;
@@ -505,7 +505,7 @@ void GunnsFluidAccumGas::updateGasChamber(const double dt)
         /// - Update gas pressure.
         const double density = newMass / mPressurizerVolume;
         double gasPressure   = mGasInternalFluid->computePressure(mGasInternalFluid->getTemperature(), density);
-        gasPressure          = Math::limitRange(DBL_EPSILON, gasPressure, mMaxPressure);
+        gasPressure          = MsMath::limitRange(DBL_EPSILON, gasPressure, mMaxPressure);
         mGasInternalFluid->setPressure(gasPressure);
     } else {
         GUNNS_WARNING("pressurizer volume <= 0.0. Invalid volume config. Pressure update aborted.");

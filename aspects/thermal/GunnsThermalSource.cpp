@@ -9,7 +9,7 @@ LIBRARY DEPENDENCY:
 ***************************************************************************************************/
 #include "GunnsThermalSource.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh" //needed for Math::isInRange() in validate()
+#include "math/MsMath.hh" //needed for MsMath::isInRange() in validate()
 #include "aspects/thermal/PtcsMacros.hh"
 /**************************************************************************************************/
 /* ConfigData class */
@@ -265,7 +265,7 @@ void GunnsThermalSource::validate(const GunnsThermalSourceConfigData& configData
     for (unsigned int i = 0; i < configData.cFluxDistributionFractions.size(); ++i)
     {
         /// - Each flux-distribution fraction must be between zero and one.
-        TS_PTCS_IF_ERREX(!Math::isInRange(0.0, configData.cFluxDistributionFractions.at(i), 1.0),
+        TS_PTCS_IF_ERREX(!MsMath::isInRange(0.0, configData.cFluxDistributionFractions.at(i), 1.0),
                 TsInitializationException,
                 "invalid config data", "Flux-distribution fraction out of range (0-1).");
 

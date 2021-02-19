@@ -10,6 +10,7 @@ LIBRARY DEPENDENCY:
 #include <cppunit/ui/text/TestRunner.h>
 
 #include "UtGunnsThermalCapacitor.hh"
+#include "UtGunnsThermalCapacitorHeatQueues.hh"
 #include "UtGunnsThermalRadiation.hh"
 #include "UtGunnsThermalHeater.hh"
 #include "UtGunnsThermalPanel.hh"
@@ -32,6 +33,7 @@ int main(int argc, char** argv)
 {
     CppUnit::TextTestRunner runner;
     runner.addTest( UtGunnsThermalCapacitor::suite() );
+    runner.addTest( UtGunnsThermalCapacitorHeatQueues::suite() );
     runner.addTest( UtGunnsThermalRadiation::suite() );
     runner.addTest( UtGunnsThermalHeater::suite() );
     runner.addTest( UtGunnsThermalPotential::suite() );

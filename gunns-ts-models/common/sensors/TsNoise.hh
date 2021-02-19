@@ -65,10 +65,15 @@ ASSUMPTIONS AND LIMITATIONS:
 class TsNoise {
     TS_MAKE_SIM_COMPATIBLE(TsNoise);
     public:
+        /// @brief  A function pointer type of signature: double function(), used for accessing getNoise.
+        typedef double (*f_ptr)();
         /// @brief  Initializes this Noise model.
         static void initialize(const unsigned int seed);
         /// @brief  Gets noise from this Noise model.
         static double getNoise();
+        /// @brief  Returns an object handle to the getNoise function for Python (Trick input file).
+        static f_ptr getNoiseFunction() {return getNoise;}
+
     protected:
         static const double  S;                   /**< (--)  Curve fit coefficient 1. */
         static const double  T;                   /**< (--)  Curve fit coefficient 2. */

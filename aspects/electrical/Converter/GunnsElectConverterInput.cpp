@@ -16,7 +16,7 @@ LIBRARY DEPENDENCY:
 #include "GunnsElectConverterInput.hh"
 #include "aspects/electrical/Converter/GunnsElectConverterOutput.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                       (--) Link name
@@ -317,7 +317,7 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         ///   the output side blockage to conserve energy for intermediate values.
         double scaledInputLoad = mInputPower;
         if (mMalfBlockageFlag) {
-            scaledInputLoad *= 1.0 - Math::limitRange(0.0, mMalfBlockageValue, 1.0);
+            scaledInputLoad *= 1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0);
         }
 
         double current = 0.0;

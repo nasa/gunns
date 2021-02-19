@@ -9,7 +9,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
 #include "strings/UtResult.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "UtGunnsElectConverterInput.hh"
 
 /// @details  Test identification number.
@@ -561,6 +561,10 @@ void UtGunnsElectConverterInput::testAccessors()
     /// @test    Get the trip logics.
     CPPUNIT_ASSERT(&tArticle->mInputOverVoltageTrip  == tArticle->getInputOverVoltageTrip());
     CPPUNIT_ASSERT(&tArticle->mInputUnderVoltageTrip == tArticle->getInputUnderVoltageTrip());
+
+    /// @test    Get the input voltage.
+    tArticle->mInputVoltage = 5.0;
+    CPPUNIT_ASSERT(5.0 == tArticle->getInputVoltage());
 
     UT_PASS;
 }

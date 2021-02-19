@@ -116,6 +116,8 @@ class BasicNetworkBodyTemplate:
       r = r+('    ' + link[1] + '(name + ".' + link[1] + '", &network->netNodeList' + link[2] + ')\n')
     r = r+('{\n'
         '    // Load config data vectors\n')
+    for spotter in self.data['spotters']:
+      r = r + spotter[5]
     for link in self.data['links']:
       r = r + link[5]
     r = r+('}\n'
@@ -146,6 +148,8 @@ class BasicNetworkBodyTemplate:
       r = r+('    ' + link[1] + '(' + link[3] + ')\n')
     r = r+('{\n'
         '    // Load input data vectors\n')
+    for spotter in self.data['spotters']:
+      r = r + spotter[6]
     for link in self.data['links']:
       r = r + link[6]
     r = r+('}\n'

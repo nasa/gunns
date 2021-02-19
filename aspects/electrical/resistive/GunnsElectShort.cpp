@@ -11,7 +11,7 @@ LIBRARY DEPENDENCY:
 */
 
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cfloat>
 #include "GunnsElectShort.hh"
 

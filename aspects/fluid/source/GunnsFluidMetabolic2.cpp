@@ -16,7 +16,7 @@ LIBRARY DEPENDENCY:
 #include "GunnsFluidMetabolic2.hh"
 #include "aspects/fluid/fluid/GunnsFluidTraceCompounds.hh"
 #include "properties/ChemicalCompound.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"

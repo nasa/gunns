@@ -23,7 +23,7 @@ PROGRAMMERS:
    ((Jason Harvey) (L3) (2013-01) (Initial Prototype))
 **************************************************************************************************/
 #include "GunnsFluidEqConductor.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
 /// @details  This value is chosen to get reliable network capacitance calculations from the solver
@@ -291,7 +291,7 @@ void GunnsFluidEqConductor::step(const double dt __attribute__((unused)))
     ///   so when we estimate the equivalent resistance of the external network, we use the stored
     ///   delta-pressure that corresponds with the fluxes.
     if (fabs(mLastPotentialDrop) > DBL_EPSILON) {
-        mEquivalentConductance = Math::limitRange(0.0, avgFlux / fabs(mLastPotentialDrop),
+        mEquivalentConductance = MsMath::limitRange(0.0, avgFlux / fabs(mLastPotentialDrop),
                                                   mConductanceLimit);
     } else {
         mEquivalentConductance = 0.0;

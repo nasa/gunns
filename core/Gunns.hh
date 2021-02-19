@@ -136,6 +136,12 @@ class Gunns
             GPU_SPARSE = 2    ///< Uses GPU sparse matrix math for decomposition & solution.
         };
 
+        /// @name     Step data logger.
+        /// @{
+        /// @details  This is public to allow Trick jobs to directly call functions in it.
+        GunnsMinorStepLog mStepLog;  /**< (--) trick_chkpnt_io(**) Step data logger for debugging */
+        /// @}
+
         /// @brief Default constructs this Gunns object.
         Gunns();
 
@@ -214,9 +220,6 @@ class Gunns
 
         /// @brief Gets the number of admittance matrix decompositions.
         int getDecompositionCount() const;
-
-        /// @brief Gets the minor step log object.
-        GunnsMinorStepLog& getMinorStepLog();
 
         /// @brief Gets the most recent solve time value.
         double getSolveTime() const;
@@ -393,7 +396,6 @@ class Gunns
         ///           mDebugSavedNode.  A value <0 or above the last row turns off this feature.
         ///           The term is set to -1 to pause recording when that nodes fails to converge.
         int     mDebugDesiredNode;        /**<    (--)                     Desired node to record minor step potentials for */
-        GunnsMinorStepLog mMinorStepLog;  /**< ** (--) trick_chkpnt_io(**) Debug minor step log for non-linear networks */
         bool    mVerbose;                 /**<    (--)                     Verbose console output option flag */
         /// @}
 
@@ -695,16 +697,6 @@ inline int Gunns::getLinkResetStepFailCount() const
 inline int Gunns::getDecompositionCount() const
 {
     return mDecompositionCount;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   GunnsMinorStepLog  (--)  Returns a reference to the minor step log object.
-///
-/// @details  This method returns a reference to the minor step log object.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline GunnsMinorStepLog& Gunns::getMinorStepLog()
-{
-    return mMinorStepLog;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -339,7 +339,7 @@ void GunnsFluidNode::setPotential(const double potential)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidNode::setExpansionScaleFactor(const double expansionScaleFactor)
 {
-    if (!Math::isInRange(0.0, expansionScaleFactor, 1.0)) {
+    if (!MsMath::isInRange(0.0, expansionScaleFactor, 1.0)) {
         GUNNS_ERROR(TsOutOfBoundsException, "Input Argument Out Of Range",
                 "Node set illegal expansion scale factor.");
     }
@@ -738,7 +738,7 @@ double GunnsFluidNode::computePressureCorrection()
         }
 
         /// - Protect for arithmetic underflow in the gain.
-        mCorrectGain = Math::limitRange( DBL_EPSILON, mCorrectGain, 1.0);
+        mCorrectGain = MsMath::limitRange( DBL_EPSILON, mCorrectGain, 1.0);
 
         /// - We only apply the pressure correction if the error is above a certain threshold, to
         ///   avoid creating extra noise in the system.

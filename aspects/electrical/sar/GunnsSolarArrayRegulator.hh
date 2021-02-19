@@ -32,7 +32,7 @@ PROGRAMMERS:
 */
 
 #include "software/SimCompatibility/TsSimCompatibility.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "aspects/electrical/Converter/ConverterElect.hh"
 
 // Forward class declarations for pointer types.

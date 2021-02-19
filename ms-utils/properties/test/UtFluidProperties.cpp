@@ -272,6 +272,24 @@ void UtFluidProperties::testSpecificEnthalpyTemperatureConsistency()
         const double returned           = mArticle->getProperties(type)->
             getTemperature(specificEnthalpy, pressure);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
+    } {
+        FluidProperties::FluidType type = FluidProperties::GUNNS_NTO;
+        const double pressure           = 600.0;
+        const double expected           = 400.0;
+        const double specificEnthalpy   = mArticle->getProperties(type)->
+            getSpecificEnthalpy(expected, pressure);
+        const double returned           = mArticle->getProperties(type)->
+            getTemperature(specificEnthalpy, pressure);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
+    } {
+        FluidProperties::FluidType type = FluidProperties::GUNNS_MMH;
+        const double pressure           = 600.0;
+        const double expected           = 400.0;
+        const double specificEnthalpy   = mArticle->getProperties(type)->
+            getSpecificEnthalpy(expected, pressure);
+        const double returned           = mArticle->getProperties(type)->
+            getTemperature(specificEnthalpy, pressure);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
     }
 
     std::cout << "... Pass";
@@ -319,7 +337,7 @@ void UtFluidProperties::testForPositive()
         CPPUNIT_ASSERT_MESSAGE(ss.str(), 0.0 <  mArticle->getProperties(type)->getTemperature(1.0E15));
         CPPUNIT_ASSERT_MESSAGE(ss.str(), 0.0 <  mArticle->getProperties(type)->getSaturationPressure(1.0E15));
         CPPUNIT_ASSERT_MESSAGE(ss.str(), 0.0 <  mArticle->getProperties(type)->getSaturationTemperature(1.0E15));
-        CPPUNIT_ASSERT_MESSAGE(ss.str(), 0.0 == mArticle->getProperties(type)->getHeatOfVaporization(1.0E15));
+        CPPUNIT_ASSERT_MESSAGE(ss.str(), 0.0 <= mArticle->getProperties(type)->getHeatOfVaporization(1.0E15));
 }
 
     std::cout << "... Pass";
@@ -661,11 +679,20 @@ void UtFluidProperties::testInvalidRangeBounds()
     } {
         /// @test getSaturationTemperature upper pressure limit
         const double expected =
-            mArticle->mProperties[FluidProperties::GUNNS_METHANE]->
-            getSaturationTemperature(4600.0);
+            mArticle->mProperties[FluidProperties::GUNNS_NTO]->
+            getSaturationTemperature(9929.85);
         const double returned =
-            mArticle->mProperties[FluidProperties::GUNNS_METHANE]->
-            getSaturationTemperature(4700.0);
+            mArticle->mProperties[FluidProperties::GUNNS_NTO]->
+            getSaturationTemperature(9930.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, mTolerance);
+    } {
+        /// @test getSaturationTemperature upper pressure limit
+        const double expected =
+            mArticle->mProperties[FluidProperties::GUNNS_MMH]->
+            getSaturationTemperature(8030.46);
+        const double returned =
+            mArticle->mProperties[FluidProperties::GUNNS_MMH]->
+            getSaturationTemperature(8031.0);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, mTolerance);
     }
 
@@ -907,7 +934,7 @@ void UtFluidProperties::testSaturationCurveConsistency()
                                     4.0, 205.0, 106.0, 107.0, 207.0,
                                   308.0, 309.0, 400.0, 401.0, 402.0,
                                   310.0,  60.0, 150.0, 311.0, 312.0,
-                                  313.0};
+                                  313.0, 314.0, 315.0};
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);

@@ -6,4 +6,3 @@ ifndef $(TS_MODELS_HOME)
 else
     include ${TS_MODELS_HOME}/test/utils/Makefile.default
 endif
-LDFLAGS += -ltinyxml

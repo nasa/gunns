@@ -128,6 +128,10 @@ const double DefinedFluidProperties::mMWeightHCN        = 27.0254;
 const double DefinedFluidProperties::mMWeightHe         = 4.002602;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightXe         = 131.293;
+/// @details  Reference: NIST Chemistry Webbook.
+const double DefinedFluidProperties::mMWeightN2O4       = 92.011;
+/// @details  Reference: NIST Chemistry Webbook.
+const double DefinedFluidProperties::mMWeightCH3N2H3    = 46.0717;
 /// @details  Reference: 3M (TM) Novec (TM) 7000 Engineering Fluid Product Information.
 const double DefinedFluidProperties::mMWeightHFE7000    = 200.0;
 /// @details  Reference: 3M (TM) Novec (TM) Engineered Fluid HFE-7100 for Heat Transfer.
@@ -170,6 +174,11 @@ const double DefinedFluidProperties::mCriticalTemperatureHCN        = 319.38;
 const double DefinedFluidProperties::mCriticalTemperatureHe         = 5.1953;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mCriticalTemperatureXe         = 289.733;
+/// @details  Reference: "USAF Propellant Handbooks, Nitric Acid/Nitrogen Tetroxide Oxidizers, Vol. II",
+///           Martin Marietta Corp., Feb. 1977.
+const double DefinedFluidProperties::mCriticalTemperatureN2O4       = 431.35;
+/// @details  Reference: "USAF Propellant Handbooks, Hydrazine Fuels, Vol. I", Bell Aerospace Corp., Mar. 1970.
+const double DefinedFluidProperties::mCriticalTemperatureCH3N2H3    = 585.0;
 /// @details  Reference: 3M (TM) Novec (TM) 7000 Engineering Fluid Product Information.
 const double DefinedFluidProperties::mCriticalTemperatureHFE7000    = 438.15;
 /// @details  Reference: 3M (TM) Novec (TM) Engineered Fluid HFE-7100 for Heat Transfer.
@@ -494,6 +503,20 @@ DefinedFluidProperties::DefinedFluidProperties()
     mPressureO2Real(mO2TemperatureScale, mO2PressureScale, mO2DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
 
     /************************************************************************
+                   Properties for N2O4
+    ************************************************************************/
+    mSaturationPressureN2O4(8.949029, -5.406766, 0.4546795, 1.0, mCriticalTemperatureN2O4/261.95),
+    mSaturationTemperatureN2O4(8.949029, -5.406766, 0.4546795, 18.996, 9929.85),
+    mHeatOfVaporizationN2O4(1258.40074661114, -2.91735422884232, 261.95, 431.35),
+
+    /************************************************************************
+                   Properties for CH3N2H3
+    ************************************************************************/
+    mSaturationPressureCH3N2H3(6.263433, -1.923808, -0.434885, 1.0, mCriticalTemperatureCH3N2H3/220.0),
+    mSaturationTemperatureCH3N2H3(6.263433, -1.923808, -0.434885, 0.011827, 8030.46),
+    mHeatOfVaporizationCH3N2H3(1788.0772786368, -3.05654235664393, 220.0, 585.0),
+
+    /************************************************************************
                    Properties for liquid water
     ************************************************************************/
     mDensityWATER(7.971248e+2, 7.557045e-3, 1.591560, -4.273648e-5, -3.100791e-3,
@@ -696,6 +719,34 @@ DefinedFluidProperties::DefinedFluidProperties()
                        mDataWATERPVT.mScaleTemperature[mDataWATERPVT.getTscaleSize() - 1],
                        mDataWATERPVT.mScalePressure[0],
                        mDataWATERPVT.mScalePressure[mDataWATERPVT.getPscaleSize() - 1]),
+
+    /************************************************************************
+                   Properties for liquid NTO
+    ************************************************************************/
+    mDensityNTO(3.241299e+3, 1.140648e-1, 2.817185e+1, -6.391916e-4, -4.342774e-2, 9.113739e-7,
+                261.95, 427.6, 1.0e-64, 1.0e+06),
+    mViscosityNTO(7.533e-3, -6.167e-5, 2.055e-7, -3.234e-10, 1.966e-13, 261.95, 427.6),
+    mSpecificHeatNTO(-2215.7, 13.372, 261.95, 427.6),
+    mThermalConductivityNTO(-1.3782e-1, 2.3288e-3, -4.7865e-6, 261.95, 350.0),
+    mPrandtlNumberNTO(-2.364171e+1, 2.898713e-1, -9.459955e-4, 9.33181e-7, 2.44165e-10, 261.95, 350.0),
+    mAdiabaticIndexNTO(0.64975127, 1.227552e-3, 200.0, 470.0),
+    mPressureNTO(3.241299e+3, 1.140648e-1, 2.817185e+1, -6.391916e-4, -4.342774e-2, 9.113739e-7,
+                 261.95, 427.6, 1.0e-64, 1.0e+06),
+    mTemperatureNTO(-2215.7, 13.372, 1214.0*261.95, 3502.0*427.6),
+
+    /************************************************************************
+                   Properties for liquid MMH
+    ************************************************************************/
+    mDensityMMH(8.742437e+2, -6.249975e-1, 8.721129e-1, 2.521965e-3, -2.845312e-3, -2.503301e-6,
+                220.0, 585.0, 1.0e-64, 1.0e+6),
+    mViscosityMMH(1.081484e1, -1.796232e-1, 1.189885e-3, -3.928065e-6, 6.460698e-9, -4.234832e-12, 220.0, 360.0),
+    mSpecificHeatMMH(2480.7, 1.2624, 220.0, 585.0),
+    mThermalConductivityMMH(1.4236e-1, 9.2048e-4, -1.9016e-6, 220.0, 585.0),
+    mPrandtlNumberMMH(1.73757e3, -1.634448e1, 5.688812e-2, -8.669108e-5, 4.878808e-8, 220.0, 500.0),
+    mAdiabaticIndexMMH(0.64975127, 1.227552e-3, 200.0, 470.0),
+    mPressureMMH(8.742437e+2, -6.249975e-1, 8.721129e-1, 2.521965e-3, -2.845312e-3, -2.503301e-6,
+                 220.0, 585.0, 1.0e-64, 1.0e+6),
+    mTemperatureMMH(2480.7, 1.2624, 2758.4*220.0, 3219.2*585.0),
 
     /************************************************************************
                    Properties for carbon monoxide (Ideal Gas)
@@ -984,7 +1035,31 @@ DefinedFluidProperties::DefinedFluidProperties()
                         &mPrandtlNumberWATER,             &mAdiabaticIndexWATER,
                         &mPressureWATERPVT,               &mTemperatureWATER,
                         &mSaturationPressureH2O,          &mSaturationTemperatureH2O,
-                        &mHeatOfVaporizationH2O)
+                        &mHeatOfVaporizationH2O),
+
+/************************************************************************
+               Properties for NTO (Liquid)
+************************************************************************/
+    mPropertiesNTO(FluidProperties::GUNNS_NTO, FluidProperties::LIQUID,
+                   mMWeightN2O4,                   mCriticalTemperatureN2O4,
+                   &mDensityNTO,                   &mViscosityNTO,
+                   &mSpecificHeatNTO,              &mThermalConductivityNTO,
+                   &mPrandtlNumberNTO,             &mAdiabaticIndexNTO,
+                   &mPressureNTO,                  &mTemperatureNTO,
+                   &mSaturationPressureN2O4,       &mSaturationTemperatureN2O4,
+                   &mHeatOfVaporizationN2O4),
+
+/************************************************************************
+                Properties for NTO (Liquid)
+************************************************************************/
+    mPropertiesMMH(FluidProperties::GUNNS_MMH, FluidProperties::LIQUID,
+                   mMWeightCH3N2H3,                mCriticalTemperatureCH3N2H3,
+                   &mDensityMMH,                   &mViscosityMMH,
+                   &mSpecificHeatMMH,              &mThermalConductivityMMH,
+                   &mPrandtlNumberMMH,             &mAdiabaticIndexMMH,
+                   &mPressureMMH,                  &mTemperatureMMH,
+                   &mSaturationPressureCH3N2H3,    &mSaturationTemperatureCH3N2H3,
+                   &mHeatOfVaporizationCH3N2H3)
 {
     /// - Load the fluid properties array with the pointer to the properties for each fluid type
     mProperties[FluidProperties::GUNNS_CO]          = &mPropertiesCO;
@@ -1013,6 +1088,8 @@ DefinedFluidProperties::DefinedFluidProperties()
     mProperties[FluidProperties::GUNNS_NAK78]       = &mPropertiesNAK78;
     mProperties[FluidProperties::GUNNS_GALDEN170]   = &mPropertiesGALDEN170;
     mProperties[FluidProperties::GUNNS_WATER_PVT]   = &mPropertiesWATERPVT;
+    mProperties[FluidProperties::GUNNS_NTO]         = &mPropertiesNTO;
+    mProperties[FluidProperties::GUNNS_MMH]         = &mPropertiesMMH;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

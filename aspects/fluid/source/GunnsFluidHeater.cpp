@@ -180,7 +180,7 @@ void GunnsFluidHeater::validate(const GunnsFluidHeaterConfigData& configData,
                                 const GunnsFluidHeaterInputData&  inputData __attribute__((unused))) const
 {
     /// - Throw an exception if heater efficiency not between 0 and 1.
-    if (!Math::isInRange(0.0, configData.mHeaterEfficiency, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mHeaterEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Heater efficiency not between 0 and 1.");
     }

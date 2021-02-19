@@ -50,7 +50,7 @@ LIBRARY DEPENDENCY:
 #include "UtGunnsFluidFlowController.hh"
 #include "UtGunnsFluidIslandAnalyzer.hh"
 #include "UtGunnsNetworkSpotter.hh"
-#include "UtGunnsMinorStepLogDumper.hh"
+#include "UtGunnsMinorStepLog.hh"
 #include "UtGunnsFluidFlowIntegrator.hh"
 #include "UtGunnsFluidVolumeMonitor.hh"
 #include "UtGunnsSensorAnalogWrapper.hh"
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     runner.addTest( UtGunnsFluidFlowController::suite());
     runner.addTest( UtGunnsFluidIslandAnalyzer::suite() );
     runner.addTest( UtGunnsNetworkSpotter::suite() );
-    runner.addTest( UtGunnsMinorStepLogDumper::suite() );
+    runner.addTest( UtGunnsMinorStepLog::suite() );
     runner.addTest( UtGunnsFluidFlowIntegrator::suite() );
     runner.addTest( UtGunnsFluidVolumeMonitor::suite() );
     runner.addTest( UtGunnsSensorAnalogWrapper::suite() );

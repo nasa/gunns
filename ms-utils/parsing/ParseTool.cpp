@@ -32,7 +32,7 @@ PROGRAMMERS:
 #include "ParseTool.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsParseException.hh"
-#include "math/Math.hh" //needed for Math::isInRange() in convertToDouble()
+#include "math/MsMath.hh" //needed for MsMath::isInRange() in convertToDouble()
 #include <cerrno>    //needed for error reporting in openFile()
 #include <unistd.h>  //needed for access() function
 #include <libgen.h>  //needed for dirname() function
@@ -167,7 +167,7 @@ double ParseTool::convertToDouble(
         hsSendMsg(msg);
 
     /// - Make sure the value returned is in range.
-    } else if (!Math::isInRange(-DBL_MAX, newDouble, DBL_MAX))
+    } else if (!MsMath::isInRange(-DBL_MAX, newDouble, DBL_MAX))
     {
         /// - Issue first warning.
         TsHsMsg msg(TS_HS_WARNING, subsystem);
@@ -175,7 +175,7 @@ double ParseTool::convertToDouble(
         hsSendMsg(msg);
 
         /// - Limit the range.
-        newDouble = Math::limitRange(-DBL_MAX, newDouble, DBL_MAX);
+        newDouble = MsMath::limitRange(-DBL_MAX, newDouble, DBL_MAX);
 
         /// - Issue second warning.
         msg.clear();

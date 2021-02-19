@@ -20,7 +20,7 @@
 
 #include "ConverterElect.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "aspects/electrical/EpsMacros.hh"
 
 /// @details    -- Minimum Conductance 
@@ -448,7 +448,7 @@ void ConverterElect::buildConductance()
         // Input Side
         if(mDeltaPotentialInputSide > 0.0) {
             mInputActiveConductance = mConverter.getInputPower() / (mDeltaPotentialInputSide * mDeltaPotentialInputSide);
-            mInputActiveConductance = Math::limitRange(MIN_CONDUCTANCE, mInputActiveConductance, GunnsBasicLink::mConductanceLimit);
+            mInputActiveConductance = MsMath::limitRange(MIN_CONDUCTANCE, mInputActiveConductance, GunnsBasicLink::mConductanceLimit);
         }
     } else {
         mInputActiveConductance   = mConverterOffConductance;

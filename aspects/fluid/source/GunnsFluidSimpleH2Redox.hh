@@ -19,12 +19,19 @@ REQUIREMENTS:
 - ()
 
 REFERENCE:
-- ()
+- (("The HESTIA Project: Solid Oxide Fuel Cell Model Validation", Jason Harvey, July 31, 2016.))
 
 ASSUMPTIONS AND LIMITATIONS:
 - (
-    (Reaction rates are not dependent on temperature or fluid concentrations.  Heats of reaction and
-     phase change are not modeled.)
+   (H2, O2 and H2O are in gaseous phase and are ideal gas.)
+   (Effects of temperature are not modeled.)
+   (Heats of reaction and phase change are not modeled.)
+   (Energy is not conserved, because of the lack of reaction heat.)
+   (Output voltage is constant, not a function of temperature or load.)
+   (Reaction efficiency is constant.)
+   (Reaction rate is not dependent on temperature or fluid concentration.)
+   (Absorption of contaminants and their effects on efficiency are not modeled.)
+   (Reaction trips off if inlet reactants pressure < 1 Pa.)
   )
 
  LIBRARY DEPENDENCY:
@@ -48,23 +55,17 @@ ASSUMPTIONS AND LIMITATIONS:
 class GunnsFluidSimpleH2RedoxConfigData : public GunnsFluidLinkConfigData
 {
     public:
-        int    mNumCells;           /**< (--)       trick_chkpnt_io(**) Number of reaction cells in the stack. */
-        double mCellVoltageLoaded;  /**< (V)        trick_chkpnt_io(**) Nominal cell voltage under load. */
-        //TODO is this per cell or for whole stack?  Abbie gives "1.05e-8 kg/s * P/Vcell".  Vcell is
-        // 0.8, and P = 1000.  Would we then multiply this by # of cells 30?
-        double mH2ReactRate;        /**< (kg/s/amp) trick_chkpnt_io(**) Stack H2 reaction mass rate per amp. */
-        double mMaxEfficiency;      /**< (--)       trick_chkpnt_io(**) Maximum efficiency (0-1) of the reaction. */
-//        double mHeAbsorptionFactor; /**< (--)       trick_chkpnt_io(**) Fraction of helium absorbed from the air stream. */
-//        double mHeEfficiencyFactor; /**< (1/kg)     trick_chkpnt_io(**) Reduction in efficiency per mass of absorbed helium. */
+        int    mNumCells;          /**< (1)        trick_chkpnt_io(**) Number of reaction cells in the stack. */
+        double mCellVoltageLoaded; /**< (V)        trick_chkpnt_io(**) Nominal cell voltage under load. */
+        double mCellH2ReactRate;   /**< (kg/s/amp) trick_chkpnt_io(**) Cell H2 reaction mass rate per amp. */
+        double mMaxEfficiency;     /**< (1)        trick_chkpnt_io(**) Maximum efficiency (0-1) of the reaction. */
         /// @brief    Default constructs this Simple H2 Redox configuration data.
         GunnsFluidSimpleH2RedoxConfigData(const std::string& name               = "",
                                           GunnsNodeList*     nodes              = 0,
                                           const int          numCells           = 0,
                                           const double       cellVoltageLoaded  = 0.0,
-                                          const double       h2ReactRate        = 0.0,
+                                          const double       cellH2ReactRate    = 0.0,
                                           const double       maxEfficiency      = 0.0);
-//                                          const double       heAbsorptionFactor = 0.0,
-//                                          const double       heEfficiencyFactor = 0.0);
         /// @brief    Default destructs this Simple H2 Redox configuration data.
         virtual ~GunnsFluidSimpleH2RedoxConfigData();
 
@@ -85,14 +86,12 @@ class GunnsFluidSimpleH2RedoxInputData : public GunnsFluidLinkInputData
 {
     public:
         double mCurrent;         /**< (amp) trick_chkpnt_io(**) Initial electrical stack current. */
-        bool   mTrippedOff;      /**< (--)  trick_chkpnt_io(**) Initial tripped off flag. */
-//        double mHeAbsorbedMass;  /**< (kg)  trick_chkpnt_io(**) Initial absorbed helium mass. */
+        bool   mTrippedOff;      /**< (1)   trick_chkpnt_io(**) Initial tripped off flag. */
         /// @brief    Default constructs this Simple H2 Redox input data with arguments.
         GunnsFluidSimpleH2RedoxInputData(const bool   malfBlockageFlag  = false,
                                          const double malfBlockageValue = 0.0,
                                          const double current           = 0.0,
                                          const bool   trippedOff        = false);
-//                                         const double heAbsorbedMass    = 0.0);
         /// @brief    Default destructs this Simple H2 Redox input data.
         ~GunnsFluidSimpleH2RedoxInputData();
 
@@ -110,6 +109,23 @@ class GunnsFluidSimpleH2RedoxInputData : public GunnsFluidLinkInputData
 ///           electrolyzer.  The reaction is reversible: reaction rate is directly proportional to
 ///           input electrical current, with positive current giving a forward H2 reduction reaction
 ///           direction (fuel cell), and negative current giving a reverse direction (electrolysis).
+///
+///           This link's blockage malfunction degrades the efficiency.  The reaction rate can be
+///           degraded by blocking the electrical aspect -- this lowers the input current.
+///
+///           Note this link has many significant simplifications that may limit its usefulness.
+///           These are addressed in the reference document.  Suggestions for improving the model,
+///           possibly in another, higher-fidelity H2 redox link:
+///           - Model unloaded voltage as a function of temperature.
+///           - Model loaded voltage sag as a non-linear function of current.
+///           - Model reaction efficiency as function of power load.
+///           - Model non-zero unloaded reaction rate.
+///           - Allow mixed fluid phases, although this might depend on other GUNNS upgrades.
+///           - Model heats of reaction and phase change.
+///           - Model absorption/desorption of contaminants and their effects on efficiency.  This
+///             might be best achieved with a separate absorber link that communicates the types and
+///             amounts of absorbed contaminants to the H2 redox link.
+///           - Improve effects of insufficient reactants: reduce output voltage, etc.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidSimpleH2Redox : public GunnsFluidLink
 {
@@ -122,9 +138,9 @@ class GunnsFluidSimpleH2Redox : public GunnsFluidLink
         /// @brief    Initializes this Simple H2 Redox with configuration and input data.
         void         initialize(      GunnsFluidSimpleH2RedoxConfigData& configData,
                                 const GunnsFluidSimpleH2RedoxInputData&  inputData,
-                                std::vector<GunnsBasicLink*>&         networkLinks,
-                                const int                             port0,
-                                const int                             port1);
+                                std::vector<GunnsBasicLink*>&            networkLinks,
+                                const int                                port0,
+                                const int                                port1);
         /// @brief    Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief    Step method for updating the link.
@@ -145,28 +161,23 @@ class GunnsFluidSimpleH2Redox : public GunnsFluidLink
         double       getH2OMassRate() const;
 
     protected:
-        int        mNumCells;           /**< (--)       trick_chkpnt_io(**) Number of reaction cells in the stack. */
+        int        mNumCells;           /**< (1)        trick_chkpnt_io(**) Number of reaction cells in the stack. */
         double     mCellVoltageLoaded;  /**< (V)        trick_chkpnt_io(**) Nominal cell voltage under load. */
-        double     mH2ReactRate;        /**< (kg/s/amp) trick_chkpnt_io(**) Stack H2 reaction mass rate per amp. */
-        double     mMaxEfficiency;      /**< (--)       trick_chkpnt_io(**) Maximum efficiency (0-1) of the reaction. */
-//        double     mHeAbsorptionFactor; /**< (--)       trick_chkpnt_io(**) Fraction of helium absorbed from the air stream. */
-//        double     mHeEfficiencyFactor; /**< (1/kg)     trick_chkpnt_io(**) Reduction in efficiency per mass of absorbed helium. */
+        double     mCellH2ReactRate;    /**< (kg/s/amp) trick_chkpnt_io(**) Cell H2 reaction mass rate per amp. */
+        double     mMaxEfficiency;      /**< (1)        trick_chkpnt_io(**) Maximum efficiency (0-1) of the reaction. */
         double     mCurrent;            /**< (amp)                          Electrical stack current driving the reaction. */
-        bool       mTrippedOff;         /**< (--)                           Reaction is disabled. */
-//        double     mHeAbsorbedMass;     /**< (kg)                           Absorbed helium mass. */
+        bool       mTrippedOff;         /**< (1)                            Reaction is disabled. */
         double     mOutputStackVoltage; /**< (V)                            Output voltage of the stack. */
-        double     mEfficiency;         /**< (--)       trick_chkpnt_io(**) Actual efficiency. */
+        double     mEfficiency;         /**< (1)        trick_chkpnt_io(**) Actual efficiency. */
         double     mH2MassRate;         /**< (kg/s)     trick_chkpnt_io(**) Produced mass rate of H2 from the reaction. */
         double     mO2MassRate;         /**< (kg/s)     trick_chkpnt_io(**) Produced mass rate of O2 from the reaction. */
         double     mH2OMassRate;        /**< (kg/s)     trick_chkpnt_io(**) Produced mass rate of H2O from the reaction. */
         double     mH2MoleRate;         /**< (kg*mol/s) trick_chkpnt_io(**) Produced molar rate of H2 from the reaction. */
         double     mO2MoleRate;         /**< (kg*mol/s) trick_chkpnt_io(**) Produced molar rate of O2 from the reaction. */
         double     mH2OMoleRate;        /**< (kg*mol/s) trick_chkpnt_io(**) Produced molar rate of H2O from the reaction. */
-//        double     mHeAbsorbRate;       /**< (kg/s)     trick_chkpnt_io(**) Absorbed mass rate of He from the thru air stream. */
-        PolyFluid* mH2Fluid;            /**< (--)       trick_chkpnt_io(**) Pointer to an internal fluid for the fuel constituent (H2). */
-        PolyFluid* mO2Fluid;            /**< (--)       trick_chkpnt_io(**) Pointer to an internal fluid for the oxidizer constituent (O2). */
-        PolyFluid* mH2OFluid;           /**< (--)       trick_chkpnt_io(**) Pointer to an internal fluid for the water constituent (H2O). */
-//        PolyFluid* mHeFluid;            /**< (--)       trick_chkpnt_io(**) Pointer to an internal fluid for the helium constituent (HE). */
+        PolyFluid* mH2Fluid;            /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the fuel constituent (H2). */
+        PolyFluid* mO2Fluid;            /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the oxidizer constituent (O2). */
+        PolyFluid* mH2OFluid;           /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the water constituent (H2O). */
         /// @brief    Validates the initialization inputs of this Simple H2 Redox.
         void         validate(const GunnsFluidSimpleH2RedoxConfigData& configData,
                               const GunnsFluidSimpleH2RedoxInputData&  inputData);
@@ -239,6 +250,19 @@ inline double GunnsFluidSimpleH2Redox::getO2MassRate() const
 inline double GunnsFluidSimpleH2Redox::getH2OMassRate() const
 {
     return mH2OMassRate;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details Zeroes all the reaction constituent mass and molar flow rate terms.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidSimpleH2Redox::zeroReactionRates()
+{
+    mH2MassRate   = 0.0;
+    mO2MassRate   = 0.0;
+    mH2OMassRate  = 0.0;
+    mH2MoleRate   = 0.0;
+    mO2MoleRate   = 0.0;
+    mH2OMoleRate  = 0.0;
 }
 
 #endif

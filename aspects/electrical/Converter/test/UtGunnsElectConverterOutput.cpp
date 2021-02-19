@@ -9,7 +9,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
 #include "strings/UtResult.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "UtGunnsElectConverterOutput.hh"
 
 /// @details  Test identification number.

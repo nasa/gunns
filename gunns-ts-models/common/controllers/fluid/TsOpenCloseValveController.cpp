@@ -9,7 +9,7 @@
  ((TsPoweredValveController.o))
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 

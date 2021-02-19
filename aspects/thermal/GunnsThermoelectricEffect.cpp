@@ -11,7 +11,7 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsThermoelectricEffect.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cfloat>
 #include <cmath>
 
@@ -266,8 +266,8 @@ void GunnsThermoelectricEffect::restart()
 void GunnsThermoelectricEffect::update()
 {
     /// - Constants used in evaluating polynomials, limited to the valid temperature range.
-    const double hotT  = Math::limitRange(mMinTemperature, mTemperatureHot,  mMaxTemperature);
-    const double coldT = Math::limitRange(mMinTemperature, mTemperatureCold, mMaxTemperature);
+    const double hotT  = MsMath::limitRange(mMinTemperature, mTemperatureHot,  mMaxTemperature);
+    const double coldT = MsMath::limitRange(mMinTemperature, mTemperatureCold, mMaxTemperature);
     const double dT    = hotT - coldT;
     const double dT2   = hotT * hotT - coldT * coldT;
     const double dT3   = hotT * hotT * hotT  - coldT * coldT * coldT;

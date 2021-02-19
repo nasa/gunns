@@ -29,7 +29,7 @@ PROGRAMMERS:
 #include "GunnsGasFan.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsNumericalException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details These coefficients define a generalized shaft power curve for impellers with specific
 ///          speed between 0.2 and 5 radians, which covers most radial, mixed and axial flow pumps.
@@ -317,7 +317,7 @@ void GunnsGasFan::initialize(const GunnsGasFanConfigData&  configData,
         /// - Calculate Specific Speed
         mSpecificSpeed = mReferenceSpeed / UnitConversion::SEC_PER_MIN_PER_2PI * sqrt(mReferenceQBep)
                        * pow(UnitConversion::KPA_PER_PA * mReferenceDensity / pressureBep, 0.75);
-        mSpecificSpeed = Math::limitRange(0.2, mSpecificSpeed, 5.0);
+        mSpecificSpeed = MsMath::limitRange(0.2, mSpecificSpeed, 5.0);
         const double frac = (mSpecificSpeed      - mSpecificSpeedRadial)
                           / (mSpecificSpeedAxial - mSpecificSpeedRadial);
 
@@ -507,7 +507,7 @@ void GunnsGasFan::updateFluid(const double dt __attribute__((unused)), const dou
         const double densityFactor = mNodes[0]->getOutflow()->getDensity() / mReferenceDensity;
         const double affinityP     = speedRatio * speedRatio * speedRatio
                                    * mReferencePowerBep * densityFactor;
-        const double QQbep         = Math::limitRange(0.0, mVolFlowRate, mReferenceQ * speedRatio)
+        const double QQbep         = MsMath::limitRange(0.0, mVolFlowRate, mReferenceQ * speedRatio)
                                    / std::max(affinityQ, DBL_EPSILON);
 
         mImpellerPower             = affinityP * (mPowerCoeffs[0]
@@ -578,7 +578,7 @@ void GunnsGasFan::computeSourcePressure()
         ///
         /// - Min/max limits are set to avoid locking up the pressure, and the result is
         ///   filtered for further stability as needed.
-        const double gSys = Math::limitRange
+        const double gSys = MsMath::limitRange
                        (0.001 / sourceDensity,
                         std::max(mVolFlowRate, 0.0) / sqrt(std::max(mSourcePressure, DBL_EPSILON)),
                         1.0);

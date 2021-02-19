@@ -29,7 +29,7 @@ LIBRARY DEPENDENCY:
 */
 #include "GunnsFluidExternalDemand.hh"
 #include "core/GunnsFluidUtils.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 

@@ -11,7 +11,7 @@ LIBRARY DEPENDENCY:
   )
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "GunnsElectPvString.hh"
 #include "core/GunnsBasicNode.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -270,7 +270,7 @@ void GunnsElectPvStringInputData::applyOverrides(const double dt)
     ///   and subsequent insolation events by a planetary body.
     if (mMalfPhotoFluxFlag and mMalfPhotoFluxDuration > 0.0) {
         /// - Limit ramp time to 1/2 duration.
-        mMalfPhotoFluxRampTime = Math::limitRange(0.0, mMalfPhotoFluxRampTime, 0.5 * mMalfPhotoFluxDuration);
+        mMalfPhotoFluxRampTime = MsMath::limitRange(0.0, mMalfPhotoFluxRampTime, 0.5 * mMalfPhotoFluxDuration);
         if (mPhotoFluxElapsedTime > mMalfPhotoFluxDuration) {
             /// - Automatically switch off when full duration has elapsed.
             mPhotoFluxElapsedTime = 0.0;
@@ -317,7 +317,7 @@ double GunnsElectPvStringInputData::rampPhotoFlux(const double time, const doubl
 {
     double rampFunction = 1.0;
     if (mMalfPhotoFluxRampTime > 0.0) {
-        const double timeFraction = Math::limitRange(0.0, time / mMalfPhotoFluxRampTime, 1.0);
+        const double timeFraction = MsMath::limitRange(0.0, time / mMalfPhotoFluxRampTime, 1.0);
         rampFunction = 0.5 * (1.0 + sin(UnitConversion::PI_UTIL * (timeFraction - 0.5)));
     }
     return outValue + rampFunction * (mMalfPhotoFluxMagnitude - outValue);
@@ -441,7 +441,7 @@ void GunnsElectPvString::validate() const
     }
 
     /// - Throw an exception on cell efficiency not in range.
-    if (not Math::isInRange(0.0, mConfig->mCellConfig.mEfficiency, 1.0)) {
+    if (not MsMath::isInRange(0.0, mConfig->mCellConfig.mEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "cell efficiency not in 0-1.");
     }
@@ -495,7 +495,7 @@ void GunnsElectPvString::validate() const
     }
 
     /// - Throw an exception on source exposed fraction not in 0-1.
-    if (not Math::isInRange(0.0, mInput->mSourceExposedFraction, 1.0)) {
+    if (not MsMath::isInRange(0.0, mInput->mSourceExposedFraction, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                     "initial source exposed fraction not in 0-1.");
     }
@@ -548,7 +548,7 @@ void GunnsElectPvString::update()
         ///   malf.
         double power = mInput->mPhotoFlux * mNumActiveCells * mConfig->mCellConfig.mSurfaceArea * conv;
         if (mMalfDegradeFlag) {
-            power *= Math::limitRange(0.0, (1.0 - mMalfDegradeValue), 1.0);
+            power *= MsMath::limitRange(0.0, (1.0 - mMalfDegradeValue), 1.0);
         }
         mEqProps.mSourceCurrent = power / mEqProps.mShuntVoltageDrop;
     } else {
@@ -585,9 +585,9 @@ void GunnsElectPvString::update()
 void GunnsElectPvString::updateBypassedGroups()
 {
     const int numGroups = mConfig->mNumCells / mConfig->mBypassDiodeInterval;
-    int numBypassedGroups = ceil(numGroups * (1.0 - Math::limitRange(0.0, mInput->mSourceExposedFraction, 1.0)));
+    int numBypassedGroups = ceil(numGroups * (1.0 - MsMath::limitRange(0.0, mInput->mSourceExposedFraction, 1.0)));
     if (mMalfCellGroupFlag) {
-        mMalfCellGroupValue = Math::limitRange(0, mMalfCellGroupValue, numGroups);
+        mMalfCellGroupValue = MsMath::limitRange(0, mMalfCellGroupValue, numGroups);
         numBypassedGroups   = std::max(numBypassedGroups, mMalfCellGroupValue);
     }
     mNumBypassedGroups = numBypassedGroups;
@@ -668,7 +668,7 @@ void GunnsElectPvString::loadAtPower(const double power, const bool shortSide)
 void GunnsElectPvString::loadAtVoltage(const double v1)
 {
     mTerminal.mVoltage = v1;
-    if (not Math::isInRange(DBL_EPSILON, v1, mOpenCircuitVoltage)) {
+    if (not MsMath::isInRange(DBL_EPSILON, v1, mOpenCircuitVoltage)) {
         mTerminal.mPower       = 0.0;
         mTerminal.mConductance = 0.0;
         mTerminal.mCurrent     = 0.0;
@@ -713,4 +713,27 @@ void GunnsElectPvString::loadAtConductance(const double g)
         mTerminal.mVoltage = mTerminal.mCurrent / g;
         mTerminal.mPower   = mTerminal.mCurrent * mTerminal.mVoltage;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  v1  (V)  The terminal voltage to calculate outputs for.
+///
+/// @returns  double (amp) String current at the given voltage.
+///
+/// @details  This is similar to loadAtVoltage method, but only returns the current, and doesn't
+///           store the result or actually load the string.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsElectPvString::predictCurrentAtVoltage(const double v1) const
+{
+    double current;
+    if (not MsMath::isInRange(DBL_EPSILON, v1, mOpenCircuitVoltage)) {
+        current = 0.0;
+
+    } else if (v1 <= mMpp.mVoltage) {
+        current = mShortCircuitCurrent - (mShortCircuitCurrent - mMpp.mCurrent) * v1 / mMpp.mVoltage;
+
+    } else {
+        current = mMpp.mCurrent * (mOpenCircuitVoltage - v1) / (mOpenCircuitVoltage - mMpp.mVoltage);
+    }
+    return current;
 }

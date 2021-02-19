@@ -26,7 +26,7 @@ PROGRAMMERS:
 #include <complex>
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsNumericalException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]     name                 (--)      Name of object.

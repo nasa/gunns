@@ -273,6 +273,8 @@ class GunnsElectPvString
         const GunnsElectPvLoadState& getMpp() const;
         /// @brief Gets the Terminal load state of this string.
         const GunnsElectPvLoadState& getTerminal() const;
+        /// @brief Returns current output of the string at the given terminal voltage.
+        double predictCurrentAtVoltage(const double voltage) const;
 
     protected:
         std::string                mName;                /**<    (--)   trick_chkpnt_io(**) Instance name for H&S messages. */

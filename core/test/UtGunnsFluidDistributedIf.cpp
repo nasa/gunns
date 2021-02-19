@@ -9,6 +9,7 @@
 ***************************************************************************************************/
 #include "UtGunnsFluidDistributedIf.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "software/exceptions/TsOutOfBoundsException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsFluidDistributedIf class.
@@ -389,6 +390,9 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT(0     == tArticle->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
     CPPUNIT_ASSERT(false == tArticle->mInData.hasData());
+    double inFractions[2]   = {0.7, 0.3};
+    double inTcFractions[4] = {1.0e-7, 2.0e-7, 3.0e-7, 4.0e-7};
+    double inTcFractionSum  = inTcFractions[0] + inTcFractions[1] + inTcFractions[2] + inTcFractions[3];
 
     /// @test with incoming data, flip to demand mode due to equal capacitances and we are the pair
     ///       master.
@@ -397,12 +401,12 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     tArticle->mInData.mCapacitance        = 1.0;
     tArticle->mInData.mSource             = 1.0e5;
     tArticle->mInData.mEnergy             = 3.0e5;
-    tArticle->mInData.mMoleFractions[0]   = 0.7;
-    tArticle->mInData.mMoleFractions[1]   = 0.3;
-    tArticle->mInData.mTcMoleFractions[0] = 1.0e-7;
-    tArticle->mInData.mTcMoleFractions[1] = 2.0e-7;
-    tArticle->mInData.mTcMoleFractions[2] = 3.0e-7;
-    tArticle->mInData.mTcMoleFractions[3] = 4.0e-7;
+    tArticle->mInData.mMoleFractions[0]   = 0.7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mMoleFractions[1]   = 0.3 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[0] = 1.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[1] = 2.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[2] = 3.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[3] = 4.0e-7 / (1.0 + inTcFractionSum);
     tArticle->mOutData.mCapacitance       = 1.0;
     tArticle->mInDataLastDemandMode       = false;
     tArticle->mFramesSinceFlip            = 2;
@@ -450,6 +454,7 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     tArticle->mInData.mSource      = -1.0;
     tArticle->mFramesSinceFlip     = 999;
     tCapacitorLink.editVolume(false, 0.0);
+    double expectedFlux = -tArticle->mInData.mSource * (1.0 - inTcFractionSum) / 1000.0;
     tArticle->processInputs();
     CPPUNIT_ASSERT(true   == tArticle->mInDataLastDemandMode);
     CPPUNIT_ASSERT(false  == tArticle->mOutData.mDemandMode);
@@ -458,7 +463,7 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT(0.0    == tArticle->mSupplyVolume);
     CPPUNIT_ASSERT(0      == tArticle->mFramesSinceFlip);
     CPPUNIT_ASSERT(0.0    == tArticle->mSourcePressure);
-    CPPUNIT_ASSERT(1.0e-3 == tArticle->mDemandFlux);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mDemandFlux, 1.0e-14);
     CPPUNIT_ASSERT(3      == tArticle->mOutData.mFrameCount);
     CPPUNIT_ASSERT(3      == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(2      == tArticle->mOutData.mFrameLoopback);
@@ -472,6 +477,13 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0e-7, tArticle->mInternalFluid->getTraceCompounds()->getMoleFractions()[1], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0e-7, tArticle->mInternalFluid->getTraceCompounds()->getMoleFractions()[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7, tArticle->mInternalFluid->getTraceCompounds()->getMoleFractions()[3], DBL_EPSILON);
+
+    /// @test handles zero incoming bulk fluid mole fractions.
+    tArticle->mInData.mMoleFractions[0] = 0.0;
+    tArticle->mInData.mMoleFractions[1] = 0.0;
+    CPPUNIT_ASSERT_THROW(tArticle->processInputs(), TsOutOfBoundsException);
+    tArticle->mInData.mMoleFractions[0] = 0.7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mMoleFractions[1] = 0.3 / (1.0 + inTcFractionSum);
 
     /// @test with both sides in supply mode, remain in supply mode due to equal capacitances and we
     ///       are not the pair master.
@@ -538,28 +550,30 @@ void UtGunnsFluidDistributedIf::testProcessOutputs()
     tNodes[0].setNetworkCapacitance(2.0);
     double inFractions[2]   = {0.7, 0.3};
     double inTcFractions[4] = {1.0e-7, 2.0e-7, 3.0e-7, 4.0e-7};
+    double inTcFractionSum  = inTcFractions[0] + inTcFractions[1] + inTcFractions[2] + inTcFractions[3];
+    double expectedSource   = tArticle->mFlux * 1000.0 * (1.0 + inTcFractionSum);
     GunnsFluidTraceCompoundsInputData inTcInput(inTcFractions);
     PolyFluidInputData inFluidInput(275.0, 110.0, 0.0, 0.0, inFractions, &inTcInput);
     PolyFluid inFluid(*tLocalConfig, inFluidInput);
     tNodes[0].collectInflux(0.001, &inFluid);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0e-7, tNodes[0].getInflow()->getTraceCompounds()->getMoleFractions()[0], DBL_EPSILON);
     tArticle->processOutputs();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->mOutData.mCapacitance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->mOutData.mSource,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,            tArticle->mOutData.mCapacitance, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSource, tArticle->mOutData.mSource,      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(inFluid.getSpecificEnthalpy(), tArticle->mOutData.mEnergy, DBL_EPSILON);
     CPPUNIT_ASSERT(0.7 == tArticle->mTempMassFractions[0]);
     CPPUNIT_ASSERT(0.3 == tArticle->mTempMassFractions[1]);
     {
         const double tempX[2]           = {0.7 / 28.0134, 0.3 / 31.9988};  // MW of N2 & O2
-        const double expectedN2Fraction = tempX[0] / (tempX[0] + tempX[1]);
-        const double expectedO2Fraction = tempX[1] / (tempX[0] + tempX[1]);
+        const double expectedN2Fraction = tempX[0] / (tempX[0] + tempX[1]) / (1.0 + inTcFractionSum);
+        const double expectedO2Fraction = tempX[1] / (tempX[0] + tempX[1]) / (1.0 + inTcFractionSum);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedN2Fraction, tArticle->mOutData.mMoleFractions[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2Fraction, tArticle->mOutData.mMoleFractions[1], DBL_EPSILON);
     }
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0e-7, tArticle->mOutData.mTcMoleFractions[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0e-7, tArticle->mOutData.mTcMoleFractions[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0e-7, tArticle->mOutData.mTcMoleFractions[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7, tArticle->mOutData.mTcMoleFractions[3], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[2], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[3], DBL_EPSILON);
 
     /// @test output in demand mode when the node has no inflow.
     tArticle->mFlux = 0.0;
@@ -576,7 +590,7 @@ void UtGunnsFluidDistributedIf::testProcessOutputs()
     tArticle->mOutData.mDemandMode = false;
     tArticle->mUseEnthalpy         = false;
     tArticle->mSuppliedCapacitance = 0.0;
-    const double expectedSource    = tFluidInput1->mPressure * 1000.0;
+    expectedSource                 = tFluidInput1->mPressure * 1000.0;
     tArticle->processOutputs();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0,                        tArticle->mOutData.mCapacitance, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSource,             tArticle->mOutData.mSource,      DBL_EPSILON);

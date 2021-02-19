@@ -75,12 +75,14 @@ class GunnsDynUtils
         static void   MtoQ(double* qA, const double* mA);
         /// @brief Normalize quaternion {q}.
         static void   normalizeQ(double* q);
-        /// @brief Normalize vector {v}.
+        /// @brief Normalize a 3-vector {v}.
         static void   normalizeV(double* v);
+        /// @brief Normalize vector {v} and returns success/fail flag.
+        static bool   normalizeVSuccess(double* v, const unsigned int size);
         /// @brief |{v}|.
         static double magV(const double* v, const unsigned int size);
         /// @brief [mA] = [mB]
-        static void   setM(double* mA, double* mB, const unsigned int size);
+        static void   setM(double* mA, const double* mB, const unsigned int size);
         /// @brief [mA] = [mB] * [mC].
         static void   multiplyMM(double* mA, double* mB, double* mC, const unsigned int size);
         /// @brief Returns whether the vector has non-zero magnitude.

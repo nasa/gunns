@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
 */
 
 #include "GunnsBasicFlowController.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                 (--) Name of object.

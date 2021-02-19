@@ -35,7 +35,7 @@
 #include <vector>
 #include <string.h>
 #include "SwitchCardElect.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "simulation/hs/TS_hs_msg_types.h"
 #include "software/exceptions/TsInitializationException.hh"
@@ -653,7 +653,7 @@ void SwitchCardElect::step(const double dt) {
                 lSwitchResistance = mLoad[i]->getResistance();
                 if (CONSTANT_POWER_LOAD == mLoad[i]->getLoadType()) {  // this is a constant power load
                     mTotalCPowerLoadsPower += mLoad[i]->getPower();    // sum up all Constant Power load values
-                } else if (Math::isInRange(0.0, lSwitchResistance, mMaxResistance)) {  // this is a resistive load, ignore value if resistance is invalid
+                } else if (MsMath::isInRange(0.0, lSwitchResistance, mMaxResistance)) {  // this is a resistive load, ignore value if resistance is invalid
                     mResLoadsConductance += (1.0 / lSwitchResistance);             // sum up the load conductance
                 }
             } else {
@@ -685,7 +685,7 @@ void SwitchCardElect::step(const double dt) {
         mCPowerLoadsConductance = 0.0;
     }
 
-    if (!Math::isInRange(mMinConductance, mCPowerLoadsConductance, mMaxConductance)) {
+    if (!MsMath::isInRange(mMinConductance, mCPowerLoadsConductance, mMaxConductance)) {
         // mCPowerLoadsConductance = mMinConductance;
         mCPowerLoadsConductance = 0.0;
     }
@@ -847,7 +847,7 @@ void SwitchCardElect::computeFlows(const double dt) {
             if (mSwitch[i].isClosed()) {
                 if ((CONSTANT_POWER_LOAD == mLoad[i]->getLoadType()) && mBusVoltage > 0.0) {
                     lCurrent = mLoad[i]->getPower() / mBusVoltage;
-                } else if ((RESISTIVE_LOAD == mLoad[i]->getLoadType()) && Math::isInRange(0.0, lSwitchResistance, mMaxResistance)) {
+                } else if ((RESISTIVE_LOAD == mLoad[i]->getLoadType()) && MsMath::isInRange(0.0, lSwitchResistance, mMaxResistance)) {
                     lCurrent = mBusVoltage / lSwitchResistance;
                 } else {
                     lCurrent = 0.0;
@@ -1078,7 +1078,7 @@ GunnsBasicLink::SolutionResult SwitchCardElect::confirmSolutionAcceptable(const 
                 if (mSwitch[i].isClosed()) {
                     if ((CONSTANT_POWER_LOAD == mLoad[i]->getLoadType()) && mBusVoltage > 0.0) {
                         lCurrent = mLoad[i]->getPower() / mBusVoltage;
-                    } else if ((RESISTIVE_LOAD == mLoad[i]->getLoadType()) && Math::isInRange(0.0, lSwitchResistance, mMaxResistance)) {
+                    } else if ((RESISTIVE_LOAD == mLoad[i]->getLoadType()) && MsMath::isInRange(0.0, lSwitchResistance, mMaxResistance)) {
                         lCurrent = mBusVoltage / lSwitchResistance;
                     } else {
                         lCurrent = 0.0;

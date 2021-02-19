@@ -157,8 +157,9 @@ def getInputData(attr):
 def getLinkName(link):
     return link.attrib['label']
 
-# Returns as a string the given link's config or input data constructor body
+# Returns as a string the given link's or spotter's config or input data constructor body
 # for loading vectors.
+# Note this works for links and spotters.
 # The dataType argument is 'c' or 'i' which determines config vs. input data.
 def getLinkConstructorBody(link, dataType):
     result  = ''
@@ -970,7 +971,7 @@ spottersData = []
 for spotter in spotters:
     spotterClass = spotter.attrib['Class'].split("/")[-1]
     spotterName  = spotter.attrib['label']
-    spotterData  = (spotterClass, spotterName, getConfigData(spotter.attrib), getInputData(spotter.attrib), spotter.attrib['ConstructorArgs'])
+    spotterData  = (spotterClass, spotterName, getConfigData(spotter.attrib), getInputData(spotter.attrib), spotter.attrib['ConstructorArgs'], getLinkConstructorBody(spotter, 'c'), getLinkConstructorBody(spotter, 'i'))
     spottersData.append(spotterData)
 
 # This is a list of data for each socket list

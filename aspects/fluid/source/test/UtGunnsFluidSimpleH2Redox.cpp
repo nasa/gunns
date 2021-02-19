@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
+/*
 @copyright Copyright 2019 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((aspects/fluid/source/GunnsFluidSimpleH2Redox.o))
-***************************************************************************************************/
+*/
 
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -21,36 +18,36 @@ int UtGunnsFluidSimpleH2Redox::TEST_ID = 0;
 UtGunnsFluidSimpleH2Redox::UtGunnsFluidSimpleH2Redox()
     :
     CppUnit::TestFixture(),
-    mFluidProperties(0),
-    mTypes(),
+    tFluidProperties(0),
+    tTypes(),
 //    mFractions(),
-    mFluidConfig(0),
-    mFluidInput0(0),
-    mFluidInput1(0),
-    mFluidInput2(0),
-    mLinks(),
-    mName(""),
-    mNodes(),
-    mNodeList(),
-    mPort0(0),
-    mPort1(0),
-    mPort2(0),
-    mH2Coefficient(0.0),
-    mMinInletPressure(0.0),
-    mNominalStackVoltage(0.0),
-    mConfigData(0),
-    mMalfBlockageFlag(false),
-    mMalfBlockageValue(0.0),
-    mCurrent(0.0),
-    mTrippedOff(false),
-    mInputData(0),
+    tFluidConfig(0),
+    tFluidInput0(0),
+    tFluidInput1(0),
+    tFluidInput2(0),
+    tLinks(),
+    tName(""),
+    tNodes(),
+    tNodeList(),
+    tPort0(0),
+    tPort1(0),
+    tNumCells(0),
+    tCellVoltageLoaded(0.0),
+    tCellH2ReactRate(0.0),
+    tMaxEfficiency(0.0),
+    tConfigData(0),
+    tMalfBlockageFlag(false),
+    tMalfBlockageValue(0.0),
+    tCurrent(0.0),
+    tTrippedOff(false),
+    tInputData(0),
 //    mFluidTemperature(0.0),
 //    mWallHeatFlux(0.0),
 //    mMass(0.0),
 //    mSorbtionFlowRate(0.0),
-    mArticle(0),
+    tArticle(0),
 //    mFlowRate(0.0),
-    mTimeStep(0.0)
+    tTimeStep(0.0)
 //    mTolerance(0.0)
 {
     // nothing to do
@@ -70,81 +67,85 @@ UtGunnsFluidSimpleH2Redox::~UtGunnsFluidSimpleH2Redox()
 
 void UtGunnsFluidSimpleH2Redox::setUp()
 {
-//    /// - Define the nominal port fluids.
-//    mFluidProperties      = new DefinedFluidProperties();
-//    mTypes[0]             = FluidProperties::GUNNS_H2;
-//    mTypes[1]             = FluidProperties::GUNNS_O2;
-//    mTypes[2]             = FluidProperties::GUNNS_CO2;
-//    mTypes[3]             = FluidProperties::GUNNS_WATER;
-//    mFluidConfig          = new PolyFluidConfigData(mFluidProperties, mTypes, N_FLUIDS);
-//
-//    double fractions0[]   = {0.9, 0.0, 0.1, 0.0};
-//    mFluidInput0          = new PolyFluidInputData( 294.261,
-//                                                   2000.0,
-//                                                      0.0,
-//                                                      0.0,
-//                                                   fractions0);
-//
-//    double fractions1[]   = {0.0, 0.9, 0.1, 0.0};
-//    mFluidInput1          = new PolyFluidInputData( 294.261,
-//                                                   2000.0,
-//                                                      0.0,
-//                                                      0.0,
-//                                                   fractions1);
-//
-//    double fractions2[]   = {0.0, 0.0, 0.0, 1.0};
-//    mFluidInput2          = new PolyFluidInputData( 294.261,
-//                                                   2000.0,
-//                                                      0.0,
-//                                                      0.0,
-//                                                   fractions2);
-//
-//    /// - Initialize the nodes.
-//    mNodes[0].initialize("UtNode0", mFluidConfig);
-//    mNodes[1].initialize("UtNode1", mFluidConfig);
-//    mNodes[2].initialize("UtNode2", mFluidConfig);
-//    mNodes[0].getContent()->initialize(*mFluidConfig, *mFluidInput0);
-//    mNodes[1].getContent()->initialize(*mFluidConfig, *mFluidInput1);
-//    mNodes[2].getContent()->initialize(*mFluidConfig, *mFluidInput2);
-//
-//    /// - Initialize the nodes list.
-//    mNodeList.mNodes      = mNodes;
-//    mNodeList.mNumNodes   = N_NODES;
-//
-//    /// - Define the nominal configuration data.
-//    mName                 = "nominal";
-//    mH2Coefficient        = 0.0001;
-//    mMinInletPressure     = 1500.0;
-//    mNominalStackVoltage  = 300.0;
-//    mConfigData           = new GunnsFluidSimpleH2RedoxConfigData(mName,
-//                                                                  &mNodeList,
-//                                                                  mH2Coefficient,
-//                                                                  mMinInletPressure,
-//                                                                  mNominalStackVoltage);
-//
-//    /// - Define the nominal input data.
-//    mMalfBlockageFlag     = false;
-//    mMalfBlockageValue    = 0.3;
-//    mCurrent              = 0.5;
-//    mTrippedOff           = false;
-//    mInputData            = new GunnsFluidSimpleH2RedoxInputData(mMalfBlockageFlag,
-//                                                                 mMalfBlockageValue,
-//                                                                 mCurrent,
-//                                                                 mTrippedOff);
-//
-//    /// - Define the nominal port mapping.
-//    mPort0                = 0;
-//    mPort1                = 1;
-//    mPort2                = 2;
-//
-//    /// - Default construct the nominal test article.
-//    mArticle              = new FriendlyGunnsFluidSimpleH2Redox;
-//
-//    /// - Define the nominal time step.
-//    mTimeStep             = 0.1;
-//
-//    /// - Increment the test identification number.
-//    ++TEST_ID;
+    /// - Define the nominal port fluids.
+    tFluidProperties = new DefinedFluidProperties();
+    tTypes[0]        = FluidProperties::GUNNS_H2;
+    tTypes[1]        = FluidProperties::GUNNS_O2;
+    tTypes[2]        = FluidProperties::GUNNS_N2;
+    tTypes[3]        = FluidProperties::GUNNS_H2O;
+    tTypes[4]        = FluidProperties::GUNNS_WATER;
+    tFluidConfig     = new PolyFluidConfigData(tFluidProperties, tTypes, N_FLUIDS);
+
+    double fractions0[] = {0.6, 0.0, 0.1, 0.3, 0.0};
+    tFluidInput0        = new PolyFluidInputData(294.261,
+                                                 200.0,
+                                                   0.0,
+                                                   0.0,
+                                                 fractions0);
+
+    double fractions1[] = {0.0, 0.9, 0.1, 0.0, 0.0};
+    tFluidInput1        = new PolyFluidInputData(294.261,
+                                                 200.0,
+                                                   0.0,
+                                                   0.0,
+                                                 fractions1);
+
+    double fractions2[] = {0.0, 0.0, 0.0, 0.0, 1.0};
+    tFluidInput2        = new PolyFluidInputData(294.261,
+                                                 200.0,
+                                                   0.0,
+                                                   0.0,
+                                                 fractions2);
+
+    /// - Initialize the nodes.
+    tNodes[0].initialize("UtNode0", tFluidConfig);
+    tNodes[1].initialize("UtNode1", tFluidConfig);
+    tNodes[2].initialize("UtNode2", tFluidConfig);
+    tNodes[3].initialize("UtNode3", tFluidConfig);
+    tNodes[0].getContent()->initialize(*tFluidConfig, *tFluidInput0);
+    tNodes[1].getContent()->initialize(*tFluidConfig, *tFluidInput1);
+    tNodes[2].getContent()->initialize(*tFluidConfig, *tFluidInput0);
+    tNodes[3].getContent()->initialize(*tFluidConfig, *tFluidInput2);
+
+    /// - Initialize the nodes list.
+    tNodeList.mNodes    = tNodes;
+    tNodeList.mNumNodes = N_NODES;
+
+    /// - Define the nominal configuration data.
+    tName              = "tArticle";
+    tNumCells          = 30;
+    tCellVoltageLoaded = 0.8;
+    tCellH2ReactRate   = 1.0e-5;
+    tMaxEfficiency     = 0.9;
+    tConfigData        = new GunnsFluidSimpleH2RedoxConfigData(tName,
+                                                               &tNodeList,
+                                                               tNumCells,
+                                                               tCellVoltageLoaded,
+                                                               tCellH2ReactRate,
+                                                               tMaxEfficiency);
+
+    /// - Define the nominal input data.
+    tMalfBlockageFlag  = true;
+    tMalfBlockageValue = 0.3;
+    tCurrent           = 0.5;
+    tTrippedOff        = false;
+    tInputData         = new GunnsFluidSimpleH2RedoxInputData(tMalfBlockageFlag,
+                                                              tMalfBlockageValue,
+                                                              tCurrent,
+                                                              tTrippedOff);
+
+    /// - Define the nominal port mapping.
+    tPort0 = 0;
+    tPort1 = 1;
+
+    /// - Default construct the nominal test article.
+    tArticle = new FriendlyGunnsFluidSimpleH2Redox;
+
+    /// - Define the nominal time step.
+    tTimeStep = 0.1;
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,15 +153,15 @@ void UtGunnsFluidSimpleH2Redox::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::tearDown()
 {
-//    /// - Deletes for news (in reverse order) in setUp.
-//    delete mArticle;
-//    delete mInputData;
-//    delete mConfigData;
-//    delete mFluidInput2;
-//    delete mFluidInput1;
-//    delete mFluidInput0;
-//    delete mFluidConfig;
-//    delete mFluidProperties;
+    /// - Deletes for news (in reverse order) in setUp.
+    delete tArticle;
+    delete tInputData;
+    delete tConfigData;
+    delete tFluidInput2;
+    delete tFluidInput1;
+    delete tFluidInput0;
+    delete tFluidConfig;
+    delete tFluidProperties;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,37 +170,39 @@ void UtGunnsFluidSimpleH2Redox::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testConfigAndInput()
 {
-//    UT_RESULT_FIRST;
-//
-//    /// @test    Configuration data nominal construction.
-//    CPPUNIT_ASSERT(mName                                          == mConfigData->mName);
-//    CPPUNIT_ASSERT(mNodes                                         == mConfigData->mNodeList->mNodes);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mH2Coefficient,                     mConfigData->mH2Coefficient,       0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMinInletPressure,                  mConfigData->mMinInletPressure,    0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mNominalStackVoltage,               mConfigData->mNominalStackVoltage, 0.0);
-//
-//    /// @test    Input data nominal construction.
-//    CPPUNIT_ASSERT(mMalfBlockageFlag                              == mInputData->mMalfBlockageFlag);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfBlockageValue,                 mInputData->mMalfBlockageValue,    0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mCurrent,                           mInputData->mCurrent,              0.0);
-//    CPPUNIT_ASSERT(mTrippedOff                                    == mInputData->mTrippedOff);
-//
-//    /// @test    Configuration data default construction.
-//    GunnsFluidSimpleH2RedoxConfigData defaultConfig;
-//    CPPUNIT_ASSERT(0                                              == defaultConfig.mName.size());
-//    CPPUNIT_ASSERT(0                                              == defaultConfig.mNodeList);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mH2Coefficient,       0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mMinInletPressure,    0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mNominalStackVoltage, 0.0);
-//
-//    /// @test    Input data default construction.
-//    GunnsFluidSimpleH2RedoxInputData   defaultInput;
-//    CPPUNIT_ASSERT(                                                 !defaultInput.mMalfBlockageFlag);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfBlockageValue,    0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mCurrent,              0.0);
-//    CPPUNIT_ASSERT(                                                 !defaultInput.mTrippedOff);
-//
-//    UT_PASS;
+    UT_RESULT_FIRST;
+
+    /// @test    Configuration data nominal construction.
+    CPPUNIT_ASSERT(tName                          == tConfigData->mName);
+    CPPUNIT_ASSERT(tNodes                         == tConfigData->mNodeList->mNodes);
+    CPPUNIT_ASSERT(tNumCells                      == tConfigData->mNumCells);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellVoltageLoaded, tConfigData->mCellVoltageLoaded, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellH2ReactRate,   tConfigData->mCellH2ReactRate,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMaxEfficiency,     tConfigData->mMaxEfficiency,     0.0);
+
+    /// @test    Input data nominal construction.
+    CPPUNIT_ASSERT(tMalfBlockageFlag              == tInputData->mMalfBlockageFlag);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMalfBlockageValue, tInputData->mMalfBlockageValue, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCurrent,           tInputData->mCurrent,           0.0);
+    CPPUNIT_ASSERT(tTrippedOff                    == tInputData->mTrippedOff);
+
+    /// @test    Configuration data default construction.
+    GunnsFluidSimpleH2RedoxConfigData defaultConfig;
+    CPPUNIT_ASSERT(0               == defaultConfig.mName.size());
+    CPPUNIT_ASSERT(0               == defaultConfig.mNodeList);
+    CPPUNIT_ASSERT(0               == defaultConfig.mNumCells);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultConfig.mCellVoltageLoaded, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultConfig.mCellH2ReactRate,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultConfig.mMaxEfficiency,     0.0);
+
+    /// @test    Input data default construction.
+    GunnsFluidSimpleH2RedoxInputData defaultInput;
+    CPPUNIT_ASSERT(                  !defaultInput.mMalfBlockageFlag);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mMalfBlockageValue, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, defaultInput.mCurrent,           0.0);
+    CPPUNIT_ASSERT(                  !defaultInput.mTrippedOff);
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,41 +210,43 @@ void UtGunnsFluidSimpleH2Redox::testConfigAndInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testDefaultConstruction()
 {
-//    UT_RESULT;
-//
-//    /// @test    Default construction configuration data.
-//    CPPUNIT_ASSERT(""                        == mArticle->mName);
-//    CPPUNIT_ASSERT(0                         == mArticle->mNodes);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           mArticle->mH2Coefficient,       0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           mArticle->mMinInletPressure,    0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           mArticle->mNominalStackVoltage, 0.0);
-//
-//    /// @test    Default construction input data.
-//    CPPUNIT_ASSERT(                            !mArticle->mMalfBlockageFlag);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           mArticle->mMalfBlockageValue,   0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           mArticle->mCurrent,             0.0);
-//    CPPUNIT_ASSERT(                            !mArticle->mTrippedOff);
-//
-//    /// @test    Default construction state data.
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mOutputStackVoltage,   0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mH2MassRate,           0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mO2MassRate,           0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mH2OMassRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mH2MoleRate,           0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mO2MoleRate,           0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mH2OMoleRate,          0.0);
-//    CPPUNIT_ASSERT(0                        == mArticle->mH2Fluid);
-//    CPPUNIT_ASSERT(0                        == mArticle->mO2Fluid);
-//    CPPUNIT_ASSERT(0                        == mArticle->mH2OFluid);
-//
-//    /// @test    Default construction initialization flag.
-//    CPPUNIT_ASSERT(!mArticle->mInitFlag);
-//
-//    /// @test    New/delete for code coverage.
-//    GunnsFluidSimpleH2Redox* article = new GunnsFluidSimpleH2Redox();
-//    delete article;
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// @test    Default construction configuration data.
+    CPPUNIT_ASSERT(""              == tArticle->mName);
+    CPPUNIT_ASSERT(0               == tArticle->mNodes);
+    CPPUNIT_ASSERT(0               == tArticle->mNumCells);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mCellVoltageLoaded, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mCellH2ReactRate,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMaxEfficiency,     0.0);
+
+    /// @test    Default construction input data.
+    CPPUNIT_ASSERT(                  !tArticle->mMalfBlockageFlag);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMalfBlockageValue, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mCurrent,           0.0);
+    CPPUNIT_ASSERT(                  !tArticle->mTrippedOff);
+
+    /// @test    Default construction state data.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mOutputStackVoltage, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEfficiency,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mH2MassRate,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mO2MassRate,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mH2OMassRate,        0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mH2MoleRate,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mO2MoleRate,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mH2OMoleRate,        0.0);
+    CPPUNIT_ASSERT(0               == tArticle->mH2Fluid);
+    CPPUNIT_ASSERT(0               == tArticle->mO2Fluid);
+    CPPUNIT_ASSERT(0               == tArticle->mH2OFluid);
+
+    /// @test    Default construction initialization flag.
+    CPPUNIT_ASSERT(!tArticle->mInitFlag);
+
+    /// @test    New/delete for code coverage.
+    GunnsFluidSimpleH2Redox* article = new GunnsFluidSimpleH2Redox();
+    delete article;
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,76 +255,57 @@ void UtGunnsFluidSimpleH2Redox::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testNominalInitialization()
 {
-//    UT_RESULT;
+    UT_RESULT;
+
+    /// - Initialize default constructed test article with nominal initialization data.
+    FriendlyGunnsFluidSimpleH2Redox article;
+    article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+
+    /// @test    Nominal configuration data.
+    CPPUNIT_ASSERT(tName              == article.mName);
+    CPPUNIT_ASSERT(&tNodes[tPort0]    == article.mNodes[0]);
+    CPPUNIT_ASSERT(&tNodes[tPort1]    == article.mNodes[1]);
+    CPPUNIT_ASSERT(tNumCells          == article.mNumCells);
+    CPPUNIT_ASSERT(tCellVoltageLoaded == article.mCellVoltageLoaded);
+    CPPUNIT_ASSERT(tCellH2ReactRate   == article.mCellH2ReactRate);
+    CPPUNIT_ASSERT(tMaxEfficiency     == article.mMaxEfficiency);
+
+    /// @test    Nominal input data.
+    CPPUNIT_ASSERT(tInputData->mMalfBlockageFlag  == article.mMalfBlockageFlag);
+    CPPUNIT_ASSERT(tInputData->mMalfBlockageValue == article.mMalfBlockageValue);
+    CPPUNIT_ASSERT(tCurrent                       == article.mCurrent);
+    CPPUNIT_ASSERT(tTrippedOff                    == article.mTrippedOff);
+
+    /// @test    Nominal state data.
+    CPPUNIT_ASSERT(0.0 == article.mEfficiency);
+    CPPUNIT_ASSERT(0.0 == article.mOutputStackVoltage);
+    CPPUNIT_ASSERT(0.0 == article.mH2MassRate);
+    CPPUNIT_ASSERT(0.0 == article.mO2MassRate);
+    CPPUNIT_ASSERT(0.0 == article.mH2OMassRate);
+    CPPUNIT_ASSERT(0.0 == article.mH2MoleRate);
+    CPPUNIT_ASSERT(0.0 == article.mO2MoleRate);
+    CPPUNIT_ASSERT(0.0 == article.mH2MoleRate);
+    CPPUNIT_ASSERT(0   != article.mH2Fluid);
+    CPPUNIT_ASSERT(0   != article.mO2Fluid);
+    CPPUNIT_ASSERT(0   != article.mH2OFluid);
+    CPPUNIT_ASSERT(1.0 == article.mH2Fluid->getMassFraction(0));
+    CPPUNIT_ASSERT(1.0 == article.mO2Fluid->getMassFraction(1));
+    CPPUNIT_ASSERT(1.0 == article.mH2OFluid->getMassFraction(3));
+
+    /// @test    Nominal initialization flag.
+    CPPUNIT_ASSERT(article.mInitFlag);
+
+    /// @test    Nominal initialization with fluid objects already allocated.
+    article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+    CPPUNIT_ASSERT(0   != article.mH2Fluid);
+    CPPUNIT_ASSERT(0   != article.mO2Fluid);
+    CPPUNIT_ASSERT(0   != article.mH2OFluid);
+    CPPUNIT_ASSERT(1.0 == article.mH2Fluid->getMassFraction(0));
+    CPPUNIT_ASSERT(1.0 == article.mO2Fluid->getMassFraction(1));
+    CPPUNIT_ASSERT(1.0 == article.mH2OFluid->getMassFraction(3));
+    CPPUNIT_ASSERT(article.mInitFlag);
 //
-//    /// - Initialize default constructed test article with nominal initialization data.
-//    FriendlyGunnsFluidSimpleH2Redox article;
-//    article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test    Nominal configuration data.
-//    CPPUNIT_ASSERT(mName                                      == article.mName);
-//    CPPUNIT_ASSERT(&mNodes[mPort0]                            == article.mNodes[0]);
-//    CPPUNIT_ASSERT(&mNodes[mPort1]                            == article.mNodes[1]);
-//    CPPUNIT_ASSERT(&mNodes[mPort2]                            == article.mNodes[2]);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mH2Coefficient,                 article.mH2Coefficient,       0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMinInletPressure,              article.mMinInletPressure,    0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mNominalStackVoltage,           article.mNominalStackVoltage, 0.0);
-//
-//    /// @test    Nominal input data.
-//    CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag              == article.mMalfBlockageFlag);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue, article.mMalfBlockageValue,   0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mCurrent,                       article.mCurrent,             0.0);
-//    CPPUNIT_ASSERT(mTrippedOff                                == article.mTrippedOff);
-//
-//    /// @test    Nominal state data.
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mOutputStackVoltage,  0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MassRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mO2MassRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2OMassRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MoleRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mO2MoleRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MoleRate,          0.0);
-//    CPPUNIT_ASSERT(0                                          != article.mH2Fluid);
-//    CPPUNIT_ASSERT(0                                          != article.mO2Fluid);
-//    CPPUNIT_ASSERT(0                                          != article.mH2OFluid);
-//
-//    /// @test    Nominal initialization flag.
-//    CPPUNIT_ASSERT(article.mInitFlag);
-//
-//    /// @test    Nominal initialization with fluid objects already allocated.
-//    article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test    Nominal configuration data.
-//    CPPUNIT_ASSERT(mName                                      == article.mName);
-//    CPPUNIT_ASSERT(&mNodes[mPort0]                            == article.mNodes[0]);
-//    CPPUNIT_ASSERT(&mNodes[mPort1]                            == article.mNodes[1]);
-//    CPPUNIT_ASSERT(&mNodes[mPort2]                            == article.mNodes[2]);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mH2Coefficient,                 article.mH2Coefficient,       0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMinInletPressure,              article.mMinInletPressure,    0.0);
-////    CPPUNIT_ASSERT_DOUBLES_EQUAL(mNominalStackVoltage,           article.mNominalStackVoltage, 0.0);
-//
-//    /// @test    Nominal input data.
-//    CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag              == article.mMalfBlockageFlag);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue, article.mMalfBlockageValue,   0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mCurrent,                       article.mCurrent,             0.0);
-//    CPPUNIT_ASSERT(mTrippedOff                                == article.mTrippedOff);
-//
-//    /// @test    Nominal state data.
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mOutputStackVoltage,  0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MassRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mO2MassRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2OMassRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MoleRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mO2MoleRate,          0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                            article.mH2MoleRate,          0.0);
-//    CPPUNIT_ASSERT(0                                          != article.mH2Fluid);
-//    CPPUNIT_ASSERT(0                                          != article.mO2Fluid);
-//    CPPUNIT_ASSERT(0                                          != article.mH2OFluid);
-//
-//    /// @test    Nominal initialization flag.
-//    CPPUNIT_ASSERT(article.mInitFlag);
-//
-//    UT_PASS;
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,26 +313,29 @@ void UtGunnsFluidSimpleH2Redox::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testAccessors()
 {
-//    UT_RESULT;
-//
-//    /// @test     isInitialized before initialization.
-//    CPPUNIT_ASSERT(                       !mArticle->isInitialized());
-//
-//    /// @test     getOutputStackVoltage before initialization.
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->getOutputStackVoltage(), 0.0);
-//
-//    /// - Initialize default constructed test article with nominal initialization data.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test     isInitialized after initialization.
-//    CPPUNIT_ASSERT(                        mArticle->isInitialized());
-//
-//    /// @test     getOutputStackVoltage after initialization.
-//    const double expected         = mNominalStackVoltage;
-//    mArticle->mOutputStackVoltage = expected;
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->getOutputStackVoltage(), 0.0);
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// @test    isInitialized.
+    tArticle->mInitFlag = true;
+    CPPUNIT_ASSERT(true == tArticle->isInitialized());
+
+    /// @test    getOutputStackVoltage.
+    tArticle->mOutputStackVoltage = 100.0;
+    CPPUNIT_ASSERT(100.0 == tArticle->getOutputStackVoltage());
+
+    /// @test    getH2MassRate
+    tArticle->mH2MassRate = -2.0;
+    CPPUNIT_ASSERT(-2.0 == tArticle->getH2MassRate());
+
+    /// @test    getO2MassRate
+    tArticle->mO2MassRate = -3.0;
+    CPPUNIT_ASSERT(-3.0 == tArticle->getO2MassRate());
+
+    /// @test    getH2OMassRate
+    tArticle->mH2OMassRate = 4.0;
+    CPPUNIT_ASSERT(4.0 == tArticle->getH2OMassRate());
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,17 +343,13 @@ void UtGunnsFluidSimpleH2Redox::testAccessors()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testModifiers()
 {
-//    UT_RESULT;
-//
-//    /// - Initialize default test article with nominal initialization data.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test    setCurrent with good value.
-//    const double current = 0.1;
-//    mArticle->setCurrent(current);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(current, mArticle->mCurrent, 0.0);
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// @test    setCurrent.
+    tArticle->setCurrent(0.1);
+    CPPUNIT_ASSERT(0.1 == tArticle->mCurrent);
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,31 +357,31 @@ void UtGunnsFluidSimpleH2Redox::testModifiers()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testRestart()
 {
-//    UT_RESULT;
-//
-//    /// - Initialize default test article with nominal initialization data.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test    the state attributes are reset on restart.
-//    mArticle->mOutputStackVoltage = mNominalStackVoltage;
-//    mArticle->mH2MassRate         = 1.0;
-//    mArticle->mO2MassRate         = 1.0;
-//    mArticle->mH2OMassRate        = 1.0;
-//    mArticle->mH2MoleRate         = 1.0;
-//    mArticle->mO2MoleRate         = 1.0;
-//    mArticle->mH2OMoleRate        = 1.0;
-//    mArticle->mPower              = 1.0;
-//    mArticle->restart();
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mNominalStackVoltage, mArticle->mOutputStackVoltage, 0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mH2MassRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mO2MassRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mH2OMassRate,        0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mH2MoleRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mO2MoleRate,         0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mH2OMoleRate,        0.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                  mArticle->mPower,              0.0);
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+
+    /// @test    the state attributes are reset on restart.
+    tArticle->mEfficiency   = 1.0;
+    tArticle->mH2MassRate   = 1.0;
+    tArticle->mO2MassRate   = 1.0;
+    tArticle->mH2OMassRate  = 1.0;
+    tArticle->mH2MoleRate   = 1.0;
+    tArticle->mO2MoleRate   = 1.0;
+    tArticle->mH2OMoleRate  = 1.0;
+    tArticle->mPower        = 1.0;
+    tArticle->restart();
+    CPPUNIT_ASSERT(0.0 == tArticle->mEfficiency);
+    CPPUNIT_ASSERT(0.0 == tArticle->mH2MassRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mO2MassRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mH2OMassRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mH2MoleRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mO2MoleRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mH2OMoleRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mPower);
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -404,256 +389,190 @@ void UtGunnsFluidSimpleH2Redox::testRestart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testStep()
 {
-//    UT_RESULT;
-//
-//    /// - Initialize default test article with nominal initialization data.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//    mArticle->mPotentialVector[0] = mFluidInput0->mPressure;
-//    mArticle->mPotentialVector[1] = mFluidInput1->mPressure;
-//    mArticle->mPotentialVector[2] = mFluidInput2->mPressure;
-//
-//    /// - Step the link.
-//    mArticle->step(mTimeStep);
-//
-//    /// @test    Nominal outputs for forward (fuel-cell) reaction.
-//    bool   expectedTrip    = false;
-//    double expectedH2mass  = -mH2Coefficient * mCurrent;
-//    double expectedH2mole  =  expectedH2mass  / 2.01588;    // MW of H2
-//    double expectedO2mole  =  expectedH2mole  * 0.5;
-//    double expectedH2Omole = -expectedH2mole  * 1.0;
-//    double expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
-//    double expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
-//    double expectedVolts   =  mNominalStackVoltage;
-//
-//    CPPUNIT_ASSERT_EQUAL        (expectedTrip,    mArticle->mTrippedOff);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mass,  mArticle->mH2MassRate,         DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mass,  mArticle->mO2MassRate,         DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omass, mArticle->mH2OMassRate,        DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mole,  mArticle->mH2MoleRate,         DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mole,  mArticle->mO2MoleRate,         DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omole, mArticle->mH2OMoleRate,        DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVolts,   mArticle->mOutputStackVoltage, DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mole,  mArticle->mSourceVector[0],    DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mole,  mArticle->mSourceVector[1],    DBL_EPSILON);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omole, mArticle->mSourceVector[2],    DBL_EPSILON);
-//
-//    /// @test    Nominal outputs for reverse (electrolysis) reaction.
-//
-//    /// @test  port re-mapping
-//
-//    /// @test trip off for inlet pressure forward
-//    /// @test trip off for inlet pressure reverse
-//
-//    /// @test h2 rate < min
-//
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+    tArticle->mPotentialVector[0] = tFluidInput0->mPressure;
+    tArticle->mPotentialVector[1] = tFluidInput1->mPressure;
+
+    /// - Step the link.
+    tArticle->step(tTimeStep);
+
+    /// @test    Nominal outputs for forward (fuel cell) reaction.
+    double expectedH2mass  = -tCellH2ReactRate * tNumCells * tCurrent
+                           / tMaxEfficiency / (1.0 - tMalfBlockageValue);
+    double expectedH2mole  =  expectedH2mass  / 2.01588;    // MW of H2
+    double expectedO2mole  =  expectedH2mole  * 0.5;
+    double expectedH2Omole = -expectedH2mole  * 1.0;
+    double expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
+    double expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
+    double expectedVolts   =  tCellVoltageLoaded * tNumCells;
+    double expectedW[2]    = {expectedH2mole + expectedH2Omole, expectedO2mole};
+    CPPUNIT_ASSERT_EQUAL        (false,           tArticle->mTrippedOff);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mass,  tArticle->mH2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mass,  tArticle->mO2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omass, tArticle->mH2OMassRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mole,  tArticle->mH2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mole,  tArticle->mO2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omole, tArticle->mH2OMoleRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVolts,   tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW[0],    tArticle->mSourceVector[0],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW[1],    tArticle->mSourceVector[1],    DBL_EPSILON);
+
+    /// @test    Nominal outputs for zero reaction.
+    tArticle->setCurrent(0.0);
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT_EQUAL        (false,         tArticle->mTrippedOff);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mH2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mO2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mH2OMassRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mH2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mO2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mH2OMoleRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVolts, tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[0],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[1],    DBL_EPSILON);
+
+    /// @test    Nominal outputs for reverse (electrolysis) reaction.
+    tArticle->setCurrent(-tCurrent);
+    tArticle->step(tTimeStep);
+    expectedH2mass  = -tCellH2ReactRate * tNumCells * tCurrent
+                    * tMaxEfficiency * (1.0 - tMalfBlockageValue);
+    expectedH2mole  =  expectedH2mass  / 2.01588;    // MW of H2
+    expectedO2mole  =  expectedH2mole  * 0.5;
+    expectedH2Omole = -expectedH2mole  * 1.0;
+    expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
+    expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
+    expectedVolts   =  tCellVoltageLoaded * tNumCells;
+    expectedW[0]    =  expectedH2mole + expectedH2Omole;
+    expectedW[1]    =  expectedO2mole;
+    CPPUNIT_ASSERT_EQUAL        ( false,           tArticle->mTrippedOff);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedH2mass,  tArticle->mH2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedO2mass,  tArticle->mO2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedH2Omass, tArticle->mH2OMassRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedH2mole,  tArticle->mH2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedO2mole,  tArticle->mO2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedH2Omole, tArticle->mH2OMoleRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedVolts,   tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW[0],    tArticle->mSourceVector[0],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW[1],    tArticle->mSourceVector[1],    DBL_EPSILON);
+
+    /// @test    trip off for inlet pressure forward.
+    tArticle->mPotentialVector[1] = 1.0e-5;
+    tArticle->setCurrent(tCurrent);
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT_EQUAL        (true, tArticle->mTrippedOff);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mO2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2OMassRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mO2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2OMoleRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[0],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[1],    DBL_EPSILON);
+
+    /// @test    reset trip.
+    tArticle->mPotentialVector[1] = 200.0;
+    tArticle->mTrippedOff         = false;
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT(false == tArticle->mTrippedOff);
+    CPPUNIT_ASSERT(0     != tArticle->mH2MassRate);
+
+    /// @test    trip off for inlet pressure reverse.
+    tArticle->mPotentialVector[0] = 1.0e-5;
+    tArticle->setCurrent(-tCurrent);
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT_EQUAL        (true, tArticle->mTrippedOff);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mO2MassRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2OMassRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mO2MoleRate,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2OMoleRate,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[0],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[1],    DBL_EPSILON);
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for GUNNS Fluid Simple H2 Redox link model update fluid.
+/// @details  Tests for GUNNS Fluid Simple H2 Redox link model compute flows.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidSimpleH2Redox::testUpdateFluidNominal()
+void UtGunnsFluidSimpleH2Redox::testComputeFlows()
 {
-//    UT_RESULT;
-//
-//    {
-//        /// @test     Nominal initialization data.
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double expectedMass     = mNodes[0].getContent()->getMassFraction(mGasIndex) * mEfficiency * mFlowRate * mTimeStep;
-//        const double expectedAdsorbed = mArticle->mAdsorbedMass + expectedMass;
-//        const double expectedRate     = -expectedMass / mTimeStep;
-//        mArticle->mFlowRate           = mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mInternalFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mSorbtionFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mSorbtionFluid->getMass(),        mTolerance);
-//    } {
-//        /// @test     Efficiency constraint.
-//        mConfigData->mEfficiency = 0.01;
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double expectedMass     = mNodes[0].getContent()->getMassFraction(mGasIndex) * 0.01 * mFlowRate * mTimeStep;;
-//        const double expectedAdsorbed = mArticle->mAdsorbedMass + expectedMass;
-//        const double expectedRate     = -expectedMass / mTimeStep;
-//        mArticle->mFlowRate           = mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mInternalFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mSorbtionFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mSorbtionFluid->getMass(),        mTolerance);
-//        mConfigData->mEfficiency      = mEfficiency;
-//    } {
-//        /// @test     Max removal rate constraint.
-//        mConfigData->mMaxAdsorbtionRate = 0.001;
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double expectedRate     = -0.001;
-//        const double expectedMass     = -expectedRate * mTimeStep;;
-//        const double expectedAdsorbed = mArticle->mAdsorbedMass + expectedMass;
-//        mArticle->mFlowRate           = mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mInternalFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mSorbtionFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mSorbtionFluid->getMass(),        mTolerance);
-//        mConfigData->mMaxAdsorbtionRate = mMaxAdsorbtionRate;
-//    } {
-//        /// @test     Capacity constraint.
-//        mInputData->mAdsorbedMass     = mConfigData->mMaxAdsorbedMass - 0.001;
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double expectedMass     = 0.001;
-//        const double expectedAdsorbed = mConfigData->mMaxAdsorbedMass;
-//        const double expectedRate     = -0.001 / mTimeStep;
-//        mArticle->mFlowRate           = mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mInternalFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mSorbtionFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mSorbtionFluid->getMass(),        mTolerance);
-//        mInputData->mAdsorbedMass     = mAdsorbedMass;
-//    } {
-//        /// @test     Nominal initialization data with reverse flow.
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double expectedMass     = mNodes[0].getContent()->getMassFraction(mGasIndex) * mEfficiency * mFlowRate * mTimeStep;
-//        const double expectedAdsorbed = mArticle->mAdsorbedMass + expectedMass;
-//        const double expectedRate     = -expectedMass / mTimeStep;
-//        mArticle->mFlowRate           = -mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mInternalFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mArticle->mFluidTemperature, mArticle->mSorbtionFluid->getTemperature(), mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mSorbtionFluid->getMass(),        mTolerance);
-//    } {
-//        /// @test    Low flow-rate adsorbtion - temperatures should approach wall temperature.
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        const double flowRate         = 1.0E-13;
-//        mArticle->mFlowRate           = flowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mAdsorbedMass,               mArticle->mAdsorbedMass,                    mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                         mArticle->mMass,                            mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                         mArticle->mSorbtionFlowRate,                mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(mWallTemperature,            mArticle->mInternalFluid->getTemperature(), mTolerance);
-//    }
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// @test     No flow.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+    tArticle->computeFlows(tTimeStep);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort0].getScheduledOutflux());
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort1].getScheduledOutflux());
+
+    /// @test    Positive net flow into the H2/H2O node.  Normally there is always a 1:1 exchange
+    ///          of H2 & H2O moles so mSourceVector[0] will always be zero.  But the code checks
+    ///          for a net imbalance, in case some future upgrade causes one.  So for now, we
+    ///          force the source vector to non-zero to test.
+    tArticle->mSourceVector[0] = 1.0;
+    tArticle->computeFlows(tTimeStep);
+    CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort0].getScheduledOutflux());
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort1].getScheduledOutflux());
+
+    /// @test    Positive flow into the O2 node (electrolysis).
+    tArticle->mPotentialVector[0] = tFluidInput0->mPressure;
+    tArticle->mPotentialVector[1] = tFluidInput1->mPressure;
+    tArticle->setCurrent(-tCurrent);
+    tArticle->step(tTimeStep);
+    tArticle->computeFlows(tTimeStep);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort0].getScheduledOutflux());
+    CPPUNIT_ASSERT(0.0                  == tNodes[tPort1].getScheduledOutflux());
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for GUNNS Fluid Simple H2 Redox link model update fluid with no flow.
+/// @details  Tests for GUNNS Fluid Simple H2 Redox link model transport flows.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidSimpleH2Redox::testUpdateFluidOffNominal()
+void UtGunnsFluidSimpleH2Redox::testTransportFlows()
 {
-//    UT_RESULT;
-//
-//    /// @test    No flow adsorbtion.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          = 0.0;
-//    mArticle->updateFluid(mTimeStep, 1.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mAdsorbedMass,    mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mSorbtionFlowRate, mTolerance);
-//
-//    /// @test    Zero time step adsorbtion.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          = mFlowRate;
-//    mArticle->updateFluid(0.0, 2.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mAdsorbedMass,    mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mSorbtionFlowRate, mTolerance);
-//
-//    /// @test    Too low flow adsorbtion.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          = -DBL_EPSILON;
-//    mArticle->updateFluid(mTimeStep, 3.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mAdsorbedMass,    mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mSorbtionFlowRate, mTolerance);
-//
-//    const double expectedMass                    = -mDesorbtionRate * mTimeStep;
-//    const double expectedAdsorbed                =  mAdsorbedMass - mDesorbtionRate * mTimeStep;
-//    const double expectedRate                    = -expectedMass / mTimeStep;
-//
-//    /// @test    No flow desorbtion.
-//    mInputData->mDesorbtionCycle                 = true;
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          =  0.0;
-//    mArticle->updateFluid(mTimeStep, 1.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed, mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     mArticle->mSorbtionFlowRate, mTolerance);
-//
-//    /// @test    Zero time step desorbtion.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          = mFlowRate;
-//    mArticle->updateFluid(0.0, 2.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(mAdsorbedMass,    mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              mArticle->mSorbtionFlowRate, mTolerance);
-//
-//    /// @test    Too low flow desorbtion.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//    mArticle->mFlowRate                          = -DBL_EPSILON;
-//    mArticle->updateFluid(mTimeStep, 3.0);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed, mArticle->mAdsorbedMass,     mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     mArticle->mMass,             mTolerance);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     mArticle->mSorbtionFlowRate, mTolerance);
-//    mInputData->mDesorbtionCycle                 = false;
-//
-//    UT_PASS;
-}
+    UT_RESULT;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for GUNNS Fluid Simple H2 Redox link model update fluid in desorbtion cycle.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidSimpleH2Redox::testUpdateFluidDesorbtion()
-{
-//    UT_RESULT;
-//
-//    {
-//        /// @test    Nominal.
-//        const double expectedMass     = -mDesorbtionRate * mTimeStep;
-//        const double expectedAdsorbed =  mAdsorbedMass - mDesorbtionRate * mTimeStep;
-//        const double expectedRate     =  -expectedMass / mTimeStep;
-//        mInputData->mDesorbtionCycle  = true;
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        mArticle->mFlowRate           =  mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed, mArticle->mAdsorbedMass,     mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     mArticle->mMass,             mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     mArticle->mSorbtionFlowRate, mTolerance);
-//    } {
-//        /// @test    Availability constraint.
-//        const double expectedMass     = -0.0001;
-//        const double expectedAdsorbed =  0.0;
-//        const double expectedRate     = -expectedMass / mTimeStep;
-//        mInputData->mAdsorbedMass     = -expectedMass;
-//        mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-//        mArticle->mFlowRate           =  mFlowRate;
-//        mArticle->updateFluid(mTimeStep, 0.0);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed, mArticle->mAdsorbedMass,     mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     mArticle->mMass,             mTolerance);
-//        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     mArticle->mSorbtionFlowRate, mTolerance);
-//    }
-//
-//    mInputData->mAdsorbedMass         = mAdsorbedMass;
-//    mInputData->mDesorbtionCycle      = false;
-//
-//    UT_PASS;
+    /// @test    no flow.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+    tArticle->mPotentialVector[0] = tFluidInput0->mPressure;
+    tArticle->mPotentialVector[1] = tFluidInput1->mPressure;
+    tArticle->transportFlows(tTimeStep);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort0].getContent()->getPressure(), tArticle->mH2Fluid->getPressure(),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort0].getContent()->getPressure(), tArticle->mH2OFluid->getPressure(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort1].getContent()->getPressure(), tArticle->mO2Fluid->getPressure(),  DBL_EPSILON);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort0].getOutflow()->getTemperature(), tArticle->mH2Fluid->getTemperature(),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort0].getOutflow()->getTemperature(), tArticle->mH2OFluid->getTemperature(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[tPort1].getOutflow()->getTemperature(), tArticle->mO2Fluid->getTemperature(),  DBL_EPSILON);
+
+    CPPUNIT_ASSERT(0.0 == tNodes[tPort0].getInflux());
+    CPPUNIT_ASSERT(0.0 == tNodes[tPort1].getInflux());
+
+    /// @test    fuel cell flow.
+    tArticle->step(tTimeStep);
+    tArticle->computeFlows(tTimeStep);
+    tArticle->transportFlows(tTimeStep);
+
+    const double expectedMdot[2] = {tArticle->mH2MassRate + tArticle->mH2OMassRate,
+                                    tArticle->mO2MassRate};
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot[0], tNodes[tPort0].getInflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot[1], tNodes[tPort1].getInflux(), DBL_EPSILON);
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -661,30 +580,30 @@ void UtGunnsFluidSimpleH2Redox::testUpdateFluidDesorbtion()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testPortMapping()
 {
-//    UT_RESULT;
-//
-//    /// - Initialize default test article with nominal initialization data.
-//    mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2);
-//
-//    /// @test    Fail if port 2 is not liquid phase.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(2,0));
-//
-//    /// @test    Fail if port 1 is not gas phase.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(1,2));
-//
-//    /// @test    Fail if port 0 is not gas phase.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(0,2));
-//
-//    /// @test    Fail if port 0 is the vacuum boundary node.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(0,3));
-//
-//    /// @test    Fail if port 1 is the vacuum boundary node.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(1,3));
-//
-//    /// @test    Fail if port 2 is the vacuum boundary node.
-//    CPPUNIT_ASSERT(!mArticle->checkSpecificPortRules(2,3));
-//
-//    UT_PASS;
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+
+    /// @test    Successful move port 0 to another gas node.
+    CPPUNIT_ASSERT(tArticle->checkSpecificPortRules(0,2));
+
+    /// @test    Successful move port 1 to another gas node.
+    CPPUNIT_ASSERT(tArticle->checkSpecificPortRules(1,0));
+
+    /// @test    Fail move port 0 to a liquid node.
+    CPPUNIT_ASSERT(!tArticle->checkSpecificPortRules(0,3));
+
+    /// @test    Fail move port 1 to a liquid node.
+    CPPUNIT_ASSERT(!tArticle->checkSpecificPortRules(1,3));
+
+    /// @test    Fail move port 0 to Ground.
+    CPPUNIT_ASSERT(!tArticle->checkSpecificPortRules(0,4));
+
+    /// @test    Fail move port 1 to Ground.
+    CPPUNIT_ASSERT(!tArticle->checkSpecificPortRules(1,4));
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -692,52 +611,114 @@ void UtGunnsFluidSimpleH2Redox::testPortMapping()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSimpleH2Redox::testInitializationExceptions()
 {
-//    UT_RESULT;
-//
-//    /// - Default construct a test article.
-//    GunnsFluidSimpleH2Redox article;
-//
-//    /// @test    Initialization exception on invalid config data: no name.
-//    mConfigData->mName = "";
-//    CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2),
-//                         TsInitializationException);
-//    mConfigData->mName = mName;
-//
-//    /// @test    Initialization exception on invalid config data: mH2Coefficient < DBL_EPSILON.
-//    mConfigData->mH2Coefficient = 0.0;
-//    CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2),
-//                         TsInitializationException);
-//    mConfigData->mH2Coefficient = mH2Coefficient;
-//
-//    /// @test    Initialization exception on invalid config data: mMinInletPressure < DBL_EPSILON.
-//    mConfigData->mMinInletPressure = 0.0;
-//    CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2),
-//                         TsInitializationException);
-//    mConfigData->mMinInletPressure = mMinInletPressure;
-//
-//    /// @test    Initialization exception on invalid config data: mNominalStackVoltage < DBL_EPSILON.
-//    mConfigData->mNominalStackVoltage = 0.0;
-//    CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2),
-//                         TsInitializationException);
-//    mConfigData->mNominalStackVoltage = mNominalStackVoltage;
-//
-//    /// @test    Initialization exception on invalid config data: H2 not in the network.
-//    //TODO
-////    mTypes[0]             = FluidProperties::GUNNS_N2;
-////    PolyFluidConfigData* fluidConfig = new PolyFluidConfigData(mFluidProperties, mTypes, N_FLUIDS);
-////
-////    double fractions0[]   = {0.9, 0.0, 0.1, 0.0};
-////    PolyFluidInputData fluidInput0   = new PolyFluidInputData( 294.261,
-////                                                   2000.0,
-////                                                      0.0,
-////                                                      0.0,
-////                                                   fractions0);
-////    delete fluidInput0;
-////    delete fluidConfig;
-////
-////    mTypes[0]             = FluidProperties::GUNNS_H2;
-//    /// @test    Initialization exception on invalid config data: O2 not in the network.
-//    /// @test    Initialization exception on invalid config data: WATER not in the network.
-//
-//    UT_PASS_LAST;
+    UT_RESULT;
+
+    /// - Default construct a test article.
+    GunnsFluidSimpleH2Redox article;
+
+    /// @test    Initialization exception on invalid config data: no name.
+    tConfigData->mName = "";
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mName = tName;
+
+    /// @test    Initialization exception on invalid config data: mNumCells < 1.
+    tConfigData->mNumCells = 0;
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mNumCells = tNumCells;
+
+    /// @test    Initialization exception on invalid config data: mCellVoltageLoaded < DBL_EPSILON.
+    tConfigData->mCellVoltageLoaded = 0.0;
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mCellVoltageLoaded = tCellVoltageLoaded;
+
+    /// @test    Initialization exception on invalid config data: mCellH2ReactRate < DBL_EPSILON.
+    tConfigData->mCellH2ReactRate = 0.0;
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mCellH2ReactRate = tCellH2ReactRate;
+
+    /// @test    Initialization exception on invalid config data: mMaxEfficiency not in (0-1).
+    tConfigData->mMaxEfficiency = 0.0;
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mMaxEfficiency = 1.001;
+    CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                         TsInitializationException);
+    tConfigData->mMaxEfficiency = tMaxEfficiency;
+
+    {
+        /// @test    Initialization exception on invalid config data: H2 not in the network.
+        tTypes[0] = FluidProperties::GUNNS_N2;
+        PolyFluidConfigData* fluidConfig = new PolyFluidConfigData(tFluidProperties, tTypes, N_FLUIDS);
+
+        double fractions0[N_FLUIDS] = {0.9, 0.0, 0.1, 0.0, 0.0};
+        PolyFluidInputData* fluidInput0 = new PolyFluidInputData(294.261,
+                                                                 200.0,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 fractions0);
+        GunnsFluidNode nodes[N_NODES];
+        nodes[0].initialize("UtNode0", fluidConfig);
+        nodes[1].initialize("UtNode1", fluidConfig);
+        nodes[0].getContent()->initialize(*fluidConfig, *fluidInput0);
+        nodes[1].getContent()->initialize(*fluidConfig, *fluidInput0);
+        tNodeList.mNodes    = nodes;
+        tNodeList.mNumNodes = N_NODES;
+        CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                             TsInitializationException);
+        delete fluidInput0;
+        delete fluidConfig;
+        tTypes[0] = FluidProperties::GUNNS_H2;
+    } {
+        /// @test    Initialization exception on invalid config data: O2 not in the network.
+        tTypes[1] = FluidProperties::GUNNS_N2;
+        PolyFluidConfigData* fluidConfig = new PolyFluidConfigData(tFluidProperties, tTypes, N_FLUIDS);
+
+        double fractions0[N_FLUIDS] = {0.9, 0.0, 0.1, 0.0, 0.0};
+        PolyFluidInputData* fluidInput0 = new PolyFluidInputData(294.261,
+                                                                 200.0,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 fractions0);
+        GunnsFluidNode nodes[N_NODES];
+        nodes[0].initialize("UtNode0", fluidConfig);
+        nodes[1].initialize("UtNode1", fluidConfig);
+        nodes[0].getContent()->initialize(*fluidConfig, *fluidInput0);
+        nodes[1].getContent()->initialize(*fluidConfig, *fluidInput0);
+        tNodeList.mNodes    = nodes;
+        tNodeList.mNumNodes = N_NODES;
+        CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                             TsInitializationException);
+        delete fluidInput0;
+        delete fluidConfig;
+        tTypes[1] = FluidProperties::GUNNS_O2;
+    } {
+        /// @test    Initialization exception on invalid config data: H2O not in the network.
+        tTypes[3] = FluidProperties::GUNNS_N2;
+        PolyFluidConfigData* fluidConfig = new PolyFluidConfigData(tFluidProperties, tTypes, N_FLUIDS);
+
+        double fractions0[N_FLUIDS] = {0.9, 0.0, 0.1, 0.0, 0.0};
+        PolyFluidInputData* fluidInput0 = new PolyFluidInputData(294.261,
+                                                                 200.0,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 fractions0);
+        GunnsFluidNode nodes[N_NODES];
+        nodes[0].initialize("UtNode0", fluidConfig);
+        nodes[1].initialize("UtNode1", fluidConfig);
+        nodes[0].getContent()->initialize(*fluidConfig, *fluidInput0);
+        nodes[1].getContent()->initialize(*fluidConfig, *fluidInput0);
+        tNodeList.mNodes    = nodes;
+        tNodeList.mNumNodes = N_NODES;
+        CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
+                             TsInitializationException);
+        delete fluidInput0;
+        delete fluidConfig;
+        tTypes[3] = FluidProperties::GUNNS_H2O;
+    }
+
+    UT_PASS_LAST;
 }

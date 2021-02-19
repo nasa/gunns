@@ -227,7 +227,7 @@ void GunnsFluidEvaporation::validate(const GunnsFluidEvaporationConfigData& conf
                                      const GunnsFluidEvaporationInputData&  inputData) const
 {
     /// - Throw an exception if pool mass exponent isn't in range.
-    if (not Math::isInRange(-10.0, configData.mPoolMassExponent, 10.0)) {
+    if (not MsMath::isInRange(-10.0, configData.mPoolMassExponent, 10.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Pool mass exponent outside of (-10, 10).");
     }
@@ -357,7 +357,7 @@ void GunnsFluidEvaporation::updateVaporRate(const double dt)
                 double mdot_gas = std::max(mPotentialDrop, 0.0) * mEvaporationCoeff
                                 * powf(mLiquidPoolMass, mPoolMassExponent);
                 if (mMalfBlockageFlag) {
-                    mdot_gas *= (1.0 - Math::limitRange(0.0, mMalfBlockageValue, 1.0));
+                    mdot_gas *= (1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0));
                 }
 
                 /// - Limit the evaporation rate to the available liquid mass.  The ratio of mol

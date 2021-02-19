@@ -31,7 +31,7 @@
 #include <cfloat>
 #include <iostream>
 #include "PowerBusElect.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "core/GunnsBasicJumperPlug.hh"
@@ -337,7 +337,7 @@ void PowerBusElect::step(const double dt)
             lLoadResitance = mLoad[i]->getResistance();
             if (CONSTANT_POWER_LOAD == mLoad[i]->getLoadType()) {      // this is a constant power load
                 mTotalCPowerLoadsPower += mLoad[i]->getPower();        // sum up all Constant Power load values
-            } else if (Math::isInRange(DBL_EPSILON, lLoadResitance, mMaxResistance)) {      // this is a resistive load, ignore value if resistance is invalid
+            } else if (MsMath::isInRange(DBL_EPSILON, lLoadResitance, mMaxResistance)) {      // this is a resistive load, ignore value if resistance is invalid
                 mResLoadsConductance += (1.0 / lLoadResitance);                           // sum up the load conductance
             }
         }

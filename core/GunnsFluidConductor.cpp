@@ -26,7 +26,7 @@ PROGRAMMERS:
    ((Jason Harvey) (L3) (2011-02) (Design))
 */
 #include "GunnsFluidConductor.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ void GunnsFluidConductor::step(const double dt)
         mEffectiveConductivity *= (1.0 - mMalfBlockageValue);
     }
 
-    mSystemConductance = Math::limitRange(0.0, linearizeConductance(), mConductanceLimit);
+    mSystemConductance = MsMath::limitRange(0.0, linearizeConductance(), mConductanceLimit);
     buildConductance();
 }
 

@@ -1,16 +1,92 @@
-before_script:
-    - git fetch
-    - git submodule foreach --recursive git fetch -v
-    - git submodule update --init
-    - source ./test/CI/env_setup.profile
-    - source ./bin/bashrc
-    - cd ${GUNNS_HOME}
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    TRICK_HOME: /home/trick
+    GUNNS_HOME: /builds/gunns/gunns
+    GUNNS_TRICK_HOME: /home/trick
+    GUNNS_TRICK_VER: 19.0.0
+    MS_UTILS_HOME: ${GUNNS_HOME}/ms-utils
+    TS_MODELS_HOME: ${GUNNS_HOME}/gunns-ts-models
+    HS_CONFIG_PATH: ${GUNNS_HOME}/sims/Modified_data
 
-SIM_test:
-  script:
-    - ./test/CI/sim_test.py
     
+stages: 
+    - ut_test
+    - deploy
+    - build 
+    - int_test
+
+
+before_script:
+    - source ./test/CI/env_setup.profile 
+    
+
 all_unit_tests:
+  tags:
+    - docker 
+  image:
+    name: esgl-gitlab.jsc.nasa.gov:5005/gunns/gunns/build_environment
+  stage: ut_test
+  allow_failure: false
+  only: 
+    - next 
   script:
-    - ./test/make_all_ut.sh
-    - ./test/CI/scan_all_ut.py
+    - chmod a-r ms-utils/parsing/test/file_no_permission.txt; chmod a-r ms-utils/parsing/test/nopermission
+    - cd test
+    - ./make_all_ut.sh
+    - chmod +x scan_all_ut.py ; python ./scan_all_ut.py
+  artifacts:
+    when: always 
+    expire_in: 1 hour
+    paths:
+    - core/test/output/coverage/*
+
+
+trick_test:
+  tags:
+    - docker
+  image:
+    name: esgl-gitlab.jsc.nasa.gov:5005/gunns/gunns/build_environment
+  stage: build
+  only:
+    - next
+  script:
+    - cd sims/SIM_test
+    - /home/trick/bin/trick-CP
+
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - sims/SIM_test/S_main* 
+      - sims/SIM_test/trick
+      - sims/SIM_test/S_sie.json 
+      - sims/SIM_test/S_source.hh
+
+    
+SIM_test:
+  tags:
+    - docker
+  image:
+    name: esgl-gitlab.jsc.nasa.gov:5005/gunns/gunns/build_environment
+  stage: int_test
+  only:
+    - next
+  script:
+    - cd sims/SIM_test
+    - ./S_main* RUN_test/input_int_test.py
+    - cd ${GUNNS_HOME} ; cd test/CI
+    - chmod +x sim_test.py ; python ./sim_test.py
+    
+    
+pages:
+  stage: deploy
+  only:
+    - next
+  dependencies:
+    - all_unit_tests
+  script:
+    - mv core/test/output/coverage/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+    

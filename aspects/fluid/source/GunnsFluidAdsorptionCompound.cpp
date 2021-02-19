@@ -15,7 +15,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "aspects/fluid/fluid/PolyFluid.hh"
 #include "core/GunnsBasicNode.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details  Limit 100 * DBL_EPSILON for some applications.
 const double GunnsFluidAdsorptionCompound::m100EpsilonLimit = 100.0 * DBL_EPSILON;
@@ -224,18 +224,18 @@ void GunnsFluidAdsorptionCompound::initialize(const std::string&                
     }
 
     /// - Throw an exception on initial mass in adsorber not between zero and max.
-    if (!Math::isInRange(0.0, config.mAdsorbedMass, config.mMaxAdsorbedMass)) {
+    if (!MsMath::isInRange(0.0, config.mAdsorbedMass, config.mMaxAdsorbedMass)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "initial mass in adsorber not between 0 and max.");
     }
 
     /// - Throw an exception on initial efficiency malf outside valid range.
-    if (!Math::isInRange(0.0, config.mMalfEfficiencyValue, 1.0)) {
+    if (!MsMath::isInRange(0.0, config.mMalfEfficiencyValue, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Initial efficiency malfunction value outside (0-1).");
     }
     /// - Throw an exception on Breakthrough exponent not in between valid range (1-100).
-    if (!Math::isInRange(1.0, mBreakthroughExp, 100.0)) {
+    if (!MsMath::isInRange(1.0, mBreakthroughExp, 100.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Breakthrough exponent value not between 1.0 and 100.0.");
     }
@@ -258,7 +258,7 @@ void GunnsFluidAdsorptionCompound::sorb(const double dt, const double tAvg, cons
                                         const double mdot)
 {
     /// - Compute sorption efficiency as a function of fluid temperature.
-    const double efficiency = Math::limitRange(-1.0, mEfficiencyCoeff0
+    const double efficiency = MsMath::limitRange(-1.0, mEfficiencyCoeff0
                                                    + mEfficiencyCoeff1 * tAvg, 1.0);
 
     /// - Compute partial pressure of this compound by its mole fraction in the fluid stream.
@@ -294,7 +294,7 @@ void GunnsFluidAdsorptionCompound::sorb(const double dt, const double tAvg, cons
     if (mTaperOffFlag) {
         if (adsorbRate > 0.0) {
             adsorbRate *= (1 - pow(std::max(0.1, mFillFraction),
-                                   Math::limitRange(1.0, mBreakthroughExp, 100.0)));
+                                   MsMath::limitRange(1.0, mBreakthroughExp, 100.0)));
         } else {
             adsorbRate *= mFillFraction;
         }

@@ -11,7 +11,7 @@ LIBRARY DEPENDENCY:
 */
 
 #include "GunnsElectBatteryCell.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "core/GunnsBasicNode.hh"    // for H&S macros
 #include "math/approximation/TsLinearInterpolator.hh"
 #include "simulation/hs/TsHsMsg.hh"
@@ -55,18 +55,24 @@ GunnsElectBatteryCellConfigData::GunnsElectBatteryCellConfigData(const GunnsElec
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] malfOpenCircuit (--) Initial failed open-circuit malfunction.
-/// @param[in] malfOpenCircuit (--) Initial failed short-circuit malfunction.
-/// @param[in] soc             (--) Initial State of Charge (0-1).
+/// @param[in] malfOpenCircuit   (--)     Initial failed open-circuit malfunction.
+/// @param[in] malfOpenCircuit   (--)     Initial failed short-circuit malfunction.
+/// @param[in] malfCapacityFlag  (--)     Initial capacity override malfunction activation flag.
+/// @param[in] malfCapacityValue (amp*hr) Initial capacity override malfunction value.
+/// @param[in] soc               (--)     Initial State of Charge (0-1).
 ///
 /// @details  Default constructs this GunnsElectBatteryCell input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectBatteryCellInputData::GunnsElectBatteryCellInputData(const bool   malfOpenCircuit,
                                                                const bool   malfShortCircuit,
+                                                               const bool   malfCapacityFlag,
+                                                               const double malfCapacityValue,
                                                                const double soc)
     :
     mMalfOpenCircuit(malfOpenCircuit),
     mMalfShortCircuit(malfShortCircuit),
+    mMalfCapacityFlag(malfCapacityFlag),
+    mMalfCapacityValue(malfCapacityValue),
     mSoc(soc)
 {
     // Nothing to to.
@@ -89,6 +95,8 @@ GunnsElectBatteryCellInputData::GunnsElectBatteryCellInputData(const GunnsElectB
     :
     mMalfOpenCircuit(that.mMalfOpenCircuit),
     mMalfShortCircuit(that.mMalfShortCircuit),
+    mMalfCapacityFlag(that.mMalfCapacityFlag),
+    mMalfCapacityValue(that.mMalfCapacityValue),
     mSoc(that.mSoc)
 {
     // Nothing to to.
@@ -101,6 +109,8 @@ GunnsElectBatteryCell::GunnsElectBatteryCell()
     :
     mMalfOpenCircuit(false),
     mMalfShortCircuit(false),
+    mMalfCapacityFlag(false),
+    mMalfCapacityValue(0.0),
     mResistance(0.0),
     mMaxCapacity(0.0),
     mSoc(0.0)
@@ -128,12 +138,14 @@ void GunnsElectBatteryCell::initialize(const GunnsElectBatteryCellConfigData& co
 		                               const std::string&                     name)
 {
     /// - Initialize from configuration and input data.
-    mResistance       = configData.mResistance;
-    mMaxCapacity      = configData.mMaxCapacity;
-    mMalfOpenCircuit  = inputData.mMalfOpenCircuit;
-    mMalfShortCircuit = inputData.mMalfShortCircuit;
-    mSoc              = inputData.mSoc;
-    mName             = name;
+    mResistance        = configData.mResistance;
+    mMaxCapacity       = configData.mMaxCapacity;
+    mMalfOpenCircuit   = inputData.mMalfOpenCircuit;
+    mMalfShortCircuit  = inputData.mMalfShortCircuit;
+    mMalfCapacityFlag  = inputData.mMalfCapacityFlag;
+    mMalfCapacityValue = inputData.mMalfCapacityValue;
+    mSoc               = inputData.mSoc;
+    mName              = name;
 
     validate();
 }
@@ -165,7 +177,7 @@ void GunnsElectBatteryCell::validate()
     }
 
     /// - Issue an error on initial SOC not in (0-1).
-    if (!Math::isInRange(0.0, mSoc, 1.0)) {
+    if (!MsMath::isInRange(0.0, mSoc, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                     "Initial State of Charge not in (0-1).");
     }
@@ -185,12 +197,16 @@ void GunnsElectBatteryCell::updateSoc(const double current, const double timeSte
     if (mMalfShortCircuit) {
         mSoc = 0.0;
     } else if (!mMalfOpenCircuit) {
-        if (mMaxCapacity > DBL_EPSILON) {
-            mSoc -= current * timeStep / mMaxCapacity / UnitConversion::SEC_PER_HR;
+        double capacity = mMaxCapacity;
+        if (mMalfCapacityFlag) {
+            capacity = mMalfCapacityValue;
+        }
+        if (capacity > DBL_EPSILON) {
+            mSoc -= current * timeStep / capacity / UnitConversion::SEC_PER_HR;
         } else {
             mSoc = 0.0;
         }
-        mSoc = Math::limitRange(0.0, mSoc, 1.0);
+        mSoc = MsMath::limitRange(0.0, mSoc, 1.0);
     }
 }
 

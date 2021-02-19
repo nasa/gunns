@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
     (GunnsFluidAdsorptionCompound.o))
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"

@@ -235,7 +235,7 @@ void GunnsFluidHiFiOrifice::initialize(const GunnsFluidHiFiOrificeConfigData& co
 void GunnsFluidHiFiOrifice::validate() const
 {
     /// - Throw an exception if Cd <= 0 or > 1.
-    if (!Math::isInRange(DBL_EPSILON, mCdDefault, 1.0)) {
+    if (!MsMath::isInRange(DBL_EPSILON, mCdDefault, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Coefficient of discharge outside valid range [0-1).");
     }
@@ -247,7 +247,7 @@ void GunnsFluidHiFiOrifice::validate() const
     }
 
     /// - Throw an exception if expansion scale factor < 0 or > 1.
-    if (!Math::isInRange(0.0, mExpansionScaleFactor, 1.0)) {
+    if (!MsMath::isInRange(0.0, mExpansionScaleFactor, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Expansion scale factor outside valid range (0-1).");
     }
@@ -334,7 +334,7 @@ void GunnsFluidHiFiOrifice::computeConductance(const PolyFluid* fluid0, const Po
     /// - Convert mass to molar conductance by average molecular weight of the inlet & exit fluids.
     const double avgMW = 0.5 * (fluid0->getMWeight() + fluid1->getMWeight());
     if (avgMW > DBL_EPSILON) {
-        mSystemConductance = Math::limitRange(0.0, (conductance / avgMW), mConductanceLimit);
+        mSystemConductance = MsMath::limitRange(0.0, (conductance / avgMW), mConductanceLimit);
     } else {
         mSystemConductance = 0.0;
     }

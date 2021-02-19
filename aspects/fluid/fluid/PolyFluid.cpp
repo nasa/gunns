@@ -524,7 +524,7 @@ void PolyFluid::derive()
     }
 
     /// - Bound moles/unit mass away from zero
-    molesPerUnitMass = Math::innerLimit(-DBL_EPSILON, molesPerUnitMass, +DBL_EPSILON);
+    molesPerUnitMass = MsMath::innerLimit(-DBL_EPSILON, molesPerUnitMass, +DBL_EPSILON);
 
     for (int i = 0; i < mNConstituents; ++i) {
         mConstituents[i].mMoleFraction /= molesPerUnitMass;
@@ -716,7 +716,7 @@ void PolyFluid::setMassAndMassFractions(const double mass, double* massFraction)
     }
 
     /// - Bound moles/unit mass away from zero
-    molesPerUnitMass = Math::innerLimit(-DBL_EPSILON, molesPerUnitMass, +DBL_EPSILON);
+    molesPerUnitMass = MsMath::innerLimit(-DBL_EPSILON, molesPerUnitMass, +DBL_EPSILON);
 
     /// - Then update the composite moles and molecular weight.
     mMWeight          = 1.0 / molesPerUnitMass;
@@ -782,7 +782,7 @@ void PolyFluid::setMoleAndMoleFractions(const double mole, double* moleFraction)
     }
 
     /// - Bound molecular weight away from zero
-    mMWeight = Math::innerLimit(-DBL_EPSILON, mMWeight, +DBL_EPSILON);
+    mMWeight = MsMath::innerLimit(-DBL_EPSILON, mMWeight, +DBL_EPSILON);
 
     /// - Update the mass fractions and composite mass and moles.
     mMass             = mMole * mMWeight;
@@ -837,7 +837,7 @@ void PolyFluid::updateMass()
     }
 
     /// - Bound mass away from zero
-    mMass = Math::innerLimit(-DBL_EPSILON, mMass, +DBL_EPSILON);
+    mMass = MsMath::innerLimit(-DBL_EPSILON, mMass, +DBL_EPSILON);
 
     /// - Calculate constituent moles from the constituent mass, then normalize the mass fractions.
     for (int i = 0; i < mNConstituents; ++i) {
@@ -848,7 +848,7 @@ void PolyFluid::updateMass()
     }
 
     /// - Bound moles away from zero
-    moles = Math::innerLimit(-DBL_EPSILON, moles, +DBL_EPSILON);
+    moles = MsMath::innerLimit(-DBL_EPSILON, moles, +DBL_EPSILON);
 
     /// - Next update the constituent mass fractions.
     for (int i = 0; i < mNConstituents; ++i) {
@@ -1009,7 +1009,7 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
     /// - Bound mole flow rate away from zero.  Since mass flow rate is limited at DBL_EPSILON, we
     ///   can legitimately have a small mole rate that is <DBL_EPSILON and still valid, so we use a
     ///   smaller limit here.
-    moleFlowRate = Math::innerLimit(-MOLE_INNER_LIMIT, moleFlowRate, MOLE_INNER_LIMIT);
+    moleFlowRate = MsMath::innerLimit(-MOLE_INNER_LIMIT, moleFlowRate, MOLE_INNER_LIMIT);
 
     /// - And compute the combined constituent mass fractions proportional to the flow rate.
     double molesPerUnitMass = 0.0;
@@ -1021,7 +1021,7 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
     }
 
     /// - Bound moles/unit mass away from zero.
-    molesPerUnitMass = Math::innerLimit(-MOLE_INNER_LIMIT, molesPerUnitMass, MOLE_INNER_LIMIT);
+    molesPerUnitMass = MsMath::innerLimit(-MOLE_INNER_LIMIT, molesPerUnitMass, MOLE_INNER_LIMIT);
 
     /// - Now update the combined constituent mole fractions and combined composite pressure.
     mPressure    = 0.0;
@@ -1303,7 +1303,7 @@ int PolyFluid::find(const FluidProperties::FluidType& type) const
 void PolyFluid::setMass(const double mass)
 {
     /// - Bound molecular weight away from zero
-    mMWeight = Math::innerLimit(-DBL_EPSILON, mMWeight, +DBL_EPSILON);
+    mMWeight = MsMath::innerLimit(-DBL_EPSILON, mMWeight, +DBL_EPSILON);
     /// - Set the composite mass and update the composite moles.
     mMass = mass;
     mMole = mMass / mMWeight;

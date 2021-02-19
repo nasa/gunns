@@ -8,7 +8,6 @@
 LIBRARY DEPENDENCY:
    (
     (core/GunnsFluidLink.o)
-    (properties/ChemicalReaction.o)
    )
 */
 
@@ -16,17 +15,14 @@ LIBRARY DEPENDENCY:
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
-#include "properties/ChemicalReaction.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]      name                (--)        Name of object.
 /// @param[in,out]  nodes               (--)        Pointer to nodes.
 /// @param[in]      numCells            (--)        Number of reaction cells in the stack.
 /// @param[in]      cellVoltageLoaded   (V)         Nominal cell voltage under load.
-/// @param[in]      h2ReactRate         (kg/s/amp)  Stack H2 reaction mass rate per amp.
+/// @param[in]      cellH2ReactRate     (kg/s/amp)  Cell H2 reaction mass rate per amp.
 /// @param[in]      maxEfficiency       (--)        Maximum efficiency (0-1) of the reaction.
-/// @param[in]      heAbsorptionFactor  (--)        Fraction of helium absorbed from the air stream.
-/// @param[in]      heEfficiencyFactor  (1/kg)      Reduction in efficiency per mass of absorbed helium.
 ///
 /// @details  Default constructs this Simple H2 Redox link model configuration data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,18 +30,14 @@ GunnsFluidSimpleH2RedoxConfigData::GunnsFluidSimpleH2RedoxConfigData(const std::
                                                                      GunnsNodeList*     nodes,
                                                                      const int          numCells,
                                                                      const double       cellVoltageLoaded,
-                                                                     const double       h2ReactRate,
+                                                                     const double       cellH2ReactRate,
                                                                      const double       maxEfficiency)
-//                                                                     const double       heAbsorptionFactor,
-//                                                                     const double       heEfficiencyFactor)
     :
     GunnsFluidLinkConfigData(name, nodes),
     mNumCells(numCells),
     mCellVoltageLoaded(cellVoltageLoaded),
-    mH2ReactRate(h2ReactRate),
+    mCellH2ReactRate(cellH2ReactRate),
     mMaxEfficiency(maxEfficiency)
-//    mHeAbsorptionFactor(heAbsorptionFactor),
-//    mHeEfficiencyFactor(heEfficiencyFactor)
 {
     // nothing to do
 }
@@ -63,7 +55,6 @@ GunnsFluidSimpleH2RedoxConfigData::~GunnsFluidSimpleH2RedoxConfigData()
 /// @param[in]      malfBlockageValue  (--)    Blockage malfunction fractional value (0-1).
 /// @param[in]      current            (amp)   Initial electrical current.
 /// @param[in]      trippedOff         (--)    Initial tripped off flag.
-/// @param[in]      heAbsorbedMass     (kg)    Initial absorbed helium mass.
 ///
 /// @details  Default constructs this Simple H2 Redox link model input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,12 +62,10 @@ GunnsFluidSimpleH2RedoxInputData::GunnsFluidSimpleH2RedoxInputData(const bool   
                                                                    const double malfBlockageValue,
                                                                    const double current,
                                                                    const bool   trippedOff)
-//                                                                   const double heAbsorbedMass)
     :
     GunnsFluidLinkInputData(malfBlockageFlag, malfBlockageValue),
     mCurrent(current),
     mTrippedOff(trippedOff)
-//    mHeAbsorbedMass(heAbsorbedMass)
 {
     // nothing to do
 }
@@ -100,13 +89,10 @@ GunnsFluidSimpleH2Redox::GunnsFluidSimpleH2Redox()
     GunnsFluidLink(NPORTS),
     mNumCells(0),
     mCellVoltageLoaded(0.0),
-    mH2ReactRate(0.0),
+    mCellH2ReactRate(0.0),
     mMaxEfficiency(0.0),
-//    mHeAbsorptionFactor(0.0),
-//    mHeEfficiencyFactor(0.0),
     mCurrent(0.0),
     mTrippedOff(false),
-//    mHeAbsorbedMass(0.0),
     mOutputStackVoltage(0.0),
     mEfficiency(0.0),
     mH2MassRate(0.0),
@@ -115,11 +101,9 @@ GunnsFluidSimpleH2Redox::GunnsFluidSimpleH2Redox()
     mH2MoleRate(0.0),
     mO2MoleRate(0.0),
     mH2OMoleRate(0.0),
-//    mHeAbsorbRate(0.0),
     mH2Fluid(0),
     mO2Fluid(0),
     mH2OFluid(0)
-//    mHeFluid(0)
 {
     // nothing to do
 }
@@ -199,27 +183,13 @@ void GunnsFluidSimpleH2Redox::initialize(      GunnsFluidSimpleH2RedoxConfigData
     mH2OFluid->setMass(mNodes[0]->getContent()->find(FluidProperties::GUNNS_H2O), 1.0);
     mH2OFluid->updateMass();
 
-//    if (mHeFluid) {
-//        mHeFluid->cleanup();
-//        TS_DELETE_OBJECT(mHeFluid);
-//    }
-//    TS_NEW_PRIM_OBJECT_EXT(mHeFluid, PolyFluid,
-//                           (*(mNodes[0]->getContent()), mName + ".mHeFluid", false),
-//                           mName + ".mHeFluid");
-//    mHeFluid->resetState();
-//    mHeFluid->setMass(mNodes[0]->getContent()->find(FluidProperties::GUNNS_HE), 1.0);
-//    mHeFluid->updateMass();
-
     /// - Initialize from the validated configuration and input data.
     mNumCells           = configData.mNumCells;
     mCellVoltageLoaded  = configData.mCellVoltageLoaded;
-    mH2ReactRate        = configData.mH2ReactRate;
+    mCellH2ReactRate    = configData.mCellH2ReactRate;
     mMaxEfficiency      = configData.mMaxEfficiency;
-//    mHeAbsorptionFactor = configData.mHeAbsorptionFactor;
-//    mHeEfficiencyFactor = configData.mHeEfficiencyFactor;
     mCurrent            = inputData.mCurrent;
     mTrippedOff         = inputData.mTrippedOff;
-//    mHeAbsorbedMass     = inputData.mHeAbsorbedMass;
 
     /// - Initialize remaining state attributes.
     zeroReactionRates();
@@ -241,7 +211,7 @@ void GunnsFluidSimpleH2Redox::initialize(      GunnsFluidSimpleH2RedoxConfigData
 void GunnsFluidSimpleH2Redox::validate(const GunnsFluidSimpleH2RedoxConfigData& configData,
                                        const GunnsFluidSimpleH2RedoxInputData&  inputData)
 {
-    /// - Throw an exception on reaction compounds (H2, O2, H2O, HE) unavailable in the network.
+    /// - Throw an exception on reaction compounds (H2, O2, H2O) unavailable in the network.
     try {
         mNodes[0]->getContent()->find(FluidProperties::GUNNS_H2);
     } catch (TsOutOfBoundsException& e) {
@@ -257,11 +227,6 @@ void GunnsFluidSimpleH2Redox::validate(const GunnsFluidSimpleH2RedoxConfigData& 
     } catch (TsOutOfBoundsException& e) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "fluid type GUNNS_H2O not in network.");
     }
-//    try {
-//        mNodes[0]->getContent()->find(FluidProperties::GUNNS_HE);
-//    } catch (TsOutOfBoundsException& e) {
-//        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "fluid type GUNNS_HE not in network.");
-//    }
 
     /// - Throw an exception if number of cells < 1.
     if (configData.mNumCells < 1) {
@@ -274,34 +239,14 @@ void GunnsFluidSimpleH2Redox::validate(const GunnsFluidSimpleH2RedoxConfigData& 
     }
 
     /// - Throw an exception if H2 reaction rate < DBL_EPSILON.
-    if (configData.mH2ReactRate < DBL_EPSILON) {
+    if (configData.mCellH2ReactRate < DBL_EPSILON) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "H2 reaction rate < DBL_EPSILON.");
     }
 
     /// - Throw an exception if max efficiency not [0-1).
-    if (!Math::isInRange(DBL_EPSILON, configData.mMaxEfficiency, 1.0)) {
+    if (!MsMath::isInRange(DBL_EPSILON, configData.mMaxEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "max efficiency not in [0-1).");
     }
-
-//    /// - Throw an exception if helium absorption factor < 0.
-//    if (configData.mHeAbsorptionFactor < 0.0) {
-//        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "helium absorption factor < 0.");
-//    }
-//
-//    /// - Throw an exception if helium efficiency factor < 0.
-//    if (configData.mHeEfficiencyFactor < 0.0) {
-//        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "helium efficiency factor < 0.");
-//    }
-
-    /// - Throw an exception if initial current < 0.
-    if (inputData.mCurrent < 0.0) {
-        GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "initial current < 0.");
-    }
-
-//    /// - Throw an exception if initial absorbed helium mass < 0.
-//    if (inputData.mHeAbsorbedMass < 0.0) {
-//        GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "initial absorbed helium mass < 0.");
-//    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -313,6 +258,7 @@ void GunnsFluidSimpleH2Redox::restartModel()
     GunnsFluidLink::restartModel();
 
     /// - Reset non-config & non-checkpointed attributes.
+    mEfficiency = 0.0;
     zeroReactionRates();
 }
 
@@ -330,20 +276,33 @@ void GunnsFluidSimpleH2Redox::step(const double dt __attribute__((unused)))
     /// - Check node reactant partial pressures and trip off the model if they are near zero.  Once
     ///   set, the flag must be manually reset by the user.  This prevents pulling negative pressure
     ///   or constituent masses on the nodes.  We use an arbitrary limit pressure of 1 Pa.
-    if (mNodes[0]->getContent()->getMoleFraction(FluidProperties::GUNNS_H2) * mPotentialVector[0] < 0.001 or
-        mNodes[1]->getContent()->getMoleFraction(FluidProperties::GUNNS_O2) * mPotentialVector[1] < 0.001) {
-        mTrippedOff = true;
+    if (mCurrent > 0.0) {
+        if (mNodes[0]->getContent()->getMoleFraction(FluidProperties::GUNNS_H2) * mPotentialVector[0] < 0.001 or
+            mNodes[1]->getContent()->getMoleFraction(FluidProperties::GUNNS_O2) * mPotentialVector[1] < 0.001) {
+            mTrippedOff = true;
+        }
+    } else {
+        if (mNodes[0]->getContent()->getMoleFraction(FluidProperties::GUNNS_H2O) * mPotentialVector[0] < 0.001) {
+            mTrippedOff = true;
+        }
     }
 
-    /// - Reaction efficiency as a function of absorbed helium mass, limited to [0-1).
-    mEfficiency = Math::limitRange(DBL_EPSILON,
-                                   mMaxEfficiency,
-//                                   mMaxEfficiency - mHeEfficiencyFactor * mHeAbsorbedMass,
-                                   1.0);
+    /// - Reaction efficiency, limited to [0-1).
+    if (mMalfBlockageFlag) {
+        mEfficiency = MsMath::limitRange(DBL_EPSILON, mMaxEfficiency * (1.0 - mMalfBlockageValue), 1.0);
+    } else {
+        mEfficiency = MsMath::limitRange(DBL_EPSILON, mMaxEfficiency, 1.0);
+    }
 
-    /// - H2 rate as function of electrical current and efficiency.  Negative sign because the
-    ///   reaction removes H2.  Current limited to positive values.
-    mH2MassRate = -std::max(mCurrent, 0.0) * mH2ReactRate * mNumCells / mEfficiency;
+    /// - H2 rate as function of electrical current and efficiency.  Negative sign because positive
+    ///   current removes H2.  Reduced efficiency increases fuel cell H2 consumption and reduces
+    ///   electrolysis H2 production,
+    mH2MassRate = -mCurrent * mCellH2ReactRate * mNumCells;
+    if (mCurrent > 0.0) {
+        mH2MassRate /= mEfficiency;
+    } else {
+        mH2MassRate *= mEfficiency;
+    }
 
     if (mTrippedOff or fabs(mH2MassRate) < m100EpsilonLimit) {
         /// - Zero all reaction rates if the reactor is tripped off or insufficient H2 rate.
@@ -351,12 +310,11 @@ void GunnsFluidSimpleH2Redox::step(const double dt __attribute__((unused)))
 
     } else {
         /// - When reacting, update all molar rates from the H2 mass rates, molecular masses and
-        ///   reaction stoichiometry.
-        const DefinedChemicalReactions definedReactions;
-        const ChemicalReaction* reaction = definedReactions.getReaction(ChemicalReaction::H2_REMOVAL);
+        ///   reaction stoichiometry.  The 0.5 factor on O2 mole rate is because there is 1/2 O2
+        ///   molecule for each H2 molecule.
         mH2MoleRate  =  mH2MassRate / mH2Fluid->getMWeight();
-        mO2MoleRate  =  mH2MoleRate * reaction->mReagentMoleRatio  / reaction->mReactantMoleRatio;
-        mH2OMoleRate = -mH2MoleRate * reaction->mProduct1MoleRatio / reaction->mReactantMoleRatio;
+        mO2MoleRate  =  0.5 * mH2MoleRate;
+        mH2OMoleRate = -mH2MoleRate;
 
         /// - Update O2 & H2O mass rates.
         mO2MassRate  =  mO2MoleRate * mO2Fluid->getMWeight();
@@ -379,11 +337,8 @@ void GunnsFluidSimpleH2Redox::step(const double dt __attribute__((unused)))
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsFluidSimpleH2Redox::buildSource()
 {
-    /// - The helium rate is from the last pass.  This causes a small mass error in the air
-    ///   node but should be washed out by the node in its normal pressure correction.
     mSourceVector[0] = mH2MoleRate + mH2OMoleRate;
     mSourceVector[1] = mO2MoleRate;
-//    mSourceVector[1] = mO2MoleRate - mHeAbsorbRate / mHeFluid->getMWeight();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -393,14 +348,21 @@ inline void GunnsFluidSimpleH2Redox::buildSource()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSimpleH2Redox::computeFlows(const double dt __attribute__((unused)))
 {
-    // - Set port directions based of source vectors.
+    /// - Set port directions based on source vectors.  In the case of negative source vector, we
+    ///   are pulling some mass out of the node.  Since these are gas nodes it's unlikely that the
+    ///   node is ever 100% the source fluid type.  So we don't bother with using the SOURCE port
+    ///   direction.  This link avoids overflows by tripping off when the source fluid type gets
+    ///   too rare in the source node.
     mPortDirections[0] = NONE;
     mPortDirections[1] = NONE;
-        
-    if (fabs(mSourceVector[0]) > m100EpsilonLimit) {
+
+    /// - mH2MoleRate always equals the negative of mH2OMoleRate so mSourceVector should always
+    ///   equal zero.  This check is left here in case some future upgrade allows the mSourceVector
+    ///   to be non-zero (addition of absorption/desoprtion of contaminants, etc.)
+    if (mSourceVector[0] > m100EpsilonLimit) {
         mPortDirections[0] = SINK;
     }
-    if (fabs(mSourceVector[1]) > m100EpsilonLimit) {
+    if (mSourceVector[1] > m100EpsilonLimit) {
         mPortDirections[1] = SINK;
     }
 }
@@ -417,46 +379,17 @@ void GunnsFluidSimpleH2Redox::transportFlows(const double dt __attribute__((unus
     mH2Fluid->setPressure(mPotentialVector[0]);
     mH2OFluid->setPressure(mPotentialVector[0]);
     mO2Fluid->setPressure(mPotentialVector[1]);
-//    mHeFluid->setPressure(mPotentialVector[1]);
 
     mH2Fluid->setTemperature(mNodes[0]->getOutflow()->getTemperature());
     mH2OFluid->setTemperature(mNodes[0]->getOutflow()->getTemperature());
     mO2Fluid->setTemperature(mNodes[1]->getOutflow()->getTemperature());
-//    mHeFluid->setTemperature(mNodes[1]->getOutflow()->getTemperature());
 
-    if (mH2MassRate <= -m100EpsilonLimit) {
-//        /// - When reacting, absorb Helium from the thru air stream.  The air node has a bulk flow
-//        ///   through it due to normal flow from SOFC inlet to exit.  The SOFC will absorb a
-//        ///   fraction of the helium content in that bulk air flow.  Use the node's flow-thru value
-//        ///   to determine the buld air flow rate, and its helium mass fraction to determine the
-//        ///   amount of helium available to absorb.
-//        mHeAbsorbRate = mHeAbsorptionFactor * mNodes[1]->getFluxThrough()
-//                      * mNodes[1]->getOutflow()->getMassFraction(FluidProperties::GUNNS_HE);
-//        mHeAbsorbedMass += mHeAbsorbRate * dt;
-
+    if (fabs(mH2MassRate) >= m100EpsilonLimit) {
         /// - Transport node flows.
-        mNodes[0]->collectInflux( mH2MassRate,   mH2Fluid);
-        mNodes[0]->collectInflux( mH2OMassRate,  mH2OFluid);
-        mNodes[1]->collectInflux( mO2MassRate,   mO2Fluid);
-//        mNodes[1]->collectInflux(-mHeAbsorbRate, mHeFluid);
-
-//    } else {
-//        mHeAbsorbRate = 0.0;
+        mNodes[0]->collectInflux(mH2MassRate,  mH2Fluid);
+        mNodes[0]->collectInflux(mH2OMassRate, mH2OFluid);
+        mNodes[1]->collectInflux(mO2MassRate,  mO2Fluid);
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details Zeroes all the reaction constituent mass and molar flow rate terms.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSimpleH2Redox::zeroReactionRates()
-{
-    mH2MassRate   = 0.0;
-    mO2MassRate   = 0.0;
-    mH2OMassRate  = 0.0;
-    mH2MoleRate   = 0.0;
-    mO2MoleRate   = 0.0;
-    mH2OMoleRate  = 0.0;
-//    mHeAbsorbRate = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -410,20 +410,41 @@ void GunnsDynUtils::normalizeQ(double* q)
 ///
 /// @throws   TsNumericalException
 ///
-/// @details  Normalizes the given vector to have a magnitude of 1.
+/// @details  Normalizes the given vector to have a magnitude of 1.  If the vector magnitude is too
+///           small, this throws an exception and leaves the vector unchanged.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsDynUtils::normalizeV(double* v)
 {
-    double factor;
-    const double mag2 = dotV(v, v, 3);
-    if (fabs(mag2) < vecNormTolerance) {
+    const double mag = magV(v, 3);
+    if (mag < vecNormTolerance) {
         throw TsNumericalException();
     } else {
-        factor = 1.0 / sqrt(mag2);
+        const double factor = 1.0 / mag;
+        v[0] *= factor;
+        v[1] *= factor;
+        v[2] *= factor;
     }
-    v[0] *= factor;
-    v[1] *= factor;
-    v[2] *= factor;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in, out] v    (--) The vector.
+/// @param[in]      size (--) Size of the vector.
+///
+/// @returns  bool (--) True if the normalize succeeded, false if it failed.
+///
+/// @details  If the given vector magnitude is sufficient for dividing, this normalizes the vector
+///           to have a magnitude of 1, and returns true indicating success.  Otherwise leaves the
+///           vector unchanged and returns false indicating failure.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GunnsDynUtils::normalizeVSuccess(double* v, const unsigned int size)
+{
+    const double mag = magV(v, size);
+    if (mag < vecNormTolerance) {
+        return false;
+    } else {
+        scaleV(v, v, 1.0 / mag, size);
+    }
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -450,7 +471,7 @@ double GunnsDynUtils::magV(const double* v, const unsigned int size)
 ///
 /// @details  Sets mA to mB value by value.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsDynUtils::setM(double* mA, double* mB, const unsigned int size)
+void GunnsDynUtils::setM(double* mA, const double* mB, const unsigned int size)
 {
     const unsigned int sizeSq = size*size;
     for (unsigned int i=0; i<sizeSq; ++i) {

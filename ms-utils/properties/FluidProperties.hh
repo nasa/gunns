@@ -37,6 +37,7 @@ ASSUMPTIONS AND LIMITATIONS:
 
 #include "math/approximation/TsApproximation.hh"
 #include "math/approximation/QuinticFit.hh"
+#include "math/approximation/QuarticFit.hh"
 #include "math/approximation/CubicFit.hh"
 #include "math/approximation/LinearFit.hh"
 #include "math/approximation/PowerFit.hh"
@@ -104,7 +105,9 @@ class FluidProperties {
             GUNNS_NAK78       = 23,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
             GUNNS_GALDEN170   = 24,  ///<  Galden HT-170 (liquid)
             GUNNS_WATER_PVT   = 25,  ///<  water (liquid with table lookup density)
-            NO_FLUID          = 26   ///<  Invalid or number of fluids - Keep this last!
+            GUNNS_NTO         = 26,  ///<  nitrogen tetroxide (liquid)
+            GUNNS_MMH         = 27,  ///<  monomethylhydrazine (liquid)
+            NO_FLUID          = 28   ///<  Invalid or number of fluids - Keep this last!
         };
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief    Enumeration of the phases of Fluids.
@@ -352,6 +355,12 @@ class DefinedFluidProperties {
         TsBilinearInterpolatorReverse mPressureN2Real;     /**< (--) N2 real-gas pressure table */
         TsBilinearInterpolator mDensityO2Real;             /**< (--) O2 real-gas density table */
         TsBilinearInterpolatorReverse mPressureO2Real;     /**< (--) O2 real-gas pressure table */
+        QuadraticFit      mSaturationPressureN2O4;         /**< (--) N2O4 saturation pressure curve fit */
+        FluidTsatFit      mSaturationTemperatureN2O4;      /**< (--) N2O4 saturation temperature curve fit */
+        LinearFit         mHeatOfVaporizationN2O4;         /**< (--) N2O4 heat of vaporization curve fit */
+        QuadraticFit      mSaturationPressureCH3N2H3;      /**< (--) CH3N2H3 saturation pressure curve fit */
+        FluidTsatFit      mSaturationTemperatureCH3N2H3;   /**< (--) CH3N2H3 saturation temperature curve fit */
+        LinearFit         mHeatOfVaporizationCH3N2H3;      /**< (--) CH3N2H3 heat of vaporization curve fit */
         QuadLinFit        mDensityWATER;                   /**< (--) WATER density curve fit */
         QuinticFit        mViscosityWATER;                 /**< (--) WATER dynamic viscosity curve fit */
         LinearFit         mSpecificHeatWATER;              /**< (--) WATER specific heat curve fit */
@@ -459,6 +468,22 @@ class DefinedFluidProperties {
         FluidPropertiesDataWaterPvt mDataWATERPVT;         /**< (--) WATER_PVT table data object */
         TsBilinearInterpolator mDensityWATERPVT;           /**< (--) WATER_PVT density table */
         TsBilinearInterpolatorReverse mPressureWATERPVT;   /**< (--) WATER_PVT pressure table */
+        QuadLinFit        mDensityNTO;                     /**< (--) NTO density curve fit */
+        QuarticFit        mViscosityNTO;                   /**< (--) NTO dynamic viscosity curve fit */
+        LinearFit         mSpecificHeatNTO;                /**< (--) NTO specific heat curve fit */
+        QuadraticFit      mThermalConductivityNTO;         /**< (--) NTO thermal conductivity curve fit */
+        QuarticFit        mPrandtlNumberNTO;               /**< (--) NTO prandtl number curve fit */
+        LinearFit         mAdiabaticIndexNTO;              /**< (--) NTO adiabatic index curve fit */
+        QuadLinInvFit     mPressureNTO;                    /**< (--) NTO pressure curve fit */
+        QuadraticRootFit  mTemperatureNTO;                 /**< (--) NTO temperature curve fit */
+        QuadLinFit        mDensityMMH;                     /**< (--) MMH density curve fit */
+        QuinticFit        mViscosityMMH;                   /**< (--) MMH dynamic viscosity curve fit */
+        LinearFit         mSpecificHeatMMH;                /**< (--) MMH specific heat curve fit */
+        QuadraticFit      mThermalConductivityMMH;         /**< (--) MMH thermal conductivity curve fit */
+        QuarticFit        mPrandtlNumberMMH;               /**< (--) MMH prandtl number curve fit */
+        LinearFit         mAdiabaticIndexMMH;              /**< (--) MMH adiabatic index curve fit */
+        QuadLinInvFit     mPressureMMH;                    /**< (--) MMH pressure curve fit */
+        QuadraticRootFit  mTemperatureMMH;                 /**< (--) MMH temperature curve fit */
         FluidProperties   mPropertiesCO;                   /**< (--) CO fluid properties (ideal gas) */
         FluidProperties   mPropertiesCO2;                  /**< (--) CO2 fluid properties (ideal gas) */
         FluidProperties   mPropertiesH2O;                  /**< (--) H2O fluid properties (ideal gas) */
@@ -485,6 +510,8 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesNAK78;                /**< (--) NaK-78 fluid properties (liquid) */
         FluidProperties   mPropertiesGALDEN170;            /**< (--) Galden HT-170 fluid properties (liquid) */
         FluidProperties   mPropertiesWATERPVT;             /**< (--) WATER_PVT fluid properties (liquid with density table lookup) */
+        FluidProperties   mPropertiesNTO;                  /**< (--) NTO fluid properties (liquid) */
+        FluidProperties   mPropertiesMMH;                  /**< (--) MMH fluid properties (liquid) */
         FluidProperties*  mProperties[FluidProperties::NO_FLUID]; /**< (--) Array of pointers to the defined Fluid Properties */
         static const double mXeTemperatureScale[12]; /**< (K)     Xenon real-gas density table temperature scale */
         static const double mXePressureScale[12];    /**< (kPa)   Xenon real-gas density table pressure scale */
@@ -515,6 +542,8 @@ class DefinedFluidProperties {
         static const double mMWeightHCN;             /**< (1/mol) Molecular weight of HCN */
         static const double mMWeightHe;              /**< (1/mol) Molecular weight of He */
         static const double mMWeightXe;              /**< (1/mol) Molecular weight of Xe */
+        static const double mMWeightN2O4;            /**< (1/mol) Molecular weight of N2O4 */
+        static const double mMWeightCH3N2H3;         /**< (1/mol) Molecular weight of CH3N2H3 */
         static const double mMWeightHFE7000;         /**< (1/mol) Molecular weight of HFE7000 */
         static const double mMWeightHFE7100;         /**< (1/mol) Molecular weight of HFE7100 */
         static const double mMWeightPG30;            /**< (1/mol) Molecular weight of propylene glycol 30% */
@@ -540,6 +569,8 @@ class DefinedFluidProperties {
         static const double mCriticalTemperatureHCN; /**< (K) Critical temperature of HCN */
         static const double mCriticalTemperatureHe;  /**< (K) Critical temperature of He */
         static const double mCriticalTemperatureXe;  /**< (K) Critical temperature of Xe */
+        static const double mCriticalTemperatureN2O4;    /**< (K) Critical temperature of N2O4 */
+        static const double mCriticalTemperatureCH3N2H3; /**< (K) Critical temperature of CH3N2H3 */
         static const double mCriticalTemperatureHFE7000; /**< (K) Critical temperature of HFE7000 */
         static const double mCriticalTemperatureHFE7100; /**< (K) Critical temperature of HFE7100 */
         static const double mCriticalTemperaturePG30;    /**< (K) Critical temperature of propylene glycol 30% */

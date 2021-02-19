@@ -643,7 +643,7 @@ void UtGunnsFluidSublimator::testStepNoVent()
     ///   thermal conductivity decreasing.
     relativeHumidity = tNodes[1].getContent()->getPartialPressure(tGasType) /
             propertiesH2O->getSaturationPressure(tNodes[1].getContent()->getTemperature());
-    relativeHumidity = Math::limitRange(0.0, relativeHumidity, 1.0);
+    relativeHumidity = MsMath::limitRange(0.0, relativeHumidity, 1.0);
 
     plateDP = tArticle->mPotentialVector[0] - tArticle->mPotentialVector[1];
     plateConductivity = tPlateConductivity * (1.0 - iceMass / (tMaxIceMass * tIceCoverageFraction));

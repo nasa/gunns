@@ -183,8 +183,6 @@ class ThermalNetwork : public GunnsNetworkBase
         virtual void preloadCheckpoint();
         /// @brief  Simulation restart task.
         virtual void restart();
-        /// @brief  Simulation update task.
-        virtual void update(const double timeStep);
         /// @brief  Update network spotters before the solver solution.
         virtual void stepSpottersPre(const double timeStep);
         /// @brief  Update network spotters after the solver solution.

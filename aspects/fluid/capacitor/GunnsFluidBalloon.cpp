@@ -371,7 +371,7 @@ void GunnsFluidBalloon::processVolumeEdit()
     } else if (mEditVolumeFlag) {
         mEditTemperaturePressureFlag = true;
         mEditTemperatureValue        = mNodes[0]->getContent()->getTemperature();
-        mEditPressureValue           = Math::limitRange(mMinVolume, mEditVolume, mMaxVolume)
+        mEditPressureValue           = MsMath::limitRange(mMinVolume, mEditVolume, mMaxVolume)
                                      / mActualInflatability + mPotentialVector[1];
     }
 

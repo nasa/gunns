@@ -53,8 +53,8 @@ void UtStrings::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtStrings::testFloatToString()
 {
-    std::cout << "--------------------------------------------------------------------------------";
-    std::cout << "\n Strings Test 01: Float to String Tests                    ";
+    std::cout << "-----------------------------------------------------------------------------";
+    std::cout << "\n Strings Test 01: testFloatToString ..........................";
 
     float convert    = 3.14159;
     float minValue   = 0.0;
@@ -90,7 +90,7 @@ void UtStrings::testFloatToString()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtStrings::testIntToString()
 {
-    std::cout << "\n Strings Test 02: Int to String Tests                      ";
+    std::cout << "\n Strings Test 01: testIntToString ............................";
 
     float convert    = 3;
     float minValue   = 0;
@@ -113,3 +113,62 @@ void UtStrings::testIntToString()
     std::cout << "... Pass";
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the method for string split.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtStrings::testSplit()
+{
+    std::cout << "\n Strings Test 03: testSplit ..................................";
+
+    std::string input = "  Different hearts\nBeat on different strings ";
+    std::string expected[8] = {"", "", "Different", "hearts\nBeat", "on", "different", "strings", ""};
+    std::vector<std::string> actual = Strings::split(input, " ");
+    CPPUNIT_ASSERT(8 == actual.size());
+    CPPUNIT_ASSERT_EQUAL(expected[0], actual[0]);
+    CPPUNIT_ASSERT_EQUAL(expected[1], actual[1]);
+    CPPUNIT_ASSERT_EQUAL(expected[2], actual[2]);
+    CPPUNIT_ASSERT_EQUAL(expected[3], actual[3]);
+    CPPUNIT_ASSERT_EQUAL(expected[4], actual[4]);
+    CPPUNIT_ASSERT_EQUAL(expected[5], actual[5]);
+    CPPUNIT_ASSERT_EQUAL(expected[6], actual[6]);
+    CPPUNIT_ASSERT_EQUAL(expected[7], actual[7]);
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the method for string trim.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtStrings::testTrim()
+{
+    std::cout << "\n Strings Test 04: testTrim ...................................";
+
+    std::string input = " \t\n\t But there are times\nFor you and me\nWhen all such things agree \n";
+    std::string expected = "But there are times\nFor you and me\nWhen all such things agree";
+    std::string actual = Strings::trim(input);
+    CPPUNIT_ASSERT_EQUAL(expected, actual);
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the method for string ends with.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtStrings::testEndsWith()
+{
+    std::cout << "\n Strings Test 05: endsWith ...................................";
+
+    const std::string str = "system.subsystem.aspect.network.structure.surface";
+    std::string end = "structure.surface";
+    CPPUNIT_ASSERT(Strings::endsWith(str, "structure.surface"));
+    CPPUNIT_ASSERT(Strings::endsWith(str, "e"));
+    CPPUNIT_ASSERT(Strings::endsWith(str, ""));
+    CPPUNIT_ASSERT(Strings::endsWith(str, str));
+    CPPUNIT_ASSERT(not Strings::endsWith(str, " " + str));
+    CPPUNIT_ASSERT(not Strings::endsWith(str, "\n"));
+    CPPUNIT_ASSERT(not Strings::endsWith(str, " "));
+    CPPUNIT_ASSERT(not Strings::endsWith(str, "E"));
+    CPPUNIT_ASSERT(not Strings::endsWith(str, "Structure.surface"));
+
+    std::cout << "... Pass";
+}

@@ -6,7 +6,7 @@ LIBRARY DEPENDENCY:
    ((core/GunnsFluidConductor.o))
 ***************************************************************************************************/
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -253,7 +253,7 @@ void GunnsFluidPhaseChangeSource::validate(const GunnsFluidPhaseChangeSourceConf
     }
 
     /// - Throw an exception on efficiency outside valid range (-1.0 to +1.0)).
-    if (!Math::isInRange(-1.0, configData.mEfficiency, 1.0)) {
+    if (!MsMath::isInRange(-1.0, configData.mEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "efficiency outside valid range (-1.0 to +1.0).");
     }
 }
@@ -313,10 +313,14 @@ void GunnsFluidPhaseChangeSource::restartModel()
 ///
 /// @return   void
 ///
-/// @details  TODO
+/// @details  Computes the mass flow of phase change based on input power, and contributions to the
+///           system of equations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidPhaseChangeSource::step(const double dt __attribute__((unused)))
 {
+    /// - Process commands to change node map.
+    processUserPortCommand();
+
     /// - Calculate actual heat power from efficiency.
     mPower = mPowerInput * mEfficiency;
 
@@ -343,12 +347,11 @@ void GunnsFluidPhaseChangeSource::step(const double dt __attribute__((unused)))
         /// - Latent heat of vaporization of the phase change fluid type at the saturation T,
         ///   converted from kJ/kg to J/kg.
         mL = liqProperties->getHeatOfVaporization(mTsat) * UnitConversion::UNIT_PER_KILO;
-        /// - Calculate resulting mass phase change rate.
-        //L (J/kg), Cp (J/kg/K), P (J/s)
-        //Qt = Cp*dT (J/kg/K) * (K) = (J/kg)
-        //mdot = P / (Qt + L) (J/s) / (J/kg) = (kg/s)
-        //TODO what happens if mFlowRate < 0???
-        mFlowRate = mPower / (mDh + mL);
+        /// - Calculate resulting mass phase change rate.  If mDh is negative then the liquid is
+        ///   already above the saturation temperature and is boiling, which reduces the input power
+        ///   needed to produce mass flow.  However, we limit mDh + mL > 0 to avoid dividing by zero
+        ///   or mass flow direction opposite the power sign.
+        mFlowRate = mPower / fmax(mDh + mL, FLT_EPSILON);
 
     } else {
         /// - Assuming the exit liquid is saturated, find the saturation temperature at its current
@@ -362,8 +365,7 @@ void GunnsFluidPhaseChangeSource::step(const double dt __attribute__((unused)))
         ///   converted from kJ/kg to J/kg.
         mL = gasProperties->getHeatOfVaporization(mTsat) * UnitConversion::UNIT_PER_KILO;
         /// - Calculate resulting mass phase change rate.
-        //TODO what happens if mFlowRate > 0???
-        mFlowRate = mPower / (mDh + mL);
+        mFlowRate = mPower / fmax(mDh + mL, FLT_EPSILON);
     }
 
     /// - Update the source vector.  The gas & liquid molecular weights are the same, as enforced

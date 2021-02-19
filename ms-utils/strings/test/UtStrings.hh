@@ -36,11 +36,20 @@ class UtStrings : public CppUnit::TestFixture
         void testFloatToString();
         /// @brief    Test int to string method.
         void testIntToString();
+        /// @brief    Test split method.
+        void testSplit();
+        /// @brief    Test trim method.
+        void testTrim();
+        /// @brief    Test endsWith method.
+        void testEndsWith();
 
     private:
         CPPUNIT_TEST_SUITE(UtStrings);
         CPPUNIT_TEST(testFloatToString);
         CPPUNIT_TEST(testIntToString);
+        CPPUNIT_TEST(testSplit);
+        CPPUNIT_TEST(testTrim);
+        CPPUNIT_TEST(testEndsWith);
         CPPUNIT_TEST_SUITE_END();
         double tolerance;
 

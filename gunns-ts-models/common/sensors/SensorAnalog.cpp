@@ -14,7 +14,7 @@ PROGRAMMERS:
 #include "SensorAnalog.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] minRange          (--) Minimum sensed output value, in output units
@@ -316,7 +316,7 @@ void SensorAnalog::validate() const
     }
 
     /// - Throw an exception when off value is not between minimum range & maximum range.
-    if (not Math::isInRange(mMinRange, mOffValue, mMaxRange)) {
+    if (not MsMath::isInRange(mMinRange, mOffValue, mMaxRange)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_SENSORS, "Invalid Configuration Data", TsInitializationException,
                 "off value must be between the minimum & maximum output values.", mName);
     }
@@ -402,7 +402,7 @@ void SensorAnalog::processInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void SensorAnalog::processOutput()
 {
-    mSensedOutput = Math::limitRange(mMinRange, mSensedOutput, mMaxRange);
+    mSensedOutput = MsMath::limitRange(mMinRange, mSensedOutput, mMaxRange);
     mTruthOutput  = UnitConversion::convert(mUnitConversion, mTruthInput);
 }
 

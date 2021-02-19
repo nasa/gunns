@@ -8,7 +8,7 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsThermalMultiPanel.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh" //needed for Math::isInRange() in validate()
+#include "math/MsMath.hh" //needed for MsMath::isInRange() in validate()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                      (--) Name of given ThermalSource object.
@@ -194,7 +194,7 @@ void GunnsThermalMultiPanel::validate(const GunnsThermalMultiPanelConfigData& co
 {
     /// - Throw an exception if any absorptivity < 0 or > 1.
     for (int i = 0; i < 5; ++i) {
-        TS_PTCS_IF_ERREX(!Math::isInRange(0.0, configData.cAbsorptivity[i], 1.0),
+        TS_PTCS_IF_ERREX(!MsMath::isInRange(0.0, configData.cAbsorptivity[i], 1.0),
                 TsInitializationException,
                 "invalid config data", "An absorptivity value is out of range (0-1).");
     }
@@ -205,7 +205,7 @@ void GunnsThermalMultiPanel::validate(const GunnsThermalMultiPanelConfigData& co
 
     /// - Throw an exception if any view scalar < 0 or > 1.
     for (int i = 0; i < 5; ++i) {
-        TS_PTCS_IF_ERREX(!Math::isInRange(0.0, inputData.iViewScalar[i], 1.0),
+        TS_PTCS_IF_ERREX(!MsMath::isInRange(0.0, inputData.iViewScalar[i], 1.0),
                 TsInitializationException,
                 "invalid input data", "A view scalar value is out of range (0-1).");
     }
@@ -262,7 +262,7 @@ void GunnsThermalMultiPanel::updateState(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsThermalMultiPanel::getAbsorptivity(const int index) const
 {
-    if (Math::isInRange(0, index, 4)) {
+    if (MsMath::isInRange(0, index, 4)) {
         return mAbsorptivity[index];
     } else {
         TS_PTCS_WARNING ("Array index out of bounds. First element returned.");
@@ -279,7 +279,7 @@ double GunnsThermalMultiPanel::getAbsorptivity(const int index) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsThermalMultiPanel::getViewScalar(const int index) const
 {
-    if (Math::isInRange(0, index, 4)) {
+    if (MsMath::isInRange(0, index, 4)) {
         return mViewScalar[index];
     } else {
         TS_PTCS_WARNING ("Array index out of bounds. First element returned.");
@@ -296,7 +296,7 @@ double GunnsThermalMultiPanel::getViewScalar(const int index) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsThermalMultiPanel::getIncidentFlux(const int index) const
 {
-    if (Math::isInRange(0, index, 4)) {
+    if (MsMath::isInRange(0, index, 4)) {
         return mIncidentFlux[index];
     } else {
         TS_PTCS_WARNING ("Array index out of bounds. First element returned.");

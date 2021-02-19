@@ -16,7 +16,7 @@ PROGRAMMERS:
 #include "parsing/ParseTool.hh" //needed to check file accessibility in openFile
 #include "software/exceptions/TsParseException.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh" //needed for fabs() and FLT_EPSILON in confirmNodeBuild()
+#include "math/MsMath.hh" //needed for fabs() and FLT_EPSILON in confirmNodeBuild()
 #include <algorithm> //needed for find() function in getCapEditGroupId()
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -11,6 +11,7 @@
 #include "UtGunnsDynSingleRigidMassProps.hh"
 #include "UtGunnsDynSingleRigidStateDeriv.hh"
 #include "UtGunnsDynSingleRigidEom.hh"
+#include "UtGunnsDynUtils.hh"
 #include "UtGunnsDynEuler.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,7 @@ int main(int, char**)
     runner.addTest(UtGunnsDynSingleRigidMassProps::suite());
     runner.addTest(UtGunnsDynSingleRigidStateDeriv::suite());
     runner.addTest(UtGunnsDynSingleRigidEom::suite());
+    runner.addTest(UtGunnsDynUtils::suite());
     runner.addTest(UtGunnsDynEuler::suite());
 
     runner.run();

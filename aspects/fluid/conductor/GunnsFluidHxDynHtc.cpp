@@ -70,9 +70,9 @@ double GunnsFluidHxDynHtcSegment::update(const double mdot, const double degrada
     const double fabsMdot = std::min(10.0, fabs(mdot));
     double htc = mCoeff0;
     if (fabsMdot > FLT_EPSILON) {
-        htc += mCoeff1 * powf(fabsMdot, Math::limitRange(0.05, mExponent, 20.0));
+        htc += mCoeff1 * powf(fabsMdot, MsMath::limitRange(0.05, mExponent, 20.0));
     }
-    return Math::limitRange(0.0, htc * degradation, mLimit);
+    return MsMath::limitRange(0.0, htc * degradation, mLimit);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ void GunnsFluidHxDynHtc::validate(const GunnsFluidHxDynHtcConfigData& configData
 
         for (unsigned int i = 0; i < configData.mSegsHtc.size(); ++i) {
             /// - Throw an exception if a segment HTC exponent not in (0.05, 20).
-            if (!Math::isInRange(0.05, configData.mSegsHtc[i].mExponent, 20.0)) {
+            if (!MsMath::isInRange(0.05, configData.mSegsHtc[i].mExponent, 20.0)) {
                 GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                         "A segment's HTC exponent not in (0.05, 20).");
             }
@@ -289,7 +289,7 @@ void GunnsFluidHxDynHtc::validate(const GunnsFluidHxDynHtcConfigData& configData
         }
     } else {
         /// - Throw an exception if the HTC exponent not in (0.05, 20).
-        if (!Math::isInRange(0.05, configData.mHtcExponent, 20.0)) {
+        if (!MsMath::isInRange(0.05, configData.mHtcExponent, 20.0)) {
             GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "HTC exponent not in (0.05, 20).");
         }
@@ -318,6 +318,6 @@ void GunnsFluidHxDynHtc::computeHeatTransferCoefficient()
         } else if (mMalfHxDegradeFlag) {
             degradation = mMalfHxDegradeValue;
         }
-        mSegHtc[i] = mSegsDynHtc[i].update(mFlowRate, Math::limitRange(0.0, degradation, 1.0));
+        mSegHtc[i] = mSegsDynHtc[i].update(mFlowRate, MsMath::limitRange(0.0, degradation, 1.0));
     }
 }

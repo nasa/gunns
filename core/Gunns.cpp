@@ -181,7 +181,7 @@ Gunns::Gunns()
     mDebugDesiredSlice     (0),
     mDebugDesiredStep      (0),
     mDebugDesiredNode      (-1),
-    mMinorStepLog          (),
+    mStepLog               (),
     mVerbose               (false),
     mSorActive             (false),
     mSorWeight             (1.0),
@@ -384,7 +384,6 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     mDebugDesiredSlice     = 0;
     mDebugDesiredStep      = 0;
     mDebugDesiredNode      = -1;
-    mMinorStepLog.initialize(mNetworkSize, mNumLinks, mMinorStepLimit);
 
     /// - Allocate a variable size array of pointers to the network links.
     mLinks = new GunnsBasicLink*[mNumLinks];
@@ -465,6 +464,9 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     for (int link = 0; link < mNumLinks; ++link) {
         mLinks[link]->processOutputs();
     }
+
+    /// - Initialize the minor step log.
+    mStepLog.initialize(mName + ".mStepLog", mNetworkSize, mNumLinks, mLinks);
 
     /// - Perform functions common to initialization and restart.
     initializeRestartCommonFunctions();
@@ -730,6 +732,8 @@ void Gunns::step(const double timeStep)
     /// - Check for proper initialization and run-time mode settings.
     checkStepInputs();
     if (PAUSE == mRunMode) return;
+    ++mMajorStepCount;
+    mStepLog.beginMajorStep();
 
     /// - Call the links to process special read data from the sim bus.
     for (int link = 0; link < mNumLinks; ++link) {
@@ -743,10 +747,16 @@ void Gunns::step(const double timeStep)
     }
 
     /// - Build & solve the system of equations.
-    bool isConverged = iterateMinorSteps(timeStep);
+    bool isConverged = false;
+    try {
+        isConverged = iterateMinorSteps(timeStep);
+    } catch (TsNumericalException& e) {
+        mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::MATH_FAIL);
+        mStepLog.endMajorStep();
+        throw e;
+    }
 
     /// - System performance metrics: update the average minor frame count per major frame.
-    ++mMajorStepCount;
     mAvgMinorStepCount     = double (mMinorStepCount)     / double (mMajorStepCount);
     mAvgDecompositionCount = double (mDecompositionCount) / double (mMajorStepCount);
     if (mLastDecomposition > mMaxDecompositionCount) {
@@ -770,18 +780,8 @@ void Gunns::step(const double timeStep)
         resetToMajorPotentialVector();
         overridePotential();
         outputPotentialVector();
+        mStepLog.recordPotential(mPotentialVector);
         GUNNS_WARNING("failed to converge.");
-    }
-
-    /// - Update results in the minor step log.
-    mMinorStepLog.mMajorStep = mMajorStepCount;
-    mMinorStepLog.mMinorStep = mLastMinorStep;
-    if (isConverged) {
-        mMinorStepLog.mResult = GunnsMinorStepLog::SUCCESS;
-    } else if (mLastMinorStep > mMinorStepLimit) {
-        mMinorStepLog.mResult = GunnsMinorStepLog::MINOR;
-    } else {
-        mMinorStepLog.mResult = GunnsMinorStepLog::DECOMP;
     }
 
     /// - Save the potential vector for next pass.  This covers linear networks, and the last minor
@@ -790,6 +790,7 @@ void Gunns::step(const double timeStep)
     saveMajorPotentialVector();
 
     mRebuild = false;
+    mStepLog.endMajorStep();
 
     mSolveTime = mSolveTimeWorking;
     mStepTime  = CLOCK_TIME - startTime;
@@ -838,6 +839,7 @@ bool Gunns::iterateMinorSteps(const double timeStep)
         if (mLastMinorStep > mMaxMinorStepCount) {
             mMaxMinorStepCount = mLastMinorStep;
         }
+        mStepLog.beginMinorStep(mMajorStepCount, mLastMinorStep);
 
         /// - If the result of the previous minor step is DELAY, then we skip stepping the links and
         ///   building/solving the system.
@@ -876,11 +878,18 @@ bool Gunns::iterateMinorSteps(const double timeStep)
                 networkConverged = false;
                 /// - Pause recording minor step potentials when the recorded node fails to converge.
                 mDebugDesiredNode = -1;
+                mStepLog.recordNodesConvergence(mNodesConvergence);
+                mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::DECOMP_LIMIT);
                 break;
             }
             overridePotential();
             outputPotentialVector();
+        } else {
+            /// - Record links' admittance matrix and source vector here because buildAndSolveSystem
+            ///   wasn't called.
+            mStepLog.recordLinkContributions();
         }
+        mStepLog.recordPotential(mPotentialVector);
 
         /// - For non-linear networks in NORMAL mode, the first thing to do after the solution is to
         ///   check for convergence, and rejection or delay of the solution by any links.  We do not
@@ -890,6 +899,7 @@ bool Gunns::iterateMinorSteps(const double timeStep)
             if (GunnsBasicLink::DELAY == result or checkSystemConvergence(mLastMinorStep)) {
                 convergedStep++;
             }
+            mStepLog.recordNodesConvergence(mNodesConvergence);
 
             /// - Any links rejecting the solution will kick the entire network state back to the
             ///   previous minor step, and the network goes back to being un-converged.
@@ -912,10 +922,18 @@ bool Gunns::iterateMinorSteps(const double timeStep)
                     networkConverged = true;
                     if ( (mWorstCaseTiming and (mDecompositionLimit <= mLastDecomposition))
                             or not mWorstCaseTiming) {
+                        mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::SUCCESS);
                         break;
                     }
                 }
             }
+        }
+        if (GunnsBasicLink::CONFIRM == result) {
+            mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::CONFIRM);
+        } else if (GunnsBasicLink::DELAY == result) {
+            mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::DELAY);
+        } else {
+            mStepLog.recordStepResult(mLastDecomposition, GunnsMinorStepData::REJECT);
         }
     }
 
@@ -943,6 +961,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
         needDecomposition = true;
         mRebuild = false;
     }
+    mStepLog.recordLinkContributions();
 
     //if sorResult = -1, then sor didnt' converge, so throw a warning, reset mPotentialVector back
     //to the previous minor step, and go to Cholesky.
@@ -1128,28 +1147,16 @@ bool Gunns::checkSystemConvergence(const int minorStep)
     /// - Record the last node found that fails to converge, otherwise -1 indicates all nodes have
     ///   converged.
     int lastNonConvergingNode = -1;
-    const unsigned int step = minorStep - 1;
-    unsigned int word = 0;
-    unsigned int bit  = 0;
     for (int node = 0; node < mNetworkSize; ++node) {
 
         mNodesConvergence[node] = fabs(mMinorPotentialVector[node] - mPotentialVector[node]);
         if (mNodesConvergence[node] > mConvergenceTolerance) {
             lastNonConvergingNode = node;
-            mMinorStepLog.mNodeBits[step][word].set(bit);
 
             /// - Pause recording minor step potentials when the recorded node fails to converge.
             if (minorStep == mMinorStepLimit and node == mDebugDesiredNode) {
                 mDebugDesiredNode = -1;
             }
-        } else {
-            mMinorStepLog.mNodeBits[step][word].reset(bit);
-        }
-
-        bit++;
-        if (mMinorStepLog.mWordSize == bit) {
-            bit = 0;
-            word++;
         }
     }
     return (lastNonConvergingNode < 0);
@@ -1176,9 +1183,6 @@ GunnsBasicLink::SolutionResult Gunns::confirmSolutionAcceptance(const int conver
     ///   solution, we still give the remaining links a chance to assess, because multiple links
     ///   might be rejecting the solution simultaneously (say for 2 diodes in parallel), and we want
     ///   all of them to adjust for the next minor-step at the same time.
-    const unsigned int step = absoluteStep - 1;
-    unsigned int word = 0;
-    unsigned int bit  = 0;
     for (int link = 0; link < mNumLinks; ++link) {
 
         if (mLinks[link]->isNonLinear()) {
@@ -1187,6 +1191,7 @@ GunnsBasicLink::SolutionResult Gunns::confirmSolutionAcceptance(const int conver
             ///   so change such a result to confirmed until after we've converged.
             GunnsBasicLink::SolutionResult linkResult =
                     mLinks[link]->confirmSolutionAcceptable(convergedStep, absoluteStep);
+            mStepLog.recordLinkResult(link, linkResult);
             if ((0 == convergedStep) and (GunnsBasicLink::DELAY == linkResult)) {
                 linkResult = GunnsBasicLink::CONFIRM;
             }
@@ -1196,24 +1201,14 @@ GunnsBasicLink::SolutionResult Gunns::confirmSolutionAcceptance(const int conver
             //    break statements.
             if (GunnsBasicLink::REJECT == linkResult) {
                 result = GunnsBasicLink::REJECT;
-                mMinorStepLog.mLinkBits[step][word].set(bit);
             }
 
             /// - If any link delays the solution, then the entire network solution is delayed, but
             ///   only if no link is rejecting.  Rejecting overrides delaying.
             else if (GunnsBasicLink::DELAY == linkResult && GunnsBasicLink::REJECT != result) {
                 result = GunnsBasicLink::DELAY;
-                mMinorStepLog.mLinkBits[step][word].set(bit);
-            } else {
-                mMinorStepLog.mLinkBits[step][word].reset(bit);
             }
             mLinksConvergence[link] = linkResult;
-
-            bit++;
-            if (mMinorStepLog.mWordSize == bit) {
-                bit = 0;
-                word++;
-            }
         }
     }
     return result;

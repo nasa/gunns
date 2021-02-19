@@ -35,7 +35,7 @@ PROGRAMMERS:
 #include "core/GunnsBasicLink.hh"
 #include "GunnsElectPvRegSensors.hh"
 #include "GunnsElectPvRegTrips.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 // Forward-declare pointer types.
 class GunnsElectPvArray;

@@ -47,7 +47,7 @@ lib:
 	cd ${GUNNS_HOME}/lib/test && $(MAKE)
 
 $(test_exe): $(OBJECTS) lib
-	$(CXX) --coverage $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunns -lcppunit $(LDFLAGS)
+	$(CXX) --coverage $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunns -lcppunit -pthread $(LDFLAGS)
 
 $(OBJECTS): build/%.o : %.cpp | $(OBJDIRS)
 	$(CXX) $(CXXFLAGS) $(extra_CXXFLAGS) -c $< -o $@

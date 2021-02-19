@@ -192,7 +192,7 @@ void GunnsFluidVolumeMonitor::stepPreSolver(const double dt __attribute__((unuse
 void GunnsFluidVolumeMonitor::stepPostSolver(const double dt __attribute__((unused)))
 {
     /// - Limit the user-supplied link port number to the link's valid range.
-    mLinkPort = Math::limitRange(0, mLinkPort, mLink.getNumberPorts()-1);
+    mLinkPort = MsMath::limitRange(0, mLinkPort, mLink.getNumberPorts()-1);
 
     /// - Set up pointers for speed.
     GunnsFluidNode*  nodes = static_cast<GunnsFluidNode*>(mNodeList.mNodes);

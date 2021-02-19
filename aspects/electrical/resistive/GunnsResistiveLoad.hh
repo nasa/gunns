@@ -27,7 +27,7 @@ PROGRAMMERS:
 */
 
 #include "software/SimCompatibility/TsSimCompatibility.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "aspects/electrical/resistive/GunnsElectricalResistor.hh"
 #include "aspects/electrical/Switch/GunnsElectSwitchUtil.hh"
 

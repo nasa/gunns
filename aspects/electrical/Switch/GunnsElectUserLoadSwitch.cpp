@@ -15,7 +15,7 @@ LIBRARY DEPENDENCY:
   )
 */
 #include "GunnsElectUserLoadSwitch.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "aspects/electrical/UserLoad/GunnsElectUserLoad.hh"
 

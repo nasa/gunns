@@ -2,7 +2,7 @@
 #define UtMath_Exist
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup  UT_TSM_UTILITIES_MATH_MATH    Math Unit Tests
+/// @defgroup  UT_TSM_UTILITIES_MATH_MATH    MsMath Unit Tests
 /// @ingroup   UT_TSM_UTILITIES_MATH
 ///
 /// @copyright Copyright 2019 United States Government as represented by the Administrator of the
@@ -17,9 +17,9 @@
 #include <cppunit/TestFixture.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Math unit tests.
+/// @brief    MsMath unit tests.
 ///
-/// @details  This class provides the unit tests for the Math class within the CPPUnit framework.
+/// @details  This class provides the unit tests for the MsMath class within the CPPUnit framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class UtMath : public CppUnit::TestFixture
 {

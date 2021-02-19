@@ -225,7 +225,7 @@ void GunnsFluidHotAdsorber::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidHotAdsorber::computeEfficiency()
 {
-    double efficiency = Math::limitRange(-1.0, mEfficiencyBias + mEfficiencyScaleFactor * mFluidTemperature, 1.0);
+    double efficiency = MsMath::limitRange(-1.0, mEfficiencyBias + mEfficiencyScaleFactor * mFluidTemperature, 1.0);
 
     /// - The efficiency malfunction overrides the normal value.  Desorption cycle flag responds to
     ///   the final efficiency.

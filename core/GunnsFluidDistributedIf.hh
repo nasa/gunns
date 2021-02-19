@@ -166,18 +166,18 @@ class GunnsFluidDistributedIfInputData : public GunnsFluidLinkInputData
 ///           with a minLinearizationPotential of 1e-8 or less.
 ///           \verbatim
 ///
-///              Master-Side Network                                        Slave-Side Network
-///                                                    |
-///                   ****                                                           ****
-///                ***    ***                          |                          ***    ***
-///               *          *                                                   *          *
-///              *            *                        |                        *            *
-///              *    NODE    *<----------->                        <---------->*    NODE    *
+///              Master-Side Network                                          Slave-Side Network
+///                                                     |
+///                   ****                                                             ****
+///                ***    ***                           |                           ***    ***
+///               *          *                                                     *          *
+///              *            *                         |                         *            *
+///              *    NODE    *<----------->                          <---------->*    NODE    *
 ///              *            * GunnsFluidDistributedIf | GunnsFluidDistributedIf *            *
-///               *          *           Link                     Link           *          *
-///                ***    ***                          |                          ***    ***
-///                   ****                                                           ****
-///                                                    |
+///               *          *           Link                       Link           *          *
+///                ***    ***                           |                           ***    ***
+///                   ****                                                             ****
+///                                                     |
 ///           \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidDistributedIf : public GunnsFluidLink
@@ -230,6 +230,8 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         double                      mDemandFluxGain;         /**<    (--)       trick_chkpnt_io(**) Demand mode flow factor due to lag frames. */
         double                      mSuppliedCapacitance;    /**<    (mol/Pa)   trick_chkpnt_io(**) Network capacitance applied to the Demand node from the Supply side. */
         double*                     mTempMassFractions;      /**< ** (--)       trick_chkpnt_io(**) Scratch array for mass-mole mixture conversions. */
+        double*                     mTempMoleFractions;      /**< ** (--)       trick_chkpnt_io(**) Scratch array for bulk fluid mole fraction adjustments. */
+        double*                     mTempTcMoleFractions;    /**< ** (--)       trick_chkpnt_io(**) Scratch array for trace compound mole fraction adjustments. */
         std::vector<GunnsFluidDistributedIf*> mOtherIfs;     /**< ** (--)       trick_chkpnt_io(**) Vector of other similar links to avoid capacitance interference with. */
         PolyFluid                   mFluidState;             /**<    (--)       trick_chkpnt_io(**) Fluid state of the interface volume, for sensors. */
         static const double         mNetworkCapacitanceFlux; /**< ** (kg*mol/s) trick_chkpnt_io(**) Flux value to use in network node capacitance calculations. */
@@ -250,9 +252,9 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         /// @brief Special processing of Demand mode data input.
         void processInputsDemand();
         /// @brief Copies incoming fluid state from the interface to the given fluid object.
-        void inputFluid(const double pressure, PolyFluid* fluid);
+        double inputFluid(const double pressure, PolyFluid* fluid);
         /// @brief Copies the given fluid object state to the outgoing interface.
-        void outputFluid(PolyFluid* fluid);
+        double outputFluid(PolyFluid* fluid);
         /// @brief Handles several mode flip cases based on input data.
         void flipModesOnInput();
         /// @brief Flips to the Demand mode based on capacitances.

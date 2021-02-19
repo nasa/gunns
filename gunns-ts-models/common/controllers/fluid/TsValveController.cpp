@@ -11,7 +11,7 @@
 */
 
 #include "GenericMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -240,11 +240,11 @@ void TsValveController::validate(const TsValveControllerConfigData& config,
                         TsInitializationException, "Invalid Configuration Data",  "Valve maximum flow area fraction <= valve minimum flow area fraction.");
 
     /// - Throw a TsInitializationException exception on valve position out of range.
-    TS_GENERIC_IF_ERREX((!Math::isInRange(config.mMinCmdPosition, input.mCmdPosition, config.mMaxCmdPosition)),
+    TS_GENERIC_IF_ERREX((!MsMath::isInRange(config.mMinCmdPosition, input.mCmdPosition, config.mMaxCmdPosition)),
                         TsInitializationException, "Invalid Input Data",          "Valve position out of range.");
 
     /// - Throw a TsInitializationException exception on manual position out of range.
-    TS_GENERIC_IF_ERREX(input.mManualPositionFlag && (!Math::isInRange(config.mMinCmdPosition, input.mManualPositionValue, config.mMaxCmdPosition)),
+    TS_GENERIC_IF_ERREX(input.mManualPositionFlag && (!MsMath::isInRange(config.mMinCmdPosition, input.mManualPositionValue, config.mMaxCmdPosition)),
                         TsInitializationException, "Invalid Input Data",          "Manual position out of range.");
 }
 
@@ -289,11 +289,11 @@ void TsValveController::updatePosition(const double position)
     mUpperLimitFlag            = mCmdPosition >= mMaxCmdPosition;
 
     /// - In all cases limit the position to the valid range.
-    mCmdPosition               = Math::limitRange(mMinCmdPosition, mCmdPosition, mMaxCmdPosition);
+    mCmdPosition               = MsMath::limitRange(mMinCmdPosition, mCmdPosition, mMaxCmdPosition);
 
     /// - Compute the valve flow area fraction from the position and limit range to 0 to 1.
     const double fluidPosition = mFluidBias + mFluidScale * mCmdPosition;
-    mFluidPosition             = Math::limitRange(0.0, fluidPosition, 1.0);
+    mFluidPosition             = MsMath::limitRange(0.0, fluidPosition, 1.0);
 }
 
 

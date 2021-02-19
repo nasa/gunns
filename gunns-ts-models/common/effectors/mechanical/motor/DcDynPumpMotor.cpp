@@ -13,7 +13,7 @@
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "GenericMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "math/UnitConversion.hh"
 #include "DcDynPumpMotor.hh"
 
@@ -396,7 +396,7 @@ void DcDynPumpMotor::computeElectricalOutputs()
     ///   produces.
     mCurrent = (mVoltage - mTorqueConstant * mMotorSpeed / UnitConversion::SEC_PER_MIN_PER_2PI)
              / mDegradedResistance;
-    mCurrent = Math::limitRange(0.0, mCurrent, mCurrentLimit);
+    mCurrent = MsMath::limitRange(0.0, mCurrent, mCurrentLimit);
 
     mPower       = mCurrent * mVoltage;
     mResistance  = mVoltage / std::max(mCurrent, DBL_EPSILON);

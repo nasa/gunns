@@ -124,7 +124,7 @@ void UtGunnsSensorAnalogWrapper::testConfig()
     CPPUNIT_ASSERT(1.0                           == defaultConfig.mSensor.mNominalScale);
     CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mNominalNoiseScale);
     CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mNominalResolution);
-    CPPUNIT_ASSERT(0                             == defaultConfig.mSensor.mNoiseFunction);
+    CPPUNIT_ASSERT(TsNoise::getNoise             == defaultConfig.mSensor.mNoiseFunction);
     CPPUNIT_ASSERT(UnitConversion::NO_CONVERSION == defaultConfig.mSensor.mUnitConversion);
 
     std::cout << "... Pass";

@@ -13,7 +13,7 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsFluidBalancedPrv.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cfloat>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,7 +241,7 @@ void GunnsFluidBalancedPrv::step(const double dt)
         mExitConductance = 0.0;
     } else {
         mExitConductance = 1.0 / mNodes[0]->getOutflow()->getMWeight()
-                         / Math::limitRange(FLT_EPSILON, mExitPressureDroop, 1.0 / FLT_EPSILON);
+                         / MsMath::limitRange(FLT_EPSILON, mExitPressureDroop, 1.0 / FLT_EPSILON);
         if (mMalfBlockageFlag) {
             mExitConductance *= (1.0 - mMalfBlockageValue);
         }
@@ -257,7 +257,7 @@ void GunnsFluidBalancedPrv::step(const double dt)
         const double inletFlux = inletMdot / mNodes[0]->getOutflow()->getMWeight();
         mInletConductance = inletFlux / mPotentialVector[0];
     }
-    mInletConductance = Math::limitRange(0.0, mInletConductance, mConductanceLimit);
+    mInletConductance = MsMath::limitRange(0.0, mInletConductance, mConductanceLimit);
 
     /// - Build link's contributions to the network.
     buildAdmittanceMatrix();

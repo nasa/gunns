@@ -130,7 +130,7 @@ class TsPidController  {
         double      mTimer;      /**< (s)                       Timer for control update interval. */
         double      mIntegral;   /**< (s)                       Controller integral value. */
         double      mOutput;     /**< (--)                      Output control value. */
-        double      mError;      /**< (--)  trick_chkpnt_io(**) Controller error value. */
+        double      mError;      /**< (--)                      Controller error value. */
         double      mDerivative; /**< (1/s)                     Controller derivative value. */
         std::string mName;       /**< (--)  trick_chkpnt_io(**) Name of the instance for messages. */
         bool        mInitFlag;   /**< (--)  trick_chkpnt_io(**) Object initialization flag. */

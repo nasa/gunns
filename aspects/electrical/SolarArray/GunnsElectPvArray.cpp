@@ -14,7 +14,7 @@ LIBRARY DEPENDENCY:
   )
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "GunnsElectPvArray.hh"
 #include "core/GunnsBasicNode.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -345,18 +345,19 @@ void GunnsElectPvArray::updateArray(const double dt)
         for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
             isc += mSections[section].mStrings[string].getShortCircuitCurrent();
             voc  = std::max(voc, mSections[section].mStrings[string].getOpenCircuitVoltage());
-            pmpp = std::max(pmpp, mSections[section].mStrings[string].getMpp().mPower);
+            const double stringMpp = mSections[section].mStrings[string].getMpp().mPower;
+            if (stringMpp > pmpp) {
+                pmpp = stringMpp;
+                vmpp = mSections[section].mStrings[string].getMpp().mVoltage;
+            }
         }
     }
 
-    /// - Loop over the strings again and sum up the maximum power point current for all strings
-    ///   that match the string maximum power.
+    /// - Loop over the strings again and sum their currents when loaded at the maximum power
+    ///   point voltage.
     for (unsigned int section=0; section<mConfig.mNumSections; ++section) {
         for (unsigned int string=0; string<mSections[section].getNumStrings(); ++string) {
-            if (pmpp == mSections[section].mStrings[string].getMpp().mPower) {
-                vmpp  = mSections[section].mStrings[string].getMpp().mVoltage;
-                impp += mSections[section].mStrings[string].getMpp().mCurrent;
-            }
+            impp += mSections[section].mStrings[string].predictCurrentAtVoltage(vmpp);
         }
     }
 
@@ -476,7 +477,7 @@ void GunnsElectPvArray::predictLoadAtVoltage(
         double&      conductance,
         const double voltage) const
 {
-    if (not Math::isInRange(DBL_EPSILON, voltage, mOpenCircuitVoltage)) {
+    if (not MsMath::isInRange(DBL_EPSILON, voltage, mOpenCircuitVoltage)) {
         power       = 0.0;
         conductance = 0.0;
 

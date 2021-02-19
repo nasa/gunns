@@ -325,7 +325,7 @@ void GunnsFluidSelectiveMembrane::step(const double dt __attribute__((unused)))
         mEffectiveConductance *= (1.0 - mMalfBlockageValue);
     }
 
-    mSystemConductance = Math::limitRange(0.0, linearizeConductance(), mConductanceLimit);
+    mSystemConductance = MsMath::limitRange(0.0, linearizeConductance(), mConductanceLimit);
     buildAdmittance();
 
     /// - Compute partial pressure of the absorbed fluid in the internal and external streams.
@@ -371,7 +371,7 @@ void GunnsFluidSelectiveMembrane::step(const double dt __attribute__((unused)))
         }
         mPhaseChange = (mInternalSaturated != mExternalSaturated);
         if (mMalfMembraneDegradeFlag) {
-            mMembraneFlowRate *= (1.0 - Math::limitRange(0.0, mMalfMembraneDegradeValue, 1.0));
+            mMembraneFlowRate *= (1.0 - MsMath::limitRange(0.0, mMalfMembraneDegradeValue, 1.0));
         }
     }
 
@@ -527,11 +527,15 @@ void GunnsFluidSelectiveMembrane::transportFlows(const double dt __attribute__((
         }
     }
 
-    /// - Transport membrane absorption flow from/to the downstream node if flow is negative.
+    /// - Transport positive membrane absorption flow from the upstream node, or negative membrane
+    ///   flow to the downstream node.
     if (mMembraneFlowRate > m100EpsilonLimit) {
-        if (mNodes[downstreamPort]->getOutflow()->getMassFraction(mInternalType) < 1.0) {
-            mInternalMembraneFluid->setTemperature(mNodes[upstreamPort]->getOutflow()->getTemperature());
-        } 
+        mInternalMembraneFluid->setTemperature(mNodes[upstreamPort]->getOutflow()->getTemperature());
+        if (mNodes[upstreamPort]->getOutflow()->getMassFraction(mInternalType) < 1.0) {
+            mNodes[upstreamPort]->collectInflux(-mMembraneFlowRate, mInternalMembraneFluid);
+        } else {
+            mNodes[upstreamPort]->collectOutflux(mMembraneFlowRate);
+        }
     } else if (mMembraneFlowRate < -m100EpsilonLimit) {
         mInternalMembraneFluid->setTemperature(mNodes[2]->getOutflow()->getTemperature());
         mNodes[downstreamPort]->collectInflux(-mMembraneFlowRate, mInternalMembraneFluid);

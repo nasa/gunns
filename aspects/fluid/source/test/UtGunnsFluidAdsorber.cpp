@@ -629,7 +629,7 @@ void UtGunnsFluidAdsorber::testUpdateFluidNominal()
                                                      mTcFractions[1] * (1.0 - tcEfficiency[1]),
                                                      mTcFractions[2] * (1.0 - tcEfficiency[2])};
         mArticle->updateFluid(mTimeStep, 0.0);
-        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
+        CPPUNIT_ASSERT(MsMath::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
@@ -657,7 +657,7 @@ void UtGunnsFluidAdsorber::testUpdateFluidNominal()
         const double expectedRate     = -expectedMass / mTimeStep;
         mArticle->mFlowRate           = mFlowRate;
         mArticle->updateFluid(mTimeStep, 0.0);
-        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
+        CPPUNIT_ASSERT(MsMath::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
@@ -674,7 +674,7 @@ void UtGunnsFluidAdsorber::testUpdateFluidNominal()
         const double expectedAdsorbed = mArticle->mAdsorbedMass + expectedMass;
         mArticle->mFlowRate           = mFlowRate;
         mArticle->updateFluid(mTimeStep, 0.0);
-        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
+        CPPUNIT_ASSERT(MsMath::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
@@ -691,7 +691,7 @@ void UtGunnsFluidAdsorber::testUpdateFluidNominal()
         const double expectedRate     = -0.001 / mTimeStep;
         mArticle->mFlowRate           = mFlowRate;
         mArticle->updateFluid(mTimeStep, 0.0);
-        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
+        CPPUNIT_ASSERT(MsMath::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);
@@ -708,7 +708,7 @@ void UtGunnsFluidAdsorber::testUpdateFluidNominal()
         const double expectedRate     = -expectedMass / mTimeStep;
         mArticle->mFlowRate           = -mFlowRate;
         mArticle->updateFluid(mTimeStep, 0.0);
-        CPPUNIT_ASSERT(Math::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
+        CPPUNIT_ASSERT(MsMath::isInRange(mFluidInput0->mTemperature, mArticle->mFluidTemperature, mWallTemperature));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdsorbed,            mArticle->mAdsorbedMass,                    mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,                mArticle->mMass,                            mTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,                mArticle->mSorbtionFlowRate,                mTolerance);

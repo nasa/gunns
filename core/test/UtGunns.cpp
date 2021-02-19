@@ -21,6 +21,7 @@
 #include <cfloat>
 
 #include "UtGunns.hh"
+#include "UtGunnsMinorStepLog.hh"
 #include "core/GunnsBasicFlowOrchestrator.hh"
 
 //TODO catch-up for line coverage:
@@ -434,7 +435,6 @@ void UtGunns::testDefaultConstruction()
     CPPUNIT_ASSERT(0             == tNetwork.mDebugDesiredSlice);
     CPPUNIT_ASSERT(0             == tNetwork.mDebugDesiredStep);
     CPPUNIT_ASSERT(-1            == tNetwork.mDebugDesiredNode);
-    CPPUNIT_ASSERT(0             == tNetwork.mMinorStepLog.mMajorStep);
     CPPUNIT_ASSERT(false         == tNetwork.mVerbose);
     CPPUNIT_ASSERT(false         == tNetwork.mSorActive);
     CPPUNIT_ASSERT(1.0           == tNetwork.mSorWeight);
@@ -809,6 +809,9 @@ void UtGunns::testLinearStep()
     int fakeLinkPorts[2]  = {0, 1};
     fakeLink.initialize(fakeLinkConfig, fakeLinkInput, tLinks, fakeLinkPorts);
 
+    /// - Configure the network minor step log and initialize.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 5;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     tNetwork.initialize(tNetworkConfig, tLinks);
 
     /// - Check call to links for sim bus writes during network init.
@@ -888,6 +891,22 @@ void UtGunns::testLinearStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetwork.mPotentialVector[2],
             tNetwork.mLinkPotentialVectors[4][0],0.0);
 
+    /// - Verify outputs to the minor step log.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMinorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mDecomposition);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[0]        == log->mBuffer[0].mPotentialVector[0]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[1]        == log->mBuffer[0].mPotentialVector[1]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[2]        == log->mBuffer[0].mPotentialVector[2]);
+    CPPUNIT_ASSERT(0.0                                 == log->mBuffer[0].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(0.0                                 == log->mBuffer[0].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(0.0                                 == log->mBuffer[0].mNodesConvergence[2]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(tPotential.getAdmittanceMatrix()[0] == log->mBuffer[0].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tSource.getSourceVector()[0]        == log->mBuffer[0].mLinksData[4].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[0].mLinksData[0].mSolutionResult);
+
     /// - Step again and verify results of the 2nd major step.
     tNetwork.step(tDeltaTime);
 
@@ -905,6 +924,11 @@ void UtGunns::testLinearStep()
             tNetwork.mPotentialVector[1], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1499800299600462e+02,
             tNetwork.mPotentialVector[2], DBL_EPSILON);
+
+    /// - Verify outputs to the minor step log.
+    CPPUNIT_ASSERT(2 == log->mBuffer[1].mMajorStep);
+    CPPUNIT_ASSERT(1 == log->mBuffer[1].mMinorStep);
+    CPPUNIT_ASSERT(0 == log->mBuffer[1].mDecomposition);
 
     /// - Step a 3rd time with tConductor2 overriding its port 0 potential, and verify the network
     ///   solution gets this override value and passes it to other incident links on that node.
@@ -937,7 +961,24 @@ void UtGunns::testNonLinearStep()
 {
     std::cout << "\n UtGunns ................ 12: testNonLinearStep .....................";
 
+    /// - Configure the network minor step log and set up the network.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 5;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     setupNominalNonLinearNetwork(true);
+
+    /// - Verify minor step log init.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(5                         == log->mSize);
+    CPPUNIT_ASSERT(5                         == log->mBuffer.size());
+    CPPUNIT_ASSERT(GunnsMinorStepLog::PAUSED == log->mState);
+    CPPUNIT_ASSERT(true                      == log->mIsRecording);
+    CPPUNIT_ASSERT(4                         == log->mHeadIndex);
+    CPPUNIT_ASSERT(4                         == log->mBuffer[0].mPotentialVector.size());
+    CPPUNIT_ASSERT(4                         == log->mBuffer[4].mPotentialVector.size());
+    CPPUNIT_ASSERT(8                         == log->mBuffer[0].mLinksData.size());
+    CPPUNIT_ASSERT(8                         == log->mBuffer[4].mLinksData.size());
+    CPPUNIT_ASSERT(4                         == log->mBuffer[4].mLinksData[4].mAdmittanceMatrix.size());
+    CPPUNIT_ASSERT(2                         == log->mBuffer[4].mLinksData[4].mSourceVector.size());
 
     /// - Step the network and verify the correct system values.
     tNetwork.step(tDeltaTime);
@@ -1044,6 +1085,40 @@ void UtGunns::testNonLinearStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.8054854277996810e-03, tNetwork.mNodesConvergence[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4027427138927351e-03, tNetwork.mNodesConvergence[3], DBL_EPSILON);
 
+    /// - Verify outputs to the minor step log.
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[1].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[2].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[3].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[4].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMinorStep);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mMinorStep);
+    CPPUNIT_ASSERT(3                                   == log->mBuffer[2].mMinorStep);
+    CPPUNIT_ASSERT(4                                   == log->mBuffer[3].mMinorStep);
+    CPPUNIT_ASSERT(5                                   == log->mBuffer[4].mMinorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mDecomposition);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mDecomposition);
+    CPPUNIT_ASSERT(3                                   == log->mBuffer[2].mDecomposition);
+    CPPUNIT_ASSERT(4                                   == log->mBuffer[3].mDecomposition);
+    CPPUNIT_ASSERT(5                                   == log->mBuffer[4].mDecomposition);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[0]        == log->mBuffer[4].mPotentialVector[0]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[1]        == log->mBuffer[4].mPotentialVector[1]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[2]        == log->mBuffer[4].mPotentialVector[2]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[0]       == log->mBuffer[4].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[1]       == log->mBuffer[4].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[2]       == log->mBuffer[4].mNodesConvergence[2]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[2].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[3].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::SUCCESS         == log->mBuffer[4].mSolutionResult);
+    CPPUNIT_ASSERT(tPotential.getAdmittanceMatrix()[0] == log->mBuffer[4].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tConstantLoad2.getSourceVector()[0] == log->mBuffer[4].mLinksData[6].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[4].mLinksData[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepLog::RECORDING_SNAP   == log->mState);
+    CPPUNIT_ASSERT(true                                == log->mIsRecording);
+    CPPUNIT_ASSERT(4                                   == log->mHeadIndex);
+
     /// - Step again and verify results of the 2nd major step.  This time link tFake1 will delay to
     ///   converged minor step 3 -- this verifies that extra decompositions aren't performed when
     ///   the network has already converged and we are delaying.
@@ -1148,6 +1223,40 @@ void UtGunns::testNonLinearStep()
     CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mMaxMinorStepCount);
     CPPUNIT_ASSERT_EQUAL( 0, tNetwork.mConvergenceFailCount);
 
+    /// - Verify outputs to the minor step log.
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[0].mMajorStep);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mMajorStep);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[2].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[3].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[4].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMinorStep);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mMinorStep);
+    CPPUNIT_ASSERT(3                                   == log->mBuffer[2].mMinorStep);
+    CPPUNIT_ASSERT(4                                   == log->mBuffer[3].mMinorStep);
+    CPPUNIT_ASSERT(5                                   == log->mBuffer[4].mMinorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mDecomposition);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[1].mDecomposition);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[2].mDecomposition);
+    CPPUNIT_ASSERT(4                                   == log->mBuffer[3].mDecomposition);
+    CPPUNIT_ASSERT(5                                   == log->mBuffer[4].mDecomposition);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[0]        == log->mBuffer[2].mPotentialVector[0]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[1]        == log->mBuffer[2].mPotentialVector[1]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[2]        == log->mBuffer[2].mPotentialVector[2]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[0]       == log->mBuffer[2].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[1]       == log->mBuffer[2].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[2]       == log->mBuffer[2].mNodesConvergence[2]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY           == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY           == log->mBuffer[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::SUCCESS         == log->mBuffer[2].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[3].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::SUCCESS         == log->mBuffer[4].mSolutionResult);
+    CPPUNIT_ASSERT(tPotential.getAdmittanceMatrix()[0] == log->mBuffer[2].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tConstantLoad2.getSourceVector()[0] == log->mBuffer[2].mLinksData[6].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[2].mLinksData[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepLog::RECORDING_SNAP   == log->mState);
+    CPPUNIT_ASSERT(true                                == log->mIsRecording);
+    CPPUNIT_ASSERT(2                                   == log->mHeadIndex);
+
     std::cout << "... Pass";
 }
 
@@ -1177,6 +1286,9 @@ void UtGunns::testLinearStepExceptions()
 
     tLink.initialize(tLinkConfig, tLinkInput, tLinks, tLinkPorts);
 
+    /// - Configure the network minor step log and initialize the network.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 5;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     tNetwork.initialize(tNetworkConfig, tLinks);
 
     /// - Non-positive-definite matrix.
@@ -1188,6 +1300,21 @@ void UtGunns::testLinearStepExceptions()
 
     /// - Expect a TsOutOfBoundsException for matrix decomposition error.
     CPPUNIT_ASSERT_THROW(tNetwork.step(tDeltaTime), TsNumericalException);
+
+    /// - Verify outputs to the minor step log.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(1                              == log->mBuffer[0].mMajorStep);
+    CPPUNIT_ASSERT(1                              == log->mBuffer[0].mMinorStep);
+    CPPUNIT_ASSERT(1                              == log->mBuffer[0].mDecomposition);
+    CPPUNIT_ASSERT(0.0                            == log->mBuffer[0].mPotentialVector[0]);
+    CPPUNIT_ASSERT(0.0                            == log->mBuffer[0].mPotentialVector[1]);
+    CPPUNIT_ASSERT(0.0                            == log->mBuffer[0].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(0.0                            == log->mBuffer[0].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::MATH_FAIL  == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(tLink.getAdmittanceMatrix()[0] == log->mBuffer[0].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tLink.getAdmittanceMatrix()[1] == log->mBuffer[0].mLinksData[0].mAdmittanceMatrix[1]);
+    CPPUNIT_ASSERT(tLink.getSourceVector()[0]     == log->mBuffer[0].mLinksData[0].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM        == log->mBuffer[0].mLinksData[0].mSolutionResult);
 
     /// - Create an system of equations that decomposes fine, but fails in forward/backwards
     ///   substitution, then step and verify an exception is thrown.
@@ -1212,6 +1339,9 @@ void UtGunns::testNonConvergence()
 {
     std::cout << "\n UtGunns ................ 14: testNonConvergence ....................";
 
+    /// - Configure the network minor step log and set up the network.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 10;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     setupNominalNonLinearNetwork(false);
 
     /// - Step the network and verify the correct system values.  The network will exceed the
@@ -1232,6 +1362,30 @@ void UtGunns::testNonConvergence()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5277576986464879e+01, tNetwork.mNodesConvergence[1], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4048346654220552e+01, tNetwork.mNodesConvergence[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.0241733271102795e+00, tNetwork.mNodesConvergence[3], DBL_EPSILON);
+
+    /// - Verify outputs to the minor step log.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[5].mMajorStep);
+    CPPUNIT_ASSERT(6                                   == log->mBuffer[5].mMinorStep);
+    CPPUNIT_ASSERT(5                                   == log->mBuffer[5].mDecomposition);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[0]        == log->mBuffer[5].mPotentialVector[0]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[1]        == log->mBuffer[5].mPotentialVector[1]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[2]        == log->mBuffer[5].mPotentialVector[2]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[0]       == log->mBuffer[5].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[1]       == log->mBuffer[5].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[2]       == log->mBuffer[5].mNodesConvergence[2]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[2].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[3].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM         == log->mBuffer[4].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DECOMP_LIMIT    == log->mBuffer[5].mSolutionResult);
+    CPPUNIT_ASSERT(tPotential.getAdmittanceMatrix()[0] == log->mBuffer[5].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tConstantLoad2.getSourceVector()[0] == log->mBuffer[5].mLinksData[6].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[5].mLinksData[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepLog::RECORDING_SNAP   == log->mState);
+    CPPUNIT_ASSERT(true                                == log->mIsRecording);
+    CPPUNIT_ASSERT(5                                   == log->mHeadIndex);
 
     std::cout << "... Pass";
 }
@@ -1355,6 +1509,9 @@ void UtGunns::testSolutionRejection()
     tLink1.initialize(tLink1Config, tLink1Input, tLinks, tLink1Map);
     tLink2.initialize(tLink2Config, tLink2Input, tLinks, tLink2Map);
 
+    /// - Configure the network minor step log and initialize the network.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 3;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     tNetworkConfig.mMinorStepLimit = 2;
     tNetworkConfig.mConvergenceTolerance = 0.01;
     tNetwork.initialize(tNetworkConfig, tLinks);
@@ -1387,6 +1544,30 @@ void UtGunns::testSolutionRejection()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(  0.0, tLink2.mPotentialVector[1],   0.0);
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT  == tNetwork.mLinksConvergence[1]);
+
+    /// - Verify outputs to the minor step log.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[1].mMajorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMinorStep);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mMinorStep);
+    CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mDecomposition);
+    CPPUNIT_ASSERT(2                                   == log->mBuffer[1].mDecomposition);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[0]        == log->mBuffer[1].mPotentialVector[0]);
+    CPPUNIT_ASSERT(tNetwork.mPotentialVector[1]        == log->mBuffer[1].mPotentialVector[1]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[0]       == log->mBuffer[1].mNodesConvergence[0]);
+    CPPUNIT_ASSERT(tNetwork.mNodesConvergence[1]       == log->mBuffer[1].mNodesConvergence[1]);
+    CPPUNIT_ASSERT(GunnsMinorStepData::REJECT          == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::REJECT          == log->mBuffer[1].mSolutionResult);
+    CPPUNIT_ASSERT(tLink1.getAdmittanceMatrix()[0]     == log->mBuffer[1].mLinksData[0].mAdmittanceMatrix[0]);
+    CPPUNIT_ASSERT(tLink1.getSourceVector()[0]         == log->mBuffer[1].mLinksData[0].mSourceVector[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[0].mLinksData[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == log->mBuffer[0].mLinksData[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == log->mBuffer[1].mLinksData[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == log->mBuffer[1].mLinksData[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepLog::RECORDING_SNAP   == log->mState);
+    CPPUNIT_ASSERT(true                                == log->mIsRecording);
+    CPPUNIT_ASSERT(1                                   == log->mHeadIndex);
 
     std::cout << "... Pass";
 }
@@ -1491,6 +1672,9 @@ void UtGunns::testSolutionDelay()
 {
     std::cout << "\n UtGunns ................ 19: testSolutionDelay .....................";
 
+    /// - Configure the network minor step log and set up the network.
+    tNetwork.mStepLog.mInputData.mLogSteps    = 20;
+    tNetwork.mStepLog.mInputData.mModeCommand = GunnsMinorStepLogInputData::RECORD_SNAP;
     setupNominalNonLinearNetwork(true);
 
     /// - Set up tFake1 to delay the solution until minor step 3.  Step the network and verify it
@@ -1504,6 +1688,16 @@ void UtGunns::testSolutionDelay()
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[7]);
 
+    /// - Verify outputs to the minor step log.
+    FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
+    CPPUNIT_ASSERT(5                           == log->mBuffer[4].mMinorStep);
+    CPPUNIT_ASSERT(5                           == log->mBuffer[4].mDecomposition);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM == log->mBuffer[0].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM == log->mBuffer[1].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM == log->mBuffer[2].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::CONFIRM == log->mBuffer[3].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::SUCCESS == log->mBuffer[4].mSolutionResult);
+
     /// - Now step again, this time tFake1 is set up to delay the solution until the 3rd frame after
     ///   the system converged.
     tFake1.delayToAbsoluteStep  = 0;
@@ -1515,8 +1709,13 @@ void UtGunns::testSolutionDelay()
     CPPUNIT_ASSERT_EQUAL(8, tNetwork.mMinorStepCount);
     CPPUNIT_ASSERT_EQUAL(6, tNetwork.mDecompositionCount);
     CPPUNIT_ASSERT_EQUAL(4, tFake1.callsToMinorStep);
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[0]);
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[7]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM     == tNetwork.mLinksConvergence[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM     == tNetwork.mLinksConvergence[7]);
+    CPPUNIT_ASSERT(3                           == log->mBuffer[7].mMinorStep);
+    CPPUNIT_ASSERT(1                           == log->mBuffer[7].mDecomposition);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY   == log->mBuffer[5].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY   == log->mBuffer[6].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::SUCCESS == log->mBuffer[7].mSolutionResult);
 
     /// - Now step again, this time tLink1 is set up to delay the solution until the 11th frame
     ///   after the system converged, which is later than the minor step limit.
@@ -1528,8 +1727,13 @@ void UtGunns::testSolutionDelay()
     CPPUNIT_ASSERT_EQUAL(18, tNetwork.mMinorStepCount);
     CPPUNIT_ASSERT_EQUAL(7,  tNetwork.mDecompositionCount);
     CPPUNIT_ASSERT_EQUAL(4,  tFake1.callsToMinorStep);
-    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tNetwork.mLinksConvergence[0]);
-    CPPUNIT_ASSERT(GunnsBasicLink::DELAY   == tNetwork.mLinksConvergence[7]);
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tNetwork.mLinksConvergence[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::DELAY     == tNetwork.mLinksConvergence[7]);
+    CPPUNIT_ASSERT(10                        == log->mBuffer[17].mMinorStep);
+    CPPUNIT_ASSERT(1                         == log->mBuffer[17].mDecomposition);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY == log->mBuffer[15].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY == log->mBuffer[16].mSolutionResult);
+    CPPUNIT_ASSERT(GunnsMinorStepData::DELAY == log->mBuffer[17].mSolutionResult);
 
     std::cout << "... Pass";
 }
@@ -1609,9 +1813,6 @@ void UtGunns::testAccessMethods()
 
     tNetwork.mStepTime = 2.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, tNetwork.getStepTime(), 0.0);
-
-    tNetwork.mMinorStepLog.mMajorStep = 8;
-    CPPUNIT_ASSERT(8 == tNetwork.getMinorStepLog().mMajorStep);
 
     CPPUNIT_ASSERT(2                          == tNetwork.getNumLinks());
     CPPUNIT_ASSERT(2                          == tNetwork.getNetworkSize());
@@ -2401,7 +2602,6 @@ void UtGunns::setupNominalNonLinearNetwork(const bool converging)
     }
 
     tNetwork.initialize(tNetworkConfig, tLinks);
-//    tNetwork.setDebugLogMode(Gunns::AUTO, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

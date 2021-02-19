@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
 #include <iostream>
 #include "strings/UtResult.hh"
 #include "UtGunnsElectPvSection.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details  Test identification number.
 int UtGunnsElectPvSection::TEST_ID = 0;
@@ -360,11 +360,14 @@ void UtGunnsElectPvSection::testUpdate()
         const double expectedFacing = pow(cos(tSourceAngle), tSourceAngleExponent);
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction;
         const double expectedInsol  = 100.0 * expectedFlux / tRefSourceFluxMagnitude;
-
+        const double expectedPower  = -tArticle->mStrings[0].getTerminal().mPower
+                                     - tArticle->mStrings[1].getTerminal().mPower
+                                     - tArticle->mStrings[2].getTerminal().mPower;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,           tArticle->mStringsInput.mPhotoFlux,             DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceExposedFraction, tArticle->mStringsInput.mSourceExposedFraction, DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tTemperature,           tArticle->mStringsInput.mTemperature,           DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInsol,          tArticle->mPercentInsolation,                   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,          tArticle->mTerminalPower,                       DBL_EPSILON);
     } {
         /// @test    Outputs with edge-on source angle, back-lit, 0 reference soure flux mag, and
         ///          string input temperature override.
@@ -379,11 +382,13 @@ void UtGunnsElectPvSection::testUpdate()
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction
                                     * (1.0 - tBacksideReduction);
         const double expectedInsol  = 0.0;
+        const double expectedPower  = 0.0;
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,           tArticle->mStringsInput.mPhotoFlux,             DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceExposedFraction, tArticle->mStringsInput.mSourceExposedFraction, DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(400.0,                  tArticle->mStringsInput.mTemperature,           DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInsol,          tArticle->mPercentInsolation,                   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,          tArticle->mTerminalPower,                       DBL_EPSILON);
     }
 
     UT_PASS;

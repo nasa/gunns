@@ -380,7 +380,7 @@ void GunnsFluidHeatExchanger::computeHeatTransferCoefficient()
             mSegHtc[i] *= mMalfHxDegradeValue;
         }
 
-        mSegHtc[i] = Math::limitRange(0.0, mSegHtc[i], mSegHtcDefault[i]);
+        mSegHtc[i] = MsMath::limitRange(0.0, mSegHtc[i], mSegHtcDefault[i]);
     }
 }
 
@@ -409,7 +409,7 @@ void GunnsFluidHeatExchanger::setMalfHxDegrade(const bool flag, const double val
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidHeatExchanger::setMalfSegDegrade(const int segment, const bool flag, const double value)
 {
-    if (Math::isInRange(0, segment, mNumSegs-1)) {
+    if (MsMath::isInRange(0, segment, mNumSegs-1)) {
         mMalfSegDegradeFlag[segment]  = flag;
         mMalfSegDegradeValue[segment] = value;
     } else {

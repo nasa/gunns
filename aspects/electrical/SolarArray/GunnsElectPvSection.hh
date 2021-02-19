@@ -119,6 +119,7 @@ class GunnsElectPvSection
         /// @details Embedded objects are public to allow access from the Trick events processor.
         GunnsElectPvString*                  mStrings;            /**<    (--) trick_chkpnt_io(**) Array of strings in this section. */
         GunnsElectPvStringInputData          mStringsInput;       /**<    (--) trick_chkpnt_io(**) Input data for the strings. */
+        GunnsElectPvSectionInputData         mInput;              /**<    (--)                     This section's unique input data and environment model interface. */
         /// @}
         /// @brief Default constructor for this Photovoltaic Section.
         GunnsElectPvSection();
@@ -149,8 +150,8 @@ class GunnsElectPvSection
         std::string                          mName;               /**<    (--) trick_chkpnt_io(**) Instance name for H&S messages. */
         const GunnsElectPvSectionConfigData* mConfig;             /**< ** (--) trick_chkpnt_io(**) Pointer to common section config data. */
         unsigned int                         mNumStrings;         /**< *o (--) trick_chkpnt_io(**) The number of strings in this section. */
-        GunnsElectPvSectionInputData         mInput;              /**<    (--)                     This section's unique input data and environment model interface. */
         double                               mPercentInsolation;  /**<    (--) trick_chkpnt_io(**) Percentage of actual light incident on string relative to reference source flux magnitude. */
+        double                               mTerminalPower;      /**<    (W)  trick_chkpnt_io(**) Total electrical power output of all strings (negative). */
         static const double                  mMaxAngleExponent;   /**< ** (--) trick_chkpnt_io(**) Upper limit on light source angle exponent. */
         /// @brief Validates the initialization of this Photovoltaic Section.
         void validate() const;

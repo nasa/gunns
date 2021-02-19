@@ -346,7 +346,7 @@ void GunnsSolarArrayRegulator::updateControl(const double timeStep)
   /// - Apply proportional-derivative feedback control and the voltage saturation limits to the controlled
   ///   output voltage.
   mControlledVoltage += mKp*chargeCurrentError + mKd*chargeCurrentErrorDot;
-  mControlledVoltage = Math::limitRange(mRegulatedVoltageLowLimit, mControlledVoltage, mRegulatedVoltageHighLimit);
+  mControlledVoltage = MsMath::limitRange(mRegulatedVoltageLowLimit, mControlledVoltage, mRegulatedVoltageHighLimit);
   /// - Final step is to update the RegulatedVoltage term that the ConverterElect base class uses to perform
   ///   its converter function. The base class step function will be called after this.
   mRegulatedVoltage = mControlledVoltage;

@@ -22,7 +22,7 @@ PROGRAMMERS:
 **************************************************************************************************/
 
 #include "GunnsFluid3WayCheckValve.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
@@ -233,7 +233,7 @@ void GunnsFluid3WayCheckValve::validate() const
     }
 
     /// - Throw an exception if fail to position malfunction value is out of range 0 to 1.
-    if (!Math::isInRange(0.0, mMalfFailToValue, 1.0)) {
+    if (!MsMath::isInRange(0.0, mMalfFailToValue, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "Fail to position position malfunction value out of range 0 to 1.");
     }
 }
@@ -259,14 +259,14 @@ void GunnsFluid3WayCheckValve::updateState(const double dt)
     if (!mMalfStuckFlag) {
         if (mMalfFailToFlag) {
             /// - Handle fail to position malfunction with range limiting.
-            mPosition = Math::limitRange(0.0, mMalfFailToValue, 1.0);
+            mPosition = MsMath::limitRange(0.0, mMalfFailToValue, 1.0);
         } else{
             const double previousPosition = mPosition;
             mPosition = calculateValvePosition();
 
             /// - Apply range and rate limiting to the computed position.
             const double maxDelta = mRateLimit * dt;
-            mPosition = Math::limitRange(std::max(0.0, previousPosition - maxDelta),
+            mPosition = MsMath::limitRange(std::max(0.0, previousPosition - maxDelta),
                                          mPosition,
                                          std::min(1.0, previousPosition + maxDelta));
         }
@@ -296,13 +296,13 @@ double GunnsFluid3WayCheckValve::calculateValvePosition()
         position = 0.5;
     } else if(pressureA > pressureB){
         /// - Greater potential drop across A, position greater than 0.5
-        position = Math::limitRange(0.5,
+        position = MsMath::limitRange(0.5,
                                     0.5 * (1 + (pressureA - pressureB - mMinPressureDiff)
                                              / (mOpenPressureA - mMinPressureDiff)),
                                     1.0);
     } else if(pressureB > pressureA){
         /// - Greater potential drop across B, position less than 0.5
-        position = Math::limitRange(0.0,
+        position = MsMath::limitRange(0.0,
                                     0.5 * (1 - (pressureB - pressureA - mMinPressureDiff)
                                              / (mOpenPressureA - mMinPressureDiff)),
                                     0.5);

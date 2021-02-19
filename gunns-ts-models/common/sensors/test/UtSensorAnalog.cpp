@@ -157,6 +157,12 @@ void UtSensorAnalog::testConfigData()
     /// - Test self-assignment of a test config data article.
     CPPUNIT_ASSERT(&defaultConfig == &(defaultConfig = defaultConfig));
 
+    /// - Test setNoiseFunction.
+    typedef double (*f_ptr)();
+    f_ptr ptr = TsNoise::getNoiseFunction();
+    defaultConfig.setNoiseFunction(ptr);
+    CPPUNIT_ASSERT(TsNoise::getNoise == defaultConfig.mNoiseFunction);
+
     std::cout << "... Pass";
 }
 

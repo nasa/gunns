@@ -251,7 +251,7 @@ void GunnsElectPvRegConv::validate(const GunnsElectPvRegConvConfigData& configDa
     }
 
     /// - Throw an exception on voltage conversion efficiency not in DBL_EPSILON, 1.
-    if (!Math::isInRange(DBL_EPSILON, configData.mVoltageConvEfficiency, 1.0)) {
+    if (!MsMath::isInRange(DBL_EPSILON, configData.mVoltageConvEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "voltage conversion efficiency not in (DBL_EPSILON, 1).");
     }

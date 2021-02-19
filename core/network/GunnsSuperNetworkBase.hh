@@ -32,6 +32,7 @@ PROGRAMMERS:
 #include <string>
 #include <vector>
 #include <map>
+#include <pthread.h>
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "core/Gunns.hh"
 #include "core/GunnsFluidNode.hh"
@@ -158,6 +159,10 @@ class GunnsSuperNetworkBase
         /// @brief  Connects two sub-network locations via a joint sub-network.
         void     joinLocations(GunnsMultiLinkConnector* location1,
                                GunnsMultiLinkConnector* location2);
+        /// @brief  Returns a pointer to the contained mutex object.
+        pthread_mutex_t* getMutex();
+        /// @brief  Sets the mutex locking enable flag to the given value.
+        void     setMutexEnabled(const bool flag);
 
     protected:
         std::string                         mName;           /**< ** (--) trick_chkpnt_io(**) Network instance name for H&S messages. */
@@ -167,6 +172,8 @@ class GunnsSuperNetworkBase
         std::vector<GunnsSubNetworkJoint*>  mJoints;         /**< ** (--) trick_chkpnt_io(**) Joints vector. */
         std::map<std::string, unsigned int> mJointsIndeces;  /**< ** (--) trick_chkpnt_io(**) Map of location spotter name to joint network index. */
         unsigned int                        numJoints;       /**< *o (--) trick_chkpnt_io(**) Number of network joints. */
+        pthread_mutex_t                     netMutex;        /**< ** (--) trick_chkpnt_io(**) The mutex. */
+        bool                                netMutexEnabled; /**<    (--) trick_chkpnt_io(**) When true, mutex locking is enabled. */
         /// @brief  Pure virtual method to create dynamic nodes array of the derived aspect type.
         virtual void allocateNodes() = 0;
         /// @brief  Pure virtual method to delete the dynamic nodes array.
@@ -278,6 +285,26 @@ inline void GunnsSuperNetworkBase::empty()
 inline std::vector<GunnsNetworkBase*>& GunnsSuperNetworkBase::getSubnets()
 {
     return mSubnets;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  pthread_mutex_t* (--) Pointer to the contained mutex object.
+///
+/// @details  Returns the address of the mMutex object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline pthread_mutex_t* GunnsSuperNetworkBase::getMutex()
+{
+    return &netMutex;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag (--) When true, enabled mutex locking.
+///
+/// @details  Sets the netMutexEnabled attribute to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsSuperNetworkBase::setMutexEnabled(const bool flag)
+{
+    netMutexEnabled = flag;
 }
 
 #endif

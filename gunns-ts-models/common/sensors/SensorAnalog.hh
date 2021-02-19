@@ -79,6 +79,9 @@ class SensorAnalogConfigData : public SensorBaseConfigData
 
         /// @brief Assignment operator for this Analog Sensor configuration data.
         SensorAnalogConfigData& operator =(const SensorAnalogConfigData& that);
+
+        /// @brief Sets the noise function pointer to the given function.
+        void setNoiseFunction(double (*function)());
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +243,16 @@ class SensorAnalog : public SensorBase
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] function (--) Pointer to function of signature: double function().
+///
+/// @details  Sets the mNoiseFunction attribute to the given function pointer.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void SensorAnalogConfigData::setNoiseFunction(double (*function)())
+{
+    mNoiseFunction = function;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] truthInput (--) The truth input analog value to the sensor.

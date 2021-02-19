@@ -13,7 +13,7 @@
 #include "UtEpsTripMgr.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  UtEpsTripMgr constructor called before each unit test.

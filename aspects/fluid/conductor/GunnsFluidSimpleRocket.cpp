@@ -309,7 +309,7 @@ void GunnsFluidSimpleRocket::validate(const GunnsFluidSimpleRocketConfigData& co
     }
 
     /// - Throw an exception if recombination tuning factor not in (0-1).
-    if (!Math::isInRange(0.0, configData.mRecombinationTuning, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mRecombinationTuning, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Recombination tuning factor < 0 or > 1.");
     }
@@ -502,7 +502,7 @@ double GunnsFluidSimpleRocket::updateNozzle()
     /// - Get results of recombination in nozzle from the combustion model.  This is set up so that
     ///   if the combustion model fails or gives an invalid output, we fall back to the 'frozen',
     ///   no-recombination result.  This would cause a jump in thrust.
-    const double RTF = Math::limitRange(0.0, mRecombinationTuning, 1.0);
+    const double RTF = MsMath::limitRange(0.0, mRecombinationTuning, 1.0);
     if (mCombustion) {
         if (mCombustModel and RTF > FLT_EPSILON) {
             try {
@@ -607,7 +607,7 @@ void GunnsFluidSimpleRocket::updateConductance(const double mdot)
         }
 
         /// - Convert mass to molar conductance by molecular weight the inlet fluid.
-        mSystemConductance = Math::limitRange(0.0, (conductance / MW), mConductanceLimit);
+        mSystemConductance = MsMath::limitRange(0.0, (conductance / MW), mConductanceLimit);
     } else {
         mSystemConductance = 0.0;
     }

@@ -1,13 +1,14 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
 # @revs_begin
 # @rev_entry(Jason Harvey, CACI, GUNNS, March 2019, --, Initial implementation.}
+# @rev_entry(Jason Harvey, CACI, GUNNS, January 2021, --, Change to support Visio 2013+ .vsdx files.}
 # @revs_end
 #
-# Input a GunnShow Visio drawing saved from Visio as .vdx (Visio XML)
+# Input a GunnShow Visio drawing saved from Visio 2013+ as .vsdx (Visio XML)
 # Output an equivalent GunnsDraw drawing .xml
 #
 # Known limitations:
@@ -21,6 +22,11 @@
 # TODO:
 # - TC Config, TC State
 # - Link init order
+# - Remaining issues in Visio 2013 upgrade:
+#   - Port Maps, Battery Tables, Chemical Compounds and Chemical Reactions have been implemented but not tested
+#   - Graphic lines (non-connector) aren't supported
+#   - Custom jumper/plug links aren't supported (links other than GunnsBasicJumper &
+#     GunnsFluidJumper that have plugs)
 
 import os
 import sys
@@ -28,6 +34,7 @@ import re
 import copy
 import collections
 import math
+import shutil
 from optparse import OptionParser
 
 # Python 2.7 vs. 3 imports by feature detection:
@@ -51,6 +58,7 @@ import modules.consoleMsg as console
 import modules.xmlUtils as xmlUtils
 import string
 import random
+import zipfile
 from ctypes import c_int64
 
 # Random ID string for id attributes
@@ -64,7 +72,7 @@ def id(n):
 
 # This copies a GunnShow shape's config & input data to the GunnsDraw shape.
 # gs_config is a list of the GunnShow shape's config & input data values.
-# gd is the GunnsDraw shape.
+# gd is the GunnsDraw shape
 def copyConfigInputData(gs_config, gd):
     # Make an ordered list of the GunnsDraw config & input data attribute names.
     od = collections.OrderedDict(sorted(gd.attrib.items()))
@@ -74,8 +82,7 @@ def copyConfigInputData(gs_config, gd):
             gd_list.append(key)
     # Abort if the list length doesn't match between GunnShow & GunnsDraw.
     if len(gd_list) != len(gs_config):
-        # TODO more helpful info: which objects
-        sys.exit(console.abort('config/input data length mismatch for shape: ' + gd.attrib['label']))
+        sys.exit(console.abort('config/input data length mismatch for shape: ' + gd.attrib['label'] + '.  GunnsDraw shape has ' + str(len(gd_list)) + ' terms, GunnShow shape has ' + str(len(gs_config)) + '.'))
     for i in range(0, len(gd_list)):
         gd.attrib[gd_list[i]] = gs_config[i]
 
@@ -328,6 +335,150 @@ def snapElements(path):
         if 'height' in attr:
             attr['height'] = str(int(round(float(attr['height']), -1)))
 
+# Searches for a Section element within the given XML element, shape, (usually from
+# Visio) with N attribute equal to the given name, and returns that Section element.
+# Returns None if no match is found.
+def findGsSection(shape, name):
+    sections = shape.findall('Section')
+    for section in sections:
+        if name == section.attrib['N']:
+            return section
+    return None
+
+# Searches the XML element (usually from Visio) for a Cell element with N attribute
+# equal to the given name, and returns that Cell element.
+# Returns None if no match is found.
+def findGsCell(elem, name):
+    cells = elem.findall('Cell')
+    for cell in cells:
+        if name == cell.attrib['N']:
+            return cell
+    return None
+    
+# Searches the XML element (usually from Visio) for a Cell element with N attribute
+# equal to the given name, and returns that Cell element's 'V' attribute value.
+# Returns None if no match is found.
+def findGsCellValue(elem, name):
+    cell = findGsCell(elem, name)
+    if cell is not None:
+        return cell.attrib['V']
+    return None
+    
+# Searches the XML element (usually a Shape element from Visio) for a sub-element
+# named Section with an attribute N='Property'.  If found, we return all 'Row'
+# sub-elements of that Section.  If not found, return None.
+def findGsShapeProperties(shape):
+    sections = shape.findall('Section')
+    for section in sections:
+        if 'Property' == section.attrib['N']:
+            return section.findall('Row')
+    return None
+
+# Extracts the text within the 'Text' element of the given shape and returns all
+# text in one string.  Returns None if there is no Text element.
+def findGsShapeText(shape):
+    textelem = shape.find('Text')
+    if textelem is not None:
+        elems = list(textelem.iter())
+        str = ''
+        for elem in elems:
+            tail = elem.tail
+            if tail is not None:
+                str += tail
+        return str
+    return None
+
+# Finds the 'InstanceName' property in the given list of properties and returns its
+# value, or None if no instance name is found.
+def findGsInstanceName(props):
+    if props is not None:
+        for prop in props:
+            if 'InstanceName' == prop.attrib['N']:
+                return findGsCellValue(prop, 'Value')
+    return None
+
+# For each config & input parameter in the given GunnsDraw shape, gd, search for the value
+# in the GunnShow properties, gs_prop, and copy into gd if found.  Properties not found in
+# gs are left with the GunnsDraw default.
+def searchCopyConfigInputData(gs_props, gd):
+    # Make an ordered list of the GunnsDraw config & input data attribute names.
+    od = collections.OrderedDict(sorted(gd.attrib.items()))
+    gd_list = []
+    for key, value in od.items():
+        if None != re.search('^([c,i])([0-9])', key):
+            gd_list.append(key)
+    # For each GunnsDraw config & input data, loop over the GunnShow properties.  If
+    # the property names match, copy the GunnShow property into the GunnsDraw shape.
+    for gd_prop in gd_list:
+        for gs_prop in gs_props:
+            if gd_prop.endswith(gs_prop.attrib['N'][3:]):
+                value = findGsCellValue(gs_prop, 'Value')
+                if value is not None:
+                    gd.attrib[gd_prop] = value
+                break
+
+# Class to hold the geometry values of a GunnShow shape.
+class GsShapeGeometry:
+    x     = 0.0
+    y     = 0.0
+    w     = 0.0  # width
+    h     = 0.0  # height
+    a     = 0.0  # angle
+    flipX = False
+    flipY = False
+    
+    # Inits this GsShapeGeometry with values from the given GunnShow shape.
+    def __init__(self, shape):
+        self.x = float(findGsCellValue(shape, 'PinX'))
+        self.y = float(findGsCellValue(shape, 'PinY'))
+        
+        try:
+            self.w = float(findGsCellValue(shape, 'Width'))
+        except TypeError:
+            # Some of the Link shapes are missing Width.  Same as the nodes, we'll
+            # we'll fall back on TxtWidth, except for some reason TxtWidth is always
+            # 10x larger than Width.
+            try:
+                self.w = float(findGsCellValue(shape, 'TxtWidth')) / 10.0
+            except TypeError:
+                self.w = 0.0
+            
+        try:
+            self.h = float(findGsCellValue(shape, 'Height'))
+        except TypeError:
+            # Some of the Link shapes are missing Height.  Same as the nodes, we'll
+            # we'll fall back on TxtHeight.
+            try:
+                self.h = float(findGsCellValue(shape, 'TxtHeight'))
+            except TypeError:
+                self.h = 0.0
+                
+        try:
+            self.a = math.degrees(-float(findGsCellValue(shape, 'Angle')))
+        except TypeError:
+            self.a = 0.0
+            
+        try:
+            self.flipX = bool(int(findGsCellValue(shape, 'FlipX')))
+        except TypeError:
+            self.flipX = False
+            
+        try:
+            self.flipY = bool(int(findGsCellValue(shape, 'FlipY')))
+        except TypeError:
+            self.flipY = False
+            
+        return
+
+# Returns the value of the GS property name from the given GD shape, or None if not found.
+def gdGetGsProperty(gdShape, gsProp):
+    # Look for a match to gsProp in the GD object attribute names, return that GD object attrib value.
+    # gsProp includes CD_ or ID_ prefix, so ignore 1st 3 chars - after that should be an exact match.
+    for name, value in gdShape.attrib.items():
+        if name.endswith(gsProp[3:]):
+            return value
+    return None
+
 #####################
 # BEGIN MAIN SCRIPT #
 #####################
@@ -337,9 +488,11 @@ homepath = os.path.dirname(os.path.abspath(__file__))
 #   -l paths to custom shape libraries
 #   -z overrides the zoom level, default is 85
 #   -s disables snap to grid
+#   -v keeps the working folder with the unzipped .vsdx files
 cmd_parser = OptionParser()
 cmd_parser.add_option("-l", action="store", help="use the provided custom shape library paths, delimited by colons, e.g. -l path1:path2", dest="custom_lib_paths", default="")
 cmd_parser.add_option("-s", action="store_false", help="disables snap to grid", dest="snap", default=True)
+cmd_parser.add_option("-v", action="store_true", help="keep the unzipped Visio document folder", dest="keepVisio", default=False)
 cmd_parser.add_option("-z", action="store", help="zoom amount, default is 85", dest="zoom", default="85")
 
 (options, args) = cmd_parser.parse_args()
@@ -350,11 +503,12 @@ if len(args) > 0:
 else:
     root = TK.Tk()
     root.withdraw()
-    ftypes = [('Visio XML files', '*.vdx')]
+    ftypes = [('Visio XML files', '*.vsdx')]
     inputPathFile = TKFILE.askopenfilename(title = "Select a drawing file to process", filetypes = ftypes)
 if not inputPathFile:
     sys.exit(console.abort('no drawing file selected.'))
 
+outputPath = os.path.splitext(inputPathFile)[0]
 outputPathFile = os.path.splitext(inputPathFile)[0] + '.xml'
 
 # Process command line options
@@ -363,47 +517,52 @@ if options.custom_lib_paths:
     customlibs = options.custom_lib_paths.split(':')
 zoom = float(options.zoom)
 
+# Load & decompress all GunnsDraw shape masters from the shape libs, just like netexport.
+for shapeLib in shapeLibs.shapeLibs:
+    shapeLibs.loadShapeLibs(homepath + '/' + shapeLib, False)
+for customLib in customlibs:
+    shapeLibs.loadShapeLibs(customLib, False)
+allShapeMasters = shapeLibs.shapeTree.findall('./object')
+
 print('')
-print('Parsing XML from ' + inputPathFile + '.')
+print('Unzipping .vsdx file to ' + outputPath + '/.')
+with zipfile.ZipFile(inputPathFile, 'r') as zip_ref:
+    zip_ref.extractall(outputPath)
 
-# Don't want to deal with the namespace in the .vdx file's <VisioDocument> element,
-# so delete it before parsing XML.
-with open(inputPathFile, 'r') as fin:
-    fin_str = fin.read()
+print('Parsing and cleaning XML from ' + outputPath + '/.')
+inputPathFileDocProps = outputPath + '/docProps/custom.xml'       # custom document properties
+inputPathFilePage1    = outputPath + '/visio/pages/page1.xml'     # main drawing
+inputPathFilePages    = outputPath + '/visio/pages/pages.xml'     # lists the layers
 
-# Find the <VisioDocument ...> and delete the ...
-fin_fixed = re.sub('<VisioDocument.+?>', '<VisioDocument>', fin_str)
+# Get the Fluid or Basic network type from the document properties alternate names.
+gs_fluid              = False
+gs_docProps_root      = xmlUtils.parseClean(inputPathFileDocProps)
+gs_DocumentProperties = gs_docProps_root.findall('property')
+for property in gs_DocumentProperties:
+    name = property.attrib['name']
+    if name.endswith('ALTERNATENAMES'):
+        gs_fluid = ('Fluid' in property.find('lpwstr').text)
+        break
 
-# Now parse the XML
-gs_root = ET.fromstring(fin_fixed)
+# Get the network shapes and connections.
+gs_root     = xmlUtils.parseClean(inputPathFilePage1)
+gs_shapes   = gs_root.findall('Shapes/Shape')
+gs_connects = gs_root.findall('Connects/Connect')
 
-#gs_DocumentProperties = None
-#gs_Page              = None
-#for child in gs_root:
-#    if 'DocumentProperties' in child.tag:
-#        gs_DocumentProperties = child
-#    elif 'Pages' in child.tag:
-#        gs_Page = child.find('Page')
-
-gs_DocumentProperties = gs_root.find('DocumentProperties')
-gs_Page               = gs_root.find('Pages/Page')
-gs_PageHeight         = float(gs_Page.find('PageSheet/PageProps/PageHeight').text)
-gs_shapes             = gs_Page.findall('Shapes/Shape')
-gs_layers             = gs_Page.findall('PageSheet/Layer')
-gs_connects           = gs_Page.findall('Connects/Connect')
-gs_masters            = gs_root.findall('Masters/Master')
-
-# Get the Fluid or Basic network type from <DocumentProperties><AlternateNames>
-gs_fluid = ('Fluid' in gs_DocumentProperties.find('AlternateNames').text)
+# Get the page height value.
+gs_pages_root     = xmlUtils.parseClean(inputPathFilePages)
+gs_pageSheet      = gs_pages_root.find('Page/PageSheet')
+gs_pageSheetCells = gs_pageSheet.findall('Cell')
+gs_PageHeight     = float(findGsCellValue(gs_pageSheet, 'PageHeight'))
 
 # Build a list of layers info.
+gs_layerSection = gs_pages_root.find('Page/PageSheet/Section')
+gs_layers       = gs_layerSection.findall('Row')
 layers = {}
 for layer in gs_layers:
     layer_id   = int(layer.attrib['IX'])
-    layer_name = layer.find('Name').text
+    layer_name = findGsCellValue(layer, 'Name')
     layers[layer_name] = layer_id
-
-#print(layers)
 
 netConfig = []
 netNodes = []
@@ -426,114 +585,150 @@ lines = []
 # Find GUNNS objects and store their info
 # X,Y coords are from the bottom left corner
 for shape in gs_shapes:
-    layerMember = shape.find('LayerMem/LayerMember')
+    layerMember = findGsCellValue(shape, 'LayerMember')
     if layerMember is not None:
         # Some GunnShow objects belong to more than one layer.
         # We'll handle these special cases individually:
         # ConverterElect and GunnsSolarArrayRegulator links belong
         # to 23 (Converter) and 2 (Link), so we just use 2 (Link).
-        if len(layerMember.text.split(';')) > 1:
+        if len(layerMember.split(';')) > 1:
             layer_id = 2
         else:
-            layer_id = int(layerMember.text)
+            layer_id = int(layerMember)
 
+    # Process all GunnShow layer shapes not in the Misc layer:
+    if (layerMember is not None) and not ('Misc' in layers and layers['Misc'] == layer_id):
+
+        # Shape properties
+        props = findGsShapeProperties(shape)
+        
         # Net Config
         if layers['Title'] == layer_id:
             name   = ''
             config = []
-            props  = shape.findall('Prop')
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif prop.attrib['NameU'].startswith('CD_'):
-                    config.append(prop.find('Value').text)
+                if 'InstanceName' == prop.attrib['N']:
+                    name = findGsCellValue(prop, 'Value')
+                elif prop.attrib['N'].startswith('CD_') and 'Del' not in prop.attrib:
+                    config.append(findGsCellValue(prop, 'Value'))
             netConfig.append((name, config))
-
+            
         # Net Nodes
         elif layers['Node'] == layer_id:
-            gs_id = shape.attrib['ID']
-            x = float(shape.find('XForm/PinX').text)
-            y = float(shape.find('XForm/PinY').text)
-            w = float(shape.find('XForm/Width').text)
-            h = float(shape.find('XForm/Height').text)
+            gs_id  = shape.attrib['ID']
             num    = ''
             config = []
-            props  = shape.findall('Prop')
+            geom   = GsShapeGeometry(shape)
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU'] and num == '':
-                    num = prop.find('Value').text
-                if 'Init' in prop.attrib['NameU'] and len(config) == 0:
-                    config.append(prop.find('Value').text)
-            # For basic nodes, this shape won't have a Prop element for the
-            # initial potential unless it was changed from the default value in
-            # GunnShow.  So we have to get the value from the shape Master.
+                if 'N' in prop.attrib:
+                    if 'InstanceName' == prop.attrib['N'] and num == '':
+                        num = findGsCellValue(prop, 'Value')
+                    if 'Init' in prop.attrib['N'] and len(config) == 0:
+                        config.append(findGsCellValue(prop,'Value'))
+            # The instance name property may be missing if the user never changed
+            # the node number (i.e. node 0), so assume 0.
+            if num is None or num == '':
+                num = '0'
+            # In cases where the node shape doesn't have any 'Init' properties,
+            # we can assume it is just a single '0', since basic nodes will
+            # always have zero potential in their master shape, and fluid nodes
+            # will always have 0 as their initial fluid state in their master
+            # shape.  This saves us from having to go look for these values in
+            # the master shape.
             if len(config) == 0:
-                # Get config[0] as initial potential from the Master shape.
-                master_id = shape.attrib['Master']
-                for master in gs_masters:
-                    if master_id == master.attrib['ID']:
-                        allProps = master.find('Shapes/Shape').findall('Prop')
-                        config.append(allProps[-1].find('Value').text)
-                        break
+                config.append('0')
             isFrame = False
             if 'NameU' in shape.attrib and 'Segment' in shape.attrib['NameU']:
                 isFrame = True
-            netNodes.append((num, x, y, w, h, config, isFrame, gs_id))
+            netNodes.append((num, geom.x, geom.y, geom.w, geom.h, config, isFrame, gs_id))
 
         # Links
-        elif layers['Link'] == layer_id or ('Thermal Source' in layers and layers['Thermal Source'] == layer_id) or ('Jumper' in layers and layers['Jumper'] == layer_id) or ('Reactor' in layers and layers['Reactor'] == layer_id):
-            gs_id = shape.attrib['ID']
-            x = float(shape.find('XForm/PinX').text)
-            y = float(shape.find('XForm/PinY').text)
-            w = float(shape.find('XForm/Width').text)
-            h = float(shape.find('XForm/Height').text)
-            a = math.degrees(-float(shape.find('XForm/Angle').text))
-            flipX = bool(int(shape.find('XForm/FlipX').text))
-            flipY = bool(int(shape.find('XForm/FlipY').text))
-            name        = ''
-            subtype     = ''
-            plug0Type   = ''
-            plug1Type   = ''
-            config      = []
-            props       = shape.findall('Prop')
-            propsNameU  = []
-            masterProps = None
-            if 'Master' in shape.attrib:
-                master_id   = shape.attrib['Master']
-                for master in gs_masters:
-                    if master_id == master.attrib['ID']:
-                        masterProps = master.find('Shapes/Shape').findall('Prop')
-                        break
+        elif (layers['Link'] == layer_id) or \
+             ('Thermal Source' in layers and layers['Thermal Source'] == layer_id) or \
+             ('Jumper' in layers and layers['Jumper'] == layer_id) or \
+             ('Reactor' in layers and layers['Reactor'] == layer_id):
+            gs_id      = shape.attrib['ID']
+            name       = ''
+            subtype    = ''
+            plug0type  = '0'
+            plug1type  = '0'
+            config     = []
+            propsName  = []
+            geom       = GsShapeGeometry(shape)
+            
+            # Determine the link instance name.
+            instanceName = findGsInstanceName(props)
+            if instanceName is None:
+                sys.exit(console.abort('link ID ' + str(gs_id) + ', instance name cannot be determined.'))
+            propsName.append('InstanceName')
+
+            # Determine the link class from the ModelPath property.
+            linkClass = None
             for prop in props:
-                # Ignore duplicated properties with names that we've already processed
-                if prop.attrib['NameU'] not in propsNameU:
-                    propsNameU.append(prop.attrib['NameU'])
-                    # Some props won't have a Value element, in which case we must get it from the visio document's master shape.
-                    value = prop.find('Value')
-                    if value is None:
-                        if masterProps is not None:
-                            for masterProp in masterProps:
-                                 if masterProp.attrib['NameU'] == prop.attrib['NameU'] and masterProp.attrib['ID'] == prop.attrib['ID']:
-                                     value = masterProp.find('Value')
-                                     break
-                        else:
-                            sys.exit(console.abort('link ID ' + str(gs_id) + ' is missing a property value and there is no shape master.'))
-                    if 'InstanceName' == prop.attrib['NameU']:
-                        name = value.text
-                    elif 'ModelPath' == prop.attrib['NameU']:
-                        # GunnShow model paths include the filetype, i.e. '.hh' which we must strip off.
-                        subtype = os.path.splitext(value.text)[0]
-                    elif 'Plug0Type' == prop.attrib['NameU']:
-                        plug0type = value.text
-                    elif 'Plug1Type' == prop.attrib['NameU']:
-                        plug1type = value.text
-                    elif prop.attrib['NameU'].startswith('CD_'):
-                        config.append(value.text)
-                    elif prop.attrib['NameU'].startswith('ID_'):
-                        config.append(value.text)
-            netLinks.append((name, subtype, x, y, w, h, a, flipX, flipY, config, gs_id))
+                if 'ModelPath' == prop.attrib['N']:
+                    value = findGsCellValue(prop, 'Value')
+                    # GunnShow model paths include the filetype, i.e. '.hh' which we must strip off.
+                    if value is not None:
+                        subtype = os.path.splitext(value)[0]
+                        codePath, linkClass = os.path.split(subtype)
+                        break
+                    
+            # Some links don't have a ModelPath property or a Value inside ModelPath.  In this case we have
+            # to determine the link class from the GunnShow documentation hyperlink, and we'll figure out the
+            # source code path (subtype) later.  Find Shape/Section with N="Actions", then Row N="Docs", then Cell N="Menu".
+            # That cell's V is split by spaces, link name is the [1] piece, i.e. "View GunnsFluidValve Documentation"
+            if linkClass is None:
+                sections = shape.findall('Section')
+                for section in sections:
+                    if "Actions" == section.attrib['N']:
+                        rows = section.findall('Row')
+                        for row in rows:
+                            if "Docs" == row.attrib['N']:
+                                linkClass = findGsCellValue(row, 'Menu').split(' ')[1]
+                                break
+                        break
+            if linkClass is None:
+                sys.exit(console.abort('link name ' + instanceName + ', ID ' + str(gs_id) + ', class cannot be determined.'))
+            propsName.append('ModelPath')
+                    
+            # Make a copy of the GunnsDraw master shape for this link class.
+            # We can't look for the subtype because we don't always have the subtype from the Visio data.
+            gd_masterShape = copy.deepcopy(shapeLibs.getLinkClassShapeMaster(allShapeMasters, linkClass))
+            if gd_masterShape is None:
+                sys.exit(console.abort('link name ' + instanceName + ', ID ' + str(gs_id) + ', subtype ' + linkClass + ', GunnsDraw master shape cannot be found.'))
+
+            # Override subtype with the GunnsDraw subtype to fix missing subtype or any path differences.
+            subtype = shapeLibs.getShapeSubtype(gd_masterShape)
+
+            # Copy config & input data values from the GunnShow properties into the GunnsDraw shape.
+            searchCopyConfigInputData(props, gd_masterShape)
+            
+            netLinks.append((instanceName, subtype, geom.x, geom.y, geom.w, geom.h, geom.a, geom.flipX, geom.flipY, gd_masterShape, gs_id))
+            
             # Special case for jumper as they're on their own layer, and we need to save their 'plug type' values for later.
+            # TODO upgrade to handle custom jumper/plug links with more or less than 2 plugs.
             if 'Jumper' in layers and layers['Jumper'] == layer_id:
+                for prop in props:
+                    # Ignore duplicated properties with names that we've already processed
+                    if prop.attrib['N'] not in propsName:
+                        propsName.append(prop.attrib['N'])
+                        if 'Plug0Type' == prop.attrib['N']:
+                            value = findGsCellValue(prop, 'Value')
+                            # For no plug, we have handle either no field at all (None), or 'NONE' or numeric
+                            # values like '0' or '0.0000'.  The try/except handles the numeric check for python 2 and 3.
+                            # Any of those indicate there isn't a plug on this port, so we leave the plug type as '0'.
+                            if value is not None and value != 'NONE':
+                                try:
+                                    numeric = float(value)
+                                except ValueError:
+                                    plug0type = value
+                        elif 'Plug1Type' == prop.attrib['N']:
+                            value = findGsCellValue(prop, 'Value')
+                            if value is not None and value != 'NONE':
+                                try:
+                                    numeric = float(value)
+                                except ValueError:
+                                    plug1type = value
                 netJumpers.append([gs_id, plug0type, plug1type])
 
         # Connectors
@@ -545,63 +740,90 @@ for shape in gs_shapes:
         # connections because of optional ports.
         elif layers['Boundary'] == layer_id:
             gs_id = shape.attrib['ID']
-            x = float(shape.find('XForm/PinX').text)
-            y = float(shape.find('XForm/PinY').text)
-            a = math.degrees(-float(shape.find('XForm/Angle').text))
-            flipX = bool(int(shape.find('XForm/FlipX').text))
-            flipY = bool(int(shape.find('XForm/FlipY').text))
-            netGrounds.append((x, y, a, flipX, flipY, gs_id))
+            geom  = GsShapeGeometry(shape)
+            netGrounds.append((geom.x, geom.y, geom.a, geom.flipX, geom.flipY, gs_id))
 
         # Fluid Configs
         elif 'PolyFluid' in layers and layers['PolyFluid'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
+            gs_id  = shape.attrib['ID']
+            geom   = GsShapeGeometry(shape)
+            geom.x = zoom * geom.x - 80.0
+            geom.y = zoom * (gs_PageHeight - geom.y) - 10.0
             name         = ''
             internal     = 'False'
             constituents = []
-            props        = shape.findall('Prop')
+            propsName    = []
+            
+            # Determine the instance name.
+            instanceName = findGsInstanceName(props)
+            if instanceName is None:
+                textName = findGsShapeText(shape)
+                if textName is not None:
+                    instanceName = textName.rstrip().lstrip()
+            if instanceName is None:
+                sys.exit(console.abort('fluid config ID ' + str(gs_id) + ', instance name cannot be determined.'))
+            propsName.append('InstanceName')
+ 
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    name = prop.find('Value').text
-                elif 'IsInternalFluid' == prop.attrib['NameU']:
-                    internal = prop.find('Value').text
-                elif prop.find('Label') is not None and 'Fluid Constituent' in prop.find('Label').text:
-                    constituents.append(prop.find('Value').text)
-            netFluidConfigs.append((name, x, y, constituents, internal))
+                # Ignore duplicated properties with names that we've already processed.
+                if prop.attrib['N'] not in propsName:
+                    propsName.append(prop.attrib['N'])
+                    value = findGsCellValue(prop, 'Value')
+                    if 'IsInternalFluid' == prop.attrib['N']:
+                        internal = value
+                    elif prop.attrib['N'].startswith('Constituent'):
+                        constituents.append(value)
+            netFluidConfigs.append((instanceName, geom.x, geom.y, constituents, internal))
 
         # Fluid States
         elif 'FluidState' in layers and layers['FluidState'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
-            name         = ''
-            temperature  = ''
-            pressure     = ''
-            mass         = ''
-            tc           = '0' # since some old fluid state boxes in GS don't have this field
-            props        = shape.findall('Prop')
-            mixture = []
+            gs_id  = shape.attrib['ID']
+            geom   = GsShapeGeometry(shape)
+            geom.x = zoom * geom.x - 80.0
+            geom.y = zoom * (gs_PageHeight - geom.y) - 10.0
+            temperature = ''
+            pressure    = ''
+            mass        = ''
+            tc          = '0' # since some old fluid state boxes in GS don't have this field
+            mixture     = []
+            propsName   = []
+
+            # Determine the instance name.
+            instanceName = findGsInstanceName(props)
+            if instanceName is None:
+                sys.exit(console.abort('fluid state ID ' + str(gs_id) + ', instance name cannot be determined.'))
+            propsName.append('InstanceName')
+ 
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    name = prop.find('Value').text
-                if 'InitialStateInitTemperature' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    temperature = prop.find('Value').text
-                if 'InitialStateInitPressure' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    pressure = prop.find('Value').text
-                if 'InitialStateInitMass' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    mass = prop.find('Value').text
-                if 'InitialStateInitTraceCompoundsState' == prop.attrib['NameU'] and prop.find('Value') is not None:
-                    tc = prop.find('Value').text
-                if 'ConstituentData' in prop.attrib['NameU'] and prop.find('Value') is not None:
-                    mixture.append([prop.attrib['NameU'][len('ConstituentData'):], prop.find('Value').text])
+                # Ignore duplicated properties with names that we've already processed.
+                if prop.attrib['N'] not in propsName:
+                    propsName.append(prop.attrib['N'])
+                    value = findGsCellValue(prop, 'Value')
+                    if 'InitialStateInitTemperature' == prop.attrib['N']:
+                        temperature = value
+                    if 'InitialStateInitPressure' == prop.attrib['N']:
+                        pressure = value
+                    if 'InitialStateInitMass' == prop.attrib['N']:
+                        mass = value
+                    if 'InitialStateInitTraceCompoundsState' == prop.attrib['N']:
+                        tc = value
+                    if 'ConstituentData' in prop.attrib['N']:
+                        mixture.append([prop.attrib['N'][len('ConstituentData'):], value])
             states = [['Pressure', pressure], ['Temperature', temperature], ['Mass', mass], ['TC State', tc]]
             for mix in mixture:
                 states.append(mix)
-            netFluidStates.append((name, x, y, states))
+            netFluidStates.append((instanceName, geom.x, geom.y, states))
 
         # Port Maps
         elif 'Port Map' in layers and layers['Port Map'] == layer_id:
             gs_id = shape.attrib['ID']
-            portNum = shape.find('Prop/Value').text
+            print('Port Map', gs_id)
+            # Port map shapes will be missing any property elements if the user never changed the port number in Visio.
+            # In this case they have the default port number of zero.
+            portNum = findGsInstanceName(props)
+            if portNum is None:
+                portNum = '0'
+            print('  ', portNum)
             connector_ids = []
             connected_shape_ids = []
             # Find both connects on this port map.
@@ -626,108 +848,120 @@ for shape in gs_shapes:
 
         # Spotters
         elif 'Spotter' in layers and layers['Spotter'] == layer_id:
-            x = float(shape.find('XForm/PinX').text)
-            y = float(shape.find('XForm/PinY').text)
+            gs_id = shape.attrib['ID']
+            geom  = GsShapeGeometry(shape)
             name       = ''
             subtype    = ''
             configData = []
             inputData  = []
             args       = []
-            props      = shape.findall('Prop')
+            propsName  = []
+            
+            # Determine the instance name.
+            instanceName = findGsInstanceName(props)
+            if instanceName is None:
+                sys.exit(console.abort('spotter ID ' + str(gs_id) + ', instance name cannot be determined.'))
+            propsName.append('InstanceName')
+
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif 'ModelPath' == prop.attrib['NameU']:
-                    # GunnShow model paths include the filetype, i.e. '.hh' which we must strip off.
-                    subtype = os.path.splitext(prop.find('Value').text)[0]
-                elif prop.attrib['NameU'].startswith('CD_'):
-                    configData.append([prop.attrib['NameU'], prop.find('Value').text])
-                elif prop.attrib['NameU'].startswith('ID_'):
-                    inputData.append([prop.attrib['NameU'], prop.find('Value').text])
-                elif prop.attrib['NameU'].startswith('RefObject_'):
-                    args.append(prop.find('Value').text)
-            netSpotters.append((name, subtype, x, y, configData, inputData, args))
+                # Ignore duplicated properties with names that we've already processed.
+                if prop.attrib['N'] not in propsName:
+                    propsName.append(prop.attrib['N'])
+                    value = findGsCellValue(prop, 'Value')
+                    if 'ModelPath' == prop.attrib['N']:
+                        # GunnShow model paths include the filetype, i.e. '.hh' which we must strip off.
+                        subtype = os.path.splitext(value)[0]
+                    elif prop.attrib['N'].startswith('CD_'):
+                        configData.append([prop.attrib['N'], value])
+                    elif prop.attrib['N'].startswith('ID_'):
+                        inputData.append([prop.attrib['N'], value])
+                    elif prop.attrib['N'].startswith('RefObject_'):
+                        args.append(value)
+            netSpotters.append((instanceName, subtype, geom.x, geom.y, configData, inputData, args))
 
         # Battery Tables
         elif 'Battery Table' in layers and layers['Battery Table'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
+            gs_id  = shape.attrib['ID']
+            geom   = GsShapeGeometry(shape)
+            geom.x = zoom * geom.x - 80.0
+            geom.y = zoom * (gs_PageHeight - geom.y) - 10.0
             name   = ''
             socstr = ''
             vocstr = ''
             size   = ''
             data = []
             data.append(['SOC', 'VOC'])
-            props  = shape.findall('Prop')
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif 'CD_Soc' == prop.attrib['NameU']:
-                    socstr = prop.find('Value').text
-                elif 'CD_Voc' == prop.attrib['NameU']:
-                    vocstr = prop.find('Value').text
-                elif 'CD_ArraySize' == prop.attrib['NameU']:
-                    size = prop.find('Value').text
+                # Ignore duplicated properties with names that we've already processed.
+                if prop.attrib['N'] not in propsName:
+                    propsName.append(prop.attrib['N'])
+                    value = findGsCellValue(prop, 'Value')
+                    if 'InstanceName' == prop.attrib['N']:
+                        name = value
+                    elif 'CD_Soc' == prop.attrib['N']:
+                        socstr = value
+                    elif 'CD_Voc' == prop.attrib['N']:
+                        vocstr = value
+                    elif 'CD_ArraySize' == prop.attrib['N']:
+                        size = value
             soc = socstr.lstrip('{').rstrip('}').split(',')
             voc = vocstr.lstrip('{').rstrip('}').split(',')
             for i in range(0, int(size)):
                 data.append([soc[i], voc[i]])
-            netBatteryTables.append([name, x, y, data])
+            netBatteryTables.append([name, geom.x, geom.y, data])
 
         # Reference Nodes
         elif 'ReferenceNode' in layers and layers['ReferenceNode'] == layer_id:
             gs_id = shape.attrib['ID']
-            x = float(shape.find('XForm/PinX').text)
-            y = float(shape.find('XForm/PinY').text)
-            num = ''
-            props  = shape.findall('Prop')
-            for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    num = prop.find('Value').text
-            netRefNodes.append((num, x, y, gs_id))
+            geom  = GsShapeGeometry(shape)
+            num   = findGsInstanceName(props)
+            netRefNodes.append((num, geom.x, geom.y, gs_id))
 
         # Socket Lists
         elif 'Socket List' in layers and layers['Socket List'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
+            geom    = GsShapeGeometry(shape)
+            geom.x  = zoom * geom.x - 80.0
+            geom.y  = zoom * (gs_PageHeight - geom.y) - 10.0
             name    = ''
             sockets = []
-            props   = shape.findall('Prop')
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif prop.attrib['NameU'].startswith('Socket'):
-                    sockets.append(prop.find('Value').text)
-            netSocketLists.append((name, x, y, sockets))
+                value = findGsCellValue(prop, 'Value')
+                if 'InstanceName' == prop.attrib['N']:
+                    name = value
+                elif prop.attrib['N'].startswith('Socket'):
+                    sockets.append(value)
+            netSocketLists.append((name, geom.x, geom.y, sockets))
 
         # Reactions
         elif 'Reactions' in layers and layers['Reactions'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
+            geom      = GsShapeGeometry(shape)
+            geom.x    = zoom * geom.x - 80.0
+            geom.y    = zoom * (gs_PageHeight - geom.y) - 10.0
             name      = ''
             reactions = []
-            props     = shape.findall('Prop')
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif prop.attrib['NameU'].startswith('Reaction_'):
-                    reactions.append(prop.find('Value').text)
-            netReactions.append((name, x, y, reactions))
+                value = findGsCellValue(prop, 'Value')
+                if 'InstanceName' == prop.attrib['N']:
+                    name = value
+                elif prop.attrib['N'].startswith('Reaction_'):
+                    reactions.append(value)
+            netReactions.append((name, geom.x, geom.y, reactions))
 
         # Compounds
         elif 'Compounds' in layers and layers['Compounds'] == layer_id:
-            x = zoom * float(shape.find('XForm/PinX').text) - 80.0
-            y = zoom * (gs_PageHeight - float(shape.find('XForm/PinY').text)) - 10.0
+            geom      = GsShapeGeometry(shape)
+            geom.x    = zoom * geom.x - 80.0
+            geom.y    = zoom * (gs_PageHeight - geom.y) - 10.0
             name      = ''
             compounds = []
             compounds.append(['Compounds', 'Mass'])
-            props     = shape.findall('Prop')
             for prop in props:
-                if 'InstanceName' == prop.attrib['NameU']:
-                    name = prop.find('Value').text
-                elif prop.attrib['NameU'].startswith('Compound_'):
-                    compounds.append([prop.attrib['NameU'][len('Compound_'):], prop.find('Value').text])
-            netCompounds.append((name, x, y, compounds))
+                value = findGsCellValue(prop, 'Value')
+                if 'InstanceName' == prop.attrib['N']:
+                    name = value
+                elif prop.attrib['N'].startswith('Compound_'):
+                    compounds.append([prop.attrib['N'][len('Compound_'):], value])
+            netCompounds.append((name, geom.x, geom.y, compounds))
 
         # For unsupported GunnShow layers, give a warning that we didn't migrate.
         elif 'IPS' in layers and layers['IPS'] == layer_id:
@@ -743,47 +977,41 @@ for shape in gs_shapes:
         # Sensors
         # Switch Cards
 
-    else: # not on a GunnShow layer
-        Text      = shape.find('Text')
-        Line      = shape.find('Line')
-        XForm     = shape.find('XForm')
-        XForm1D   = shape.find('XForm1D')
-
+    # Process all shapes not in a GunnShow layer, or in the Misc layer.
+    else:
+        gs_id  = shape.attrib['ID']
+        geom   = GsShapeGeometry(shape)
+        gsText = findGsShapeText(shape)
+        #TODO implement lines
+        #Line      = shape.find('Line')
+        #XForm     = shape.find('XForm')
+        #XForm1D   = shape.find('XForm1D')
         # Lines
-        if Line is not None and XForm1D is not None:
-            beginX = float(XForm1D.find('BeginX').text)
-            beginY = float(XForm1D.find('BeginY').text)
-            endX = float(XForm1D.find('EndX').text)
-            endY = float(XForm1D.find('EndY').text)
-            lines.append([beginX, beginY, endX, endY])
-            pass
+        #if Line is not None and XForm1D is not None:
+        #    beginX = float(XForm1D.find('BeginX').text)
+        #    beginY = float(XForm1D.find('BeginY').text)
+        #    endX = float(XForm1D.find('EndX').text)
+        #    endY = float(XForm1D.find('EndY').text)
+        #    lines.append([beginX, beginY, endX, endY])
 
         # Text boxes
-        elif XForm is not None:
-            text = ''
-            x = float(XForm.find('PinX').text)
-            y = float(XForm.find('PinY').text)
-            w = float(XForm.find('Width').text)
-            h = float(XForm.find('Height').text)
+        if gsText is not None:
             valignDict = {'0':'top', '1':'middle', '2':'bottom'}
             # draw.io has no 'justified' horizontal alignment, so we just use 'left' instead.
             halignDict = {'0':'left', '1':'center', '2':'right', '3':'left'}
             valign = valignDict['1']
             halign = halignDict['1']
-            if Text is not None:
-                TextElems = Text.findall('*')
-                if len(TextElems) > 0:
-                    text = Text.findall('*')[-1].tail
-                else:
-                    text = Text.tail
-                VerticalAlign = shape.find('TextBlock/VerticalAlign')
-                if VerticalAlign is not None:
-                    valign = valignDict[VerticalAlign.text]
-                HorzAlign = shape.find('Para/HorzAlign')
-                if HorzAlign is not None:
-                    halign = halignDict[HorzAlign.text]
-            if text is not None:
-                textBoxes.append([text, x, y, w, h, halign, valign])
+            
+            sections = shape.findall('Section')
+            for section in sections:
+                if 'Paragraph' == section.attrib['N']:
+                    cells = section.findall('Row.Cell')
+                    for cell in cells:
+                        if 'HorzAlign' == cell.attrib['N']:
+                            halign = halignDict[cell.attrib['V'].text]
+                            break
+                    break
+            textBoxes.append([gsText, geom.x, geom.y, geom.w, geom.h, halign, valign])
 
 # For debugging:
 #print(netConfig)
@@ -797,6 +1025,9 @@ for shape in gs_shapes:
 #print(netReactions)
 #print(netCompounds)
 #print(portIdMap)
+#print(netFluidConfigs)
+#print(netFluidStates)
+#print(textBoxes)
 
 ########################
 # Build GunnsDraw File #
@@ -822,13 +1053,6 @@ netLayerCell.attrib['parent'] = '0'
 netLayerCell.attrib['value'] = 'Network'
 netLayerCell.attrib['id'] = '1'
 gd_rootroot.append(netLayerCell)
-
-# Load & decompress all shape masters from the shape libs, just like netexport.
-for shapeLib in shapeLibs.shapeLibs:
-    shapeLibs.loadShapeLibs(homepath + '/' + shapeLib, False)
-for customLib in customlibs:
-    shapeLibs.loadShapeLibs(customLib, False)
-allShapeMasters = shapeLibs.shapeTree.findall('./object')
 
 # Add the network object to the tree with a default size.  Size will be updated to contain objects as they are added.
 netId = id(idn)
@@ -932,19 +1156,16 @@ except NameError:
 
 # Add links to the tree
 for link in netLinks:
-    linkShape = copy.deepcopy(shapeLibs.getLinkSubtypeShapeMaster(allShapeMasters, link[1]))
-    if None == linkShape:
-        sys.exit(console.abort('couldn\'t find shape master for link ' + link[0] + '.'))
+    linkShape = link[9]
     try:
         migrate_map = migrate_link_map[link[1]]
     except:
         migrate_map = None
         print('   ' + console.warn('link: ' + link[0] + ' has no migration map.'))
-    linkShape.attrib['label']  = str(link[0])
+    linkShape.attrib['label'] = str(link[0])
     gd_id = id(idn)
     linkIdMap[link[10]]    = linkShape
     linkShape.attrib['id'] = gd_id
-    copyConfigInputData(link[9], linkShape)
     mxcell_attr = linkShape.find('mxCell').attrib
     mxcell_attr['parent'] = netId
     mxcellgeom_attr = linkShape.find('./mxCell/mxGeometry').attrib
@@ -989,12 +1210,25 @@ for link in netLinks:
     #   connection0 and connection1: add the 'NetworkName_' in front
     for jumper in netJumpers:
         if link[10] == jumper[0]:
-            if jumper[1] != '0':
-                linkShape.attrib['c02.plug0'] = jumper[1]
-                linkShape.attrib['i04.connection0'] = netConfig[0][0] + '_' + linkShape.attrib['i04.connection0']
-            if jumper[2] != '0':
-                linkShape.attrib['c03.plug1'] = jumper[2]
-                linkShape.attrib['i05.connection1'] = netConfig[0][0] + '_' + linkShape.attrib['i05.connection1']
+            numPlugs = 2 # for now only support 2 plugs, TODO upgrade to support any number, and
+                         # get this number for this link from netJumpers
+            for plugNum in range(0, numPlugs):
+                # Find the config & input data attribute keys for this plug number.
+                plugKey = None
+                connectionKey = None
+                for key, value in linkShape.attrib.items():
+                    if key.endswith('.plug' + str(plugNum)):
+                        plugKey = key
+                        break
+                for key, value in linkShape.attrib.items():
+                    if key.endswith('.connection' + str(plugNum)):
+                        connectionKey = key
+                        break
+                if plugKey is None or connectionKey is None:
+                    sys.exit(console.abort('plug type or connection config/input data not found for link', link[0]))
+                if jumper[1 + plugNum] != '0':
+                    linkShape.attrib[plugKey] = jumper[1 + plugNum]
+                    linkShape.attrib[connectionKey] = netConfig[0][0] + '_' + linkShape.attrib[connectionKey]
 
     gd_rootroot.append(linkShape)
     updateContainerBounds(networkShape, linkShape.find('mxCell'))
@@ -1004,10 +1238,10 @@ completedPortMaps = []
 for shape in netConnectors:
     shape_id = shape.attrib['ID']
     # These appear to be absolute coordinates in Visio:
-    gs_beginX = float(shape.find('XForm1D/BeginX').text)
-    gs_beginY = float(shape.find('XForm1D/BeginY').text)
-    gs_endX   = float(shape.find('XForm1D/EndX').text)
-    gs_endY   = float(shape.find('XForm1D/EndY').text)
+    gs_beginX = float(findGsCellValue(shape, 'BeginX'))
+    gs_beginY = float(findGsCellValue(shape, 'BeginY'))
+    gs_endX   = float(findGsCellValue(shape, 'EndX'))
+    gs_endY   = float(findGsCellValue(shape, 'EndY'))
     if gs_beginX == gs_endX and gs_beginY == gs_endY:
         # Ignore a floating connector that has the same begin & end point, continue with next connector.
         print('    ' + console.warn('ignored connector ID ' + str(shape_id) + ', it has same begin & end points in GunnShow drawing near (' + str(int(gs_endX/0.03937)) + ', ' + str(int(gs_endY/0.03937)) + ').'))
@@ -1060,6 +1294,10 @@ for shape in netConnectors:
                             except:
                                 pass
 
+    if link is None:
+        print('    ' + console.warn('ignored connector ID ' + shape_id + ' between coordinates (' + str(int(gs_endX/0.03937)) + ', ' + str(int(gs_endY/0.03937)) + ') and (' + str(int(gs_beginX/0.03937)) + ', ' + str(int(gs_beginY/0.03937)) + '), has no link connected.'))
+        continue
+        
     if nodeBegins:
         node_end = 'source'
         link_end = 'target'
@@ -1138,32 +1376,37 @@ for shape in netConnectors:
     #     <mxPoint x="#" y="#"/>
     #     <mxPoint x="#" y="#"/>
     #   </Array>
-    # Visio routing points are in the Shape's <Geom> element.
-    # there is a starting <MoveTo> sub, followed by <LineTo> subs
+    # Visio routing points are in the Shape's 'Geometry' Section element.
+    # there is an optional starting 'MoveTo' sub, followed by 'LineTo' subs
     # The LineTo's give X/Y of vertices.
     # The MoveTo is the bias in the LineTo coordinates, so we subtract the MoveTo values
     # from the LineTo values.
     # The mxPoint are in absolute page coords so we have to adjust the LineTo's
     # connection point relative coords by the connection point's location in the page.
     if link is not None:
-        allLineTo = shape.findall('Geom/LineTo')
+        allRows   = findGsSection(shape, 'Geometry').findall('Row')
+        allLineTo = []
+        biasVertX = 0.0
+        biasVertY = 0.0
+        for row in allRows:
+            if row.attrib['T'] == 'MoveTo':
+                moveToX = findGsCellValue(row, 'X')
+                moveToY = findGsCellValue(row, 'Y')
+                if moveToX is not None:
+                    biasVertX = float(moveToX)
+                if moveToY is not None:
+                    biasVertY = float(moveToY)
+            elif row.attrib['T'] == 'LineTo':
+                allLineTo.append(row)
         if len(allLineTo) > 0:
-            biasVertX = 0.0
-            biasVertY = 0.0
-            moveToX = shape.find('Geom/MoveTo/X')
-            moveToY = shape.find('Geom/MoveTo/Y')
-            if moveToX is not None:
-                biasVertX = float(moveToX.text)
-            if moveToY is not None:
-                biasVertY = float(moveToY.text)
             array = ET.Element('Array')
             array.attrib['as'] = 'points'
             for i in range(0, len(allLineTo)):
-                gs_x = allLineTo[i].find('./X')
-                gs_y = allLineTo[i].find('./Y')
+                gs_x = findGsCellValue(allLineTo[i], 'X')
+                gs_y = findGsCellValue(allLineTo[i], 'Y')
                 if gs_x is not None and gs_y is not None:
-                    x = zoom * (                gs_beginX + float(gs_x.text) - biasVertX)
-                    y = zoom * (gs_PageHeight - gs_beginY - float(gs_y.text) + biasVertY)
+                    x = zoom * (                gs_beginX + float(gs_x) - biasVertX)
+                    y = zoom * (gs_PageHeight - gs_beginY - float(gs_y) + biasVertY)
                     mxpoint = ET.Element('mxPoint')
                     mxpoint.attrib['x'] = str(x)
                     mxpoint.attrib['y'] = str(y)
@@ -1192,8 +1435,6 @@ for shape in netConnectors:
             migrate_map = migrate_link_map[link.find('gunns').attrib['subtype']]
         except:
             pass
-    else:
-        sys.exit(console.abort('connection line ID ' + shape_id + ' between coordinates (' + str(int(gs_endX/0.03937)) + ', ' + str(int(gs_endY/0.03937)) + ') and (' + str(int(gs_beginX/0.03937)) + ', ' + str(int(gs_beginY/0.03937)) + ') has no link connected.'))
 
     if migrate_map is not None:
         # Make a list of link connection point coordinates that this port # has affinity for.
@@ -1391,6 +1632,14 @@ if options.snap:
     snapElements('mxCell/mxGeometry/mxPoint')
 
 # Write the output file
+print('Rendering output file: ' + outputPathFile + '...')
 xmlUtils.formatXml(gd_root)
 gd_tree.write(outputPathFile, xml_declaration=False)
+print('  ...complete!')
 
+# Delete the working folder when we're done, unless option selected.
+if not options.keepVisio:
+    shutil.rmtree(outputPath)
+    print('Deleted working folder ' + outputPath + '/.')
+    
+quit();

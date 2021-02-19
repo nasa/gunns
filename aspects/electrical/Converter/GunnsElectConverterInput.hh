@@ -114,6 +114,8 @@ class GunnsElectConverterInput : public GunnsBasicLink
         void setEnabled(const bool enabled);
         /// @brief  Sets the input power.
         void setInputPower(const double inputPower);
+        /// @brief  Returns the input voltage.
+        double getInputVoltage() const;
         /// @brief  Returns the input under-voltage trip logic.
         GunnsTripLogic* getInputUnderVoltageTrip();
         /// @brief  Returns the input over-voltage trip logic.
@@ -259,6 +261,16 @@ inline void GunnsElectConverterInput::setEnabled(const bool enabled)
 inline void GunnsElectConverterInput::setInputPower(const double inputPower)
 {
     mInputPower = inputPower;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (V)  Input voltage.
+///
+/// @details  Returns the value of mInputVoltage.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterInput::getInputVoltage() const
+{
+    return mInputVoltage;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,9 @@ GunnsNetworkBase::GunnsNetworkBase(const std::string& name, int numNodes, GunnsB
     netSuperNodesOffset(0),
     netJointIndex(-1),
     netNumLocalNodes(numNodes),
-    netSuperNetwork(0)
+    netSuperNetwork(0),
+    netMutex(),
+    netMutexEnabled(false)
 {
     // nothing to do
 }
@@ -112,6 +114,7 @@ void GunnsNetworkBase::initialize(const std::string& name)
             initNodes(name);
         }
         initNetwork();
+        pthread_mutex_init(&netMutex, NULL);
 
     } catch (TsInitializationException& e) {
         /// - Send an H&S fatal message and return on TsInitializationException
@@ -165,6 +168,10 @@ void GunnsNetworkBase::update(const double timeStep)
     ///   already updated by the super-network, and this solver isn't used.
     if (netIsSubNetwork) return;
 
+    if (netMutexEnabled) {
+        pthread_mutex_lock(&netMutex);
+    }
+
     /// - Catch exceptions and send a non-fatal H&S error.
     try {
         stepSpottersPre(timeStep);
@@ -182,6 +189,8 @@ void GunnsNetworkBase::update(const double timeStep)
         msg << mName << " caught unexpected exception." << '\n' << tsStackTrace();
         hsSendMsg(msg);
     }
+
+    pthread_mutex_unlock(&netMutex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -97,6 +97,7 @@ void UtGunnsBasicSuperNetwork::testDefaultConstruction()
     CPPUNIT_ASSERT(0                    == tArticle->netNodeList.mNodes);
     CPPUNIT_ASSERT(0                    == tArticle->mLinks.size());
     CPPUNIT_ASSERT(0                    == tArticle->mSubnets.size());
+    CPPUNIT_ASSERT(false                == tArticle->netMutexEnabled);
 
     UT_PASS;
 }
@@ -250,6 +251,10 @@ void UtGunnsBasicSuperNetwork::testInitialize()
     CPPUNIT_ASSERT_EQUAL(294.261, tArticle->netSolver.getPotentialVector()[3]);
     CPPUNIT_ASSERT_EQUAL(294.261, tArticle->netSolver.getPotentialVector()[4]);
     CPPUNIT_ASSERT_EQUAL(294.261, tArticle->netSolver.getPotentialVector()[5]);
+
+    /// @test mutex initializationa: the network should leave the mutex unlocked after unit.
+    CPPUNIT_ASSERT(0 == pthread_mutex_trylock(&tArticle->netMutex));
+    pthread_mutex_unlock(&tArticle->netMutex);
 
     UT_PASS;
 }
@@ -406,6 +411,16 @@ void UtGunnsBasicSuperNetwork::testUpdate()
     CPPUNIT_ASSERT_EQUAL(1, tSubNetworkA.mLink.mStepCount);
     CPPUNIT_ASSERT_EQUAL(1, tSubNetworkB.mLink.mStepCount);
 
+    /// @test updating with mutex locking enabled and verify network leaves it unlocked when
+    ///       finished.
+    tArticle->setMutexEnabled(true);
+    CPPUNIT_ASSERT_NO_THROW(tArticle->update(1.0));
+    CPPUNIT_ASSERT_EQUAL(2, tSubNetworkA.mLink.mStepCount);
+
+    pthread_mutex_t* mutex = tArticle->getMutex();
+    CPPUNIT_ASSERT(0 == pthread_mutex_trylock(mutex));
+    pthread_mutex_unlock(mutex);
+    
     UT_PASS;
 }
 

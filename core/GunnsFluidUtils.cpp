@@ -343,7 +343,7 @@ double GunnsFluidUtils::predictExpansionScaleFactor(const double     deltaTemper
                       (supplyT * (pow((p0/p1), (gamma - 1.0) / gamma) - 1.0));
     }
 
-    return Math::limitRange( 0.0, tunedFactor, 1.0);
+    return MsMath::limitRange( 0.0, tunedFactor, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -551,7 +551,7 @@ double GunnsFluidUtils::computeConvectiveHeatTransferCoefficient(const double   
 
         /// - Determine Reynolds number, limited to prevent divide by zero and overflows in
         ///   subsequent ts-utils.
-        const double re = Math::limitRange(DBL_EPSILON,
+        const double re = MsMath::limitRange(DBL_EPSILON,
                                            GunnsFluidUtils::computeReynoldsNumber(fluid, vm, diameter),
                                            RE_TURBULENT_LIMIT);
 
@@ -575,7 +575,7 @@ double GunnsFluidUtils::computeConvectiveHeatTransferCoefficient(const double   
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidUtils::computeFlowRegimeFactor(const double re)
 {
-    return Math::limitRange(0.0, (re - RE_LAMINAR_LIMIT) / (RE_TRANSITION_LIMIT - RE_LAMINAR_LIMIT), 1.0);
+    return MsMath::limitRange(0.0, (re - RE_LAMINAR_LIMIT) / (RE_TRANSITION_LIMIT - RE_LAMINAR_LIMIT), 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -626,7 +626,7 @@ double GunnsFluidUtils::computeNusseltNumber(const PolyFluid* fluid,
         ///   number correlation.
         const double ret = std::max(re, RE_TRANSITION_LIMIT);
         const double darcy8 = GunnsFluidUtils::computeDarcyFrictionFactor(rOverD, ret) / 8.0;
-        const double pr = Math::limitRange(0.0, fluid->getPrandtlNumber(), 1.0/DBL_EPSILON);
+        const double pr = MsMath::limitRange(0.0, fluid->getPrandtlNumber(), 1.0/DBL_EPSILON);
         const double turbulent = darcy8 * (ret - 1000.0) * pr /
                 (1.0 + 12.7 * sqrt(darcy8) * (pow(pr, (2.0 / 3.0)) - 1.0));
 
@@ -657,14 +657,14 @@ double GunnsFluidUtils::computeDarcyFrictionFactor(const double rOverD,
     const double regimeFactor = GunnsFluidUtils::computeFlowRegimeFactor(re);
 
     /// - First initialize the laminar flow result.
-    double darcy = 64.0 / Math::limitRange(DBL_EPSILON, re, RE_LAMINAR_LIMIT);
+    double darcy = 64.0 / MsMath::limitRange(DBL_EPSILON, re, RE_LAMINAR_LIMIT);
 
     if (regimeFactor > 0.0) {
         /// - For turbulent/transition flow, get a turbulent result using Serghide's
         ///   approximation to the Colebrook-White Equation for turbulent flow.  Accurate to
         ///   0.14% from 4000 < re < 1E8, and Reynolds number is limited in that range for this
         ///   equation.
-        const double rod = Math::limitRange(0.0, rOverD, 0.5) / 3.7;
+        const double rod = MsMath::limitRange(0.0, rOverD, 0.5) / 3.7;
         const double ret = std::max(re, RE_TRANSITION_LIMIT);
         const double a   = log10(rod + 12.0 / ret);
         const double b   = log10(rod - 5.02 * a / ret);
@@ -957,11 +957,11 @@ double GunnsFluidUtils::computeGasDiffusion(PolyFluid*       fluid,
         if (bulkFlowRate > 0.0 && negativeFlux < 0.0 && fluid0Mw != 0.0) {
             const double bulkFlux = bulkFlowRate / fluid0Mw / area;
             const double opposingFlux = fmin(0.0, negativeFlux + bulkFlux);
-            limitNetFluxRatio = Math::limitRange(0.0, opposingFlux / negativeFlux, 1.0);
+            limitNetFluxRatio = MsMath::limitRange(0.0, opposingFlux / negativeFlux, 1.0);
         } else if (bulkFlowRate < 0.0 && positiveFlux > 0.0 && fluid1Mw != 0.0) {
             const double bulkFlux = bulkFlowRate / fluid1Mw / area;
             const double opposingFlux = fmax(0.0, positiveFlux + bulkFlux);
-            limitNetFluxRatio = Math::limitRange(0.0, opposingFlux / positiveFlux, 1.0);
+            limitNetFluxRatio = MsMath::limitRange(0.0, opposingFlux / positiveFlux, 1.0);
         }
     }
 

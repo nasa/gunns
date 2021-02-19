@@ -30,6 +30,8 @@ UtGunnsElectBatteryCell::UtGunnsElectBatteryCell()
     tMaxCapacity(0.0),
     tMalfOpenCircuit(false),
     tMalfShortCircuit(false),
+    tMalfCapacityFlag(false),
+    tMalfCapacityValue(0.0),
     tSoc(0.0),
     tName(),
     tSocVocTable(0)
@@ -56,10 +58,14 @@ void UtGunnsElectBatteryCell::setUp()
     tConfigData       = new GunnsElectBatteryCellConfigData(tResistance, tMaxCapacity);
 
     /// - Create nominal input data.
-    tMalfOpenCircuit  = false;
-    tMalfShortCircuit = false;
-    tSoc              = 0.9;
-    tInputData        = new GunnsElectBatteryCellInputData(tMalfOpenCircuit, tMalfShortCircuit, tSoc);
+    tMalfOpenCircuit   = false;
+    tMalfShortCircuit  = false;
+    tMalfCapacityFlag  = false;
+    tMalfCapacityValue = 0.0;
+    tSoc               = 0.9;
+    tInputData         = new GunnsElectBatteryCellInputData(tMalfOpenCircuit, tMalfShortCircuit,
+                                                            tMalfCapacityFlag, tMalfCapacityValue,
+                                                            tSoc);
 
     /// - Create the SOC/VOC table and set it up so it will interpolate to the same Voc output as
     ///   SOC in (0 - 1).
@@ -119,21 +125,27 @@ void UtGunnsElectBatteryCell::testInput()
     UT_RESULT;
 
     /// @test nominal input construction.
-    GunnsElectBatteryCellInputData nominalInput(true, true, 1.0);
+    GunnsElectBatteryCellInputData nominalInput(true, true, true, 5.0, 1.0);
     CPPUNIT_ASSERT(true  == nominalInput.mMalfOpenCircuit);
     CPPUNIT_ASSERT(true  == nominalInput.mMalfShortCircuit);
+    CPPUNIT_ASSERT(true  == nominalInput.mMalfCapacityFlag);
+    CPPUNIT_ASSERT(5.0   == nominalInput.mMalfCapacityValue);
     CPPUNIT_ASSERT(1.0   == nominalInput.mSoc);
 
     /// @test default input construction.
     GunnsElectBatteryCellInputData defaultInput;
     CPPUNIT_ASSERT(false == defaultInput.mMalfOpenCircuit);
     CPPUNIT_ASSERT(false == defaultInput.mMalfShortCircuit);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfCapacityFlag);
+    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfCapacityValue);
     CPPUNIT_ASSERT(0.0   == defaultInput.mSoc);
 
     /// @test copy input construction.
     GunnsElectBatteryCellInputData copyInput(nominalInput);
     CPPUNIT_ASSERT(true  == copyInput.mMalfOpenCircuit);
     CPPUNIT_ASSERT(true  == copyInput.mMalfShortCircuit);
+    CPPUNIT_ASSERT(true  == copyInput.mMalfCapacityFlag);
+    CPPUNIT_ASSERT(5.0   == copyInput.mMalfCapacityValue);
     CPPUNIT_ASSERT(1.0   == copyInput.mSoc);
 
     UT_PASS;
@@ -149,9 +161,15 @@ void UtGunnsElectBatteryCell::testDefaultConstruction()
     /// @test state data.
     CPPUNIT_ASSERT(false == tArticle->mMalfOpenCircuit);
     CPPUNIT_ASSERT(false == tArticle->mMalfShortCircuit);
+    CPPUNIT_ASSERT(false == tArticle->mMalfCapacityFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfCapacityValue);
     CPPUNIT_ASSERT(0.0   == tArticle->mResistance);
     CPPUNIT_ASSERT(0.0   == tArticle->mMaxCapacity);
     CPPUNIT_ASSERT(0.0   == tArticle->mSoc);
+
+    /// @test default new & delete for code coverage.
+    GunnsElectBatteryCell* article = new GunnsElectBatteryCell;
+    delete article;
 
     UT_PASS;
 }
@@ -163,20 +181,26 @@ void UtGunnsElectBatteryCell::testNominalInitialization()
 {
     UT_RESULT;
 
-    tMalfOpenCircuit              = true;
-    tMalfShortCircuit             = true;
-    tInputData->mMalfOpenCircuit  = tMalfOpenCircuit;
-    tInputData->mMalfShortCircuit = tMalfShortCircuit;
+    tMalfOpenCircuit               = true;
+    tMalfShortCircuit              = true;
+    tMalfCapacityFlag              = true;
+    tMalfCapacityValue             = 16.0;
+    tInputData->mMalfOpenCircuit   = tMalfOpenCircuit;
+    tInputData->mMalfShortCircuit  = tMalfShortCircuit;
+    tInputData->mMalfCapacityFlag  = tMalfCapacityFlag;
+    tInputData->mMalfCapacityValue = tMalfCapacityValue;
 
     /// @test initialize with initialization data and no exceptions.
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tName));
-    CPPUNIT_ASSERT(tResistance       == tArticle->mResistance);
-    CPPUNIT_ASSERT(tMaxCapacity      == tArticle->mMaxCapacity);
-    CPPUNIT_ASSERT(tResistance       == tArticle->mResistance);
-    CPPUNIT_ASSERT(tMalfOpenCircuit  == tArticle->mMalfOpenCircuit);
-    CPPUNIT_ASSERT(tMalfShortCircuit == tArticle->mMalfShortCircuit);
-    CPPUNIT_ASSERT(tSoc              == tArticle->mSoc);
-    CPPUNIT_ASSERT(tName             == tArticle->mName);
+    CPPUNIT_ASSERT(tResistance        == tArticle->mResistance);
+    CPPUNIT_ASSERT(tMaxCapacity       == tArticle->mMaxCapacity);
+    CPPUNIT_ASSERT(tResistance        == tArticle->mResistance);
+    CPPUNIT_ASSERT(tMalfOpenCircuit   == tArticle->mMalfOpenCircuit);
+    CPPUNIT_ASSERT(tMalfShortCircuit  == tArticle->mMalfShortCircuit);
+    CPPUNIT_ASSERT(tMalfCapacityFlag  == tArticle->mMalfCapacityFlag);
+    CPPUNIT_ASSERT(tMalfCapacityValue == tArticle->mMalfCapacityValue);
+    CPPUNIT_ASSERT(tSoc               == tArticle->mSoc);
+    CPPUNIT_ASSERT(tName              == tArticle->mName);
 
     UT_PASS;
 }
@@ -362,6 +386,38 @@ void UtGunnsElectBatteryCell::testUpdateMalfBoth()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->getEffectiveResistance(),          DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test updates with the capacity override malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectBatteryCell::testUpdateMalfCapacity()
+{
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tName);
+
+    /// - Set the capacity malfunction.
+    tArticle->setMalfCapacity(true, 16.0);
+
+    /// @test SOC change affected by capacity.
+    const double dt          =   0.1;
+    double       current     = 100.0;
+    double       expectedSoc = tSoc - current * dt / 16.0 / 3600.0;
+    double       expectedR   = tResistance;
+    tArticle->updateSoc(current, dt);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->mSoc,                              DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveSoc(),                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+
+    /// @test resetting the malfunction.
+    tArticle->setMalfCapacity();
+    CPPUNIT_ASSERT(false == tArticle->mMalfCapacityFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfCapacityValue);
 
     UT_PASS_LAST;
 }

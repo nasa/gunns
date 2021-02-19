@@ -118,3 +118,17 @@ void UtTsNoise::testRandom()
 
     std::cout << "... Pass";
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief  Tests the accessor functions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtTsNoise::testAccessors()
+{
+    std::cout << "\n UtTsNoise ............ 05: testAccessors..............................";
+
+    typedef double (*f_ptr)();
+    f_ptr ptr = TsNoise::getNoiseFunction();
+    CPPUNIT_ASSERT(ptr == TsNoise::getNoise);
+
+    std::cout << "... Pass";
+}

@@ -30,7 +30,7 @@ LIBRARY_DEPENDENCY:
   )
 **************************************************************************************************/
 #include "GunnsThermalRadiation.hh"
-#include "math/Math.hh" // Needed for pow and DBL_EPSILON
+#include "math/MsMath.hh" // Needed for pow and DBL_EPSILON
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                (--) Link name
@@ -198,8 +198,9 @@ void GunnsThermalRadiation::updateState(const double dt __attribute__((unused)))
     if (fabs(mPotentialVector[0] - mPotentialVector[1]) > DBL_EPSILON)
     {
         /// - Admittance is calculated per the above comment block.
-        mEffectiveConductivity = mViewScalar * mDefaultConductivity *
-                             (std::pow(mPotentialVector[0],4.0) - std::pow(mPotentialVector[1],4.0))
-                           / (mPotentialVector[0] - mPotentialVector[1]);
+        const double T0_4 = mPotentialVector[0] * mPotentialVector[0] * mPotentialVector[0] * mPotentialVector[0];
+        const double T1_4 = mPotentialVector[1] * mPotentialVector[1] * mPotentialVector[1] * mPotentialVector[1];
+        mEffectiveConductivity = mViewScalar * mDefaultConductivity * (T0_4 - T1_4)
+                               / (mPotentialVector[0] - mPotentialVector[1]);
     }
 }

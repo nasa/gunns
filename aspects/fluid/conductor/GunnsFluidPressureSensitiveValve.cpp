@@ -6,7 +6,7 @@ LIBRARY DEPENDENCY:
   ((core/GunnsFluidLink.o))
 ***************************************************************************************************/
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "core/GunnsFluidUtils.hh"
 
@@ -289,7 +289,7 @@ void GunnsFluidPressureSensitiveValve::validate() const
     }
 
     /// - Throw an exception if expansion scale factor < 0 or > 1.
-    if (!Math::isInRange(0.0, mExpansionScaleFactor, 1.0)) {
+    if (!MsMath::isInRange(0.0, mExpansionScaleFactor, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Expansion scale factor outside valid range (0-1).");
     }
 
@@ -299,7 +299,7 @@ void GunnsFluidPressureSensitiveValve::validate() const
     }
 
     /// - Throw an exception if valve position < 0 or > 1 .
-    if (!Math::isInRange(0.0, mPosition, 1.0)) {
+    if (!MsMath::isInRange(0.0, mPosition, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "Position outside valid range (0-1).");
     }
 
@@ -314,7 +314,7 @@ void GunnsFluidPressureSensitiveValve::validate() const
     }
 
     /// - Throw an exception if fail to position malfunction value is out of range 0 to 1.
-    if (!Math::isInRange(0.0, mMalfFailToValue, 1.0)) {
+    if (!MsMath::isInRange(0.0, mMalfFailToValue, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "Constant position malfunction value out of range 0 to 1.");
     }
 }
@@ -433,7 +433,7 @@ void GunnsFluidPressureSensitiveValve::step(const double dt)
                                                                mMinLinearizationPotential,
                                                                mNodes[0]->getOutflow(),
                                                                mNodes[1]->getOutflow());
-    mSystemConductance = Math::limitRange(0.0, linkAdmittance, mConductanceLimit);
+    mSystemConductance = MsMath::limitRange(0.0, linkAdmittance, mConductanceLimit);
 
     buildConductance();
 }

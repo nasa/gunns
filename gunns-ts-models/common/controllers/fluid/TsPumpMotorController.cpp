@@ -13,7 +13,7 @@
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "GenericMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cmath>
 #include "TsPumpMotorController.hh"
 
@@ -354,19 +354,19 @@ void TsPumpMotorController::validate(const TsPumpMotorControllerConfigData& conf
                               const TsPumpMotorControllerInputData&  inputData) const
 {
     /// - Throw an exception if forcing gain is outside 0-1.
-    if (!Math::isInRange(0.0, configData.mForcingGain, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mForcingGain, 1.0)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "TSM", "Invalid Configuration Data", TsInitializationException,
                 "Forcing gain cannot be outside 0-1.", mName);
     }
 
     /// - Throw an exception if damping gain is outside 0-1.
-    if (!Math::isInRange(0.0, configData.mDampingGain, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mDampingGain, 1.0)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "TSM", "Invalid Configuration Data", TsInitializationException,
                 "Damping gain cannot be outside 0-1.", mName);
     }
 
     /// - Throw an exception if damping cut-off is outside 0-1.
-    if (!Math::isInRange(0.0, configData.mDampingCutoff, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mDampingCutoff, 1.0)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "TSM", "Invalid Configuration Data", TsInitializationException,
                 "Damping cut-off cannot be outside 0-1.", mName);
     }
@@ -478,7 +478,7 @@ void TsPumpMotorController::determinePower()
     if (mMalfPowerOverrideFlag) {
         useVoltage = mMalfPowerOverrideValue;
     }
-    mControllerPowerBus = Math::isInRange(mMinVoltage, useVoltage, mMaxVoltage)
+    mControllerPowerBus = MsMath::isInRange(mMinVoltage, useVoltage, mMaxVoltage)
                           and not mMalfFailPower;
 
     checkTrips();
@@ -555,7 +555,7 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         }
 
         /// - Pulse width is always limited to 0-1.
-        mPulseWidth = Math::limitRange(0.0, mPulseWidth, 1.0);
+        mPulseWidth = MsMath::limitRange(0.0, mPulseWidth, 1.0);
 
     } else {
         mPulseWidth    = 0.0;

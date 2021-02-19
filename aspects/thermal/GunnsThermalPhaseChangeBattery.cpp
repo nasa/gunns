@@ -13,7 +13,7 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsThermalPhaseChangeBattery.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cfloat>
 
 /// @details  This value is a compromise between being large enough to act like an ideal potential
@@ -213,7 +213,7 @@ void GunnsThermalPhaseChangeBattery::validate(
             "Invalid Input Data", "mTemperature < DBL_EPSILON.");
 
     /// - Throw an exception if initial hot phase fraction not in (0-1).
-    TS_PTCS_IF_ERREX(!Math::isInRange(0.0, inputData.mHotPhaseFraction, 1.0), TsInitializationException,
+    TS_PTCS_IF_ERREX(!MsMath::isInRange(0.0, inputData.mHotPhaseFraction, 1.0), TsInitializationException,
             "Invalid Input Data", "mHotPhaseFraction not in (0-1).");
 
     /// - Throw an exception if initial leak rate < 0.
@@ -270,7 +270,7 @@ void GunnsThermalPhaseChangeBattery::step(const double dt)
 void GunnsThermalPhaseChangeBattery::updateState(const double dt)
 {
     /// - Limit hot phase fraction to valid range in case of bad inputs during run-time.
-    mHotPhaseFraction = Math::limitRange(0.0, mHotPhaseFraction, 1.0);
+    mHotPhaseFraction = MsMath::limitRange(0.0, mHotPhaseFraction, 1.0);
 
     /// - Update capacitance and external heat fluxes.
     const double capacitance = computeCapacitance();
@@ -387,7 +387,7 @@ void GunnsThermalPhaseChangeBattery::updateFlux(const double dt,
     updatePhaseFraction(dt);
     updateMassLeak(dt);
 
-    mHotPhaseFraction = Math::limitRange(0.0, mHotPhaseFraction, 1.0);
+    mHotPhaseFraction = MsMath::limitRange(0.0, mHotPhaseFraction, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -12,7 +12,7 @@ LIBRARY DEPENDENCY:
 */
 
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <cfloat>
 #include "GunnsResistorPowerFunction.hh"
 
@@ -228,11 +228,11 @@ void GunnsResistorPowerFunction::minorStep(const double dt        __attribute__(
     double gLimit  = std::min(mConductanceLimit,
                               1.0 / std::max(mResistance, 1.0 / mConductanceLimit));
     if (mMalfBlockageFlag) {
-        gLimit *= Math::limitRange(0.0, (1.0 - mMalfBlockageValue), 1.0);
+        gLimit *= MsMath::limitRange(0.0, (1.0 - mMalfBlockageValue), 1.0);
     }
 
     /// - Exponent is limited away from zero to avoid instability.
-    const double expInv = 1.0 / Math::innerLimit(-0.001, mExponent, 0.001);
+    const double expInv = 1.0 / MsMath::innerLimit(-0.001, mExponent, 0.001);
     const double dPG    = dPLimit * gLimit;
 
     if (gLimit >= 1.0 / mConductanceLimit) {

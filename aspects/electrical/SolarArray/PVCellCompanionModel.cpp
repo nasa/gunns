@@ -18,7 +18,7 @@ PROGRAMMERS:
 #include "aspects/electrical/SolarArray/PVCellCompanionModel.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "core/GunnsBasicNode.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details -- Max degrade
 const double PVCellCompanionModel::mMaxDegradation    = 1.0;
@@ -452,7 +452,7 @@ void PVCellCompanionModel::dampAndBoundIVCurve()
 
                     /// - Limit filterI to within valid bounds to prevent log of a negative number
                     //    on next pass.
-                    filterI = Math::limitRange(0.0, filterV * Gload, mIsc);
+                    filterI = MsMath::limitRange(0.0, filterV * Gload, mIsc);
 
                     /// - Detect a diverging oscillation about mVmp.  This can occur in some cases
                     ///   where the vehicle constant power load is higher than the solar array can

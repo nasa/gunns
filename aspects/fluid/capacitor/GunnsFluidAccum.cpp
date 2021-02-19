@@ -259,7 +259,7 @@ GunnsFluidAccum::~GunnsFluidAccum()
 void GunnsFluidAccum::buildConductance()
 {
     /// - Compute system conductance using effective conductivity.
-    double liquidSystemConductance = Math::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
+    double liquidSystemConductance = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
     /// - Set admittance matrix.
     if (fabs(mAdmittanceMatrix[3] - liquidSystemConductance) > 0.0) {
         /// - Zero out mAdmittanceMatrix[1] and [2]. No flow ever allowed between nodes.  Note we
@@ -340,13 +340,13 @@ double GunnsFluidAccum::computeConductivity(const double capacitance,
     if (dt > DBL_EPSILON) {
         if (maxConductivity >= minConductivity) {
             /// - Divide capacitance by dt to get conductivity.
-            conductivity = Math::limitRange(minConductivity, capacitance / dt, maxConductivity);
+            conductivity = MsMath::limitRange(minConductivity, capacitance / dt, maxConductivity);
 
         } else {
             // If Max has been forced to be less than min for debugging, set to conductivity max.
             // This should not be done in nominal ops. It is for troubleshooting purposes.
             // Typically, the max could be set to 0.0 to close off one of the accumulator chambers.
-            conductivity = Math::limitRange(0.0, capacitance / dt, maxConductivity);
+            conductivity = MsMath::limitRange(0.0, capacitance / dt, maxConductivity);
         }
     }
     return conductivity;
@@ -510,7 +510,7 @@ double GunnsFluidAccum::computeTemperature(const double dt,
         }
     }
     /// - Limit temperature to be between within min and max limits.
-    newTemperature = Math::limitRange(mMinTemperature, newTemperature, mMaxTemperature);
+    newTemperature = MsMath::limitRange(mMinTemperature, newTemperature, mMaxTemperature);
 
     return(newTemperature);
 }
@@ -523,7 +523,7 @@ double GunnsFluidAccum::computeTemperature(const double dt,
 void GunnsFluidAccum::deriveChamberVolumes()
 {
     mLiquidVolume =  mBellowsPosition * mActiveVolRange + mMinChamberVol;
-    mLiquidVolume =  Math::limitRange(mMinChamberVol, mLiquidVolume, mMaxChamberVol);
+    mLiquidVolume =  MsMath::limitRange(mMinChamberVol, mLiquidVolume, mMaxChamberVol);
     updatePressurizerVolume();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -568,7 +568,7 @@ void GunnsFluidAccum::editPressurizerTemperature()
 void GunnsFluidAccum::editTemperature(const double volume, PolyFluid* accumFluid)
 {
     /// - Limit mEditTemperatureValue to be within min and max limits.
-    mEditTemperatureValue = Math::limitRange(mMinTemperature, mEditTemperatureValue, mMaxTemperature);
+    mEditTemperatureValue = MsMath::limitRange(mMinTemperature, mEditTemperatureValue, mMaxTemperature);
     /// - Set fluid temperature to desired value.
     accumFluid->setTemperature(mEditTemperatureValue);
     /// - back calculate mass, so that density and bellows postiion are unaffected.
@@ -816,9 +816,9 @@ bool GunnsFluidAccum::rampValue(const double dt,
 {
     double rampComplete = false;
     /// - Limit target value.
-    targetValue = Math::limitRange(targetLowerLimit, targetValue, targetUpperLimit);
+    targetValue = MsMath::limitRange(targetLowerLimit, targetValue, targetUpperLimit);
     /// - Limit ramp rate.
-    rate = Math::limitRange(rateLowerLimit, rate, rateUpperLimit);
+    rate = MsMath::limitRange(rateLowerLimit, rate, rateUpperLimit);
     double step = rate * dt;
 
     /// - Approach target without overshooting.
@@ -1069,7 +1069,7 @@ void GunnsFluidAccum::updateEffConductivityScale(const double dt)
         if (mFillMode == GunnsFluidAccum::FILLING) {
             if (mBellowsZone == GunnsFluidAccum::FULL_DEADBAND) {
                 /// - buffer approach to filled hard stop.
-                mEffConductivityScale = Math::limitRange(0.0, (mPressurizerVolume - mMinChamberVol) / minDeadBandRange, 1.0);
+                mEffConductivityScale = MsMath::limitRange(0.0, (mPressurizerVolume - mMinChamberVol) / minDeadBandRange, 1.0);
 
             } else if (mBellowsZone == GunnsFluidAccum::FULL) {
                 /// - Close link if at full hard stop.
@@ -1093,7 +1093,7 @@ void GunnsFluidAccum::updateEffConductivityScale(const double dt)
         } else if (mFillMode == GunnsFluidAccum::DRAINING) {
             if (mBellowsZone == GunnsFluidAccum::EMPTY_DEADBAND) {
                 /// - buffer approach to empty hard stop.
-                mEffConductivityScale = Math::limitRange(0.0, (mLiquidVolume - mMinChamberVol) / minDeadBandRange, 1.0);
+                mEffConductivityScale = MsMath::limitRange(0.0, (mLiquidVolume - mMinChamberVol) / minDeadBandRange, 1.0);
 
             } else if (mBellowsZone == GunnsFluidAccum::EMPTY) {
                 /// - Close link if at empty hard stop.
@@ -1124,12 +1124,12 @@ void GunnsFluidAccum::updateEffConductivityScale(const double dt)
        if (mBellowsZone == GunnsFluidAccum::EMPTY_DEADBAND) {
             /// - If liquid volume is between dead band and minimum volume, scale the conductivity based on delta to
             ///   min volume.
-            mEffConductivityScale = Math::limitRange(0.0, (mLiquidVolume - mMinChamberVol) / minDeadBandRange, 1.0);
+            mEffConductivityScale = MsMath::limitRange(0.0, (mLiquidVolume - mMinChamberVol) / minDeadBandRange, 1.0);
 
        } else if (mBellowsZone == GunnsFluidAccum::FULL_DEADBAND) {
             /// - If pressurizer volume is between dead band and minimum volume, scale the conductivity based on delta to
             ///   min volume.
-            mEffConductivityScale = Math::limitRange(0.0, (mPressurizerVolume - mMinChamberVol) / minDeadBandRange, 1.0);
+            mEffConductivityScale = MsMath::limitRange(0.0, (mPressurizerVolume - mMinChamberVol) / minDeadBandRange, 1.0);
 
        } else if ((mBellowsZone == GunnsFluidAccum::EMPTY and mFillMode == GunnsFluidAccum::FILLING) or
                    (mBellowsZone == GunnsFluidAccum::FULL and mFillMode == GunnsFluidAccum::DRAINING)) {
@@ -1162,7 +1162,7 @@ void GunnsFluidAccum::updateEffectiveConductivity(const double dt)
                                                       0.0,
                                                       dt);
     /// - Limit conductivity to be between 0.0 and mMaxConductivity.
-    mEffectiveConductivity = Math::limitRange(0.0, mEffectiveConductivity, mMaxConductivity);
+    mEffectiveConductivity = MsMath::limitRange(0.0, mEffectiveConductivity, mMaxConductivity);
     /// - call update effective conductivity for pressurizer
     updatePressurizerEffCond(dt);
 }
@@ -1242,7 +1242,7 @@ void GunnsFluidAccum::updateLiqChamber(const double dt)
 
     /// - Update liquid and pressurizer volumes.
     if (density > 0.0) {
-        mLiquidVolume = Math::limitRange(mMinChamberVol, newMass / density, mMaxChamberVol);
+        mLiquidVolume = MsMath::limitRange(mMinChamberVol, newMass / density, mMaxChamberVol);
     } else {
         GUNNS_WARNING("liquid density too small. Liquid volume update aborted.");
     }
@@ -1250,7 +1250,7 @@ void GunnsFluidAccum::updateLiqChamber(const double dt)
     /// - Update bellows position.
     if (mActiveVolRange > 0.0) {
         mBellowsPosition = (mLiquidVolume - mMinChamberVol) / mActiveVolRange;
-        mBellowsPosition = Math::limitRange(0.0, mBellowsPosition, 1.0);
+        mBellowsPosition = MsMath::limitRange(0.0, mBellowsPosition, 1.0);
     } else {
         GUNNS_WARNING("has Active Volume Range <= 0.0. Invalid volume config. bellows position update aborted.");
     }
@@ -1301,7 +1301,7 @@ void GunnsFluidAccum::updatePressure(const double dt __attribute__((unused)))
     /// - Update spring pressure
     mSpringPressure = mBellowsPosition * mBellowsPosition * mSpringCoeff2 + mBellowsPosition * mSpringCoeff1 + mSpringCoeff0;
     /// - Update the liquid pressure to be the combination of spring and gas chamber pressures.
-    mInternalFluid->setPressure(Math::limitRange(DBL_EPSILON, mSpringPressure + getPressurizerPressure(), mMaxPressure));
+    mInternalFluid->setPressure(MsMath::limitRange(DBL_EPSILON, mSpringPressure + getPressurizerPressure(), mMaxPressure));
     /// - Update the liquid pressure reading to be the same as the liquid node pressure.
     ///   When conditions arise that would make the liquid and gas pressures to diverge,
     ///   it is seen through the pressure "readings". This is done by closing off
@@ -1322,7 +1322,7 @@ void GunnsFluidAccum::updatePressurizerVolume()
     } else if (mLiquidVolume <= mMinChamberVol) {
         mPressurizerVolume = mMaxChamberVol;
     } else {
-        mPressurizerVolume = Math::limitRange(mMinChamberVol, mTotalVolume - mLiquidVolume, mMaxChamberVol);
+        mPressurizerVolume = MsMath::limitRange(mMinChamberVol, mTotalVolume - mLiquidVolume, mMaxChamberVol);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1360,7 +1360,7 @@ void GunnsFluidAccum::validate(const GunnsFluidAccumConfigData& configData,
                     "Link has max conductivity < 0.");
     }
     /// - Throw an exception on minConductivityScale < DBL_EPSILON or > 1.0.
-    if (!Math::isInRange(DBL_EPSILON, configData.mMinConductivityScale, 1.0)) {
+    if (!MsMath::isInRange(DBL_EPSILON, configData.mMinConductivityScale, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Min Conductivity Scale must be between DBL_EPSILON and 1.0.");
     }
@@ -1425,7 +1425,7 @@ void GunnsFluidAccum::validate(const GunnsFluidAccumConfigData& configData,
                     "One-way effective conductivity scale rate must be > DBL_EPSILON if fill mode pressure threshold > DBL_EPSILON.");
     }
     /// - Throw an exception on Initial bellows position < 0.0 or > 1.0.
-    if (!Math::isInRange(0.0, inputData.mInitialBellowsPosition, 1.0)) {
+    if (!MsMath::isInRange(0.0, inputData.mInitialBellowsPosition, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Initial bellows position must be between 0.0 and 1.0.");
     }

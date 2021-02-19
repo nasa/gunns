@@ -7,7 +7,7 @@ LIBRARY DEPENDENCY:
 ***************************************************************************************************/
 #include "GunnsThermalPanel.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh" //needed for Math::isInRange() in validate()
+#include "math/MsMath.hh" //needed for MsMath::isInRange() in validate()
 /**************************************************************************************************/
 /* ConfigData class */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ void GunnsThermalPanel::initialize(const GunnsThermalPanelConfigData& configData
 void GunnsThermalPanel::validate(const GunnsThermalPanelConfigData& configData) const
 {
     /// - Throw an exception if absorptivity < 0 or > 1.
-    TS_PTCS_IF_ERREX(!Math::isInRange(0.0, configData.cAbsorptivity, 1.0), TsInitializationException,
+    TS_PTCS_IF_ERREX(!MsMath::isInRange(0.0, configData.cAbsorptivity, 1.0), TsInitializationException,
             "invalid config data", "Absorptivity out of range (0-1).");
 
     /// - Throw an exception if surface area < 0.

@@ -32,7 +32,7 @@ LIBRARY DEPENDENCY:
     )
 */
 #include "GunnsBasicLink.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
@@ -347,7 +347,7 @@ void GunnsBasicLink::validate(const GunnsBasicLinkConfigData& configData,
     }
 
     /// - Issue an error if blockage malfunction value not inside (0-1).
-    if (!Math::isInRange(0.0, inputData.mMalfBlockageValue, 1.0)) {
+    if (!MsMath::isInRange(0.0, inputData.mMalfBlockageValue, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Link has blockage outside valid range (0-1).");
     }

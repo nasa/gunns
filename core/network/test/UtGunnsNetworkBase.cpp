@@ -303,6 +303,10 @@ void UtGunnsNetworkBase::testInitSubNetwork()
     CPPUNIT_ASSERT(0 == tArticle->mInitNodesCount);
     CPPUNIT_ASSERT(0 == tArticle->mInitNetworkCount);
 
+    /// @test mutex initializationa: the network should leave the mutex unlocked after unit.
+    CPPUNIT_ASSERT(0 == pthread_mutex_trylock(&tArticle->netMutex));
+    pthread_mutex_unlock(&tArticle->netMutex);
+
     /// @test initNodes and initNetwork methods when called directly.
     tArticle->initNodes("super");
     CPPUNIT_ASSERT(std::string("")             == nodes[0].getName());
@@ -327,6 +331,10 @@ void UtGunnsNetworkBase::testInitStandalone()
     tArticle->initialize();
     CPPUNIT_ASSERT(1 == tArticle->mInitNodesCount);
     CPPUNIT_ASSERT(1 == tArticle->mInitNetworkCount);
+
+    /// @test mutex initializationa: the network should leave the mutex unlocked after unit.
+    CPPUNIT_ASSERT(0 == pthread_mutex_trylock(&tArticle->netMutex));
+    pthread_mutex_unlock(&tArticle->netMutex);
 
     /// @test initialize method handles TsInitializationException.
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize());
@@ -412,7 +420,13 @@ void UtGunnsNetworkBase::testUpdateStandalone()
     CPPUNIT_ASSERT_NO_THROW(tArticle->update(1.0));
 
     /// @test update method handles any random throw.
+    /// @test updating with mutex locking enabled and verify network leaves it unlocked when
+    ///       finished.
+    tArticle->setMutexEnabled(true);
     CPPUNIT_ASSERT_NO_THROW(tArticle->update(1.0));
+    pthread_mutex_t* mutex = tArticle->getMutex();
+    CPPUNIT_ASSERT(0 == pthread_mutex_trylock(mutex));
+    pthread_mutex_unlock(mutex);
 
     UT_PASS_LAST;
 }

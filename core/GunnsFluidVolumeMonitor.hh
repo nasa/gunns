@@ -35,7 +35,7 @@ PROGRAMMERS:
 
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "GunnsNetworkSpotter.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Fluid Volume Monitor Spotter Configuration Data
@@ -164,7 +164,7 @@ inline double GunnsFluidVolumeMonitor::getMass() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsFluidVolumeMonitor::getMassFraction(const int index) const
 {
-    return mNodeMassFractions[Math::limitRange(0, index, mNumFluidConstituents-1)];
+    return mNodeMassFractions[MsMath::limitRange(0, index, mNumFluidConstituents-1)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ inline double GunnsFluidVolumeMonitor::getMassFraction(const int index) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsFluidVolumeMonitor::getMoleFraction(const int index) const
 {
-    return mNodeMoleFractions[Math::limitRange(0, index, mNumFluidConstituents-1)];
+    return mNodeMoleFractions[MsMath::limitRange(0, index, mNumFluidConstituents-1)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

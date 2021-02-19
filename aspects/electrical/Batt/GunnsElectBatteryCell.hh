@@ -64,13 +64,17 @@ class GunnsElectBatteryCellConfigData
 class GunnsElectBatteryCellInputData
 {
     public:
-        bool   mMalfOpenCircuit;  /**< (--) trick_chkpnt_io(**) Initial failed open-circuit malfunction. */
-        bool   mMalfShortCircuit; /**< (--) trick_chkpnt_io(**) Initial failed short-circuit malfunction. */
-        double mSoc;              /**< (--) trick_chkpnt_io(**) Initial State of Charge (0-1). */
+        bool   mMalfOpenCircuit;   /**< (--)     trick_chkpnt_io(**) Initial failed open-circuit malfunction. */
+        bool   mMalfShortCircuit;  /**< (--)     trick_chkpnt_io(**) Initial failed short-circuit malfunction. */
+        bool   mMalfCapacityFlag;  /**< (--)     trick_chkpnt_io(**) Initial capacity override malfunction activation flag. */
+        double mMalfCapacityValue; /**< (amp*hr) trick_chkpnt_io(**) Initial capacity override malfunction value. */
+        double mSoc;               /**< (--)     trick_chkpnt_io(**) Initial State of Charge (0-1). */
         /// @brief Electrical Battery Cell Model input data default constructor.
-        GunnsElectBatteryCellInputData(const bool   malfOpenCircuit  = false,
-                                       const bool   malfShortCircuit = false,
-                                       const double soc              = 0.0);
+        GunnsElectBatteryCellInputData(const bool   malfOpenCircuit   = false,
+                                       const bool   malfShortCircuit  = false,
+                                       const bool   malfCapacityFlag  = false,
+                                       const double malfCapacityValue = 0.0,
+                                       const double soc               = 0.0);
         /// @brief Electrical Battery Cell Model input data default destructor.
         virtual ~GunnsElectBatteryCellInputData();
         /// @brief Electrical Battery Cell Model input data copy constructor.
@@ -102,8 +106,10 @@ class GunnsElectBatteryCell
         /// @name    Malfunction terms.
         /// @{
         /// @details Malfunction targets are public to allow access from the Trick events processor.
-        bool        mMalfOpenCircuit;  /**<    (--)                         Failed open-circuit malfunction. */
-        bool        mMalfShortCircuit; /**<    (--)                         Failed short-circuit malfunction. */
+        bool        mMalfOpenCircuit;   /**<   (--)                         Failed open-circuit malfunction. */
+        bool        mMalfShortCircuit;  /**<   (--)                         Failed short-circuit malfunction. */
+        bool        mMalfCapacityFlag;  /**<   (--)                         Capacity override malfunction activation flag. */
+        double      mMalfCapacityValue; /**<   (amp*hr)                     Capacity override malfunction value. */
         /// @}
         /// @brief   Electrical Battery Cell Model default constructor.
         GunnsElectBatteryCell();
@@ -125,6 +131,8 @@ class GunnsElectBatteryCell
         void   setMalfOpenCircuit(const bool flag = false);
         /// @brief   Sets and resets the cell failed short-circuit malfunction.
         void   setMalfShortCircuit(const bool flag = false);
+        /// @brief   Sets and resets the cell capacity override malfunction.
+        void   setMalfCapacity(const bool flag = false, const double value = 0.0);
 
     protected:
         std::string mName;             /**< *o (--)     trick_chkpnt_io(**) Instance name for error messages. */
@@ -157,6 +165,19 @@ inline void GunnsElectBatteryCell::setMalfOpenCircuit(const bool flag)
 inline void GunnsElectBatteryCell::setMalfShortCircuit(const bool flag)
 {
     mMalfShortCircuit = flag;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag  (--)     Malfunction activation flag: true activates, false deactivates.
+/// @param[in] value (amp*hr) Malfunction value.
+///
+/// @details  Sets the malf parameters to the given values.  Calling this method with default
+///           arguments resets the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectBatteryCell::setMalfCapacity(const bool flag, const double value)
+{
+    mMalfCapacityFlag  = flag;
+    mMalfCapacityValue = value;
 }
 
 #endif

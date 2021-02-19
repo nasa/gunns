@@ -135,10 +135,14 @@ trick.add_read(0.0, """massOverflow.fluid9.hxs13.mMalfBlockageValue = 1.0""" )
 trick.add_read(0.0, """massOverflow.fluid9.hxs23.mMalfBlockageFlag = True""" )
 trick.add_read(0.0, """massOverflow.fluid9.hxs23.mMalfBlockageValue = 1.0""" )
 
-trick.add_read(0.0, """massOverflow.fluid33.smem13.mMalfMembraneDegradeFlag = True""" )
-trick.add_read(0.0, """massOverflow.fluid33.smem13.mMalfMembraneDegradeValue = 1.0""" )
-trick.add_read(0.0, """massOverflow.fluid33.smem23.mMalfMembraneDegradeFlag = True""" )
-trick.add_read(0.0, """massOverflow.fluid33.smem23.mMalfMembraneDegradeValue = 1.0""" )
+trick.add_read(0.0, """massOverflow.fluid33.liqMembrane.mMalfMembraneDegradeFlag = True""" )
+trick.add_read(0.0, """massOverflow.fluid33.liqMembrane.mMalfMembraneDegradeValue = 1.0""" )
+trick.add_read(0.0, """massOverflow.fluid33.gasMembrane.mMalfMembraneDegradeFlag = True""" )
+trick.add_read(0.0, """massOverflow.fluid33.gasMembrane.mMalfMembraneDegradeValue = 1.0""" )
+trick.add_read(0.0, """massOverflow.fluid33.liqSource.mMalfBlockageFlag = True""" )
+trick.add_read(0.0, """massOverflow.fluid33.liqSource.mMalfBlockageValue = 1.0""" )
+trick.add_read(0.0, """massOverflow.fluid33.gasSource.mMalfBlockageFlag = True""" )
+trick.add_read(0.0, """massOverflow.fluid33.gasSource.mMalfBlockageValue = 1.0""" )
 
 #---------------------------------------------
 # T+1 events (start all flows)
@@ -302,13 +306,10 @@ trick.add_read(1.0, """massOverflow.fluid32.gsep13back.mMalfBlockageFlag = False
 trick.add_read(1.0, """massOverflow.fluid32.gpump23for.mMalfBlockageFlag = False""" )
 trick.add_read(1.0, """massOverflow.fluid32.gpump23back.mMalfBlockageFlag = False""" )
 
-trick.add_read(1.0, """massOverflow.fluid33.cond01.mMalfBlockageFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.cond12.mMalfBlockageFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.cond34.mMalfBlockageFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.smem13.mMalfBlockageFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.smem23.mMalfBlockageFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.smem13.mMalfMembraneDegradeFlag = False""" )
-trick.add_read(1.0, """massOverflow.fluid33.smem23.mMalfMembraneDegradeFlag = False""" )
+trick.add_read(1.0, """massOverflow.fluid33.liqMembrane.mMalfMembraneDegradeFlag = False""" )
+trick.add_read(1.0, """massOverflow.fluid33.gasMembrane.mMalfMembraneDegradeFlag = False""" )
+trick.add_read(1.0, """massOverflow.fluid33.liqSource.mMalfBlockageFlag = False""" )
+trick.add_read(1.0, """massOverflow.fluid33.gasSource.mMalfBlockageFlag = False""" )
 
 trick.add_read(1.0, """massOverflow.fluid34.cond01.mMalfBlockageFlag = False""" )
 trick.add_read(1.0, """massOverflow.fluid34.lpump12for.mMalfBlockageFlag = False""" )
@@ -419,6 +420,10 @@ trick.add_read(10.0, """massOverflow.fluid17.tank1.editPartialPressureRate(trick
 trick.add_read(10.0, """massOverflow.fluid18.pot20.setSourcePressure(0.0)""" )
 trick.add_read(10.0, """massOverflow.fluid18.bln1.editPartialPressureRate(trick.FluidProperties.GUNNS_H2O)""" )
 
+trick.add_read(10.0, """massOverflow.fluid33.liqMembrane.mMalfMembraneDegradeFlag = True""" )
+trick.add_read(10.0, """massOverflow.fluid33.gasMembrane.mMalfMembraneDegradeFlag = True""" )
+trick.add_read(10.0, """massOverflow.fluid33.liqSource.mMalfBlockageFlag = True""" )
+trick.add_read(10.0, """massOverflow.fluid33.gasSource.mMalfBlockageFlag = True""" )
 
 #---------------------------------------------
 # Setup Data Logging

@@ -23,7 +23,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsParseException.hh"
 #include "math/UnitConversion.hh"
 #include "aspects/thermal/PtcsMacros.hh"
-#include "math/Math.hh" //needed for Math::isInRange() in setHeaterPowers()
+#include "math/MsMath.hh" //needed for MsMath::isInRange() in setHeaterPowers()
 /**************************************************************************************************/
 /* ConfigData class */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,34 +293,6 @@ void ThermalNetwork::restart()
     {
         /// - Report error.
         TS_PTCS_ERROR("Other Exception while restarting.");
-    }
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  timeStep  (s)  integration time step
-///
-/// @details    Updates the ThermalNetwork by calling the GUNNS step() function.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void ThermalNetwork::update(const double timeStep)
-{
-    try
-    {
-        /// - If not a sub-network, then step the pre-solution funcitons, then the solver, then the
-        ///   post-solution functions.  When this is a sub-network, the super-network will call the
-        ///   pre- & post- solution functions and step its own solver.
-        if (not netIsSubNetwork) {
-            stepSpottersPre(timeStep);
-            netSolver.step(timeStep);
-            stepSpottersPost(timeStep);
-        }
-    } catch(TsInitializationException& e)
-    {
-        /// - Report error.
-        TS_PTCS_ERROR("TsInitializationException while updating.");
-
-    } catch(...)
-    {
-        /// - Report error.
-        TS_PTCS_ERROR("Other Exception while updating.");
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1053,7 +1025,7 @@ void ThermalNetwork::setHeaterPowers()
 
         if (true == mMalfHtrMiswireFlag)
         {
-            if (true == Math::isInRange(0, mMalfHtrIndexValue[i], numLinksHtr-1) )
+            if (true == MsMath::isInRange(0, mMalfHtrIndexValue[i], numLinksHtr-1) )
             {
                 /// - Overwrite index with the cross-up value from the mMalfHtrIndexValue array.
                 index = mMalfHtrIndexValue[i];

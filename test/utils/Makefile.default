@@ -47,7 +47,7 @@ lib:
 	cd ${GUNNS_HOME}/lib/test && $(MAKE)
 
 $(test_exe): $(OBJECTS) lib
-	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunns -lcppunit -lgcov $(LDFLAGS)
+	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunns -lcppunit -lgcov -pthread $(LDFLAGS)
 
 $(OBJECTS): build/%.o : %.cpp | $(OBJDIRS)
 	$(CXX) $(CXXFLAGS) $(extra_CXXFLAGS) -c $< -o $@

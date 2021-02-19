@@ -28,7 +28,7 @@ LIBRARY DEPENDENCY:
     )
 */
 #include "GunnsBasicExternalDemand.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                  (--) Link name

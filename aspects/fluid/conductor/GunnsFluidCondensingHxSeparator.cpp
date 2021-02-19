@@ -345,7 +345,7 @@ void GunnsFluidCondensingHxSeparator::validate(
     }
 
     /// - Throw an exception on WS mass exponent not (0.1 - 10)
-    if (!Math::isInRange(0.1, configData.mWsMassExponent, 10.0)) {
+    if (!MsMath::isInRange(0.1, configData.mWsMassExponent, 10.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS mass exponent not in (0.1 to 10.0).");
     }
@@ -429,7 +429,7 @@ void GunnsFluidCondensingHxSeparator::updateState(const double dt __attribute__(
 {
     /// - Add the contribution of condensation on the HX fins to restrict airflow.  For example a
     ///   mHxWetFlowFactor of 0.01 reduces the link conductivity by 1% per kg of condensate mass.
-    mEffectiveConductivity *= Math::limitRange(0.0, 1.0 - mHxWetFlowFactor * mHxCondensateMass, 1.0);
+    mEffectiveConductivity *= MsMath::limitRange(0.0, 1.0 - mHxWetFlowFactor * mHxCondensateMass, 1.0);
 
     /// - Protect for divide by zero on drive ratio; also setting drive ratio to zero disconnects
     ///   the drum from the motor, allowing manual control of the drum speed for tuning.

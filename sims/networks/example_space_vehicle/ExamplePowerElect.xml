@@ -1,4 +1,4 @@
-<mxGraphModel arrows="0" connect="1" dx="2062" dy="1002" fold="1" grid="1" gridSize="10" guides="1" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
+<mxGraphModel arrows="0" connect="1" dx="1106" dy="830" fold="1" grid="1" gridSize="10" guides="1" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
   <root>
     <mxCell id="0" />
     <mxCell id="A1WOuBuKi3TF-El9oYw3-1" parent="0" value="Notices" />
@@ -117,7 +117,7 @@
         <mxGeometry as="geometry" height="40" width="40" x="20" y="160" />
       </mxCell>
     </object>
-    <object About="PV Regulator, Shunting" Ports="0=in, 1=out" c00.outputConductance="100.0" c01.shuntConductance="100.0" c02.array="&amp;network-&gt;solarArray" c03.inCurrentSensor="0" c04.inVoltageSensor="0" c05.outCurrentSensor="0" c06.outVoltageSensor="0" c07.inputOverCurrentTrip="0.0" c08.inputOverVoltageTrip="0.0" c09.outputOverCurrentTrip="0.0" c10.outputOverVoltageTrip="0.0" c11.outputUnderVoltageTrip="0.0" c12.tripPriority="0" i00.voltageSetpoint="32.0" i01.powered="true" i02.enabled="true" id="3FUAH8PDLAIBKNIN8BMR-13" label="solarArrayRegulator">
+    <object About="PV Regulator, Shunting" Ports="0=in, 1=out" c00.outputConductance="100.0" c01.shuntConductance="100.0" c02.array="&amp;network-&gt;solarArray" c03.inCurrentSensor="0" c04.inVoltageSensor="0" c05.outCurrentSensor="0" c06.outVoltageSensor="0" c07.inputOverCurrentTrip="0.0" c08.inputOverVoltageTrip="0.0" c09.outputOverCurrentTrip="0.0" c10.outputOverVoltageTrip="0.0" c11.outputUnderVoltageTrip="0.0" c12.tripPriority="3" i00.voltageSetpoint="32.0" i01.powered="true" i02.enabled="true" i03.minOperatePower="0.0" id="3FUAH8PDLAIBKNIN8BMR-13" label="solarArrayRegulator">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/SolarArray/GunnsElectPvRegShunt" type="Link" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="verticalLabelPosition=bottom;align=center;fillColor=#ffff88;strokeColor=#000000;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(nVXbboMwDP0aXidIhsrrxG5P1bSue89at0RLExTSy/b1SzBIhDYdqYRAPo59jmPXTWjZVKyGhKSsqWFlEvqYEHJgmrMvYWFiPRWCWZqiLdkOEHpZzucLi7x92tc7bO17Ue2lwXON0eobjnxtugxcVqB55z0iRjArfUrSB4u6h5YrJaUVw5VsPM/Ab5Mz7pgGcrjE1LVl2YEBjXAn++RZP511l7f2cwyP2psJRNkEIlpaJFQtLTdKw1arvVxflAdC8LqBCy06juxeUu5rulL6hguBDQydiGYvprNfZ66Zm6gzR+/eqQOE+p2HWftwweUgfHRlE+J9+qyITuALIGl0BSMFs5mXoIgUMCqg7+rtVxDdghn14u9j4wv/p5iR6ATTJ9figfH8b6o3SpqG/zre9oPdDxdLSwMnt5iY4FuJx1cg3Tbq1y+Ci9fl/AOxw+CsUbW/HOjFSU21Mswtp+7yg2vsbFm1KP69tMAf);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" vertex="1">
         <mxGeometry as="geometry" height="40" width="80" x="200" y="160" />

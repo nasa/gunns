@@ -8,7 +8,7 @@ LIBRARY DEPENDENCY:
 ***************************************************************************************************/
 
 #include "core/GunnsFluidUtils.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
 #include "GunnsFluidPipe.hh"

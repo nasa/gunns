@@ -21,7 +21,7 @@
  */
 
 #include "software/SimCompatibility/TsSimCompatibility.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <string>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,8 +92,8 @@ class TsApproximation {
 /// @details  Returns an approximation for the specified variables with bounding to the valid range.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double TsApproximation::get(const double x, const double y) {
-    const double z = Math::limitRange(mMinX, x, mMaxX);
-    const double w = Math::limitRange(mMinY, y, mMaxY);
+    const double z = MsMath::limitRange(mMinX, x, mMaxX);
+    const double w = MsMath::limitRange(mMinY, y, mMaxY);
     return evaluate(z, w);
 }
 

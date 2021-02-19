@@ -29,7 +29,7 @@ LIBRARY DEPENDENCY:
     )
 */
 #include "GunnsBasicConductor.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ void GunnsBasicConductor::step(const double dt)
     if (mMalfBlockageFlag) {
         mSystemConductance *= (1.0 - mMalfBlockageValue);
     }
-    mSystemConductance = Math::limitRange(0.0, mSystemConductance, mConductanceLimit);
+    mSystemConductance = MsMath::limitRange(0.0, mSystemConductance, mConductanceLimit);
     buildConductance();
 }
 

@@ -12,7 +12,7 @@ LIBRARY DEPENDENCY:
 */
 
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "GunnsElectSelector.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ void GunnsElectSelector::validate(const GunnsElectSelectorConfigData& configData
     }
 
     /// - Throw an exception on initial selection not in valid range.
-    if (!Math::isInRange(0, inputData.mSelector, portsVector->size()-1)) {
+    if (!MsMath::isInRange(0, inputData.mSelector, portsVector->size()-1)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "initial port selection not in valid range.");
     }
@@ -259,7 +259,7 @@ void GunnsElectSelector::step(const double dt __attribute__((unused)))
 
     /// - The blockage malfunction reduces effective conductance.
     if (mMalfBlockageFlag) {
-        mEffectiveConductance *= Math::limitRange(0.0, (1.0 - mMalfBlockageValue), 1.0);
+        mEffectiveConductance *= MsMath::limitRange(0.0, (1.0 - mMalfBlockageValue), 1.0);
     }
 
     /// - Limit effective conductance to GUNNS range.

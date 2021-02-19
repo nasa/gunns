@@ -233,7 +233,7 @@ void GunnsFluidCapacitor::validate(const GunnsFluidCapacitorConfigData& configDa
     }
 
     /// - Issue an error on expansion scale factor < 0 or > 1.
-    if (!Math::isInRange(0.0, configData.mExpansionScaleFactor, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mExpansionScaleFactor, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has expansion scale factor < 0 or > 1.");
     }

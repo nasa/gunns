@@ -9,7 +9,7 @@
  ((TsPoweredValveController.o))
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -192,7 +192,7 @@ void TsPositionValveController::update(const bool                supplyVoltageFl
         cmd                = 0.0;
     } else if (dt > DBL_EPSILON){
         const double limit = dt * mCmdScale;
-        cmd                = Math::limitRange(-limit, command.mPosition - sensed, +limit) / limit;
+        cmd                = MsMath::limitRange(-limit, command.mPosition - sensed, +limit) / limit;
     }
 
     TsPoweredValveController::update(supplyVoltageFlag, command.mEnable, cmd, dt);

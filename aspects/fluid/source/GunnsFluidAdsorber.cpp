@@ -6,7 +6,7 @@ LIBRARY DEPENDENCY:
    ((core/GunnsFluidConductor.o))
 ***************************************************************************************************/
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -318,7 +318,7 @@ void GunnsFluidAdsorber::validate(const GunnsFluidAdsorberConfigData& configData
     }
 
     /// - Throw an exception on adsorption efficiency outside valid range (0.0 to 1.0)).
-    if (!Math::isInRange(0.0, configData.mEfficiency, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mEfficiency, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Adsorption efficiency outside valid range (0.0 to 1.0).");
     }
 

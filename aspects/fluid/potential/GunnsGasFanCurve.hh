@@ -29,7 +29,7 @@ PROGRAMMERS:
 */
 
 #include "math/root_finding/BrentMethod.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@ LIBRARY DEPENDENCY:
 
 #include <algorithm>
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -275,7 +275,7 @@ void GunnsFluidReliefValve::validate() const
     }
 
     /// - Throw an exception if pop position <= 0 or pop position >= 1.
-    if (!Math::isInRange(FLT_EPSILON, mPopPosition, 1.0 - FLT_EPSILON)) {
+    if (!MsMath::isInRange(FLT_EPSILON, mPopPosition, 1.0 - FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Pop position outside valid range (0-1).");
     }
 
@@ -376,7 +376,7 @@ void GunnsFluidReliefValve::updateState(const double dt)
     /// - Set the new valve position.
     if (!mMalfStuckFlag) {
         if (mMalfFailToFlag) {
-            mPosition = Math::limitRange(0.0, mMalfFailToValue, 1.0);
+            mPosition = MsMath::limitRange(0.0, mMalfFailToValue, 1.0);
         } else {
             updatePosition(dt);
         }
@@ -506,7 +506,7 @@ void GunnsFluidReliefValve::updatePosition(const double dt)
 
     /// - Apply range and rate limiting to the computed position.
     const double maxDelta = mRateLimit * dt;
-    mPosition             = Math::limitRange(std::max(0.0, mPosition - maxDelta),
+    mPosition             = MsMath::limitRange(std::max(0.0, mPosition - maxDelta),
                                              position,
                                              std::min(1.0, mPosition + maxDelta));
 

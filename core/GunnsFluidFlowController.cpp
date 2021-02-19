@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
     (core/GunnsFluidUtils.o))
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "GunnsFluidFlowController.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -184,7 +184,7 @@ void GunnsFluidFlowController::initialize(const GunnsFluidFlowControllerConfigDa
 void GunnsFluidFlowController::validate() const
 {
     /// - Issue an error on filter gain < 0 or > 1.
-    if (!Math::isInRange(0.0, mFilterProportionalGain, 1.0)) {
+    if (!MsMath::isInRange(0.0, mFilterProportionalGain, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Filter gain not within (0-1).");
     }
@@ -231,7 +231,7 @@ inline void GunnsFluidFlowController::updateState(const double dt __attribute__(
 
     /// - This filter helps reduce noise when this link is in a flow circuit with other dynamic
     ///   valves like pressure regulators.
-    mEffectiveConductivity = mLastConductivity + Math::limitRange(0.0, mFilterProportionalGain, 1.0)
+    mEffectiveConductivity = mLastConductivity + MsMath::limitRange(0.0, mFilterProportionalGain, 1.0)
                            * (mEffectiveConductivity - mLastConductivity);
     if (mEffectiveConductivity < DBL_EPSILON) {
         mEffectiveConductivity = 0.0;

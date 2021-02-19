@@ -35,12 +35,14 @@ public:
     void testMean();
     void testRepeatability();
     void testRandom();
+    void testAccessors();
 private:
     CPPUNIT_TEST_SUITE(UtTsNoise);
     CPPUNIT_TEST(testRange);
     CPPUNIT_TEST(testMean);
     CPPUNIT_TEST(testRepeatability);
     CPPUNIT_TEST(testRandom);
+    CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST_SUITE_END();
     /// @brief Copy constructor is not implemented.
     UtTsNoise(const UtTsNoise &rhs);

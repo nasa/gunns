@@ -628,9 +628,9 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     tArticle->transportFlows(tTimeStep);
 
     /// @test Flow-thru and related output.
-
     double expectedDrop    = p0 - p1;
     double expectedFlow    = tArticle->mFlux * tNodes[tPort0].getOutflow()->getMWeight();
+    double expectedUpFlow  = expectedFlow + tArticle->mMembraneFlowRate;
     double expectedVolFlow = expectedFlow / tNodes[tPort0].getOutflow()->getDensity();
     double expectedPower   = -expectedDrop * expectedVolFlow * 1000.0;  // Pa/kPa
     CPPUNIT_ASSERT(0 < tArticle->mFlux);
@@ -642,13 +642,12 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     /// @test Flow transport between the nodes.
     tNodes[tPort1].integrateFlows(tTimeStep);
     double oldDownH         = tNodes[tPort1].getOutflow()->getSpecificEnthalpy();
-    double expectedDownFlow = expectedFlow - tArticle->mMembraneFlowRate;
     double expectedDownQ    = tNodes[tPort0].getOutflow()->getSpecificEnthalpy() * expectedFlow
                             - oldDownH * tArticle->mMembraneFlowRate
                             + tArticle->mPhaseChangeHeat;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort0].getInflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,     tNodes[tPort0].getOutflux(),     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedUpFlow,   tNodes[tPort0].getOutflux(),     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,     tNodes[tPort1].getInflux(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort1].getOutflux(),     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mMembraneFlowRate,
@@ -720,6 +719,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     /// @test Flow-thru and related output.
     expectedDrop     = p0 - p1;
     expectedFlow     = tArticle->mFlux * tNodes[tPort1].getOutflow()->getMWeight();
+    expectedUpFlow   = -expectedFlow + tArticle->mMembraneFlowRate;
     expectedVolFlow  = expectedFlow / tNodes[tPort1].getOutflow()->getDensity();
     expectedPower    = -expectedDrop * expectedVolFlow * 1000.0;  // Pa/kPa
     tempMembraneFlux = tArticle->mMembraneFlowRate / extProps->getMWeight();
@@ -730,16 +730,18 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,    tArticle->mPower,            FLT_EPSILON);
 
     /// @test Flow transport between the nodes.
-    expectedDownFlow = -expectedFlow - tArticle->mMembraneFlowRate;
-    expectedDownQ    = expectedDownFlow * tNodes[tPort1].getOutflow()->getSpecificEnthalpy()
-                     + tArticle->mPhaseChangeHeat;
+    tNodes[tPort0].integrateFlows(tTimeStep);
+    oldDownH         = tNodes[tPort0].getOutflow()->getSpecificEnthalpy();
+    expectedDownQ    = tNodes[tPort1].getOutflow()->getSpecificEnthalpy() * -expectedFlow
+                     - oldDownH * tArticle->mMembraneFlowRate + tArticle->mPhaseChangeHeat;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlow,    tNodes[tPort0].getInflux(),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort0].getOutflux(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort1].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlow,    tNodes[tPort1].getOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedUpFlow,   tNodes[tPort1].getOutflux(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mMembraneFlowRate,
                                                    tNodes[tPort2].getInflux(),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort2].getOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDownQ,    tNodes[tPort0].getNetHeatFlux(), DBL_EPSILON);
 
     // @test None 100% fluid in downstream (0) node with reverse flow
     fractions[0] = 0.0;

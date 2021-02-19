@@ -299,7 +299,7 @@ void GunnsFluidSublimator::validate(const GunnsFluidSublimatorConfigData& config
     }
 
     /// - Throw an exception if ice coverage fraction !0-1.
-    if (!Math::isInRange(0.0, configData.mIceCoverageFraction, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mIceCoverageFraction, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Ice coverage fraction not (0-1).");
     }
@@ -311,7 +311,7 @@ void GunnsFluidSublimator::validate(const GunnsFluidSublimatorConfigData& config
     }
 
     /// - Throw an exception if thermal conductivity filter gain !0-1.
-    if (!Math::isInRange(0.0, configData.mThermalConductivityGain, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mThermalConductivityGain, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Thermal conductivity filter gain not (0-1).");
     }
@@ -383,7 +383,7 @@ void GunnsFluidSublimator::step(const double dt)
 {
     /// - Relative humidity. Ability to sublimate will approach zero as this approaches 1. This will
     ///   be modeled by scaling effective conductivity of the thermal potential link towards zero.
-    mVentRelativeHumidity = Math::limitRange(0.0,
+    mVentRelativeHumidity = MsMath::limitRange(0.0,
             GunnsFluidUtils::computeRelativeHumidityH2O(mNodes[1]->getContent()), 1.0);
     const bool sublimate = mVentRelativeHumidity < 1.0;
 
@@ -479,7 +479,7 @@ void GunnsFluidSublimator::step(const double dt)
 
     /// - Calculate the new ice mass, limited to the valid range.
     mIceMass += iceRate * dt;
-    mIceMass = Math::limitRange(0.0, mIceMass, effectiveMaxIceMass);
+    mIceMass = MsMath::limitRange(0.0, mIceMass, effectiveMaxIceMass);
 
     /// - Calculate the thermal conductivity of the thermal aspect, to modulate how much heat the
     ///   sublimator can sink, based on the amount of ice in the pack (more ice absorbs more heat)

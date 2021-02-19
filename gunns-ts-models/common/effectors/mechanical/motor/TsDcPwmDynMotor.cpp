@@ -25,7 +25,7 @@ PROGRAMMERS:
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "GenericMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "math/UnitConversion.hh"
 #include "TsDcPwmDynMotor.hh"
 
@@ -343,7 +343,7 @@ void TsDcPwmDynMotor::validate(const TsDcPwmDynMotorConfigData& configData,
                                const TsDcPwmDynMotorInputData&  inputData) const
 {
     /// - Throw an exception if pulse waste fraction not within 0-1.
-    if (!Math::isInRange(0.0, configData.mPulseWasteFraction, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mPulseWasteFraction, 1.0)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "TSM", "Invalid Input Data", TsInitializationException,
                 "Pulse waste fraction cannot be outside 0-1.", mName);
     }
@@ -379,7 +379,7 @@ void TsDcPwmDynMotor::validate(const TsDcPwmDynMotorConfigData& configData,
     }
 
     /// - Throw an exception if initial pulse width not within 0-1.
-    if (!Math::isInRange(0.0, inputData.mPulseWidth, 1.0)) {
+    if (!MsMath::isInRange(0.0, inputData.mPulseWidth, 1.0)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "TSM", "Invalid Input Data", TsInitializationException,
                 "Initial pulse width cannot be outside 0-1.", mName);
     }

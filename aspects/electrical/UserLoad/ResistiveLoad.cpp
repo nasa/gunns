@@ -36,7 +36,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsNumericalException.hh"
 #include "simulation/hs/TsHsMsg.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 //=================================================================================================
 //
@@ -294,7 +294,7 @@ void ResistiveLoad::calculateResistiveLoad()
         switch(mLoadOperMode) {
         case LoadON:
             if (0.0 < mResistanceNormal ) {
-               mEquivalentResistance = Math::limitRange(MINIMUM_RESISTANCE, mResistanceNormal, MAXIMUM_RESISTANCE);
+               mEquivalentResistance = MsMath::limitRange(MINIMUM_RESISTANCE, mResistanceNormal, MAXIMUM_RESISTANCE);
             } else {
                mEquivalentResistance = MAXIMUM_RESISTANCE;
                if (!mPrintMessageOnce){
@@ -307,7 +307,7 @@ void ResistiveLoad::calculateResistiveLoad()
             break;
         case LoadSTANDBY:
             if (0.0 < mResistanceStandby ) {
-               mEquivalentResistance = Math::limitRange(MINIMUM_RESISTANCE, mResistanceStandby, MAXIMUM_RESISTANCE);
+               mEquivalentResistance = MsMath::limitRange(MINIMUM_RESISTANCE, mResistanceStandby, MAXIMUM_RESISTANCE);
             } else {
                 mEquivalentResistance = MAXIMUM_RESISTANCE;
                if (!mPrintMessageOnce){
@@ -334,7 +334,7 @@ void ResistiveLoad::computeActualPower() {
 
         if (0.0 == mEquivalentResistance) {
 //            mEquivalentResistance = 1.0/MAXIMUM_RESISTANCE;
-//            mEquivalentResistance = Math::limitRange(MINIMUM_RESISTANCE, mEquivalentResistance, MAXIMUM_RESISTANCE);
+//            mEquivalentResistance = MsMath::limitRange(MINIMUM_RESISTANCE, mEquivalentResistance, MAXIMUM_RESISTANCE);
               mEquivalentResistance = DEFAULT_RESISTANCE;
               if (!mPrintMessageOnce){
                  TsHsMsg msg(TS_HS_INFO, TS_HS_EPS);

@@ -6,7 +6,7 @@ LIBRARY DEPENDENCY:
  ((aspects/fluid/conductor/GunnsFluidValve.o))
 ***************************************************************************************************/
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include <algorithm>
@@ -223,7 +223,7 @@ void GunnsFluidCheckValve::validate() const
     }
 
     /// - Throw an exception if fail to position malfunction value is out of range 0 to 1.
-    if (!Math::isInRange(0.0, mMalfFailToValue, 1.0)) {
+    if (!MsMath::isInRange(0.0, mMalfFailToValue, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data", "Fail to position position malfunction value out of range 0 to 1.");
     }
 }
@@ -251,7 +251,7 @@ void GunnsFluidCheckValve::updateState(const double dt)
     if (!mMalfStuckFlag) {
         if (mMalfFailToFlag) {
             /// - Handle fail to position malfunction with range limiting.
-            mPosition                     = Math::limitRange(0.0, mMalfFailToValue, 1.0);
+            mPosition                     = MsMath::limitRange(0.0, mMalfFailToValue, 1.0);
         } else {
             const double previousPosition = mPosition;
             if (mPotentialDrop >= mOpenPressure) {
@@ -267,7 +267,7 @@ void GunnsFluidCheckValve::updateState(const double dt)
 
             /// - Apply range and rate limiting to the computed position.
             const double maxDelta         = mRateLimit * dt;
-            mPosition                     = Math::limitRange(std::max(0.0, previousPosition - maxDelta),
+            mPosition                     = MsMath::limitRange(std::max(0.0, previousPosition - maxDelta),
                                                              mPosition,
                                                              std::min(1.0, previousPosition + maxDelta));
         }

@@ -10,7 +10,7 @@
 */
 
 #include "GenericMacros.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -293,7 +293,7 @@ void TsPoweredValveController::validate(const TsPoweredValveControllerConfigData
                         "Invalid Configuration Data",  "transit time < DBL_EPSILON.");
 
     /// - Throw a TsInitializationException exception on reference command too small.
-    TS_GENERIC_IF_ERREX((Math::isInRange(-DBL_EPSILON, config.mRefCmd, +DBL_EPSILON)), TsInitializationException,
+    TS_GENERIC_IF_ERREX((MsMath::isInRange(-DBL_EPSILON, config.mRefCmd, +DBL_EPSILON)), TsInitializationException,
                         "Invalid Configuration Data",  "reference command too small.");
 
     /// - Throw a TsInitializationException exception on hold power < DBL_EPSILON.

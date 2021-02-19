@@ -65,12 +65,10 @@ class UtGunnsFluidSimpleH2Redox: public CppUnit::TestFixture
         void testRestart();
         /// @brief    Tests step method.
         void testStep();
-        /// @brief    Tests update fluid method (nominal).
-        void testUpdateFluidNominal();
-        /// @brief    Tests update fluid method (no/reverse flow).
-        void testUpdateFluidOffNominal();
-        /// @brief    Tests update fluid method (desorbtionCycle).
-        void testUpdateFluidDesorbtion();
+        /// @brief    Tests computeFlows method.
+        void testComputeFlows();
+        /// @brief    Tests transportFlows method.
+        void testTransportFlows();
         /// @brief    Tests specific port mapping rules.
         void testPortMapping();
         /// @brief    Tests initialize method exceptions.
@@ -84,46 +82,38 @@ class UtGunnsFluidSimpleH2Redox: public CppUnit::TestFixture
         CPPUNIT_TEST(testModifiers);
         CPPUNIT_TEST(testRestart);
         CPPUNIT_TEST(testStep);
-        CPPUNIT_TEST(testUpdateFluidNominal);
-        CPPUNIT_TEST(testUpdateFluidOffNominal);
-        CPPUNIT_TEST(testUpdateFluidDesorbtion);
+        CPPUNIT_TEST(testComputeFlows);
+        CPPUNIT_TEST(testTransportFlows);
         CPPUNIT_TEST(testPortMapping);
         CPPUNIT_TEST(testInitializationExceptions);
         CPPUNIT_TEST_SUITE_END();
         /// @brief   Enumeration for the number of nodes and fluid constituents.
-        enum {N_NODES = 4, N_FLUIDS = 4};
-        DefinedFluidProperties*        mFluidProperties;       /**< (--)    Defined fluid properties. */
-        FluidProperties::FluidType     mTypes[N_FLUIDS];       /**< (--)    Array of Fluid Types. */
-//        double                         mFractions[N_FLUIDS];   /**< (--)    Array of fluid mass fractions. */
-        PolyFluidConfigData*           mFluidConfig;           /**< (--)    Fluid config data. */
-        PolyFluidInputData*            mFluidInput0;           /**< (--)    Fluid 0 input data. */
-        PolyFluidInputData*            mFluidInput1;           /**< (--)    Fluid 1 input data. */
-        PolyFluidInputData*            mFluidInput2;           /**< (--)    Fluid 2 input data. */
-        std::vector<GunnsBasicLink*>   mLinks;                 /**< (--)    Link vector. */
-        std::string                    mName;                  /**< (--)    Nominal name. */
-        GunnsFluidNode                 mNodes[N_NODES];        /**< (--)    Fluid nodes. */
-        GunnsNodeList                  mNodeList;              /**< (--)    Node List. */
-        int                            mPort0;                 /**< (--)    Nominal H2 port index. */
-        int                            mPort1;                 /**< (--)    Nominal O2 port index. */
-        int                            mPort2;                 /**< (--)    Nominal H2O port index. */
-        double                         mH2Coefficient;         /**< (kg/s/amp)    Nominal config data. */
-        double                         mMinInletPressure;      /**< (kPa)    Nominal config data. */
-        double                         mNominalStackVoltage;   /**< (V)    Nominal config data. */
-        GunnsFluidSimpleH2RedoxConfigData*  mConfigData;       /**< (-)     Pointer to nominal configuration data. */
-        bool                           mMalfBlockageFlag;      /**< (--)    Nominal input data. */
-        double                         mMalfBlockageValue;     /**< (--)    Nominal input data. */
-        double                         mCurrent;               /**< (amp)   Nominal input data. */
-        bool                           mTrippedOff;            /**< (--)    Nominal input data. */
-        GunnsFluidSimpleH2RedoxInputData*   mInputData;        /**< (--)    Pointer to nominal input data. */
-//        double                         mFluidTemperature;      /**< (K)     Temperature of the fluid in the reactor. */
-//        double                         mWallHeatFlux;          /**< (W)     Convection heat flow from the fluid to the tube wall (simbus output to thermal aspect). */
-//        double                         mMass;                  /**< (kg)    Adsorbed mass this cycle. */
-//        double                         mSorbtionFlowRate;      /**< (kg/s)  Sorbtion mass flow rate. */
-        FriendlyGunnsFluidSimpleH2Redox*    mArticle;               /**< (--)    Pointer to the friendly adsorber under test. */
-//        double                         mFlowRate;              /**< (kg/s)  Nominal mass flow rate. */
-        double                         mTimeStep;              /**< (s)     Nominal time step. */
-//        double                         mTolerance;             /**< (--)    Nominal tolerance for comparison of expected and returned values. */
-        static int                    TEST_ID;                 /**< (--)    Test identification number. */
+        enum {N_NODES = 5, N_FLUIDS = 5};
+        DefinedFluidProperties*            tFluidProperties;   /**< (--)       Defined fluid properties. */
+        FluidProperties::FluidType         tTypes[N_FLUIDS];   /**< (--)       Array of Fluid Types. */
+        PolyFluidConfigData*               tFluidConfig;       /**< (--)       Fluid config data. */
+        PolyFluidInputData*                tFluidInput0;       /**< (--)       Fluid 0 input data. */
+        PolyFluidInputData*                tFluidInput1;       /**< (--)       Fluid 1 input data. */
+        PolyFluidInputData*                tFluidInput2;       /**< (--)       Fluid 2 input data. */
+        std::vector<GunnsBasicLink*>       tLinks;             /**< (--)       Link vector. */
+        std::string                        tName;              /**< (--)       Nominal name. */
+        GunnsFluidNode                     tNodes[N_NODES];    /**< (--)       Fluid nodes. */
+        GunnsNodeList                      tNodeList;          /**< (--)       Node List. */
+        int                                tPort0;             /**< (--)       Nominal H2/H2O port index. */
+        int                                tPort1;             /**< (--)       Nominal O2 port index. */
+        int                                tNumCells;          /**< (--)       Nominal config data. */
+        double                             tCellVoltageLoaded; /**< (V)        Nominal config data. */
+        double                             tCellH2ReactRate;   /**< (kg/s/amp) Nominal config data. */
+        double                             tMaxEfficiency;     /**< (--)       Nominal config data. */
+        GunnsFluidSimpleH2RedoxConfigData* tConfigData;        /**< (-)        Pointer to nominal configuration data. */
+        bool                               tMalfBlockageFlag;  /**< (--)       Nominal input data. */
+        double                             tMalfBlockageValue; /**< (--)       Nominal input data. */
+        double                             tCurrent;           /**< (amp)      Nominal input data. */
+        bool                               tTrippedOff;        /**< (--)       Nominal input data. */
+        GunnsFluidSimpleH2RedoxInputData*  tInputData;         /**< (--)       Pointer to nominal input data. */
+        FriendlyGunnsFluidSimpleH2Redox*   tArticle;           /**< (--)       Pointer to the friendly adsorber under test. */
+        double                             tTimeStep;          /**< (s)        Nominal time step. */
+        static int                         TEST_ID;            /**< (--)       Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////

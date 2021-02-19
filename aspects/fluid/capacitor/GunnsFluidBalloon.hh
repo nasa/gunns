@@ -258,7 +258,7 @@ inline void GunnsFluidBalloon::setMalfInflatabilityScale(const double flag, cons
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsFluidBalloon::computeVolumeFromPressure(const double pressure) const
 {
-    return Math::limitRange(mMinVolume,
+    return MsMath::limitRange(mMinVolume,
                             mActualInflatability * (pressure - mPotentialVector[1]),
                             mMaxVolume);
 }

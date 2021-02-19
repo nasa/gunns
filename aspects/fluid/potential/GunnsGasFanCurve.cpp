@@ -12,7 +12,7 @@ LIBRARY DEPENDENCY:
 
 #include <cfloat>
 #include "GunnsGasFanCurve.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "math/root_finding/LaguerreMethod.hh"
 #include "software/exceptions/TsNumericalException.hh"
 
@@ -66,7 +66,7 @@ void GunnsGasFanCurve::improveRoot(double& realRoot, double* realCoeffs, double 
         }
         mIterLaguerre = LaguerreMethod::solve(root, coeffs, 6);
 
-        if (Math::isInRange(0.0, root.real(), maxQ) and fabs(root.imag()) < DBL_EPSILON) {
+        if (MsMath::isInRange(0.0, root.real(), maxQ) and fabs(root.imag()) < DBL_EPSILON) {
             realRoot = root.real();
 
         } else try {

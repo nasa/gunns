@@ -28,7 +28,7 @@ LIBRARY DEPENDENCY:
 #include "core/GunnsBasicConductor.hh"
 #include "aspects/electrical/resistive/GunnsElectricalResistor.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                (--) Link name
@@ -177,7 +177,7 @@ void GunnsElectricalResistor::validate() const
     }
 
     /// - Throw an exception if electrical efficiency <= 0 or electrical efficiency >= 1.
-    if (!Math::isInRange(FLT_EPSILON, mElectricalEfficiency, 1.0 - FLT_EPSILON)) {
+    if (!MsMath::isInRange(FLT_EPSILON, mElectricalEfficiency, 1.0 - FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Electrical Efficiency outside valid range (0-1).");
     }
 }

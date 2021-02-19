@@ -32,6 +32,7 @@ PROGRAMMERS:
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "GunnsNetworkSpotter.hh"
 #include "common/sensors/SensorAnalog.hh"
+#include "common/sensors/TsNoise.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Analog Sensor Wrapper Spotter Configuration Data
@@ -55,7 +56,7 @@ class GunnsSensorAnalogWrapperConfigData : public GunnsNetworkSpotterConfigData
                                            const float                nominalScale      = 1.0,
                                            const float                nominalNoiseScale = 0.0,
                                            const float                nominalResolution = 0.0,
-                                           fctnPtr                    noiseFunction     = 0,
+                                           fctnPtr                    noiseFunction     = TsNoise::getNoise,
                                            const UnitConversion::Type unitConversion    = UnitConversion::NO_CONVERSION,
                                            const float                nominalNoiseMult  = 0.0);
         /// @brief  Default destructs this GUNNS Analog Sensor Wrapper Spotter configuration data.

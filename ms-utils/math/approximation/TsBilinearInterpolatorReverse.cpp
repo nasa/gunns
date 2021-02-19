@@ -218,8 +218,8 @@ double TsBilinearInterpolatorReverse::evaluate(const double x, const double z)
 bool TsBilinearInterpolatorReverse::isBetween(const double end1, const double x, const double end2)
 {
     if (end1 <= end2) {
-        return Math::isInRange(end1, x, end2);
+        return MsMath::isInRange(end1, x, end2);
     } else {
-        return Math::isInRange(end2, x, end1);
+        return MsMath::isInRange(end2, x, end1);
     }
 }

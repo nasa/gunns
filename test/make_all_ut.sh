@@ -387,6 +387,16 @@ else
     echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
 endif
 
+#
+set FOLDER = strings/test
+
+cd $MS_UTILS_HOME/$FOLDER; make clean; make;
+if ( -f $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then
+    echo $FOLDER\: `grep -E 'OK \(*|FAILURES\!|Failures \!' $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log` `grep 'ERROR SUMMARY' $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log | grep -v ' 0 errors'` >> $OUT
+else
+    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
+endif
+
 ########################################################
 # test gunns-ts-models
 ########################################################

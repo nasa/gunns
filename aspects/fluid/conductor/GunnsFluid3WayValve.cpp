@@ -25,7 +25,7 @@ PROGRAMMERS:
 
 #include "GunnsFluid3WayValve.hh"
 #include "core/GunnsFluidUtils.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
@@ -246,13 +246,13 @@ void GunnsFluid3WayValve::initialize(const GunnsFluid3WayValveConfigData& config
 void GunnsFluid3WayValve::validate() const
 {
     /// - Throw an exception on non-mixing band not in (0-1].
-    if (!Math::isInRange(0.0, mNonMixingBand, 1.0-DBL_EPSILON)) {
+    if (!MsMath::isInRange(0.0, mNonMixingBand, 1.0-DBL_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Non-mixing band not (0-1].");
     }
 
     /// - Throw an exception on valve position not (0-1).
-    if (!Math::isInRange(0.0, mPosition, 1.0)) {
+    if (!MsMath::isInRange(0.0, mPosition, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Valve position not (0-1).");
     }

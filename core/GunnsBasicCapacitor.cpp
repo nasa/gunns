@@ -29,7 +29,7 @@ LIBRARY DEPENDENCY:
     )
 */
 #include "GunnsBasicCapacitor.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

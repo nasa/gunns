@@ -9,7 +9,7 @@ LIBRARY DEPENDENCY:
 )
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "ConverterSensors.hh"
 
 ////////////////////////////////////////////////////////////////////////////////

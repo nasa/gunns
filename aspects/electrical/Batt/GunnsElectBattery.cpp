@@ -139,7 +139,7 @@ void GunnsElectBattery::initialize(GunnsElectBatteryConfigData&  configData,
 
     GunnsElectBatteryCellConfigData cellConfig(configData.mCellResistance,
                                                configData.mMaxCapacity / mNumCells);
-    GunnsElectBatteryCellInputData  cellInput(false, false, inputData.mSoc);
+    GunnsElectBatteryCellInputData  cellInput(false, false, false, 0.0, inputData.mSoc);
     for (int i = 0; i < mNumCells; i++) {
         std::ostringstream cell;
         cell << i;
@@ -212,7 +212,7 @@ void GunnsElectBattery::validate(GunnsElectBatteryConfigData& configData,
     }
 
     /// - Issue an error on initial SOC not in (0-1).
-    if (!Math::isInRange(0.0, inputData.mSoc, 1.0)) {
+    if (!MsMath::isInRange(0.0, inputData.mSoc, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Initial State of Charge not in (0-1).");
     }

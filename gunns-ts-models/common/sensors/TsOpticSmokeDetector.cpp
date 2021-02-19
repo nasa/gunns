@@ -22,7 +22,7 @@
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "common/sensors/TsNoise.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "GenericMacros.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,8 +211,8 @@ void TsOpticSmokeDetector::update(
         scatterPercentage     = configD.scatOffValue;
     }
 
-    obscurationPercentage = Math::limitRange(configD.obsMinPercentage, obscurationPercentage, configD.obsMaxPercentage);
-    scatterPercentage     = Math::limitRange(0.0, scatterPercentage, configD.scatterMaxPercentage);
+    obscurationPercentage = MsMath::limitRange(configD.obsMinPercentage, obscurationPercentage, configD.obsMaxPercentage);
+    scatterPercentage     = MsMath::limitRange(0.0, scatterPercentage, configD.scatterMaxPercentage);
 
     bool sensorPower = static_cast<bool>(isLoadOn);
     obscurationSensor.setTruthInput(obscurationPercentage);

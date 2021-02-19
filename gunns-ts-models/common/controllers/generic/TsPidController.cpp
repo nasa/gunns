@@ -13,7 +13,7 @@ LIBRARY DEPENDENCY:
 #include "TsPidController.hh"
 #include "GenericMacros.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  gainP      (--)   Proportional gain.
@@ -281,7 +281,7 @@ double TsPidController::update(const double dt)
         }
 
         /// - Limit the output to the allowable range.
-        mOutput = Math::limitRange(mLimitLow, mOutput, mLimitHigh);
+        mOutput = MsMath::limitRange(mLimitLow, mOutput, mLimitHigh);
     }
     return mOutput;
 }

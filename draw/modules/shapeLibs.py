@@ -116,6 +116,17 @@ def getLinkSubtypeShapeMaster(allShapes, subtype):
                 return shape
     return None
 
+# Returns the given link shape master from the shapeTree, or None.
+# This looks for the first match to the link class name, rather than the full
+# subtype.
+def getLinkClassShapeMaster(allShapes, linkClass):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if 'Link' == shape_gunns_attr['type']:
+            if shape_gunns_attr['subtype'].endswith(linkClass):
+                return shape
+    return None
+
 # Returns the given link's shape master from the shapeTree, or None.
 def getLinkShapeMaster(link, allShapes):
     link_gunns_attr = link.find('./gunns').attrib
@@ -183,3 +194,8 @@ def getBlankSpotterShapeMaster(allShapes):
         if ('Spotter' == shape_gunns_attr['type']) and ('' == shape.attrib['Class']):
             return shape
     return None
+
+# Returns the subtype from the given shape.
+def getShapeSubtype(shape):
+    gunns_attr = shape.find('./gunns').attrib
+    return gunns_attr['subtype']

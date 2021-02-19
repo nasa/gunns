@@ -18,7 +18,7 @@ PROGRAMMERS
 
 #include "aspects/electrical/SolarArray/SolarArray.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <string.h>
 #include <cmath>
 

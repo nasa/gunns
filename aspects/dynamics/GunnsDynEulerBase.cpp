@@ -16,7 +16,7 @@ LIBRARY DEPENDENCY:
 #include "aspects/dynamics/GunnsDynUtils.hh"
 #include "software/exceptions/TsNumericalException.hh"
 #include "math/UnitConversion.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details  This is derived from the 1.0e-6 value used by the Trick implementation in
 ///           trick_source/trick_utils/math/deuler_123_quat.c but we build in a few more operations
@@ -94,7 +94,7 @@ double* GunnsDynEulerBase::update(const double* quat)
 {
     const double sinRot2 = computeRot2Sin(quat);
 
-    if (Math::isInRange(-1.0, sinRot2, 1.0)) {
+    if (MsMath::isInRange(-1.0, sinRot2, 1.0)) {
         // Within range for asin function.
         if (fabs(sinRot2) < TOLSING) {
             mSingularity = 0;
@@ -107,12 +107,12 @@ double* GunnsDynEulerBase::update(const double* quat)
             computeAnglesNegSing(quat);                    // near -pi/2 singularity
         }
 
-    } else if (Math::isInRange(1.0, sinRot2, (1.0 + TOLE15))) {
+    } else if (MsMath::isInRange(1.0, sinRot2, (1.0 + TOLE15))) {
         // Within acceptable tolerance outside the range for asin function.
         mSingularity = 3;
         computeAnglesPosSing(quat);                        // near +pi/2 singularity
 
-    } else if (Math::isInRange((-1.0 - TOLE15), sinRot2, -1.0)) {
+    } else if (MsMath::isInRange((-1.0 - TOLE15), sinRot2, -1.0)) {
         // Within acceptable tolerance outside the range for asin function.
         mSingularity = 4;
         computeAnglesNegSing(quat);                        // near -pi/2 singularity

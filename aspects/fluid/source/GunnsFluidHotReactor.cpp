@@ -195,7 +195,7 @@ void GunnsFluidHotReactor::restartModel()
 double GunnsFluidHotReactor::computeEfficiency(const int i __attribute__((unused)))
 {
     // using fluid temperature from previous cycle
-    double result = Math::limitRange(0.0, mEfficiencyBias + mEfficiencyScaleFactor * mFluidTemperature, 1.0);
+    double result = MsMath::limitRange(0.0, mEfficiencyBias + mEfficiencyScaleFactor * mFluidTemperature, 1.0);
 
     /// - Scale by the optional reagent efficiency times the reagent mass.
     if (mReactions[i].mReagentEfficiency > DBL_EPSILON) {

@@ -12,7 +12,7 @@ LIBRARY DEPENDENCY:
   )
 */
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "GunnsElectPvSection.hh"
 #include "core/GunnsBasicNode.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -156,10 +156,11 @@ GunnsElectPvSection::GunnsElectPvSection()
     :
     mStrings(0),
     mStringsInput(),
+    mInput(),
     mConfig(0),
     mNumStrings(0),
-    mInput(),
-    mPercentInsolation(0.0)
+    mPercentInsolation(0.0),
+    mTerminalPower(0.0)
 {
     // nothing to do
 }
@@ -173,10 +174,11 @@ GunnsElectPvSection::GunnsElectPvSection(const GunnsElectPvSectionConfigData* co
     :
     mStrings(0),
     mStringsInput(),
+    mInput(),
     mConfig(configData),
     mNumStrings(0),
-    mInput(),
-    mPercentInsolation(0.0)
+    mPercentInsolation(0.0),
+    mTerminalPower(9.0)
 {
     // nothing to do
 }
@@ -222,7 +224,8 @@ void GunnsElectPvSection::initialize(const std::string&                  name,
     }
 
     /// - Initialize state.
-    mPercentInsolation  = 0.0;
+    mPercentInsolation = 0.0;
+    mTerminalPower     = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,13 +248,13 @@ void GunnsElectPvSection::validate() const
     }
 
     /// - Throw an exception on source angle exponent not in range.
-    if (not Math::isInRange(1.0/mMaxAngleExponent, mConfig->mSourceAngleExponent, mMaxAngleExponent)) {
+    if (not MsMath::isInRange(1.0/mMaxAngleExponent, mConfig->mSourceAngleExponent, mMaxAngleExponent)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "source angle exponent not in limits");
     }
 
     /// - Throw an exception on backside reduction not in 0-1.
-    if (not Math::isInRange(0.0, mConfig->mBacksideReduction, 1.0)) {
+    if (not MsMath::isInRange(0.0, mConfig->mBacksideReduction, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "backside reduction not in 0-1.");
     }
@@ -269,7 +272,7 @@ void GunnsElectPvSection::validate() const
     }
 
     /// - Throw an exception on source exposed fraction not in 0-1.
-    if (not Math::isInRange(0.0, mInput.mSourceExposedFraction, 1.0)) {
+    if (not MsMath::isInRange(0.0, mInput.mSourceExposedFraction, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                     "initial source exposed fraction not in 0-1.");
     }
@@ -291,10 +294,15 @@ void GunnsElectPvSection::update(const double dt)
 {
     updateEnvironment(dt);
 
-    /// - Update the strings internal states.
+    /// - Update the strings internal states, and accumulate total power for the section.  The
+    ///   total power is negative, this can be given to a thermal aspect as a negative heat, as this
+    ///   is the portion of total absorbed solar power that became electricity instead of heat.
+    double totalPower = 0.0;
     for (unsigned int string=0; string<mNumStrings; ++string) {
         mStrings[string].update();
+        totalPower -= mStrings[string].getTerminal().mPower;
     }
+    mTerminalPower = totalPower;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,7 +322,7 @@ void GunnsElectPvSection::updateEnvironment(const double dt)
     }
     double facing = pow(fabs(trigAngle), mConfig->mSourceAngleExponent);
     if (trigAngle < 0.0) {
-        facing *= Math::limitRange(0.0, (1.0 - mConfig->mBacksideReduction), 1.0);
+        facing *= MsMath::limitRange(0.0, (1.0 - mConfig->mBacksideReduction), 1.0);
     }
 
     /// - Update environment input data to the strings.

@@ -27,7 +27,7 @@ PROGRAMMERS:
 */
 
 #include "software/SimCompatibility/TsSimCompatibility.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "core/GunnsBasicLink.hh"
 #include "core/GunnsBasicConductor.hh"
 

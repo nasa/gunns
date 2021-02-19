@@ -35,7 +35,7 @@ PROGRAMMERS:
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "GunnsElectPvRegSensors.hh"
 #include "GunnsElectPvRegTrips.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include <vector>
 
 // Forward-declare pointer types.

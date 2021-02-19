@@ -121,7 +121,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Simple H2 Redox" Ports="0=H2, 1=O2" c00.numCells="30" c01.cellVoltageLoaded="0.8" c02.h2ReactRate="1.05e-8" c03.maxEfficiency="0.6" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.current="0.0" i03.trippedOff="false" id="yLTfmYIgFCe4FZGYixRs-1" label="reactor">
+    <object About="Simple H2 Redox" Ports="0=H2, 1=O2" c00.numCells="30" c01.cellVoltageLoaded="0.8" c02.cellH2ReactRate="0.0" c03.maxEfficiency="0.6" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.current="0.0" i03.trippedOff="false" id="yLTfmYIgFCe4FZGYixRs-1" label="reactor">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/source/GunnsFluidSimpleH2Redox" type="Link" />
       <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=middle;align=left;fillColor=#FF0000;html=1;verticalAlign=middle;strokeWidth=1;shape=stencil(rVVdb4MgFP01vi4W0q57XGy3PrVJlyV7pYotmYKB24/t1w9EM5jiajdjYjjXyzmXe7xGOFEHUtEIxURVNIUILyKETkQysis0jHTkYMFZbJeclNQiz6/r9YtGtjQTFxtUIMU7PbMMmizGD1QysNGzuxNeRvGjBs2Nk1RwrvmZ4MqLOHG9N2EcPAmM250rTVJSoNLCjdRLs7qbzO4t8uHGn8YwiSPcRDXpocKJRkIV4yQXku6lOPKsV6AiJxoSn7OiSEUhpF7aZy0iQjivr4G6pWl/p9tNy6Z+mZP46uM0iqwrwsQKdMXBDQQHxT6NR+uHK6A/A+gFrBftyyvkicdTTzxqlqRge26hlHLT3xo+OXjJsqz5Kq5j3i4Xm7chcvyP5L0HNR95TtqZ8Qpt/G6jHke7kguaQ1cwiGoE+QYNcbZ2/JV0JwBEOcDrTiht7+9JhQaSKmLe6gTacCnMF9lK95VPg9u22QXjTvZ8ZLbP/cPaI7n97LB1rqr7j4WH0+vpGehI29+bhpzvwIdRI653xHcGeY3aP24NfAE=);fontSize=12;fontColor=#000000;strokeColor=#000000;gradientColor=#00FF00;labelPosition=right;" vertex="1">
         <mxGeometry as="geometry" height="60" width="60" x="450" y="170" />

@@ -9,7 +9,7 @@
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "strings/UtResult.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "UtGunnsFluidAdsorptionCompound.hh"
 
 /// @details  Test identification number.
@@ -340,7 +340,7 @@ void UtGunnsFluidAdsorptionCompound::testSorb()
 
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
                                   * tFractions[0] * mdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
-                                                                     Math::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
+                                                                     MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;
         const double expectedHeat = -tConfig.mHeatOfAdsorption * expectedRate
@@ -362,7 +362,7 @@ void UtGunnsFluidAdsorptionCompound::testSorb()
 
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
                                   * tFractions[0] * mdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
-                                                                     Math::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
+                                                                     MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;
         const double expectedHeat = -tConfig.mHeatOfAdsorption * expectedRate
@@ -487,7 +487,7 @@ void UtGunnsFluidAdsorptionCompound::testSorbTc()
         const double expectedMdot = tArticle->mFluid->getTraceCompounds()->getMasses()[tArticle->mIndex];
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
                                   * expectedMdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
-                                                             Math::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
+                                                             MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;
         const double expectedHeat = -tConfig.mHeatOfAdsorption * expectedRate

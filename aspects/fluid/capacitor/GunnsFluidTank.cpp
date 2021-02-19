@@ -259,7 +259,7 @@ void GunnsFluidTank::validate(const GunnsFluidTankConfigData& configData,
                               const GunnsFluidTankInputData&  inputData)
 {
     /// - Throw an exception on dp/dt filter gain not (0-1).
-    if (!Math::isInRange(0.0, configData.mDpdtFilterGain, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mDpdtFilterGain, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "dp/dt gain not (0-1).");
     }

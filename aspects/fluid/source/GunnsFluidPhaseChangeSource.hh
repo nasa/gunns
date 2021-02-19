@@ -129,7 +129,6 @@ class GunnsFluidPhaseChangeSource : public GunnsFluidLink
         virtual void transportFlows(const double dt);
         /// @brief    Sets the input power of this GunnsFluidPhaseChangeSource.
         void         setPowerInput(const double power);
-        //TODO have a mode where you input desired mass change rate and force the flow rate directly
         /// @brief Moves the fluid from one port to the other
         virtual void transportFluid(const bool forcedOutflow,
                                     const int  fromPort = 0,

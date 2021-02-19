@@ -228,7 +228,7 @@ void GunnsFluidValve::validate(const GunnsFluidValveInputData&  inputData) const
     }
 
     /// - Throw an exception if valve position < 0 or valve position > 1 .
-    if (!Math::isInRange(0.0, mPosition, 1.0)) {
+    if (!MsMath::isInRange(0.0, mPosition, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Position outside valid range (0-1).");
     }

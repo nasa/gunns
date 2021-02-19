@@ -1,5 +1,5 @@
-#ifndef Math_EXISTS
-#define Math_EXISTS
+#ifndef MSMath_EXISTS
+#define MSMath_EXISTS
 
 /**
  @file
@@ -47,7 +47,7 @@
 ///           copy constructor, default destructor and assignment operator are all declared private
 ///           and not implemented.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class Math
+class MsMath
 {
     public:
         /// @brief Resolves an angle to range [-pi,+PI]
@@ -98,22 +98,22 @@ class Math
         /// @details
         /// Default constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        Math();
+        MsMath();
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details
         /// Copy constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        Math(const Math&);
+        MsMath(const MsMath&);
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details
         /// Default destructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        ~Math();
+        ~MsMath();
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details
         /// Assignment operator unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        const Math& operator =(const Math&);
+        const MsMath& operator =(const MsMath&);
 };
 
 /// @}
@@ -121,7 +121,7 @@ class Math
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructor required by Trick10 although it should never be used.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline Math::~Math()
+inline MsMath::~MsMath()
 {
     // nothing to do
 }
@@ -136,7 +136,7 @@ inline Math::~Math()
 ///
 /// @details    Returns the specified angle resolved to the range [-pi,+pi).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::anglePi(const double angle)
+inline double MsMath::anglePi(const double angle)
 {
     double result = angle;
 
@@ -159,7 +159,7 @@ inline double Math::anglePi(const double angle)
 ///
 /// @details    Returns the specified angle resolved to the range [0,+2pi).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::angle2Pi(const double angle)
+inline double MsMath::angle2Pi(const double angle)
 {
     double result = angle;
 
@@ -186,7 +186,7 @@ inline double Math::angle2Pi(const double angle)
 ///
 /// @details    Returns the specified angle resolved to the range [-180,+180).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::angle180(const double angle)
+inline double MsMath::angle180(const double angle)
 {
     double result = angle;
 
@@ -209,7 +209,7 @@ inline double Math::angle180(const double angle)
 ///
 /// @details    Returns the specified angle resolved to the range [0,+360).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::angle360(const double angle)
+inline double MsMath::angle360(const double angle)
 {
     double result = angle;
 
@@ -239,7 +239,7 @@ inline double Math::angle360(const double angle)
 ///                      |_ -pi/2,   x <= -1.0
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedAsin(const double x)
+inline double MsMath::protectedAsin(const double x)
 {
     double result;
 
@@ -267,7 +267,7 @@ inline double Math::protectedAsin(const double x)
 ///                      |_ pi,      x <= -1.0
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedAcos(const double x)
+inline double MsMath::protectedAcos(const double x)
 {
     double result;
 
@@ -294,7 +294,7 @@ inline double Math::protectedAcos(const double x)
 ///             result = |_ sqrt(x), x >  0.0
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedSqrt(const double x)
+inline double MsMath::protectedSqrt(const double x)
 {
     double result;
 
@@ -319,7 +319,7 @@ inline double Math::protectedSqrt(const double x)
 ///             result = |_ log10(x), x >  0.0
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedLog10(const double x)
+inline double MsMath::protectedLog10(const double x)
 {
     double result;
 
@@ -344,7 +344,7 @@ inline double Math::protectedLog10(const double x)
 ///             result = |_ log(x), x >  0.0
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedLog(const double x)
+inline double MsMath::protectedLog(const double x)
 {
     double result;
 
@@ -376,11 +376,11 @@ inline double Math::protectedLog(const double x)
 ///                      |_ num / den    den < -threshold
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::protectedDiv(const double num, const double den, const double threshold, const double retval)
+inline double MsMath::protectedDiv(const double num, const double den, const double threshold, const double retval)
 {
     double result = retval;
 
-    if (!Math::isInRange(-threshold, den, +threshold)) {
+    if (!MsMath::isInRange(-threshold, den, +threshold)) {
         result = num / den;
     }
 
@@ -404,7 +404,7 @@ inline double Math::protectedDiv(const double num, const double den, const doubl
 ///                      |_ upper,     x > upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::limitRange(const double lower, const double x, const double upper)
+inline double MsMath::limitRange(const double lower, const double x, const double upper)
 {
     return std::max(std::min(x, upper), lower);
 }
@@ -426,7 +426,7 @@ inline double Math::limitRange(const double lower, const double x, const double 
 ///                      |_ upper,     x > upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int Math::limitRange(const int lower, const int x, const int upper)
+inline int MsMath::limitRange(const int lower, const int x, const int upper)
 {
     return std::max(std::min(x, upper), lower);
 }
@@ -448,7 +448,7 @@ inline int Math::limitRange(const int lower, const int x, const int upper)
 ///                      |_ false,     x > upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool Math::isInRange(const double lower, const double x, const double upper)
+inline bool MsMath::isInRange(const double lower, const double x, const double upper)
 {
     return lower <= x && x <= upper;
 }
@@ -470,7 +470,7 @@ inline bool Math::isInRange(const double lower, const double x, const double upp
 ///                      |_ false,     i > upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool Math::isInRange(const int lower, const int i, const int upper)
+inline bool MsMath::isInRange(const int lower, const int i, const int upper)
 {
     return lower <= i && i <= upper;
 }
@@ -494,7 +494,7 @@ inline bool Math::isInRange(const int lower, const int i, const int upper)
 ///                      |_ x,         x >= upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::innerLimit(const double lower, const double x, const double upper)
+inline double MsMath::innerLimit(const double lower, const double x, const double upper)
 {
     double result = x;
     if (lower < x && x < upper) {
@@ -527,7 +527,7 @@ inline double Math::innerLimit(const double lower, const double x, const double 
 ///                      |_ x,         x >= upper
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int Math::innerLimit(const int lower, const int x, const int upper)
+inline int MsMath::innerLimit(const int lower, const int x, const int upper)
 {
     int result = x;
     if (lower < x && x < upper) {
@@ -554,7 +554,7 @@ inline int Math::innerLimit(const int lower, const int x, const int upper)
 ///                      |_ floor(x) + 1,       x - floor(x) >= 0.5
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int Math::round(const double x)
+inline int MsMath::round(const double x)
 {
     // Casting to an integer removes the fractional part of x
     return static_cast<int>(std::floor(x + 0.5));
@@ -579,7 +579,7 @@ inline int Math::round(const double x)
 ///             result example = quantize(123456.7, 100.0) = 123500.0;
 ///           \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::quantize(const double input, const double resolution)
+inline double MsMath::quantize(const double input, const double resolution)
 {
     double result = input;
     if (DBL_EPSILON < resolution) {
@@ -603,9 +603,9 @@ inline double Math::quantize(const double input, const double resolution)
 ///                      |_
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::asinh(const double value)
+inline double MsMath::asinh(const double value)
 {
-    return  Math::protectedLog(value + sqrt(value * value + 1.0));
+    return  MsMath::protectedLog(value + sqrt(value * value + 1.0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -625,7 +625,7 @@ inline double Math::asinh(const double value)
 ///            Like any series solution it has problems when base is close to 0.
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double Math::fastPow(const double base, const double exp)
+inline double MsMath::fastPow(const double base, const double exp)
 {
     int num;
     double a;

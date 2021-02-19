@@ -21,7 +21,7 @@ PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (Prototype) (2011-06))
 **************************************************************************************************/
 
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -258,7 +258,7 @@ void GunnsFluidMetabolic::validate(const GunnsFluidMetabolicConfigData& configDa
     }
 
     /// - Throw an exception on sleep scale factor negative or greater then nominal.
-    if (!Math::isInRange(0.0, configData.mSleepScaleFactor, 1.0)) {
+    if (!MsMath::isInRange(0.0, configData.mSleepScaleFactor, 1.0)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Sleep scale factor < 0 or > 1.0.");
     }

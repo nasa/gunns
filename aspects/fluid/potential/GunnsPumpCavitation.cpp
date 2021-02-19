@@ -55,7 +55,7 @@ GunnsPumpCavitation::GunnsPumpCavitation()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsPumpCavitation::~GunnsPumpCavitation()
 {
-    // nothing to do
+    // nothing to be done in this deconstructor
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ void GunnsPumpCavitation::update(double&                           pumpSource,
     } else {
         mCavitationFraction -= 2.0 * sqrt(1.0 - std::min(mCavitationFraction, 0.99)) * dt/mDuration;
     }
-    mCavitationFraction = Math::limitRange(0.0, mCavitationFraction, 1.0);
+    mCavitationFraction = MsMath::limitRange(0.0, mCavitationFraction, 1.0);
     pumpSource *= 1.0 - mCavitationFraction;
 
     /// - Partial cavitation simulates gas bubbles arriving at the inlet creating turbulence and

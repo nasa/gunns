@@ -40,7 +40,7 @@ lib:
 	cd ${GUNNS_HOME}/lib/test && $(MAKE) roses
 
 $(test_exe): $(OBJECTS) lib
-	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunnsroses -lcppunit -lgcov $(ROSESFLAGS) $(LDFLAGS)
+	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunnsroses -lcppunit -lgcov -pthread $(ROSESFLAGS) $(LDFLAGS)
 
 $(OBJECTS): build/%.o : %.cpp | $(OBJDIRS)
 	$(CXX) $(CXXFLAGS) $(extra_CXXFLAGS) -c $< -o $@

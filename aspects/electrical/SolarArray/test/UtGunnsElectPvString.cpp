@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
 #include <iostream>
 #include "strings/UtResult.hh"
 #include "UtGunnsElectPvString.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details  Test identification number.
 int UtGunnsElectPvString::TEST_ID = 0;
@@ -966,7 +966,7 @@ void UtGunnsElectPvString::testLoadAtPower()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests the loadAtVoltage method.
+/// @details  Tests the loadAtVoltage and predictCurrentAtVoltage methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectPvString::testLoadAtVoltage()
 {
@@ -988,33 +988,38 @@ void UtGunnsElectPvString::testLoadAtVoltage()
         const bool   shortSide = false;
 
         tArticle->loadAtPower(expectedP, shortSide);
-        const double expectedV = tArticle->mTerminal.mVoltage;
-        const double expectedI = expectedP / expectedV;
-        const double expectedG = expectedP / expectedV / expectedV;
+        const double expectedV  = tArticle->mTerminal.mVoltage;
+        const double expectedI  = expectedP / expectedV;
+        const double expectedG  = expectedP / expectedV / expectedV;
+        const double predictedI = tArticle->predictCurrentAtVoltage(expectedV);
         tArticle->loadAtVoltage(expectedV);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, predictedI,                       FLT_EPSILON);
     } {
         /// @test    Terminal outputs on short-circuit side of the I-V curve.
         const double expectedP = 0.5 * tArticle->mMpp.mPower;
         const bool   shortSide = true;
 
         tArticle->loadAtPower(expectedP, shortSide);
-        const double expectedV = tArticle->mTerminal.mVoltage;
-        const double expectedI = expectedP / expectedV;
-        const double expectedG = expectedP / expectedV / expectedV;
+        const double expectedV  = tArticle->mTerminal.mVoltage;
+        const double expectedI  = expectedP / expectedV;
+        const double expectedG  = expectedP / expectedV / expectedV;
+        const double predictedI = tArticle->predictCurrentAtVoltage(expectedV);
         tArticle->loadAtVoltage(expectedV);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     FLT_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, predictedI,                       FLT_EPSILON);
     } {
         /// @test    Terminal outputs given zero voltage.
-        const double expectedV = 0.0;
+        const double expectedV  = 0.0;
+        const double predictedI = tArticle->predictCurrentAtVoltage(expectedV);
         tArticle->loadAtVoltage(expectedV);
         const double expectedP = 0.0;
         const double expectedI = 0.0;
@@ -1024,9 +1029,11 @@ void UtGunnsElectPvString::testLoadAtVoltage()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, predictedI,                       DBL_EPSILON);
     } {
         /// @test    Terminal outputs given voltage greater than maximum.
-        const double expectedV = tArticle->mOpenCircuitVoltage + 1.0;
+        const double expectedV  = tArticle->mOpenCircuitVoltage + 1.0;
+        const double predictedI = tArticle->predictCurrentAtVoltage(expectedV);
         tArticle->loadAtVoltage(expectedV);
         const double expectedP = 0.0;
         const double expectedI = 0.0;
@@ -1036,13 +1043,15 @@ void UtGunnsElectPvString::testLoadAtVoltage()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, predictedI,                       DBL_EPSILON);
     } {
         /// @test    Terminal outputs with no active cells.
         tArticle->mMalfCellGroupFlag  = true;
         tArticle->mMalfCellGroupValue = 4;
         tArticle->update();
 
-        const double expectedV = tArticle->mOpenCircuitVoltage + 1.0;
+        const double expectedV  = tArticle->mOpenCircuitVoltage + 1.0;
+        const double predictedI = tArticle->predictCurrentAtVoltage(expectedV);
         tArticle->loadAtVoltage(expectedV);
         const double expectedP = 0.0;
         const double expectedI = 0.0;
@@ -1052,6 +1061,7 @@ void UtGunnsElectPvString::testLoadAtVoltage()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, predictedI,                       DBL_EPSILON);
     }
 
     UT_PASS;

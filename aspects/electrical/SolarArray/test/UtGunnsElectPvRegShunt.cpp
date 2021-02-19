@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
 #include <iostream>
 #include "strings/UtResult.hh"
 #include "UtGunnsElectPvRegShunt.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 /// @details  Test identification number.
 int UtGunnsElectPvRegShunt::TEST_ID = 0;

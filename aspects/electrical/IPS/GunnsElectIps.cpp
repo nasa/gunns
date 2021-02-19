@@ -11,7 +11,7 @@
 */
 
 #include "GunnsElectIps.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "software/exceptions/TsHsException.hh"
@@ -405,7 +405,7 @@ int GunnsElectIps::getVoltageBackupWithinRange() {
     if (GunnsElectIps::Invalid_Source != mBackUpPowerSource) {
         if ((!mFailPowerInputMalfunction[mBackUpPowerSource]) &&
                 !mFailAllPowerInputsMalfucntion &&
-                (Math::isInRange(mBackupVoltageMin, mPotentialVector[mBackUpPowerSource], mBackupVoltageMax))) {
+                (MsMath::isInRange(mBackupVoltageMin, mPotentialVector[mBackUpPowerSource], mBackupVoltageMax))) {
             if ((mCommandOnUsed && mCommandOn) || (!mCommandOnUsed)) {
                 sourceToUse = mBackUpPowerSource;
             }

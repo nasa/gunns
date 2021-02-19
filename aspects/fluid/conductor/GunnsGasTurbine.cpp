@@ -13,7 +13,7 @@ LIBRARY DEPENDENCY:
 #include "GunnsGasTurbine.hh"
 
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]     name                 (--)             Name of object.
@@ -489,7 +489,7 @@ void GunnsGasTurbine::updateFluid(const double dt __attribute__((unused)), const
 
     /// - Scale efficiency curve based on impeller speed, using interpolation
     double scaledEffCoeffs[6];
-    const double correctedSpeed = Math::limitRange(mCorrectedSpeedLow,
+    const double correctedSpeed = MsMath::limitRange(mCorrectedSpeedLow,
             mImpellerSpeed/(sourceTemp/mReferenceTemp), mCorrectedSpeedHigh);
     const double frac = (correctedSpeed   - mCorrectedSpeedLow)
                       / (mCorrectedSpeedHigh - mCorrectedSpeedLow);
@@ -501,7 +501,7 @@ void GunnsGasTurbine::updateFluid(const double dt __attribute__((unused)), const
 
     if(mPressureRatio >= minEffLimit and mPressureRatio <= maxEffLimit){
         mCurve.setCoeffs(scaledEffCoeffs);
-        mEfficiency = Math::limitRange(0.0, mCurve.evaluate(mPressureRatio), 1.0);
+        mEfficiency = MsMath::limitRange(0.0, mCurve.evaluate(mPressureRatio), 1.0);
     } else{
         mEfficiency = 0.0 ;
     }
@@ -550,7 +550,7 @@ void GunnsGasTurbine::computeFlowRate()
     /// - The impeller generates no flow if there is no inlet density
     if (sourceDensity > FLT_EPSILON ) {
         /// - Scale Turbine curve coefficients based on corrected impeller speed, using interpolation
-        const double correctedSpeed = Math::limitRange(mCorrectedSpeedLow,
+        const double correctedSpeed = MsMath::limitRange(mCorrectedSpeedLow,
                 mImpellerSpeed/(sourceTemp/mReferenceTemp), mCorrectedSpeedHigh);
         const double frac = (correctedSpeed   - mCorrectedSpeedLow)
                           / (mCorrectedSpeedHigh - mCorrectedSpeedLow);

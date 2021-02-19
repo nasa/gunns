@@ -19,8 +19,10 @@
 #include "UtGunnsFluidMetabolic2.hh"
 #include "UtGunnsFluidMultiAdsorber.hh"
 #include "UtGunnsFluidReactor.hh"
+#include "UtGunnsFluidPhaseChangeSource.hh"
 #include "UtGunnsFluidSeparatorGas.hh"
 #include "UtGunnsFluidSeparatorLiquid.hh"
+#include "UtGunnsFluidSimpleH2Redox.hh"
 #include "UtGunnsFluidSublimator.hh"
 #include "UtGunnsGasDisplacementPump.hh"
 #include "UtGunnsLiquidDisplacementPump.hh"
@@ -49,13 +51,14 @@ int main(int, char**) {
     runner.addTest(UtGunnsFluidMetabolic::suite());
     runner.addTest(UtGunnsFluidMetabolic2::suite());
     runner.addTest(UtGunnsFluidMultiAdsorber::suite());
+    runner.addTest(UtGunnsFluidPhaseChangeSource::suite());
     runner.addTest(UtGunnsFluidSeparatorGas::suite());
     runner.addTest(UtGunnsFluidSeparatorLiquid::suite());
+    runner.addTest(UtGunnsFluidSimpleH2Redox::suite());
     runner.addTest(UtGunnsFluidSublimator::suite());
     runner.addTest(UtGunnsFluidHeater::suite());
     runner.addTest(UtGunnsGasDisplacementPump::suite());
     runner.addTest(UtGunnsLiquidDisplacementPump::suite());
-    runner.addTest(UtGunnsFluidSimpleH2Redox::suite());
     runner.addTest(UtGunnsFluidSourceBoundary::suite());
     runner.addTest(UtGunnsFluidSelectiveMembrane::suite());
 

@@ -38,7 +38,7 @@
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "simulation/hs/TsHsMsg.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 
 
 
@@ -349,7 +349,7 @@ void Converter::validate() {
     }
 
     /// -- Check for efficiency of the converter is in range (0 <= efficiency <= 1)
-    if (!(Math::isInRange(0.0, mEfficiency, 1.0))) {
+    if (!(MsMath::isInRange(0.0, mEfficiency, 1.0))) {
         std::ostringstream msg;
         msg << "Tried to set Efficiency out of bound " << mEfficiency;
         TS_HS_EXCEPTION(TS_HS_ERROR, "EPS", msg.str(),

@@ -14,7 +14,7 @@ LIBRARY DEPENDENCY:
 #include "GunnsFluidDistributedIf.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "core/GunnsFluidCapacitor.hh"
-#include "math/Math.hh"
+#include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
@@ -161,6 +161,8 @@ GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     mDemandFluxGain        (0.0),
     mSuppliedCapacitance   (0.0),
     mTempMassFractions     (0),
+    mTempMoleFractions     (0),
+    mTempTcMoleFractions   (0),
     mOtherIfs              (),
     mFluidState            ()
 {
@@ -173,6 +175,10 @@ GunnsFluidDistributedIf::GunnsFluidDistributedIf()
 GunnsFluidDistributedIf::~GunnsFluidDistributedIf()
 {
     {
+        delete [] mTempTcMoleFractions;
+        mTempTcMoleFractions = 0;
+        delete [] mTempMoleFractions;
+        mTempMoleFractions = 0;
         delete [] mTempMassFractions;
         mTempMassFractions = 0;
     }
@@ -216,21 +222,31 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     /// - Both sides start out in Supply mode.
     mOutData.mDemandMode = false;
 
-    /// - Allocate memory and build the temporary mass fractions array.  We allocate a persistent
-    ///   array now to save allocation time during run.
+    /// - Allocate memory and build the temporary mass and mole fractions arrays.  We allocate
+    ///   persistent arrays now to save allocation time during run.
     const unsigned int nTypes = mNodes[0]->getFluidConfig()->mNTypes;
+    delete [] mTempTcMoleFractions;
+    delete [] mTempMoleFractions;
     delete [] mTempMassFractions;
     mTempMassFractions = new double[nTypes];
+    mTempMoleFractions = new double[nTypes];
     for (unsigned int i = 0; i < nTypes; ++i) {
         mTempMassFractions[i] = 0.0;
+        mTempMoleFractions[i] = 0.0;
     }
-
-    /// - Initialize the interface data objects so they can allocate memory.
     const GunnsFluidTraceCompoundsConfigData* tcConfig = mNodes[0]->getFluidConfig()->mTraceCompounds;
     unsigned int nTc = 0;
     if (tcConfig) {
         nTc = tcConfig->mNTypes;
+        if (nTc > 0) {
+            mTempTcMoleFractions = new double[nTc];
+            for (unsigned int i = 0; i < nTc; ++i) {
+                mTempTcMoleFractions[i] = 0.0;
+            }
+        }
     }
+
+    /// - Initialize the interface data objects so they can allocate memory.
     mInData .initialize(mName + ".mInData",  nTypes, nTc);
     mOutData.initialize(mName + ".mOutData", nTypes, nTc);
 
@@ -343,14 +359,32 @@ void GunnsFluidDistributedIf::processInputs()
 /// @param[in]      pressure  (kPa)  Pressure to set the fluid to.
 /// @param[in,out]  fluid     (--)   Pointer to the PolyFluid object to be set.
 ///
+/// @returns  double (--) Sum of input bulk compound mole fractions, <= 1.
+///
 /// @details  Copies the incoming fluid state from the other side of the interface (mInData) into
 ///           the given fluid object and sets it to the given pressure.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* fluid)
+double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* fluid)
 {
+    /// - Normalize the incoming bulk mole fractions to sum to 1.  Internally, GUNNS sums the bulk
+    ///   mole fractions to 1, and this doesn't include the trace compounds.  But the interface
+    ///   data includes the TC's in the sum to 1.  Adjustment to the TC's is handled below.
+    double inBulkFractionSum = 0.0;
+    const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
+    for (int i = 0; i < fluidConfig->mNTypes; ++i) {
+        inBulkFractionSum += mInData.mMoleFractions[i];
+    }
+    if (inBulkFractionSum < DBL_EPSILON) {
+        GUNNS_ERROR(TsOutOfBoundsException, "Invalid Interface Data",
+                "incoming bulk mole fractions sum to zero.");
+    }
+    for (int i = 0; i < fluidConfig->mNTypes; ++i) {
+        mTempMoleFractions[i] = mInData.mMoleFractions[i] / inBulkFractionSum;
+    }
+
     /// - Convert incoming mole fractions to mass fractions.
     GunnsFluidUtils::convertMoleFractionToMassFraction(mTempMassFractions,
-                                                       mInData.mMoleFractions,
+                                                       mTempMoleFractions,
                                                        mNodes[0]->getFluidConfig());
 
     fluid->setMassAndMassFractions(0.0, mTempMassFractions);
@@ -365,9 +399,18 @@ void GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* fluid
     if (mInData.mTcMoleFractions) {
         GunnsFluidTraceCompounds* tc = fluid->getTraceCompounds();
         if (tc) {
-            tc->setMoleFractions(mInData.mTcMoleFractions);
+            /// - As above, adjust the TC mole fractions to be relative to the internal GUNNS bulk
+            ///   fluid.
+            const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
+            if (tcConfig) {
+                for (unsigned int i = 0; i < tcConfig->mNTypes; ++i) {
+                    mTempTcMoleFractions[i] = mInData.mTcMoleFractions[i] / inBulkFractionSum;
+                }
+                tc->setMoleFractions(mTempTcMoleFractions);
+            }
         }
     }
+    return inBulkFractionSum;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -383,9 +426,12 @@ void GunnsFluidDistributedIf::processInputsSupply()
     if (not mOutData.mDemandMode) {
         mSourcePressure = 0.0;
         if (mInData.hasData() and mInData.mDemandMode) {
-            /// - Convert (mol/s) to (kmol/s).
-            mDemandFlux = -mInData.mSource * UnitConversion::KILO_PER_UNIT;
-            inputFluid(1.0, mInternalFluid);
+            /// - Convert (mol/s) to (kmol/s), and external mole rate to internal GUNNS rate.  The
+            ///   internal GUNNS rate does not include the mole rate of the trace compounds.  The
+            ///   inputFluid function returns the fraction of the bulk fluid compunds in the total,
+            ///   which is our adjustment.
+            mDemandFlux = -mInData.mSource * UnitConversion::KILO_PER_UNIT
+                        * inputFluid(1.0, mInternalFluid);
         }
     }
 }
@@ -499,9 +545,11 @@ void GunnsFluidDistributedIf::processOutputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  fluid  (--)  Fluid state to be output to the other side of the interface.
 ///
+/// @returns  double (--)  Sum of all bulk and trace compound mole fractions, >= 1.
+///
 /// @details  Copies the given fluid state for output to the other side of the interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
+double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
 {
     /// - Output energy as either temperature or specific enthalpy as configured.
     if (mUseEnthalpy) {
@@ -519,18 +567,36 @@ void GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
                                                        mTempMassFractions,
                                                        fluidConfig);
 
-    /// - Copy the trace compounds.
+    /// - Copy the trace compounds and sum their mole fractions for normalizing below.
+    double moleFractionSum = 0.0;
     const GunnsFluidTraceCompounds* tc = fluid->getTraceCompounds();
+    unsigned int nTc = 0;
     if (tc) {
-        unsigned int nTc = 0;
         const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
         if (tcConfig) {
             nTc = tcConfig->mNTypes;
         }
         for (unsigned int i = 0; i < nTc; ++i) {
             mOutData.mTcMoleFractions[i] = tc->getMoleFractions()[i];
+            moleFractionSum += mOutData.mTcMoleFractions[i];
         }
     }
+
+    /// - Add bulk fluid mole fractions to the sum for normalizing.
+    for (int i = 0; i < fluidConfig->mNTypes; ++i) {
+        moleFractionSum += mOutData.mMoleFractions[i];
+    }
+
+    /// - Normalize the bulk and trace compounds mole fractions so they all sum to 1.  Unlike
+    ///   GUNNS fluids, where only the bulk fractions sum to 1 and TC's are tracked elsewhere,
+    ///   this interface requires to the total sum of bulk + TC's to 1.
+    for (int i = 0; i < fluidConfig->mNTypes; ++i) {
+        mOutData.mMoleFractions[i] /= moleFractionSum;
+    }
+    for (int i = 0; i < nTc; ++i) {
+        mOutData.mTcMoleFractions[i] /= moleFractionSum;
+    }
+    return moleFractionSum;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -555,15 +621,14 @@ void GunnsFluidDistributedIf::processOutputsDemand()
 {
     outputCapacitance();
 
-    /// - Convert (kmol/s) to (mol/s).
-    mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO;
-
     /// - If there is no inflow to the node then its inflow fluid has a reset state so we can't use
-    ///   it.  Instead, use the node's contents.
+    ///   it.  Instead, use the node's contents.  Convert (kmol/s) to (mol/s).  Adjust mole flow
+    ///   rate (mFlux only includes bulk compounds) to also include the trace compounds for total
+    ///   flow rate to/from the interface.  The outputFluid function returns this scale factor.
     if (mNodes[0]->getInflow()->getTemperature() > 0.0) {
-        outputFluid(mNodes[0]->getInflow());
+        mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(mNodes[0]->getInflow());
     } else {
-        outputFluid(mNodes[0]->getContent());
+        mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(mNodes[0]->getContent());
     }
 }
 
@@ -617,7 +682,7 @@ void GunnsFluidDistributedIf::step(const double dt)
         if (mOutData.mCapacitance > FLT_EPSILON and mInData.mCapacitance > FLT_EPSILON) {
             /// - In Demand mode, update demand flux gain as a function of Cs/Cd.  For Cs/Cd < 1,
             ///   lower gain based on latency.  For > 1, approach gain of 1.
-            const double csOverCd = Math::limitRange(1.0, mInData.mCapacitance / mOutData.mCapacitance, mModingCapacitanceRatio);
+            const double csOverCd = MsMath::limitRange(1.0, mInData.mCapacitance / mOutData.mCapacitance, mModingCapacitanceRatio);
             const double gainLimit = std::min(1.0, mDemandFilterConstA * powf(mDemandFilterConstB, mLoopLatency));
             mDemandFluxGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
             const double conductance = mDemandFluxGain * mInData.mCapacitance / dt;
@@ -643,7 +708,7 @@ void GunnsFluidDistributedIf::step(const double dt)
     }
 
     /// - Build admittance matrix.
-    const double systemConductance = Math::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
+    const double systemConductance = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
     if (fabs(mAdmittanceMatrix[0] - systemConductance) > 0.0) {
         mAdmittanceMatrix[0] = systemConductance;
         mAdmittanceUpdate    = true;
@@ -743,4 +808,3 @@ bool GunnsFluidDistributedIf::checkSpecificPortRules(const int port, const int n
     }
     return result;
 }
-

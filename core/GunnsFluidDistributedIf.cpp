@@ -30,7 +30,9 @@ GunnsFluidDistributedIfData::GunnsFluidDistributedIfData()
     mSource(0.0),
     mEnergy(0.0),
     mMoleFractions(0),
-    mTcMoleFractions(0)
+    mTcMoleFractions(0),
+    mNumFluid(0),
+    mNumTc(0)
 {
     // nothing to do
 }
@@ -45,6 +47,31 @@ GunnsFluidDistributedIfData::~GunnsFluidDistributedIfData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  that  (--)  Object to be copied.
+///
+/// @details  Assigns values of this object's attributes to the given object's values.  mNumFluid
+///           and mNumTc are not changed.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributedIfData& GunnsFluidDistributedIfData::operator =(const GunnsFluidDistributedIfData& that)
+{
+    if (this != &that) {
+        mFrameCount    = that.mFrameCount;
+        mFrameLoopback = that.mFrameLoopback;
+        mDemandMode    = that.mDemandMode;
+        mCapacitance   = that.mCapacitance;
+        mSource        = that.mSource;
+        mEnergy        = that.mEnergy;
+        for (unsigned int i=0; i<mNumFluid; ++i) {
+            mMoleFractions[i] = that.mMoleFractions[i];
+        }
+        for (unsigned int i=0; i<mNumTc; ++i) {
+            mTcMoleFractions[i] = that.mTcMoleFractions[i];
+        }
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the instance for dynamic memory names for Trick MM.
 /// @param[in] nFluids (--) Number of fluid constituents.
 /// @param[in] nTc     (--) Number of trace compounds.
@@ -55,17 +82,19 @@ void GunnsFluidDistributedIfData::initialize(const std::string& name,
                                              const unsigned int nFluids,
                                              const unsigned int nTc)
 {
-    if (nFluids > 0) {
+    mNumFluid = nFluids;
+    mNumTc    = nTc;
+    if (mNumFluid > 0) {
         TS_DELETE_ARRAY(mMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, nFluids, double, name + ".mMoleFractions");
-        for (unsigned int i=0; i<nFluids; ++i) {
+        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, mNumFluid, double, name + ".mMoleFractions");
+        for (unsigned int i=0; i<mNumFluid; ++i) {
             mMoleFractions[i] = 0.0;
         }
     }
-    if (nTc > 0) {
+    if (mNumTc > 0) {
         TS_DELETE_ARRAY(mTcMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, nTc, double, name + ".mTcMoleFractions");
-        for (unsigned int i=0; i<nTc; ++i) {
+        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, mNumTc, double, name + ".mTcMoleFractions");
+        for (unsigned int i=0; i<mNumTc; ++i) {
             mTcMoleFractions[i] = 0.0;
         }
     }
@@ -142,6 +171,8 @@ GunnsFluidDistributedIfInputData::~GunnsFluidDistributedIfInputData()
 GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     :
     GunnsFluidLink(NPORTS),
+    mInData                (),
+    mOutData               (),
     mIsPairMaster          (false),
     mUseEnthalpy           (false),
     mDemandOption          (false),
@@ -149,9 +180,7 @@ GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     mModingCapacitanceRatio(0.0),
     mDemandFilterConstA    (0.0),
     mDemandFilterConstB    (0.0),
-    mInData                (),
     mInDataLastDemandMode  (false),
-    mOutData               (),
     mFramesSinceFlip       (0),
     mSupplyVolume          (0.0),
     mEffectiveConductivity (0.0),
@@ -403,7 +432,7 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
             ///   fluid.
             const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
             if (tcConfig) {
-                for (unsigned int i = 0; i < tcConfig->mNTypes; ++i) {
+                for (int i = 0; i < tcConfig->mNTypes; ++i) {
                     mTempTcMoleFractions[i] = mInData.mTcMoleFractions[i] / inBulkFractionSum;
                 }
                 tc->setMoleFractions(mTempTcMoleFractions);
@@ -593,7 +622,7 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         mOutData.mMoleFractions[i] /= moleFractionSum;
     }
-    for (int i = 0; i < nTc; ++i) {
+    for (unsigned int i = 0; i < nTc; ++i) {
         mOutData.mTcMoleFractions[i] /= moleFractionSum;
     }
     return moleFractionSum;

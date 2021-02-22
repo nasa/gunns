@@ -59,11 +59,13 @@ class GunnsFluidDistributedIfData
         void initialize(const std::string& name, const unsigned int nFluids, const unsigned int nTc);
         /// @brief  Returns whether this object has received data.
         bool hasData();
+        /// @brief Assignment operator for this Fluid Distributed Interface interface data.
+        GunnsFluidDistributedIfData& operator =(const GunnsFluidDistributedIfData& that);
 
     private:
+        unsigned int mNumFluid; /**< *o (--) trick_chkpnt_io(**) Number of primary fluid compounds. */
+        unsigned int mNumTc;    /**< *o (--) trick_chkpnt_io(**) Number of trace compounds. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributedIfData& operator =(const GunnsFluidDistributedIfData&);
-        /// @brief Assignment operator unavailable since declared private and not implemented.
         GunnsFluidDistributedIfData(const GunnsFluidDistributedIfData&);
 };
 
@@ -184,6 +186,8 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIf);
     public:
+        GunnsFluidDistributedIfData mInData;  /**< (--) Data from the other paired link input from the interface. */
+        GunnsFluidDistributedIfData mOutData; /**< (--) Data to the other paired link output to the interface. */
         /// @brief Default Constructor.
         GunnsFluidDistributedIf();
         /// @brief Default Destructor.
@@ -218,9 +222,7 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         double                      mModingCapacitanceRatio; /**<    (--)       trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
         double                      mDemandFilterConstA;     /**<    (--)       trick_chkpnt_io(**) Demand filter gain constant A. */
         double                      mDemandFilterConstB;     /**<    (--)       trick_chkpnt_io(**) Demand filter gain constant B. */
-        GunnsFluidDistributedIfData mInData;                 /**<    (--)                           Data from the other paired link input from the interface. */
         bool                        mInDataLastDemandMode;   /**<    (--)                           Last-pass demand mode from the other paired link. */
-        GunnsFluidDistributedIfData mOutData;                /**<    (--)                           Data to the other paired link output to the interface. */
         int                         mFramesSinceFlip;        /**<    (--)                           Number of frames since the last mode flip. */
         double                      mSupplyVolume;           /**<    (m3)                           Stored volume of the node when in Demand mode. */
         double                      mEffectiveConductivity;  /**<    (m2)       trick_chkpnt_io(**) Effective conductivity of the link in Demand mode. */

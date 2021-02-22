@@ -939,6 +939,7 @@ void UtGunnsFluidDistributedIf::testTransportFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[0].getInflux(),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[0].getOutflux(), DBL_EPSILON);
 
+
     std::cout << "... Pass";
 }
 
@@ -969,6 +970,94 @@ void UtGunnsFluidDistributedIf::testRestart()
     CPPUNIT_ASSERT(1.0 == tArticle->mDemandFluxGain);
     CPPUNIT_ASSERT(0.0 == tArticle->mSuppliedCapacitance);
     CPPUNIT_ASSERT(0.0 == tArticle->mTempMassFractions[0]);
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test for the GunnsFluidDistributedIfData class.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsFluidDistributedIf::testData()
+{
+    std::cout << "\n UtGunnsFluidDistributedIf 13: testData .............................";
+
+    /// @test Default constructor.
+    GunnsFluidDistributedIfData data;
+    CPPUNIT_ASSERT(0     == data.mFrameCount);
+    CPPUNIT_ASSERT(0     == data.mFrameLoopback);
+    CPPUNIT_ASSERT(false == data.mDemandMode);
+    CPPUNIT_ASSERT(0.0   == data.mCapacitance);
+    CPPUNIT_ASSERT(0.0   == data.mSource);
+    CPPUNIT_ASSERT(0.0   == data.mEnergy);
+    CPPUNIT_ASSERT(0     == data.mMoleFractions);
+    CPPUNIT_ASSERT(0     == data.mTcMoleFractions);
+
+    /// @test initialize method.
+    CPPUNIT_ASSERT_NO_THROW(data.initialize("data", 3, 2));
+    CPPUNIT_ASSERT(0     == data.mFrameCount);
+    CPPUNIT_ASSERT(0     == data.mFrameLoopback);
+    CPPUNIT_ASSERT(false == data.mDemandMode);
+    CPPUNIT_ASSERT(0.0   == data.mCapacitance);
+    CPPUNIT_ASSERT(0.0   == data.mSource);
+    CPPUNIT_ASSERT(0.0   == data.mEnergy);
+    CPPUNIT_ASSERT(0     != data.mMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data.mMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0   == data.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0.0   == data.mMoleFractions[2]);
+    CPPUNIT_ASSERT(0     != data.mTcMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[1]);
+
+    /// @test hasData method.
+    CPPUNIT_ASSERT(false == data.hasData());
+    data.mFrameCount = 1;
+    CPPUNIT_ASSERT(true == data.hasData());
+
+    /// @test Assignment operator before initialization.
+    data.mFrameCount         = 3;
+    data.mFrameLoopback      = 2;
+    data.mDemandMode         = true;
+    data.mCapacitance        = 1.0;
+    data.mSource             = 2.0;
+    data.mEnergy             = 3.0;
+    data.mMoleFractions[0]   = 0.5;
+    data.mMoleFractions[1]   = 0.4;
+    data.mMoleFractions[2]   = 0.09;
+    data.mTcMoleFractions[0] = 0.009;
+    data.mTcMoleFractions[1] = 0.001;
+
+    GunnsFluidDistributedIfData data2;
+    data2 = data;
+    CPPUNIT_ASSERT(3    == data2.mFrameCount);
+    CPPUNIT_ASSERT(2    == data2.mFrameLoopback);
+    CPPUNIT_ASSERT(true == data2.mDemandMode);
+    CPPUNIT_ASSERT(1.0  == data2.mCapacitance);
+    CPPUNIT_ASSERT(2.0  == data2.mSource);
+    CPPUNIT_ASSERT(3.0  == data2.mEnergy);
+    CPPUNIT_ASSERT(0    == data2.mMoleFractions);
+    CPPUNIT_ASSERT(0    == data2.mTcMoleFractions);
+
+    /// @test Assignment operator after initialization.
+    GunnsFluidDistributedIfData data3;
+    CPPUNIT_ASSERT_NO_THROW(data3.initialize("data", 3, 2));
+    data3 = data;
+    CPPUNIT_ASSERT(3     == data3.mFrameCount);
+    CPPUNIT_ASSERT(2     == data3.mFrameLoopback);
+    CPPUNIT_ASSERT(true  == data3.mDemandMode);
+    CPPUNIT_ASSERT(1.0   == data3.mCapacitance);
+    CPPUNIT_ASSERT(2.0   == data3.mSource);
+    CPPUNIT_ASSERT(3.0   == data3.mEnergy);
+    CPPUNIT_ASSERT(0.5   == data3.mMoleFractions[0]);
+    CPPUNIT_ASSERT(0.4   == data3.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0.09  == data3.mMoleFractions[2]);
+    CPPUNIT_ASSERT(0.009 == data3.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(0.001 == data3.mTcMoleFractions[1]);
+
+    /// @test Data objects are public in GunnsFluidDistributedIf.
+    GunnsFluidDistributedIf article;
+    article.initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    CPPUNIT_ASSERT(false == article.mInData.hasData());
+    CPPUNIT_ASSERT(false == article.mOutData.hasData());
 
     std::cout << "... Pass";
 }

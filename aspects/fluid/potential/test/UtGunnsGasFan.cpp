@@ -126,8 +126,8 @@ void UtGunnsGasFan::setUp()
     tReferenceCoeff3      =-21093.2;
     tReferenceCoeff4      = 168250.0;
     tReferenceCoeff5      =-549729.0;
-    tBestEfficiency       = 0.0;
-    tReferenceQBep        = 0.0;
+    tBestEfficiency       = 0.420264;
+    tReferenceQBep        = 0.064;
     tFilterGain           = 0.5;
     tDriveRatio           = 0.5;
     tThermalLength        = 0.1;
@@ -154,9 +154,6 @@ void UtGunnsGasFan::setUp()
                                                       tThermalDiameter,
                                                       tSurfaceRoughness,
                                                       tCheckValveActive);
-    //TODO move into the constructor args when class constructor is updated.
-    tConfigData->mBestEfficiency = tBestEfficiency;
-    tConfigData->mReferenceQBep  = tReferenceQBep;
 
     /// - Define the nominal input data
     tBlockageFlag         = true;
@@ -373,12 +370,6 @@ void UtGunnsGasFan::testNominalInitialization()
     /// - Initialize default constructed test article with nominal initialization data.
     FriendlyGunnsGasFan article;
 
-    //TODO move to set up
-    tBestEfficiency              = 0.420264;
-    tReferenceQBep               = 0.064;
-    tConfigData->mBestEfficiency = tBestEfficiency;
-    tConfigData->mReferenceQBep  = tReferenceQBep;
-
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
 
     /// @test    Base class initialization.
@@ -424,17 +415,19 @@ void UtGunnsGasFan::testNominalInitialization()
 
     const double expectedPbep = 1000.0 * pressureBep * tReferenceQBep / tBestEfficiency;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPbep,   article.mReferencePowerBep,  1E-4);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tReferenceQ,    article.mReferenceQ,         FLT_EPSILON);
 
     /// @test    Terms initialized from input data.
     CPPUNIT_ASSERT(tMotorSpeed        == article.mMotorSpeed);
     CPPUNIT_ASSERT(tWallTemperature   == article.mWallTemperature);
 
     /// @test    Initialized state data.
+    const double expectedSysG = tReferenceQ / sqrt(tReferenceCoeff0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSysG, article.mSystemConstant, FLT_EPSILON);
     CPPUNIT_ASSERT(0.0 == article.mWallHeatFlux);
     CPPUNIT_ASSERT(0.0 == article.mImpellerTorque);
     CPPUNIT_ASSERT(0.0 == article.mImpellerSpeed);
     CPPUNIT_ASSERT(0.0 == article.mImpellerPower);
-    CPPUNIT_ASSERT(0.0 == article.mSystemConstant);
     CPPUNIT_ASSERT(0.0 == article.mAffinityCoeffs[0]);
     CPPUNIT_ASSERT(0.0 == article.mAffinityCoeffs[1]);
     CPPUNIT_ASSERT(0.0 == article.mAffinityCoeffs[2]);
@@ -542,6 +535,8 @@ void UtGunnsGasFan::testInitializationExceptions()
     tConfigData->mReferenceCoeff3 = 0.0;
     tConfigData->mReferenceCoeff4 = 0.0;
     tConfigData->mReferenceCoeff5 = 0.0;
+    tConfigData->mBestEfficiency  = 0.0;
+    tConfigData->mReferenceQBep   = 0.0;
     CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tConfigData->mReferenceCoeff0 = tReferenceCoeff0;
@@ -550,6 +545,8 @@ void UtGunnsGasFan::testInitializationExceptions()
     tConfigData->mReferenceCoeff3 = tReferenceCoeff3;
     tConfigData->mReferenceCoeff4 = tReferenceCoeff4;
     tConfigData->mReferenceCoeff5 = tReferenceCoeff5;
+    tConfigData->mBestEfficiency  = tBestEfficiency;
+    tConfigData->mReferenceQBep   = tReferenceQBep;
 
     /// @test    Initialization exception on invalid config data: reference density too small.
     tConfigData->mReferenceDensity = DBL_EPSILON * 0.5;
@@ -691,6 +688,7 @@ void UtGunnsGasFan::testUpdateState()
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
     /// @test    Zero source pressure when drive ratio and impeller speed are zero.
+    const double startGsys = tArticle->mSystemConstant;
     tArticle->mDriveRatio = 0.0;
     tArticle->updateState(tTimeStep);
     CPPUNIT_ASSERT(0.0 == tArticle->mImpellerSpeed);
@@ -706,7 +704,7 @@ void UtGunnsGasFan::testUpdateState()
 
     /// @test    Outputs under normal running condition.  Expected Q (flow rate) value is derived
     ///          from the expected affinity coefficients, expected system constant, using the root
-    ///          finder at: http://xrjunque.nom.es/precis/rootfinder.aspx
+    ///          finder at: https://www.wolframalpha.com.
     tArticle->mDriveRatio     = tDriveRatio;
     tArticle->mVolFlowRate    = 0.06;  // (m3/s), ~140 cfm
     tArticle->mSourcePressure = 0.25;  // (kPa)
@@ -719,16 +717,16 @@ void UtGunnsGasFan::testUpdateState()
     double expectedCoeff0        = tReferenceCoeff0 * expectedDensityFactor *
                                    expectedSpeedFactor * expectedSpeedFactor;
     double expectedCoeff2        = tReferenceCoeff2 * expectedDensityFactor;
-    double expectedGsys          = 0.06 / sqrt(0.25);
-    double expectedSystemConst   = tFilterGain * expectedGsys;
-    double expectedSourceQ       = 0.022;
+    double expectedGsys          = std::max(0.06, tReferenceQ * expectedSpeedFactor * 0.0001)
+                                 / sqrt(std::min(expectedCoeff0, 0.25));
+    double expectedSystemConst   = tFilterGain * expectedGsys + (1.0 - tFilterGain) * startGsys;
+    double expectedSourceQ       = 0.051262960458395;
     double expectedSourceP       = tArticle->mAffinityCoeffs[0]
                                  + tArticle->mAffinityCoeffs[1] * pow(expectedSourceQ, 1.0)
                                  + tArticle->mAffinityCoeffs[2] * pow(expectedSourceQ, 2.0)
                                  + tArticle->mAffinityCoeffs[3] * pow(expectedSourceQ, 3.0)
                                  + tArticle->mAffinityCoeffs[4] * pow(expectedSourceQ, 4.0)
                                  + tArticle->mAffinityCoeffs[5] * pow(expectedSourceQ, 5.0);
-
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpellerSpeed, tArticle->mImpellerSpeed,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff0,        tArticle->mAffinityCoeffs[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff2,        tArticle->mAffinityCoeffs[2], DBL_EPSILON);
@@ -746,8 +744,9 @@ void UtGunnsGasFan::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceP,       tArticle->mSourcePressure,    0.000001);
 
     /// @test    Outputs at dead-head condition (zero flow rate, max pressure).
-    tArticle->mFilterGain     = 0.5;
+    tArticle->mFilterGain     = 1.0;
     tArticle->mVolFlowRate    = 0.0;
+    tArticle->mSourcePressure = 100.0;
     tArticle->updateState(tTimeStep);
     expectedSourceQ           = 0.0;
     expectedSourceP           = expectedCoeff0;

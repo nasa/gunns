@@ -364,12 +364,15 @@ void GunnsGasFan::initialize(const GunnsGasFanConfigData&  configData,
     mMotorSpeed         = inputData.mMotorSpeed;
     mWallTemperature    = inputData.mWallTemperature;
 
+    /// - Initialize the system constant somewhere in the ballpark of fan performance boundaries
+    ///   to kick-start the flow on first pass.
+    mSystemConstant     = mReferenceQ / sqrt(std::max(DBL_EPSILON, mReferenceCoeffs[0]));
+
     /// - Initialize remaining state data.
     mWallHeatFlux       = 0.0;
     mImpellerTorque     = 0.0;
     mImpellerSpeed      = 0.0;
     mImpellerPower      = 0.0;
-    mSystemConstant     = 0.0;
     mAffinityCoeffs[0]  = 0.0;
     mAffinityCoeffs[1]  = 0.0;
     mAffinityCoeffs[2]  = 0.0;
@@ -578,10 +581,8 @@ void GunnsGasFan::computeSourcePressure()
         ///
         /// - Min/max limits are set to avoid locking up the pressure, and the result is
         ///   filtered for further stability as needed.
-        const double gSys = MsMath::limitRange
-                       (0.001 / sourceDensity,
-                        std::max(mVolFlowRate, 0.0) / sqrt(std::max(mSourcePressure, DBL_EPSILON)),
-                        1.0);
+        const double gSys = std::max(mReferenceQ * speedFactor * 0.0001, mVolFlowRate)
+                          / sqrt(MsMath::limitRange(DBL_EPSILON, mSourcePressure, mAffinityCoeffs[0]));
 
         mSystemConstant = mFilterGain * gSys + (1.0 - mFilterGain) * mSystemConstant;
 

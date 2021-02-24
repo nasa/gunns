@@ -145,14 +145,20 @@ GunnsFluidDistributedIfConfigData::~GunnsFluidDistributedIfConfigData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] malfBlockageFlag   (--)  Blockage malfunction flag.
 /// @param[in] malfBlockageValue  (--)  Blockage malfunction fractional value (0-1).
+/// @param[in] forceDemandMode    (--)  Forces the link to always be in Demand mode.
+/// @param[in] forceSupplyMode    (--)  Forces the link to always be in Supply mode.
 ///
 /// @details  Default GUNNS Fluid Distributed Interface Link Input Data Constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedIfInputData::GunnsFluidDistributedIfInputData(
         const bool   malfBlockageFlag,
-        const double malfBlockageValue)
+        const double malfBlockageValue,
+        const bool   forceDemandMode,
+        const bool   forceSupplyMode)
     :
-    GunnsFluidLinkInputData(malfBlockageFlag, malfBlockageValue)
+    GunnsFluidLinkInputData(malfBlockageFlag, malfBlockageValue),
+    mForceDemandMode(forceDemandMode),
+    mForceSupplyMode(forceSupplyMode)
 {
     // nothing to do
 }
@@ -180,6 +186,8 @@ GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     mModingCapacitanceRatio(0.0),
     mDemandFilterConstA    (0.0),
     mDemandFilterConstB    (0.0),
+    mForceDemandMode       (false),
+    mForceSupplyMode       (false),
     mInDataLastDemandMode  (false),
     mFramesSinceFlip       (0),
     mSupplyVolume          (0.0),
@@ -244,11 +252,15 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     mDemandFilterConstA     = configData.mDemandFilterConstA;
     mDemandFilterConstB     = configData.mDemandFilterConstB;
 
+    /// - Initialize from input data.
+    mForceDemandMode = inputData.mForceDemandMode;
+    mForceSupplyMode = inputData.mForceSupplyMode;
+
     /// - Create the internal link fluid, allocate and load the fluid config map to translate the
     ///   external network's fluid to match our local network's config.
     createInternalFluid();
 
-    /// - Both sides start out in Supply mode.
+    /// - Both sides start out in Supply mode by default.
     mOutData.mDemandMode = false;
 
     /// - Allocate memory and build the temporary mass and mole fractions arrays.  We allocate
@@ -322,6 +334,18 @@ void GunnsFluidDistributedIf::validate() const
     if (not mCapacitorLink) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Missing pointer to the node capacitor link.");
+    }
+
+    /// - Throw on invalid moding capacitance ratio range.
+    if (mModingCapacitanceRatio <= 1.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "moding capacitance ration <= 1.");
+    }
+
+    /// - Throw if conflicting mode force flags.
+    if (mForceDemandMode and mForceSupplyMode) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
+                    "both mode force flags are set.");
     }
 }
 
@@ -490,9 +514,14 @@ void GunnsFluidDistributedIf::processInputsDemand()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::flipModesOnInput()
 {
-    /// - If in demand mode and the incoming data is also demand, then the other side has initiated
-    ///   the demand/supply swap, so we flip to supply.
-    if (mInData.hasData()) {
+    /// - Force mode swap based on the mode force flags.
+    if (mForceDemandMode and not mOutData.mDemandMode) {
+        flipToDemandMode();
+    } else if (mForceSupplyMode and mOutData.mDemandMode) {
+        flipToSupplyMode();
+    } else if (mInData.hasData()) {
+        /// - If in demand mode and the incoming data is also demand, then the other side has
+        ///   initialized the demand/supply swap, so we flip to supply.
         if (mOutData.mDemandMode and mInData.mDemandMode and not mInDataLastDemandMode) {
             flipToSupplyMode();
         } else if (not mInData.mDemandMode and not mOutData.mDemandMode) {
@@ -534,11 +563,13 @@ void GunnsFluidDistributedIf::flipModesOnCapacitance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::flipToDemandMode()
 {
-    mOutData.mDemandMode = true;
-    mSupplyVolume = mNodes[0]->getVolume();
-    mCapacitorLink->editVolume(true, 0.0);
-    mFramesSinceFlip = 0;
-    GUNNS_INFO("switched to Demand mode.")
+    if (not mForceSupplyMode) {
+        mOutData.mDemandMode = true;
+        mSupplyVolume = mNodes[0]->getVolume();
+        mCapacitorLink->editVolume(true, 0.0);
+        mFramesSinceFlip = 0;
+        GUNNS_INFO("switched to Demand mode.")
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -548,11 +579,13 @@ void GunnsFluidDistributedIf::flipToDemandMode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::flipToSupplyMode()
 {
-    mOutData.mDemandMode = false;
-    mCapacitorLink->editVolume(true, mSupplyVolume);
-    mSupplyVolume = 0.0;
-    mFramesSinceFlip = 0;
-    GUNNS_INFO("switched to Supply mode.")
+    if (not mForceDemandMode) {
+        mOutData.mDemandMode = false;
+        mCapacitorLink->editVolume(true, mSupplyVolume);
+        mSupplyVolume = 0.0;
+        mFramesSinceFlip = 0;
+        GUNNS_INFO("switched to Supply mode.")
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

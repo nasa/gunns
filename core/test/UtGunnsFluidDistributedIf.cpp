@@ -367,6 +367,20 @@ void UtGunnsFluidDistributedIf::testInitializationExceptions()
     CPPUNIT_ASSERT(!tArticle->mInitFlag);
     tConfigData->mCapacitorLink = &tCapacitorLink;
 
+    /// @test Exception on invalid moding capacitance ratio.
+    tConfigData->mModingCapacitanceRatio = 1.0;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0),
+                         TsInitializationException);
+    tConfigData->mModingCapacitanceRatio = 1.25;
+
+    /// @test Exception on conflicting mode force flags.
+    tInputData->mForceDemandMode = true;
+    tInputData->mForceSupplyMode = true;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0),
+                         TsInitializationException);
+    tInputData->mForceDemandMode = false;
+    tInputData->mForceSupplyMode = false;
+
     std::cout << "... Pass";
 }
 
@@ -1058,6 +1072,54 @@ void UtGunnsFluidDistributedIf::testData()
     article.initialize(*tConfigData, *tInputData, tLinks, tPort0);
     CPPUNIT_ASSERT(false == article.mInData.hasData());
     CPPUNIT_ASSERT(false == article.mOutData.hasData());
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test for the mode forcing flags.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsFluidDistributedIf::testForceModes()
+{
+    std::cout << "\n UtGunnsFluidDistributedIf 14: testForceModes .......................";
+
+    /// @test Starts in Supply mode after initialization regardless of Demand force flag.
+    tInputData->mForceDemandMode = true;
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
+
+    /// @test Flips to Demand mode on input regardless of Demand mode in incoming data.
+    tNodes[0].setVolume(1.0);
+    tArticle->mInData.mDemandMode = true;
+    tArticle->mInData.mFrameCount = 1;
+    tArticle->processInputs();
+    CPPUNIT_ASSERT(1.0   == tArticle->mSupplyVolume);
+    CPPUNIT_ASSERT(true  == tCapacitorLink.mEditVolumeFlag);
+    CPPUNIT_ASSERT(0.0   == tCapacitorLink.mEditVolume);
+    CPPUNIT_ASSERT(0     == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(1     == tArticle->mOutData.mFrameLoopback);
+    CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
+
+    /// @test Flips to Supply mode on input regardless of capacitance.
+    tArticle->mInData.mDemandMode = false;
+    tArticle->mInData.mFrameCount = 2;
+    tArticle->mForceDemandMode    = false;
+    tArticle->mForceSupplyMode    = true;
+    tArticle->processInputs();
+    CPPUNIT_ASSERT(0.0   == tArticle->mSupplyVolume);
+    CPPUNIT_ASSERT(true  == tCapacitorLink.mEditVolumeFlag);
+    CPPUNIT_ASSERT(1.0   == tCapacitorLink.mEditVolume);
+    CPPUNIT_ASSERT(0     == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(2     == tArticle->mOutData.mFrameLoopback);
+    CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
+
+    /// @test Stays in Supply mode on output regardless of new local capacitance.
+    tArticle->mLoopLatency          = 2;
+    tArticle->mFramesSinceFlip      = 3;
+    tArticle->mOutData.mCapacitance = 0.0;
+    tArticle->mInData.mCapacitance  = 1.0;
+    tArticle->flipModesOnCapacitance();
+    CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
 
     std::cout << "... Pass";
 }

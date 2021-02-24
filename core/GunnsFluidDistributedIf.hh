@@ -115,9 +115,13 @@ class GunnsFluidDistributedIfConfigData : public GunnsFluidLinkConfigData
 class GunnsFluidDistributedIfInputData : public GunnsFluidLinkInputData
 {
     public:
+        bool mForceDemandMode; /**< (--) trick_chkpnt_io(**) Forces the link to always be in Demand mode. */
+        bool mForceSupplyMode; /**< (--) trick_chkpnt_io(**) Forces the link to always be in Supply mode. */
         /// @brief Default constructs this Fluid Distributed Interface input data.
         GunnsFluidDistributedIfInputData(const bool   malfBlockageFlag  = false,
-                                         const double malfBlockageValue = 0.0);
+                                         const double malfBlockageValue = 0.0,
+                                         const bool   forceDemandMode   = false,
+                                         const bool   forceSupplyMode   = false);
         /// @brief Default destructs this Fluid Distributed Interface input data.
         virtual ~GunnsFluidDistributedIfInputData();
 
@@ -222,6 +226,8 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         double                      mModingCapacitanceRatio; /**<    (--)       trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
         double                      mDemandFilterConstA;     /**<    (--)       trick_chkpnt_io(**) Demand filter gain constant A. */
         double                      mDemandFilterConstB;     /**<    (--)       trick_chkpnt_io(**) Demand filter gain constant B. */
+        bool                        mForceDemandMode;        /**<    (--)                           Forces the link to always be in Demand mode. */
+        bool                        mForceSupplyMode;        /**<    (--)                           Forces the link to always be in Supply mode. */
         bool                        mInDataLastDemandMode;   /**<    (--)                           Last-pass demand mode from the other paired link. */
         int                         mFramesSinceFlip;        /**<    (--)                           Number of frames since the last mode flip. */
         double                      mSupplyVolume;           /**<    (m3)                           Stored volume of the node when in Demand mode. */

@@ -65,6 +65,7 @@ class UtGunnsFluidDistributedIf: public CppUnit::TestFixture
         CPPUNIT_TEST(testTransportFlows);
         CPPUNIT_TEST(testRestart);
         CPPUNIT_TEST(testData);
+        CPPUNIT_TEST(testForceModes);
         CPPUNIT_TEST_SUITE_END();
 
         GunnsFluidDistributedIfConfigData*  tConfigData;            /**< (--)   Nominal config data */
@@ -107,6 +108,7 @@ class UtGunnsFluidDistributedIf: public CppUnit::TestFixture
         void testTransportFlows();
         void testRestart();
         void testData();
+        void testForceModes();
 };
 
 ///@}

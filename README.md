@@ -1,3 +1,5 @@
+[![Unit Tests](https://github.com/nasa/gunns/actions/workflows/unit_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/unit_test.yml)
+
 # General-Use Nodal Network Solver (GUNNS)
 
 GUNNS is a set of generic C++ math models that combines nodal circuit analysis algorithms with the hydraulic-thermal-electric analogy to model flow circuits (fluid, thermal, electrical).  The models include generic physical components like pumps, valves, resistors & capacitors.  These components, called 'links', are connected to 'nodes' and configured with their characteristic values, creating a 'network' (circuit) of links and nodes.  The state of the network and its contained models are then propagated in the time domain.

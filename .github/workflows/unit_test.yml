@@ -1,0 +1,43 @@
+name: Unit Tests
+
+on:
+  push:
+    paths-ignore:
+    - '.github/workflows/**'
+    - '!.github/workflows/unit_test.yml'
+
+jobs:
+  all_unit_tests:
+    runs-on: ubuntu-latest
+    container: docker://centos:7
+
+    steps:
+    - name: Checkout repository
+      # what about other branches or merge requests?
+      uses: actions/checkout@master
+
+    - name: Add yum repo
+      run: yum -y install epel-release.noarch && yum -y update
+
+    - name: Install dependencies
+      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind
+
+    - name: Run tests
+      run: |
+        # Set environment variables
+        export GUNNS_HOME=`pwd`
+        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
+        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
+        # Some unit tests can fail unless parallel make, probably a missing dependency
+        # in the UT makefiles...
+        export MAKEFLAGS="-j4"
+        # Set file permissions needed by the parsing test
+        chmod a-r ms-utils/parsing/test/file_no_permission.txt
+        chmod a-r ms-utils/parsing/test/nopermission
+        # Make & run unit tests
+        cd test
+        ./make_all_ut.sh
+        # Scan results for pass/fail
+        chmod +x scan_all_ut.py
+        python ./scan_all_ut.py
+

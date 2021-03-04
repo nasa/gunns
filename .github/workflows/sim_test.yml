@@ -68,6 +68,7 @@ jobs:
 
     - name: Check sim outputs for pass/fail
       run: |
+        export GUNNS_HOME=`pwd`
         cd test/CI
         chmod +x sim_test.py
         python ./sim_test.py

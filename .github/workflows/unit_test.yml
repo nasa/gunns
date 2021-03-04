@@ -13,7 +13,6 @@ jobs:
 
     steps:
     - name: Checkout repository
-      # what about other branches or merge requests?
       uses: actions/checkout@master
 
     - name: Add yum repo

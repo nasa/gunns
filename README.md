@@ -1,4 +1,7 @@
-[![Unit Tests](https://github.com/nasa/gunns/actions/workflows/unit_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/unit_test.yml)
+<p align=left>
+<a href="https://github.com/nasa/gunns/actions?query=workflow%3Aunit_test"> <img src="https://github.com/nasa/gunns/workflows/unit_test/badge.svg?branch=master" alt="Unit Tests" height=30px> </a>
+<a href="https://github.com/nasa/gunns/actions?query=workflow%3Asim_test"> <img src="https://github.com/nasa/gunns/workflows/sim_test/badge.svg?branch=master" alt="Test Trick Sim" height=30px> </a>
+</p>
 
 # General-Use Nodal Network Solver (GUNNS)
 

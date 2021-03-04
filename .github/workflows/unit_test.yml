@@ -3,6 +3,7 @@ name: Unit Tests
 on:
   push:
     paths-ignore:
+    - 'README.md'
     - '.github/workflows/**'
     - '!.github/workflows/unit_test.yml'
 

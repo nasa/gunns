@@ -3,6 +3,7 @@ name: Test Trick Sim
 on:
   push:
     paths-ignore:
+    - 'README.md'
     - '.github/workflows/**'
     - '!.github/workflows/sim_test.yml'
 

@@ -21,61 +21,54 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@master
 
-    - name: Checkout Trick
-      uses: actions/checkout@master
-      with:
-        repository: nasa/trick
-        path: /home/trick
-    
-    - name: sohw project folder
-      run: pwd; ls
+    - name: Add yum repo
+      run: yum -y install epel-release.noarch && yum -y update
 
-    - name: show trick folder
-      run: cd /home/trick; pwd; ls
+    - name: Install dependencies
+      # Note most of these are for Trick
+      run: >
+        yum install -y bison clang-devel cmake curl-devel flex gcc gcc-c++ git glibc-devel gtest-devel
+        java-1.8.0-openjdk-devel libX11-devel libxml2-devel libXi-devel libXmu-devel libXt-devel
+        llvm-devel llvm-static make tcsh csh mesa-libGL-devel mesa-libGLU-devel maven cppunit ncurses-devel
+        openmotif-devel perl-Digest-MD5 protobuf-devel python-devel sqlite-devel swig systemd-devel
+        udunits2-devel which zlib-devel tkinter
 
-    # TODO env vars don't persist between run commands because each run command starts in a new shell
-    #- name: Set environment variables
-    #  run: |
-    #    export GUNNS_HOME=`--project-dir`
-    #    echo $GUNNS_HOME
-    #    export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
-    #    export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
-    #    export HS_CONFIG_PATH="${GUNNS_HOME}/sims/Modified_data"
-    #    export TRICK_HOME="/home/trick"
-    #    export PATH="${PATH}:${TRICK_HOME}/bin"
-    #    export MAKEFLAGS="-j4"
+    - name: Build Trick
+      # Failure here is likely due to new or changed dependencies of Trick, see above
+      run: |
+        export TRICK_HOME="/home/trick"
+        export MAKEFLAGS=-j`nproc`
+        git clone https://github.com/nasa/trick.git ${TRICK_HOME}
+        cd ${TRICK_HOME}
+        ./configure
+        make
 
-    #- name: Add yum repo
-    #  run: yum -y install epel-release.noarch && yum -y update
-
-    #- name: Install dependencies
-    #  # Note most of these are for Trick
-    #  run: >
-    #    yum install -y bison clang-devel cmake curl-devel flex gcc gcc-c++ git glibc-devel gtest-devel
-    #    java-1.8.0-openjdk-devel libX11-devel libxml2-devel libXi-devel libXmu-devel libXt-devel
-    #    llvm-devel llvm-static make tcsh csh mesa-libGL-devel mesa-libGLU-devel maven cppunit ncurses-devel
-    #    openmotif-devel perl-Digest-MD5 protobuf-devel python-devel sqlite-devel swig systemd-devel
-    #    udunits2-devel which zlib-devel tkinter
-
-    #- name: Build Trick
-    #  # Failure here is likely due to new or changed dependencies of Trick, see above
-    #  run: |
-    #    cd ${TRICK_HOME}
-    #    ./configure
-    #    make
-
-    #- name: Build sim
-    #  run: |
-    #    cd ${GUNNS_HOME}/sims/SIM_test
-    #    trick-CP
+    # TODO use better way to define env vars globally for all steps
+    - name: Build sim
+      run: |
+        export TRICK_HOME="/home/trick"
+        export MAKEFLAGS=-j`nproc`
+        export GUNNS_HOME=`pwd`
+        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
+        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
+        export HS_CONFIG_PATH="${GUNNS_HOME}/sims/Modified_data"
+        cd sims/SIM_test
+        ${TRICK_HOME}/bin/trick-CP
         
-    #- name: Run sim
-    #  run: |
-    #    # Run sim to completion
-    #    cd ${GUNNS_HOME}/sims/SIM_test
-    #    ./S_main* RUN_test/input_int_test.py
-    #    # Scan sim outputs for pass/fail
-    #    cd ${GUNNS_HOME}/test/CI
-    #    chmod +x sim_test.py
-    #    python ./sim_test.py
+    - name: Run sim
+      run: |
+        export TRICK_HOME="/home/trick"
+        export MAKEFLAGS=-j`nproc`
+        export GUNNS_HOME=`pwd`
+        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
+        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
+        export HS_CONFIG_PATH="${GUNNS_HOME}/sims/Modified_data"
+        cd sims/SIM_test
+        ./S_main* RUN_test/input_int_test.py
+
+    - name: Check sim outputs for pass/fail
+      run: |
+        cd test/CI
+        chmod +x sim_test.py
+        python ./sim_test.py
 

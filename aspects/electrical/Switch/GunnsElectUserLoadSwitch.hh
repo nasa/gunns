@@ -152,6 +152,8 @@ class GunnsElectUserLoadSwitch : public GunnsBasicConductor
         double       getLoadsPower() const;
         /// @brief  Sets the loads voltage override.
         void         setLoadsOverride(const bool active = false, const double voltage = 0.0);
+        /// @brief  Returns the user load object at the given index in the list of user loads.
+        GunnsElectUserLoad* getUserLoad(const unsigned int index);
 
     protected:
         double                           mLoadsPowerRefV;       /**<    (V)     trick_chkpnt_io(**) Optional reference voltage for user loads power. */
@@ -234,6 +236,24 @@ inline void GunnsElectUserLoadSwitch::setLoadsOverride(const bool active, const 
 {
     mLoadsOverrideActive  = active;
     mLoadsOverrideVoltage = voltage;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] index  (--)  Index of the desired user load in the list of user loads.
+///
+/// @returns GunnsElectUserLoad* (--) Pointer to the user load object, or zero.
+///
+/// @details  Returns the address of the user load object at the given index in the mUserLoads
+///           vector, or zero.
+///
+/// @note  Returns zero if the given index is invalid.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsElectUserLoad* GunnsElectUserLoadSwitch::getUserLoad(const unsigned int index)
+{
+    if (index < mUserLoads.size()) {
+        return mUserLoads.at(index);
+    }
+    return 0;
 }
 
 #endif

@@ -50,7 +50,8 @@ class GunnsElectResistiveUserLoadConfigData : public GunnsElectUserLoadConfigDat
         GunnsElectResistiveUserLoadConfigData(const std::string& name,
                                               const double       underVoltageLimit,
                                               const double       resistanceNormal,
-                                              const double       resistanceStandby);
+                                              const double       resistanceStandby,
+                                              const double       fuseCurrentLimit);
         /// @brief Default destructs this GUNNS Electrical Resistive User Load Spotter
         ///        configuration data.
         virtual ~GunnsElectResistiveUserLoadConfigData();

@@ -111,16 +111,17 @@ class UtGunnsElectConstantPowerUserLoad: public CppUnit::TestFixture
         CPPUNIT_TEST(testStep);
         CPPUNIT_TEST(testInitializationExceptions);
         CPPUNIT_TEST_SUITE_END();
-        std::string                                tName;              /**< (--) Nominal name. */
-        double                                     tUnderVoltageLimit; /**< (v)  Nominal config data. */
-        double                                     tPowerNormal;       /**< (W)  Nominal config data. */
-        double                                     tPowerStandby;      /**< (W)  Nominal config data. */
-        GunnsElectConstantPowerUserLoadConfigData* tConfigData;        /**< (--) Pointer to nominal configuration data. */
-        int                                        tInitialMode;       /**< (--) Nominal input data. */
-        double                                     tInitialVoltage;    /**< (--) Nominal input data. */
-        GunnsElectConstantPowerUserLoadInputData*  tInputData;         /**< (--) Pointer to nominal input data. */
-        FriendlyGunnsElectConstantPowerUserLoad*   tArticle;           /**< (--) Pointer to the article under test. */
-        static int                                 TEST_ID;            /**< (--) Test identification number. */
+        std::string                                tName;              /**< (--)  Nominal name. */
+        double                                     tUnderVoltageLimit; /**< (v)   Nominal config data. */
+        double                                     tPowerNormal;       /**< (W)   Nominal config data. */
+        double                                     tPowerStandby;      /**< (W)   Nominal config data. */
+        double                                     tFuseCurrentLimit;  /**< (amp) Nominal config data. */
+        GunnsElectConstantPowerUserLoadConfigData* tConfigData;        /**< (--)  Pointer to nominal configuration data. */
+        int                                        tInitialMode;       /**< (--)  Nominal input data. */
+        double                                     tInitialVoltage;    /**< (--)  Nominal input data. */
+        GunnsElectConstantPowerUserLoadInputData*  tInputData;         /**< (--)  Pointer to nominal input data. */
+        FriendlyGunnsElectConstantPowerUserLoad*   tArticle;           /**< (--)  Pointer to the article under test. */
+        static int                                 TEST_ID;            /**< (--)  Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////

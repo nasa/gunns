@@ -44,22 +44,25 @@ LIBRARY DEPENDENCY:
 //
 //=================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param    name                  --    user load name
-/// @param    loadType              --    type of user load resistive or constant power
-/// @param    underVoltageLimit     --    lower limit for the voltage at which the voltage trips
-/// @param    resistanceNormal      --    resistance value for this load when operating in Normal or ON mode
-/// @param    resistanceStandby     --    resistance value for this load when operating in Standby mode
+/// @param[in] name              (--)  user load name
+/// @param[in] loadType          (--)  type of user load resistive or constant power
+/// @param[in] underVoltageLimit (V)   lower limit for the voltage at which the voltage trips
+/// @param[in] resistanceNormal  (ohm) resistance value for this load when operating in Normal or ON mode
+/// @param[in] resistanceStandby (ohm) resistance value for this load when operating in Standby mode
+/// @param[in] fuseCurrentLimit  (amp) Current above which the fuse blows.
 ///
 /// @details  Default User Load constant resistor load Config Data Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ResistiveLoadConfigData::ResistiveLoadConfigData(const std::string& name,
-        const int    loadType,
-        const double underVoltageLimit,
-        const double resistanceNormal,
-        const double resistanceStandby):
-        UserLoadBaseConfigData(name, loadType, underVoltageLimit),
-        mResistanceNormal(resistanceNormal),
-        mResistanceStandby(resistanceStandby)
+                                                 const int          loadType,
+                                                 const double       underVoltageLimit,
+                                                 const double       resistanceNormal,
+                                                 const double       resistanceStandby,
+                                                 const double       fuseCurrentLimit)
+    :
+    UserLoadBaseConfigData(name, loadType, underVoltageLimit, fuseCurrentLimit),
+    mResistanceNormal(resistanceNormal),
+    mResistanceStandby(resistanceStandby)
 {
     // nothing to do
 }
@@ -69,11 +72,11 @@ ResistiveLoadConfigData::ResistiveLoadConfigData(const std::string& name,
 ///
 /// @details  Default User Load constant resistor load Config Data Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-ResistiveLoadConfigData::ResistiveLoadConfigData(
-        const ResistiveLoadConfigData& that):
-        UserLoadBaseConfigData(that),
-        mResistanceNormal(that.mResistanceNormal),
-        mResistanceStandby(that.mResistanceStandby)
+ResistiveLoadConfigData::ResistiveLoadConfigData(const ResistiveLoadConfigData& that)
+    :
+    UserLoadBaseConfigData(that),
+    mResistanceNormal(that.mResistanceNormal),
+    mResistanceStandby(that.mResistanceStandby)
 {
     // nothing to do
 }

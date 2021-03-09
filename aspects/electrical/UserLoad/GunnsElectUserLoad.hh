@@ -43,11 +43,13 @@ PROGRAMMERS:
 class GunnsElectUserLoadConfigData : public GunnsNetworkSpotterConfigData
 {
     public:
-        double mUnderVoltageLimit;  /**< (V)  trick_chkpnt_io(**) Low voltage limit for operation. */
+        double mUnderVoltageLimit;  /**< (V)   trick_chkpnt_io(**) Low voltage limit for operation. */
+        double mFuseCurrentLimit;   /**< (amp) trick_chkpnt_io(**) Current above which the fuse blows. */
         /// @brief Default constructs this GUNNS Electrical User Load Base Spotter configuration
         ///        data.
         GunnsElectUserLoadConfigData(const std::string& name,
-                                     const double       underVoltageLimit);
+                                     const double       underVoltageLimit,
+                                     const double       fuseCurrentLimit);
         /// @brief Default destructs this GUNNS Electrical User Load Base Spotter configuration
         ///        data.
         virtual ~GunnsElectUserLoadConfigData();

@@ -58,7 +58,8 @@ public:
             const int loadType = RESISTIVE_LOAD,
             const double underVoltageLimit = 98.0,
             const double resistanceNormal = 1.0E6,
-            const double resistanceStandby = 1.0E8);
+            const double resistanceStandby = 1.0E8,
+            const double fuseCurrentLimit  = 0.0);
 
     /// @brief Default destructor for this resistive load configuration data.
     virtual ~ResistiveLoadConfigData();

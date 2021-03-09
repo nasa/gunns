@@ -69,6 +69,7 @@ tPowerStandby(10.0),
 tInitialPotential(),
 tnetworkLoads(),
 tUnderVoltageLimit(),
+tFuseCurrentLimit(0.0),
 tPowerValid(true),
 tLoadOperMode(LoadON),
 tInitialVoltage(0.0),
@@ -104,6 +105,7 @@ void UtConstantPowerLoad::setUp() {
     tloadName = "TestConstantPower UserLoad";
     tInitialPotential = 322;
     tUnderVoltageLimit = 90.0;
+    tFuseCurrentLimit = 5.0;
     tUserLoadType = CONSTANT_POWER_LOAD;
     tPowerNormal = 30.0;
     tPowerStandby = 5.0;
@@ -121,7 +123,7 @@ void UtConstantPowerLoad::setUp() {
 
     /// @brief Define nominal configuration data
     tConfigData = new ConstantPowerLoadConfigData(tloadName, tUserLoadType,
-            tUnderVoltageLimit, tPowerNormal, tPowerStandby);
+            tUnderVoltageLimit, tPowerNormal, tPowerStandby, tFuseCurrentLimit);
     /// @brief create new input data
     tInputData = new ConstantPowerLoadInputData(tMalfOverrideCurrentFlag,
             tMalfOverrideCurrentValue, tLoadOperMode, tInitialVoltage);
@@ -158,25 +160,29 @@ void UtConstantPowerLoad::testConfig() {
 
     /// @test   Nominal config construction
     CPPUNIT_ASSERT(tloadName == tConfigData->mName);
+    CPPUNIT_ASSERT(CONSTANT_POWER_LOAD == tConfigData->mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, tConfigData->mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal,       tConfigData->mPowerNormal,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerStandby,      tConfigData->mPowerStandby,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  tConfigData->mFuseCurrentLimit,  0.0);
 
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal, tConfigData->mPowerNormal,
-            tTolerance);
-
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerStandby, tConfigData->mPowerStandby,
-            tTolerance);
+    /// @test   Default config construction
+    ConstantPowerLoadConfigData defaultConfig;
+    CPPUNIT_ASSERT("Unnamed Load" == defaultConfig.mName);
+    CPPUNIT_ASSERT(CONSTANT_POWER_LOAD == defaultConfig.mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(98.0, defaultConfig.mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  defaultConfig.mPowerNormal,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  defaultConfig.mPowerStandby,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  defaultConfig.mFuseCurrentLimit,  0.0);
 
     /// @test   Check copy config construction
     ConstantPowerLoadConfigData copyConfig(*tConfigData);
     CPPUNIT_ASSERT(tloadName == copyConfig.mName);
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal, copyConfig.mPowerNormal,
-            tTolerance);
-
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerStandby, copyConfig.mPowerStandby,
-            tTolerance);
+    CPPUNIT_ASSERT(CONSTANT_POWER_LOAD == copyConfig.mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, copyConfig.mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal,       copyConfig.mPowerNormal,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerStandby,      copyConfig.mPowerStandby,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  copyConfig.mFuseCurrentLimit,  0.0);
 
     UT_PASS;
 }
@@ -228,10 +234,9 @@ void UtConstantPowerLoad::testInitialization() {
     UT_RESULT;
 
     /// @test   config and input values
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal, tArticle->mPowerNormal,
-            tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit,
-            tArticle->mUnderVoltageLimit, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tPowerNormal,       tArticle->mPowerNormal,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, tArticle->mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  tArticle->mFuseCurrentLimit,  0.0);
 
     CPPUNIT_ASSERT(tPowerStandby == tArticle->mPowerStandby);
     CPPUNIT_ASSERT(tloadName == tArticle->getName());
@@ -239,6 +244,8 @@ void UtConstantPowerLoad::testInitialization() {
     CPPUNIT_ASSERT(tUserLoadType == tArticle->getLoadType());
     CPPUNIT_ASSERT(tCardId == tArticle->getCardId());
     CPPUNIT_ASSERT(tLoadSwitchId == tArticle->getLoadSwitchId());
+    CPPUNIT_ASSERT(false == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(false == tArticle->isFuseBlown());
 
     /// @test   input load type
     CPPUNIT_ASSERT_MESSAGE("Load Type is equal.", tUserLoadType
@@ -360,6 +367,19 @@ void UtConstantPowerLoad::testUpdateState() {
     // current calculated here is very high
     CPPUNIT_ASSERT_MESSAGE("Actual current here is very low!",
             tArticle->getCurrent() < tCurrent);
+
+    /// @test fuse blow malfunction.
+    tArticle->setMalfBlowFuse(true);
+    CPPUNIT_ASSERT(true == tArticle->mMalfBlowFuse);
+    tArticle->step(tInitialPotential);
+    CPPUNIT_ASSERT(true == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(true == tArticle->isFuseBlown());
+    CPPUNIT_ASSERT(0.0  == tArticle->mVoltage);
+    tArticle->setMalfBlowFuse(false);
+    tArticle->resetFuse();
+    CPPUNIT_ASSERT(false == tArticle->mMalfBlowFuse);
+    CPPUNIT_ASSERT(false == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(false == tArticle->isFuseBlown());
 
     //set load to standby and calculate power and current
     tArticle->mLoadOperMode = LoadSTANDBY;

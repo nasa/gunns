@@ -293,17 +293,29 @@ GunnsBasicLink::SolutionResult GunnsElectUserLoadSwitch::confirmSolutionAcceptab
 
    if (convergedStep > 0) {
 
-      mPotentialDrop = getDeltaPotential();
-      computeFlux();
-      mSwitch.updateSwitchFlow(mFlux, mFlux, mPotentialVector[0], convergedStep, false);
-
-      if (mSwitch.isWaitingToTrip() ) {
-         result = GunnsBasicLink::DELAY;
-      } else if (mSwitch.isJustTripped()) {
-         result = GunnsBasicLink::REJECT;
-      } else {
-         result = GunnsBasicLink::CONFIRM;
-      }
+       /// - Check the user loads for their fuses blowing.  Always check fuses on trip priority 1
+       ///   and before the switch is updated, so the fuses (downstream) always blow before the
+       ///   switch (upstream) trips.
+       bool fuseTrips = false;
+       if (1 == convergedStep) {
+           for (unsigned int i=0; i<mUserLoads.size(); ++i) {
+               fuseTrips = fuseTrips or mUserLoads[i]->getLoad()->updateFuse(mPotentialVector[0]);
+           }
+       }
+       if (fuseTrips) {
+           result = GunnsBasicLink::REJECT;
+       } else {
+           mPotentialDrop = getDeltaPotential();
+           computeFlux();
+           mSwitch.updateSwitchFlow(mFlux, mFlux, mPotentialVector[0], convergedStep, false);
+           if (mSwitch.isWaitingToTrip() ) {
+               result = GunnsBasicLink::DELAY;
+           } else if (mSwitch.isJustTripped()) {
+               result = GunnsBasicLink::REJECT;
+           } else {
+               result = GunnsBasicLink::CONFIRM;
+           }
+       }
    }
 
    return result;

@@ -32,6 +32,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <cfloat>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default Max Resistance
@@ -41,18 +42,22 @@ const double UserLoadBase::MINIMUM_RESISTANCE = 0.1;
 const double UserLoadBase::DEFAULT_RESISTANCE = 1000000.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param    name                 --  Name of the User Load object for fault messaging
-/// @param    loadType             --  Type of the user load.
-/// @param    mUnderVoltageLimit   --  Minimum Under voltage limit set.
+/// @param[in] name              (--)  Name of the User Load object for fault messaging
+/// @param[in] loadType          (--)  Type of the user load.
+/// @param[in] underVoltageLimit (V)   Minimum Under voltage limit set.
+/// @param[in] fuseCurrentLimit  (amp) Current above which the fuse blows.
 ///
-/// @details  Constructs the UserLoadBase Config data
+/// @details  Constructs the UserLoadBaseConfigData.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 UserLoadBaseConfigData::UserLoadBaseConfigData(const std::string &name,
-        const int loadType,
-        const double underVoltageLimit):
-        mName(name),
-        mUserLoadType(loadType),
-        mUnderVoltageLimit(underVoltageLimit)
+                                               const int         loadType,
+                                               const double      underVoltageLimit,
+                                               const double      fuseCurrentLimit)
+    :
+    mName(name),
+    mUserLoadType(loadType),
+    mUnderVoltageLimit(underVoltageLimit),
+    mFuseCurrentLimit(fuseCurrentLimit)
 {
     // nothing to do
 }
@@ -60,13 +65,14 @@ UserLoadBaseConfigData::UserLoadBaseConfigData(const std::string &name,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    that  --  Object to copy
 ///
-/// @details  Default User Load constant resistor load Config Data Constructor
+/// @details  Copy constructs the UserLoadBaseConfigData.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UserLoadBaseConfigData::UserLoadBaseConfigData (const UserLoadBaseConfigData& that):
-                        mName(that.mName),
-                        mUserLoadType(that.mUserLoadType),
-                        mUnderVoltageLimit(that.mUnderVoltageLimit)
-
+UserLoadBaseConfigData::UserLoadBaseConfigData (const UserLoadBaseConfigData& that)
+    :
+    mName(that.mName),
+    mUserLoadType(that.mUserLoadType),
+    mUnderVoltageLimit(that.mUnderVoltageLimit),
+    mFuseCurrentLimit(that.mFuseCurrentLimit)
 {
     // nothing to do
 }
@@ -142,6 +148,7 @@ UserLoadBase::UserLoadBase():
                             mMalfOverrideCurrentValue(0.0),
                             mMalfOverridePowerFlag(false),
                             mMalfOverridePower(0.0),
+                            mMalfBlowFuse(false),
                             mMagicPowerFlag(false),
                             mMagicPowerValue(120.123),
                             mNameLoad("Load"),
@@ -155,6 +162,8 @@ UserLoadBase::UserLoadBase():
                             mEquivalentResistance(MAXIMUM_RESISTANCE),
                             mVoltage(0),
                             mUnderVoltageLimit(98),
+                            mFuseCurrentLimit(0.0),
+                            mFuseIsBlown(false),
                             mPowerValid(true),
                             mInitFlag(false)
 {
@@ -222,6 +231,7 @@ void UserLoadBase::initialize(const UserLoadBaseConfigData &configData,
     /// - Initialize from config data.
     mUserLoadType = configData.mUserLoadType;
     mUnderVoltageLimit = configData.mUnderVoltageLimit;
+    mFuseCurrentLimit = configData.mFuseCurrentLimit;
 
     // Initialize load card number and switch number.
     // This data is set from the config data. It is
@@ -326,15 +336,21 @@ void UserLoadBase::step(double voltage) {
     mActualPower = 0.0;
     mEquivalentResistance = MAXIMUM_RESISTANCE;
 
-    mVoltage = voltage;
+    if (mMalfBlowFuse) {
+        mFuseIsBlown = true;
+    }
 
     // factor in magic power override
     if (mMagicPowerFlag) {
         mVoltage = mMagicPowerValue;
+    } else if (mFuseIsBlown) {
+        mVoltage = 0.0;
+    } else {
+        mVoltage = voltage;
     }
 
     // set power valid to true if voltage is > than underVoltage limit
-    mPowerValid = (mVoltage > mUnderVoltageLimit);
+    mPowerValid = mVoltage > mUnderVoltageLimit;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,5 +379,23 @@ void UserLoadBase::setMalfOverridePower(const bool flag, const double value)
     mMalfOverridePower     = value;
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] voltage (V) Input voltage to the load.
+///
+/// @returns  bool (--) True if the fuse has blown during this update.
+///
+/// @details  Determines whether the given input voltage causes the fuse to blow, based on the
+///           equivalent load resistance as I = V/R.  Sets the fuse blown state if the fuse limit
+///           is exceeded, and returns whether the fuse has blown during this update.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool UserLoadBase::updateFuse(const double voltage)
+{
+    if (mFuseCurrentLimit > 0.0 and not mFuseIsBlown) {
+        const double current = voltage / std::max(mEquivalentResistance, DBL_EPSILON);
+        if (current > mFuseCurrentLimit) {
+            mFuseIsBlown = true;
+            return true;
+        }
+    }
+    return false;
+}

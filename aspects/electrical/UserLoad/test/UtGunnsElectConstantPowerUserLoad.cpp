@@ -23,6 +23,7 @@ UtGunnsElectConstantPowerUserLoad::UtGunnsElectConstantPowerUserLoad()
     tUnderVoltageLimit(0.0),
     tPowerNormal(0.0),
     tPowerStandby(0.0),
+    tFuseCurrentLimit(0.0),
     tConfigData(0),
     tInitialMode(0),
     tInitialVoltage(0.0),
@@ -51,10 +52,12 @@ void UtGunnsElectConstantPowerUserLoad::setUp()
     tUnderVoltageLimit = 100.0;
     tPowerNormal       = 40.0;
     tPowerStandby      = 500.0;
+    tFuseCurrentLimit  = 6.0;
     tConfigData        = new GunnsElectConstantPowerUserLoadConfigData(tName,
                                                                        tUnderVoltageLimit,
                                                                        tPowerNormal,
-                                                                       tPowerStandby);
+                                                                       tPowerStandby,
+                                                                       tFuseCurrentLimit);
 
     /// - Define the nominal input data.
     tInitialMode       = 1;
@@ -92,6 +95,7 @@ void UtGunnsElectConstantPowerUserLoad::testConfig()
     CPPUNIT_ASSERT(tUnderVoltageLimit == tConfigData->mUnderVoltageLimit);
     CPPUNIT_ASSERT(tPowerNormal       == tConfigData->mPowerNormal);
     CPPUNIT_ASSERT(tPowerStandby      == tConfigData->mPowerStandby);
+    CPPUNIT_ASSERT(tFuseCurrentLimit  == tConfigData->mFuseCurrentLimit);
 
     UT_PASS;
 }

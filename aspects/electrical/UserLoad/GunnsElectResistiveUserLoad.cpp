@@ -19,6 +19,7 @@ LIBRARY DEPENDENCY:
 /// @param[in]  underVoltageLimit  (v)    Low voltage limit for operation.
 /// @param[in]  resistanceNormal   (ohm)  Resistance for normal mode.
 /// @param[in]  resistanceStandby  (ohm)  Resistance for standby mode.
+/// @param[in]  fuseCurrentLimit   (amp)  Current above which the fuse blows.
 ///
 /// @details  Default constructs this GUNNS Electrical Resistive User Load Spotter configuration
 ///           data.
@@ -27,9 +28,10 @@ GunnsElectResistiveUserLoadConfigData::GunnsElectResistiveUserLoadConfigData(
         const std::string& name,
         const double       underVoltageLimit,
         const double       resistanceNormal,
-        const double       resistanceStandby)
+        const double       resistanceStandby,
+        const double       fuseCurrentLimit)
     :
-    GunnsElectUserLoadConfigData(name, underVoltageLimit),
+    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit),
     mResistanceNormal(resistanceNormal),
     mResistanceStandby(resistanceStandby)
 {
@@ -141,7 +143,8 @@ void GunnsElectResistiveUserLoad::initLoad()
                                        RESISTIVE_LOAD,
                                        mConfig->mUnderVoltageLimit,
                                        mConfig->mResistanceNormal,
-                                       mConfig->mResistanceStandby);
+                                       mConfig->mResistanceStandby,
+                                       mConfig->mFuseCurrentLimit);
     ResistiveLoadInputData loadInput(false, 0.0, mInput->mInitialMode, mInput->mInitialVoltage);
     std::vector<UserLoadBase*> dummy;
     mLoad.initialize(loadConfig, loadInput, dummy, 0, 0);

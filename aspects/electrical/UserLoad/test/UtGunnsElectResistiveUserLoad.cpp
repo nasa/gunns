@@ -23,6 +23,7 @@ UtGunnsElectResistiveUserLoad::UtGunnsElectResistiveUserLoad()
     tUnderVoltageLimit(0.0),
     tResistanceNormal(0.0),
     tResistanceStandby(0.0),
+    tFuseCurrentLimit(0.0),
     tConfigData(0),
     tInitialMode(0),
     tInitialVoltage(0.0),
@@ -51,10 +52,12 @@ void UtGunnsElectResistiveUserLoad::setUp()
     tUnderVoltageLimit  = 100.0;
     tResistanceNormal   = 40.0;
     tResistanceStandby  = 500.0;
+    tFuseCurrentLimit   = 3.0;
     tConfigData         = new GunnsElectResistiveUserLoadConfigData(tName,
                                                                     tUnderVoltageLimit,
                                                                     tResistanceNormal,
-                                                                    tResistanceStandby);
+                                                                    tResistanceStandby,
+                                                                    tFuseCurrentLimit);
 
     /// - Define the nominal input data.
     tInitialMode        = 1;
@@ -91,6 +94,7 @@ void UtGunnsElectResistiveUserLoad::testConfig()
     CPPUNIT_ASSERT(tUnderVoltageLimit == tConfigData->mUnderVoltageLimit);
     CPPUNIT_ASSERT(tResistanceNormal  == tConfigData->mResistanceNormal);
     CPPUNIT_ASSERT(tResistanceStandby == tConfigData->mResistanceStandby);
+    CPPUNIT_ASSERT(tFuseCurrentLimit  == tConfigData->mFuseCurrentLimit);
 
     UT_PASS;
 }

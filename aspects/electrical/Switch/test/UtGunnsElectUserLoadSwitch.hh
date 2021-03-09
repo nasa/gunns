@@ -128,6 +128,9 @@ class UtGunnsElectUserLoadSwitch: public CppUnit::TestFixture
         GunnsElectResistiveUserLoadConfigData     tLoadRConfigData;    /**< (--)    A resistive user load config data. */
         GunnsElectResistiveUserLoadInputData      tLoadRInputData;     /**< (--)    A resistive user load input data. */
         GunnsElectResistiveUserLoad               tLoadR;              /**< (--)    A resistive user load. */
+        GunnsElectResistiveUserLoadConfigData     tLoadR2ConfigData;   /**< (--)    A resistive user load config data. */
+        GunnsElectResistiveUserLoadInputData      tLoadR2InputData;    /**< (--)    A resistive user load input data. */
+        GunnsElectResistiveUserLoad               tLoadR2;             /**< (--)    A resistive user load. */
         GunnsElectConstantPowerUserLoadConfigData tLoadCpConfigData;   /**< (--)    A constant-power user load config data. */
         GunnsElectConstantPowerUserLoadInputData  tLoadCpInputData;    /**< (--)    A constant-power user load input data. */
         GunnsElectConstantPowerUserLoad           tLoadCp;             /**< (--)    A constant-power user load. */

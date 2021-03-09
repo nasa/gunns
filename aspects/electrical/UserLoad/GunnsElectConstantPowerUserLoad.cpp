@@ -19,6 +19,7 @@ LIBRARY DEPENDENCY:
 /// @param[in]  underVoltageLimit  (v)   Low voltage limit for operation.
 /// @param[in]  powerNormal        (W)   Power for normal mode.
 /// @param[in]  powerStandby       (W)   Power for standby mode.
+/// @param[in]  fuseCurrentLimit   (amp) Current above which the fuse blows.
 ///
 /// @details  Default constructs this GUNNS Electrical Constant-Power User Load Spotter
 ///           configuration data.
@@ -27,9 +28,10 @@ GunnsElectConstantPowerUserLoadConfigData::GunnsElectConstantPowerUserLoadConfig
         const std::string& name,
         const double       underVoltageLimit,
         const double       powerNormal,
-        const double       powerStandby)
+        const double       powerStandby,
+        const double       fuseCurrentLimit)
     :
-    GunnsElectUserLoadConfigData(name, underVoltageLimit),
+    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit),
     mPowerNormal(powerNormal),
     mPowerStandby(powerStandby)
 {
@@ -141,7 +143,8 @@ void GunnsElectConstantPowerUserLoad::initLoad()
                                            CONSTANT_POWER_LOAD,
                                            mConfig->mUnderVoltageLimit,
                                            mConfig->mPowerNormal,
-                                           mConfig->mPowerStandby);
+                                           mConfig->mPowerStandby,
+                                           mConfig->mFuseCurrentLimit);
     ConstantPowerLoadInputData loadInput(false, 0.0, mInput->mInitialMode, mInput->mInitialVoltage);
     std::vector<UserLoadBase*> dummy;
     mLoad.initialize(loadConfig, loadInput, dummy, 0, 0);

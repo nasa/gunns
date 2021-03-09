@@ -14,14 +14,17 @@ LIBRARY DEPENDENCY:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name               (--)  Instance name for self-identification in messages.
 /// @param[in]  underVoltageLimit  (V)   Low voltage limit for operation.
+/// @param[in]  fuseCurrentLimit   (amp) Current above which the fuse blows.
 ///
 /// @details  Default constructs this GUNNS Electrical User Load Base Spotter configuration data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectUserLoadConfigData::GunnsElectUserLoadConfigData(const std::string& name,
-                                                           const double       underVoltageLimit)
+                                                           const double       underVoltageLimit,
+                                                           const double       fuseCurrentLimit)
     :
     GunnsNetworkSpotterConfigData(name),
-    mUnderVoltageLimit(underVoltageLimit)
+    mUnderVoltageLimit(underVoltageLimit),
+    mFuseCurrentLimit(fuseCurrentLimit)
 {
     // nothing to do
 }

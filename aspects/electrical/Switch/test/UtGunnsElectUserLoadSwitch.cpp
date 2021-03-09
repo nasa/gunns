@@ -37,10 +37,13 @@ UtGunnsElectUserLoadSwitch::UtGunnsElectUserLoadSwitch()
     tLoadsOverrideVoltage(0.0),
     tInputData(0),
     tArticle(0),
-    tLoadRConfigData("", 0.0, 0.0, 0.0),
+    tLoadRConfigData("", 0.0, 0.0, 0.0, 0.0),
     tLoadRInputData(0, 0.0),
     tLoadR(&tLoadRConfigData, &tLoadRInputData),
-    tLoadCpConfigData("", 0.0, 0.0, 0.0),
+    tLoadR2ConfigData("", 0.0, 0.0, 0.0, 0.0),
+    tLoadR2InputData(0, 0.0),
+    tLoadR2(&tLoadR2ConfigData, &tLoadR2InputData),
+    tLoadCpConfigData("", 0.0, 0.0, 0.0, 0.0),
     tLoadCpInputData(0, 0.0),
     tLoadCp(&tLoadCpConfigData, &tLoadCpInputData)
 {
@@ -111,8 +114,16 @@ void UtGunnsElectUserLoadSwitch::setUp()
     tLoadRInputData.mInitialMode         = LoadON;
     tLoadRInputData.mInitialVoltage      = 120.0;
 
+    tLoadR2ConfigData.mName               = "tLoadR2";
+    tLoadR2ConfigData.mUnderVoltageLimit  = 80.0;
+    tLoadR2ConfigData.mResistanceNormal   = 10.0;
+    tLoadR2ConfigData.mResistanceStandby  = 100.0;
+    tLoadR2ConfigData.mFuseCurrentLimit   = 10.0;
+    tLoadR2InputData.mInitialMode         = LoadON;
+    tLoadR2InputData.mInitialVoltage      = 120.0;
+
     tLoadCpConfigData.mName              = "tLoadCp";
-    tLoadCpConfigData.mUnderVoltageLimit = 80.0;
+    tLoadCpConfigData.mUnderVoltageLimit = 15.0;
     tLoadCpConfigData.mPowerNormal       = 100.0;
     tLoadCpConfigData.mPowerStandby      = 10.0;
     tLoadCpInputData.mInitialMode        = LoadON;
@@ -291,6 +302,15 @@ void UtGunnsElectUserLoadSwitch::testAccessors()
     tArticle->setLoadsOverride();
     CPPUNIT_ASSERT_EQUAL(false, tArticle->mLoadsOverrideActive);
     CPPUNIT_ASSERT_EQUAL(0.0,   tArticle->mLoadsOverrideVoltage);
+
+    /// @test  getUserLoad
+    CPPUNIT_ASSERT(0 == tArticle->getUserLoad(0));
+    tLoadR .initLoad();
+    tLoadCp.initLoad();
+    CPPUNIT_ASSERT_NO_THROW(tArticle->addUserLoad(&tLoadR));
+    CPPUNIT_ASSERT_NO_THROW(tArticle->addUserLoad(&tLoadCp));
+    CPPUNIT_ASSERT(tArticle->mUserLoads[0] == tArticle->getUserLoad(0));
+    CPPUNIT_ASSERT(tArticle->mUserLoads[1] == tArticle->getUserLoad(1));
 
     UT_PASS;
 }
@@ -706,10 +726,13 @@ void UtGunnsElectUserLoadSwitch::testTripLogic()
     /// - Initialize the user loads and add them to the test article.  Configure the resistive load
     ///   such that it won't cause a trip in standby mode but will cause one in normal mode.
     tLoadRConfigData.mResistanceNormal = 1.2;
-    tLoadRInputData.mInitialMode = LoadSTANDBY;
+    tLoadRInputData.mInitialMode  = LoadSTANDBY;
+    tLoadR2InputData.mInitialMode = LoadSTANDBY;
     tLoadR .initLoad();
+    tLoadR2.initLoad();
     tLoadCp.initLoad();
     CPPUNIT_ASSERT_NO_THROW(tArticle->addUserLoad(&tLoadR));
+    CPPUNIT_ASSERT_NO_THROW(tArticle->addUserLoad(&tLoadR2));
     CPPUNIT_ASSERT_NO_THROW(tArticle->addUserLoad(&tLoadCp));
 
     /// - Initialize test article with nominal initialization data.
@@ -749,8 +772,29 @@ void UtGunnsElectUserLoadSwitch::testTripLogic()
         CPPUNIT_ASSERT(!tArticle->mSwitch.isTripped());
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,            DBL_EPSILON);
     } {
+        /// @test fuse blows before the switch trips, rejecting the solution on first converged step.
+        tLoadR2.getLoad()->setLoadOperMode(LoadON);
+        tArticle->mFlux = 0.0;
+        tArticle->step(0.0);
+        CPPUNIT_ASSERT(GunnsBasicLink::DELAY == tArticle->confirmSolutionAcceptable(0, 1));
+        double expectedFlux = 0.0;
+        CPPUNIT_ASSERT(!tLoadR2.getLoad()->isFuseBlown());
+        CPPUNIT_ASSERT( tArticle->mSwitch.isClosed());
+        CPPUNIT_ASSERT(!tArticle->mSwitch.isTripped());
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,            DBL_EPSILON);
+
+        tArticle->mPotentialVector[0] = 121.0;
+        tArticle->minorStep(0.0, 2);
+        CPPUNIT_ASSERT(!tLoadR2.getLoad()->isFuseBlown());
+        CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(1, 2));
+        CPPUNIT_ASSERT( tLoadR2.getLoad()->isFuseBlown());
+        CPPUNIT_ASSERT( tArticle->mSwitch.isClosed());
+        CPPUNIT_ASSERT(!tArticle->mSwitch.isTripped());
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,            DBL_EPSILON);
+    } {
         /// @test switch trip, rejecting the solution once.
         tLoadR.getLoad()->setLoadOperMode(LoadON);
+        tArticle->mPotentialVector[0] = tNodes[tPorts[0]].getPotential();
         tArticle->mFlux = 0.0;
         tArticle->step(0.0);
         CPPUNIT_ASSERT(GunnsBasicLink::DELAY == tArticle->confirmSolutionAcceptable(0, 1));

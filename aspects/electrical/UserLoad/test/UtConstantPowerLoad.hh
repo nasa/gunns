@@ -155,6 +155,7 @@ private:
 
     /// -- under voltage trip limit set point value
     double tUnderVoltageLimit; // minimum voltage at which this load trips
+    double tFuseCurrentLimit; /**< (amp) Current above which the fuse blows. */
 
     bool tPowerValid; // -- boolean for min voltage value
     bool tLoadOperMode;   // -- boolean value for Load On/Off

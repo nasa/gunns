@@ -115,6 +115,7 @@ class UtGunnsElectResistiveUserLoad: public CppUnit::TestFixture
         double                                 tUnderVoltageLimit; /**< (v)   Nominal config data. */
         double                                 tResistanceNormal;  /**< (ohm) Nominal config data. */
         double                                 tResistanceStandby; /**< (ohm) Nominal config data. */
+        double                                 tFuseCurrentLimit;  /**< (amp) Nominal config data. */
         GunnsElectResistiveUserLoadConfigData* tConfigData;        /**< (--)  Pointer to nominal configuration data. */
         int                                    tInitialMode;       /**< (--)  Nominal input data. */
         double                                 tInitialVoltage;    /**< (--)  Nominal input data. */

@@ -47,23 +47,26 @@ LIBRARY DEPENDENCY:
 //
 //=================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param    name                  --    user load name
-/// @param    loadType              --    type of user load constant resistance or constant power
-/// @param    underVoltageLimit     --    lower limit for the voltage at which the voltage trips
-/// @param    powerNormal           --    power for this user load when operating in the normal or ON mode
-/// @param    powerStandby          --    power for this user load when operating in the Standby mode
-/// @param    loadOperMode          --    flag to verify if the load is set to ON
+/// @param[in] name              (--)  user load name
+/// @param[in] loadType          (--)  type of user load constant resistance or constant power
+/// @param[in] underVoltageLimit (V)   lower limit for the voltage at which the voltage trips
+/// @param[in] powerNormal       (W)   power for this user load when operating in the normal or ON mode
+/// @param[in] powerStandby      (W)   power for this user load when operating in the Standby mode
+/// @param[in] loadOperMode      (--)  flag to verify if the load is set to ON
+/// @param[in] fuseCurrentLimit  (amp) Current above which the fuse blows.
 ///
 /// @details  Default User Load constant power load Config Data Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ConstantPowerLoadConfigData::ConstantPowerLoadConfigData(const std::string& name,
-        const int    loadType,
-        const double underVoltageLimit,
-        const double powerNormal,
-        const double powerStandby)
-:UserLoadBaseConfigData(name, loadType, underVoltageLimit),
- mPowerNormal(powerNormal),
- mPowerStandby(powerStandby)
+                                                         const int          loadType,
+                                                         const double       underVoltageLimit,
+                                                         const double       powerNormal,
+                                                         const double       powerStandby,
+                                                         const double       fuseCurrentLimit)
+     :
+     UserLoadBaseConfigData(name, loadType, underVoltageLimit, fuseCurrentLimit),
+     mPowerNormal(powerNormal),
+     mPowerStandby(powerStandby)
 {
     // nothing to do
 }

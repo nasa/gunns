@@ -58,7 +58,8 @@ public:
             const int loadType = CONSTANT_POWER_LOAD,
             const double underVoltageLimit = 98.0,
             const double powerNormal = 0.0,
-            const double powerStandby = 0.0);
+            const double powerStandby = 0.0,
+            const double fuseCurrentLimit = 0.0);
 
     /// @brief Default destructs this constant power load configuration data.
     virtual ~ConstantPowerLoadConfigData();

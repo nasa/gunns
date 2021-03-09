@@ -50,7 +50,8 @@ class GunnsElectConstantPowerUserLoadConfigData : public GunnsElectUserLoadConfi
         GunnsElectConstantPowerUserLoadConfigData(const std::string& name,
                                                   const double       underVoltageLimit,
                                                   const double       powerNormal,
-                                                  const double       powerStandby);
+                                                  const double       powerStandby,
+                                                  const double       fuseCurrentLimit);
         /// @brief Default destructs this GUNNS Electrical Constant-Power User Load Spotter
         ///        configuration data.
         virtual ~GunnsElectConstantPowerUserLoadConfigData();

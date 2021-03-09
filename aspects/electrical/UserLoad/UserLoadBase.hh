@@ -92,22 +92,19 @@ public:
     int mUserLoadType;     /**< (--) trick_chkpnt_io(**) load type set to constant resistance or constant power */
 
     ///@brief under voltage limit value
-    double mUnderVoltageLimit; /**< (--) trick_chkpnt_io(**) under voltage limit */
-
-
+    double mUnderVoltageLimit; /**< (V)   trick_chkpnt_io(**) under voltage limit */
+    double mFuseCurrentLimit;  /**< (amp) trick_chkpnt_io(**) Current above which the fuse blows. */
     /// @brief Default Constructor
     UserLoadBaseConfigData(const std::string &name = "",
             const int loadType = RESISTIVE_LOAD,
-            const double underVoltageLimit = 98.0);
-
+            const double underVoltageLimit = 98.0,
+            const double fuseCurrentLimit  = 0.0);
 
     /// @brief Default Destructor
     virtual ~UserLoadBaseConfigData();
 
     /// @brief Copy constructs this User Load Elect configuration data.
     UserLoadBaseConfigData(const UserLoadBaseConfigData& that);
-
-protected:
 
 private:
     /// @brief Assignment operator unavailable since declared private and not implemented.
@@ -175,6 +172,7 @@ public:
     double mMalfOverrideCurrentValue; /**< (amp) Override current value */
     bool   mMalfOverridePowerFlag;    /**< (--)  Flag to overwrite the power value  */
     double mMalfOverridePower;        /**< (W)   Overwrite power value  */
+    bool   mMalfBlowFuse;             /**< (--)  Flag to blow the fuse. */
     /// @}
 
     /// @brief Flag to overwrite the voltage available. Only use when the RPC at this user load is open yet downstream load needs power
@@ -190,6 +188,9 @@ public:
 
     /// @brief Updates the model
     virtual void step(double voltage);
+
+    /// @brief Checks for blown fuse given the input voltage and returns if the blows.
+    bool updateFuse(const double voltage);
 
     /// @brief get the load name
     const std::string getName();
@@ -222,6 +223,9 @@ public:
     // @brief returns the over write flag - set by the input data
     bool getOverrideCurrentFlag() const;
 
+    /// @brief returns whether the fuse is blown.
+    bool isFuseBlown() const;
+
     /// @brief returns the current override value - set from the derived classes input data
     /// This value will override the actual current value of the user load through a malfunction.
     double getOverrideCurrentValue() const;
@@ -232,8 +236,14 @@ public:
     /// @brief Sets and resets the power override malfunction.
     void setMalfOverridePower(const bool flag = false, const double value = 0.0);
 
+    /// @brief Sets and resets the fuse blown malfunction.
+    void setMalfBlowFuse(const bool flag = false);
+
     /// @brief Sets the load operating mode of this user load.
     void setLoadOperMode(const UserLoadMode mode);
+
+    /// @brief Resets the fuse state to not blown.
+    void resetFuse();
 
     /// @brief Returns whether this load is initialized.
     bool isInitialized() const;
@@ -276,6 +286,8 @@ protected:
 
     /// @brief under voltage trip limit set point value
     double mUnderVoltageLimit; /**< (V) trick_chkpnt_io(**) minimum voltage at which this load trips */
+    double mFuseCurrentLimit;  /**< (amp) trick_chkpnt_io(**) Current above which the fuse blows. */
+    bool mFuseIsBlown; /**< (--) Flag for the state of the fuse, true is blown. */
 
     /// @brief Flag set to indicate the power is valid, above the under voltage limit
     bool mPowerValid; /**< (--) boolean for min voltage value */
@@ -417,11 +429,27 @@ inline double UserLoadBase::getOverrideCurrentValue() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  True if the fuse is blown.
+///
+/// @details  Returns the value of the mFuseIsBlown flag.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool UserLoadBase::isFuseBlown() const {
+    return mFuseIsBlown;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    UserLoadMode (--) The desired mode to transition to.
 /// @details  Sets the load operating mode to the given value.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void UserLoadBase::setLoadOperMode(const UserLoadMode mode) {
     mLoadOperMode = mode;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets the mFuseIsBlown variable to false.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void UserLoadBase::resetFuse() {
+    mFuseIsBlown = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,6 +459,16 @@ inline void UserLoadBase::setLoadOperMode(const UserLoadMode mode) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline bool UserLoadBase::isInitialized() const {
     return mInitFlag;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag (--) The value of the malfunciton activation flag.
+///
+/// @details  Sets mMalfBlowFuse equal to the given flag.  Calling this method with default
+///           arguments resets the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void UserLoadBase::setMalfBlowFuse(const bool flag) {
+    mMalfBlowFuse = flag;
 }
 
 #endif

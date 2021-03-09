@@ -82,6 +82,7 @@ public:
     void testCalculateResistiveLoadMalfOverridePowerValueEqualToZero();
     void testCalculateResistiveLoadMalfOverridePowerValueLessThanZero();
     void testCalculateResistiveLoadMalfOverridePowerValueGreaterThanZero();
+    void testUpdateFuse();
 
 private:
     CPPUNIT_TEST_SUITE(UtResistiveLoad);
@@ -99,6 +100,7 @@ private:
     CPPUNIT_TEST(testCalculateResistiveLoadMalfOverridePowerValueEqualToZero);
     CPPUNIT_TEST(testCalculateResistiveLoadMalfOverridePowerValueLessThanZero);
     CPPUNIT_TEST(testCalculateResistiveLoadMalfOverridePowerValueGreaterThanZero);
+    CPPUNIT_TEST(testUpdateFuse);
     CPPUNIT_TEST_SUITE_END();
 
     /// --     Pointer to nominal configuration data
@@ -144,6 +146,7 @@ private:
 
     /// @brief under voltage trip limit set point value
     double tUnderVoltageLimit; // minimum voltage at which this load trips
+    double tFuseCurrentLimit; /**< (amp) Current above which the fuse blows. */
 
     bool tPowerValid; // -- boolean for min voltage value
 

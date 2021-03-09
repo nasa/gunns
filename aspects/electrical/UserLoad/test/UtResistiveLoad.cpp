@@ -36,6 +36,7 @@ tResistanceStandby(100000),
 tEquivalentResistance(0.0),
 tInitialPotential(0.0),
 tUnderVoltageLimit(0.0),
+tFuseCurrentLimit(0.0),
 tPowerValid(true),
 tLoadOperMode(LoadON),
 tInitialVoltage(0.0),
@@ -75,6 +76,7 @@ void UtResistiveLoad::setUp()
     tloadName          = "TestResistive Load";
     tInitialPotential  = 322;
     tUnderVoltageLimit = 90.0;
+    tFuseCurrentLimit  = 5.0;
     tUserLoadType = RESISTIVE_LOAD;
     tResistanceNormal = 100000000.0;  // value is 1.0E8
     tResistanceStandby = 1000000.0;   // value is 1.0E6
@@ -90,7 +92,7 @@ void UtResistiveLoad::setUp()
 
     /// - Define nominal configuration data
     tConfigData = new ResistiveLoadConfigData(tloadName, tUserLoadType,
-            tUnderVoltageLimit, tResistanceNormal, tResistanceStandby);
+            tUnderVoltageLimit, tResistanceNormal, tResistanceStandby, tFuseCurrentLimit);
     tInputData = new ResistiveLoadInputData(tMalfOverrideCurrentFlag, tMalfOverrideCurrentValue,
             tLoadOperMode, tInitialVoltage);
     /// - Create new test Article
@@ -121,22 +123,29 @@ void UtResistiveLoad::testConfig()
 
     /// @test   Nominal config construction
     CPPUNIT_ASSERT(tloadName == tConfigData->mName);
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal, tConfigData->mResistanceNormal, tTolerance);
-    /// @test   Nominal config construction
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceStandby, tConfigData->mResistanceStandby, tTolerance);
+    CPPUNIT_ASSERT(RESISTIVE_LOAD == tConfigData->mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, tConfigData->mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal,  tConfigData->mResistanceNormal,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceStandby, tConfigData->mResistanceStandby, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  tConfigData->mFuseCurrentLimit,  0.0);
 
     /// @test   Check default config construction
     ResistiveLoadConfigData defaultConfig;
     CPPUNIT_ASSERT("" != defaultConfig.mName);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0E6, defaultConfig.mResistanceNormal, tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0E8, defaultConfig.mResistanceStandby, tTolerance);
+    CPPUNIT_ASSERT(RESISTIVE_LOAD == defaultConfig.mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(98.0,  defaultConfig.mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0E6, defaultConfig.mResistanceNormal,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0E8, defaultConfig.mResistanceStandby, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,   defaultConfig.mFuseCurrentLimit,  0.0);
 
     /// @test   Check copy config construction
     ResistiveLoadConfigData copyConfig(*tConfigData);
     CPPUNIT_ASSERT(tloadName == copyConfig.mName);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal, copyConfig.mResistanceNormal, tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceStandby, copyConfig.mResistanceStandby, tTolerance);
+    CPPUNIT_ASSERT(RESISTIVE_LOAD == copyConfig.mUserLoadType);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, copyConfig.mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal,  copyConfig.mResistanceNormal,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceStandby, copyConfig.mResistanceStandby, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  copyConfig.mFuseCurrentLimit,  0.0);
 
     UT_PASS;
 }
@@ -188,8 +197,9 @@ void UtResistiveLoad::testInitialization()
     UT_RESULT;
 
     /// @test   config and input values
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal, tArticle->mResistanceNormal, tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit,   tArticle->mUnderVoltageLimit, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistanceNormal,  tArticle->mResistanceNormal,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tUnderVoltageLimit, tArticle->mUnderVoltageLimit, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tFuseCurrentLimit,  tArticle->mFuseCurrentLimit,  0.0);
 
     CPPUNIT_ASSERT(tResistanceStandby == tArticle->mResistanceStandby);
     CPPUNIT_ASSERT(tloadName == tArticle->getName());
@@ -197,6 +207,8 @@ void UtResistiveLoad::testInitialization()
     CPPUNIT_ASSERT(tUserLoadType == tArticle->getLoadType());
     CPPUNIT_ASSERT(tCardId == tArticle->getCardId());
     CPPUNIT_ASSERT(tLoadSwitchId == tArticle->getLoadSwitchId());
+    CPPUNIT_ASSERT(false == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(false == tArticle->isFuseBlown());
 
     /// @test   input load type
     CPPUNIT_ASSERT_MESSAGE("Load Type is equal.",
@@ -310,6 +322,19 @@ void UtResistiveLoad::testUpdateState()
     CPPUNIT_ASSERT_MESSAGE("Actual power is very high!", tArticle->getPower() > tActualPower);
     // current calculated here is very high
     CPPUNIT_ASSERT_MESSAGE("Actual current here is very low!", tArticle->getCurrent() < tCurrent);
+
+    /// @test fuse blow malfunction.
+    tArticle->setMalfBlowFuse(true);
+    CPPUNIT_ASSERT(true == tArticle->mMalfBlowFuse);
+    tArticle->step(tInitialPotential);
+    CPPUNIT_ASSERT(true == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(true == tArticle->isFuseBlown());
+    CPPUNIT_ASSERT(0.0  == tArticle->mVoltage);
+    tArticle->setMalfBlowFuse(false);
+    tArticle->resetFuse();
+    CPPUNIT_ASSERT(false == tArticle->mMalfBlowFuse);
+    CPPUNIT_ASSERT(false == tArticle->mFuseIsBlown);
+    CPPUNIT_ASSERT(false == tArticle->isFuseBlown());
 
     //set load to standby and calculate power and current
     tArticle->mLoadOperMode = LoadSTANDBY;
@@ -510,6 +535,37 @@ void UtResistiveLoad::testCalculateResistiveLoadMalfOverridePowerValueGreaterTha
     tArticle->setMalfOverridePower();
     CPPUNIT_ASSERT(false == tArticle->mMalfOverridePowerFlag);
     CPPUNIT_ASSERT(0.0   == tArticle->mMalfOverridePower);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests updateFuse method.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtResistiveLoad::testUpdateFuse() {
+
+    UT_RESULT;
+
+    /// @test fuse current limit = 0.
+    tArticle->mFuseIsBlown = true;
+    tArticle->mFuseCurrentLimit = 0.0;
+    tArticle->mEquivalentResistance = 1.0;
+
+    /// @test fuse already blown.
+    tArticle->mFuseCurrentLimit = 5.0;
+    CPPUNIT_ASSERT(false == tArticle->updateFuse(100.0));
+    CPPUNIT_ASSERT(true  == tArticle->isFuseBlown());
+
+    /// @test fuse not blown, current < limit.
+    tArticle->mFuseIsBlown = false;
+    tArticle->mEquivalentResistance = 100.0;
+    CPPUNIT_ASSERT(false == tArticle->updateFuse(100.0));
+    CPPUNIT_ASSERT(false == tArticle->isFuseBlown());
+
+    /// @test fuse not blown, current > limit.
+    tArticle->mEquivalentResistance = 1.0;
+    CPPUNIT_ASSERT(true == tArticle->updateFuse(100.0));
+    CPPUNIT_ASSERT(true == tArticle->isFuseBlown());
 
     UT_PASS_LAST;
 }

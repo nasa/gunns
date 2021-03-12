@@ -1,9 +1,11 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 # List of all GunnsDraw network drawings that are to be exported at build time:
 GUNNSDRAWINGS := \
- $(GUNNS_HOME)/draw/drawings/DrawElect.xml
+ $(GUNNS_HOME)/sims/networks/fluid/test/TestFluidNetwork.xml \
+ $(GUNNS_HOME)/sims/networks/basic/test/TestBasicNetwork.xml \
+ $(GUNNS_HOME)/sims/networks/thermal/gunnshowThermalTest/GunnShowThermalTest.xml
  
 ####################################################################################################
 # Don't touch the rest of this...

@@ -18,6 +18,7 @@
  LIBRARY DEPENDENCY:
      (
       (math/approximation/QuinticFit.o)
+      (math/approximation/QuarticFit.o)
       (math/approximation/CubicFit.o)
       (math/approximation/TsApproximation.o)
       (math/approximation/LinearFit.o)

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -84,6 +84,8 @@ arframe.pack(side=BOTTOM)
 #nameEntry = Entry(enframe, bg='white', fg='black')
 #nameEntry.pack(side=TOP)
 
+outputLabels = []
+projectPathLabels = []
 drawings = []
 drawingNameLabels = []
 drawingCountLabels = []
@@ -96,16 +98,22 @@ def select_output():
     project.name = os.path.abspath(f.name)
     f.close()
     # Add the resulting file name as a label
-    outputLabel = Label(offrame, text=project.name)
-    outputLabel.pack(side=BOTTOM)
+    if outputLabels:
+        outputLabels.pop().destroy()
+    newOutputLabel = Label(offrame, text=project.name)
+    newOutputLabel.pack(side=BOTTOM)
+    outputLabels.append(newOutputLabel)
 
 # Asks the user to select the project path, saves the result.
 def select_project():
     f = TKFILE.askdirectory(title = "Select the project path")
     project.path = os.path.abspath(f) + '/'
     # Add the resulting path as a label
-    pathLabel = Label(ppframe, text=project.path)
-    pathLabel.pack(side=BOTTOM)
+    if projectPathLabels:
+        projectPathLabels.pop().destroy()
+    newPathLabel = Label(ppframe, text=project.path)
+    newPathLabel.pack(side=BOTTOM)
+    projectPathLabels.append(newPathLabel)
 
 # Closes the GUI and passes execution to the remaining script.
 def create():
@@ -269,8 +277,12 @@ def addElemToSuper(elem):
     copiedElem = copy.deepcopy(elem)
     copiedElem.attrib['id'] = id_conversions[elem.attrib['id'][:20]] + elem.attrib['id'][20:]
 
-    # Copy remaining id attributes throughout the element.
+    # Save source element's ID into the copied element
     gunns = copiedElem.find('gunns')
+    if gunns is not None:
+        gunns.attrib['drawingId'] = elem.attrib['id']
+
+    # Copy remaining id attributes throughout the element.
     if gunns is not None and gunns.attrib['type'] == 'Network':
         # Network container element's parent is always 2, the super-network container.
         copiedElem.find('mxCell').attrib['parent'] = '2'

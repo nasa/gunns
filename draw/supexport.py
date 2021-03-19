@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -234,8 +234,12 @@ def addElemToSuper(super, elem, position):
     copiedElem = copy.deepcopy(elem)
     copiedElem.attrib['id'] = id_conversions[elem.attrib['id'][:20]] + elem.attrib['id'][20:]
 
-    # Copy remaining id attributes throughout the element.
+    # Save source element's ID into the copied element
     gunns = copiedElem.find('gunns')
+    if gunns is not None:
+        gunns.attrib['drawingId'] = elem.attrib['id']
+            
+    # Copy remaining id attributes throughout the element.
     if gunns is not None and gunns.attrib['type'] == 'Network':
         # Network container element's parent is always 2, the super-network container.
         copiedElem.find('mxCell').attrib['parent'] = '2'
@@ -324,10 +328,15 @@ def updateSubNet(subNet, subPathFile, rootroot):
             objId = obj.attrib['id']
             for port in allSuperPorts:
                 if getPortTargetId(port) == objId or getPortSourceId(port) == objId:
-                    # For the super-ports, store the link/node type, and label of source and target
-                    # that are in this sub-network.  These will be used to find new source and target
-                    # in the new sub-network.  This could be entered twice for the same port from
-                    # different source & target objects, so only create the new value dictionary once.
+                    # For the super-ports, store the link/node type, label, and source drawing ID of
+                    # source and target that are in this sub-network.  These will be used to find new
+                    # source and target in the new sub-network.  This could be entered twice for the
+                    # same port from different source & target objects, so only create the new value
+                    # dictionary once.
+                    if 'drawingId' in obj.find('gunns').attrib:
+                        drawingId = obj.find('gunns').attrib['drawingId']
+                    else:
+                        drawingId = None
                     portId = port.attrib['id']
                     if portId not in subPorts.keys():
                         subPorts[portId] = {}
@@ -335,10 +344,12 @@ def updateSubNet(subNet, subPathFile, rootroot):
                     if getPortTargetId(port) == objId:
                         subPorts[portId]['targetType'] = obj.find('./gunns').attrib['type']
                         subPorts[portId]['targetLabel'] = obj.attrib['label']
+                        subPorts[portId]['targetDrawId'] = drawingId
                         port.find('mxCell').attrib['target'] = 'orphaned'
                     if getPortSourceId(port) == objId:
                         subPorts[portId]['sourceType'] = obj.find('./gunns').attrib['type']
                         subPorts[portId]['sourceLabel'] = obj.attrib['label']
+                        subPorts[portId]['sourceDrawId'] = drawingId
                         port.find('mxCell').attrib['source'] = 'orphaned'
 
     for cell in allCells:
@@ -432,23 +443,62 @@ def updateSubNet(subNet, subPathFile, rootroot):
                 object.find('gunns').attrib['subtype'] = ''
             newObjectsAndCells.append(addElemToSuper(rootroot, object, -1))
 
-    # Reconnect super-ports to the node or link matching their old connections' labels.  If no match
-    # is found, delete the super-port and warn the user that it's gone.
+    # Reconnect super-ports to the node or link.  First a match of both label and drawingId is sought.
+    # Otherwise a match of the label is sought, otherwise a match of the drawingId is ought.
+    # This allows the user to change either name or the ID (as a new shape) in the source drawing and
+    # we'll make the connection.  If still no match is found, then delete the super-port and warn the
+    # user that it's gone.
     orphanedPorts = []
     for value in subPorts.values():
         port = value['port']
         if 'sourceType' in value.keys():
             for object in newObjectsAndCells:
-                if value['sourceType'] == getElemGunnsType(object) and value['sourceLabel'] == object.attrib['label']:
+                if (value['sourceType'] == getElemGunnsType(object)) and \
+                   (value['sourceLabel'] == object.attrib['label']) and \
+                   (value['sourceDrawId'] == object.find('gunns').attrib['drawingId']):
                     port.find('mxCell').attrib['source'] = object.attrib['id']
+                    break
+                    
+            if port.find('mxCell').attrib['source'] == 'orphaned':
+                for object in newObjectsAndCells:
+                    if (value['sourceType'] == getElemGunnsType(object)) and \
+                       (value['sourceLabel'] == object.attrib['label']):
+                        port.find('mxCell').attrib['source'] = object.attrib['id']
+                        break
+                    
+            if port.find('mxCell').attrib['source'] == 'orphaned':
+                for object in newObjectsAndCells:
+                    if (value['sourceType'] == getElemGunnsType(object)) and \
+                       (value['sourceDrawId'] == object.find('gunns').attrib['drawingId']):
+                        port.find('mxCell').attrib['source'] = object.attrib['id']
+                        break
+                    
             if port.find('mxCell').attrib['source'] == 'orphaned':
                 orphanedPorts.append(port)
                 print('      ' + console.warn('an orphaned super-port ' + port.attrib['label'] + ' on ' + saveLabel + ' ' + value['sourceType'] + ' ' + value['sourceLabel'] + ' was deleted.'))
                 
         if 'targetType' in value.keys():
             for object in newObjectsAndCells:
-                if value['targetType'] == getElemGunnsType(object) and value['targetLabel'] == object.attrib['label']:
+                if (value['targetType'] == getElemGunnsType(object)) and \
+                   (value['targetLabel']  == object.attrib['label']) and \
+                   (value['targetDrawId'] == object.find('gunns').attrib['drawingId']):
                     port.find('mxCell').attrib['target'] = object.attrib['id']
+                    break
+                    
+            if port.find('mxCell').attrib['target'] == 'orphaned':
+                for object in newObjectsAndCells:
+                    if (value['targetType'] == getElemGunnsType(object)) and \
+                       (value['targetLabel']  == object.attrib['label']):
+                        port.find('mxCell').attrib['target'] = object.attrib['id']
+                        break
+                    
+            if port.find('mxCell').attrib['target'] == 'orphaned':
+                for object in newObjectsAndCells:
+                    if (value['targetType']  == getElemGunnsType(object)) and \
+                       (value['targetDrawId'] == object.find('gunns').attrib['drawingId']):
+                        port.find('mxCell').attrib['target'] = object.attrib['id']
+                        break
+                    
             if port.find('mxCell').attrib['target'] == 'orphaned':
                 orphanedPorts.append(port)
                 print('      ' + console.warn('an orphaned super-port ' + port.attrib['label'] + ' on ' + saveLabel + ' ' + value['targetType'] + ' ' + value['targetLabel'] + ' was deleted.'))

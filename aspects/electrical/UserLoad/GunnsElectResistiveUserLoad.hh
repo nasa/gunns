@@ -47,11 +47,11 @@ class GunnsElectResistiveUserLoadConfigData : public GunnsElectUserLoadConfigDat
         double mResistanceStandby;    /**< (ohm) trick_chkpnt_io(**) Resistance for standby mode. */
         /// @brief Default constructs this GUNNS Electrical Resistive User Load Spotter
         ///        configuration data.
-        GunnsElectResistiveUserLoadConfigData(const std::string& name,
-                                              const double       underVoltageLimit,
-                                              const double       resistanceNormal,
-                                              const double       resistanceStandby,
-                                              const double       fuseCurrentLimit);
+        GunnsElectResistiveUserLoadConfigData(const std::string& name              = "",
+                                              const double       underVoltageLimit = 0.0,
+                                              const double       resistanceNormal  = 0.0,
+                                              const double       resistanceStandby = 0.0,
+                                              const double       fuseCurrentLimit  = 0.0);
         /// @brief Default destructs this GUNNS Electrical Resistive User Load Spotter
         ///        configuration data.
         virtual ~GunnsElectResistiveUserLoadConfigData();
@@ -73,8 +73,8 @@ class GunnsElectResistiveUserLoadInputData : public GunnsElectUserLoadInputData
 {
     public:
         /// @brief Default constructs this GUNNS Electrical Resistive User Load Spotter input data.
-        GunnsElectResistiveUserLoadInputData(const int    initialMode,
-                                             const double initialVoltage);
+        GunnsElectResistiveUserLoadInputData(const int    initialMode    = 0,
+                                             const double initialVoltage = 0.0);
         /// @brief Default destructs this GUNNS Electrical Resistive User Load Spotter input data.
         virtual ~GunnsElectResistiveUserLoadInputData();
 

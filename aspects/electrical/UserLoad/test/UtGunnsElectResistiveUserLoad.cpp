@@ -96,6 +96,14 @@ void UtGunnsElectResistiveUserLoad::testConfig()
     CPPUNIT_ASSERT(tResistanceStandby == tConfigData->mResistanceStandby);
     CPPUNIT_ASSERT(tFuseCurrentLimit  == tConfigData->mFuseCurrentLimit);
 
+    /// @test    Configuration data default construction.
+    GunnsElectResistiveUserLoadConfigData defaultConfig;
+    CPPUNIT_ASSERT(""  == defaultConfig.mName);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mUnderVoltageLimit);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mResistanceNormal);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mResistanceStandby);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mFuseCurrentLimit);
+
     UT_PASS;
 }
 
@@ -109,6 +117,11 @@ void UtGunnsElectResistiveUserLoad::testInput()
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(tInitialMode    == tInputData->mInitialMode);
     CPPUNIT_ASSERT(tInitialVoltage == tInputData->mInitialVoltage);
+
+    /// @test    Input data default construction.
+    GunnsElectResistiveUserLoadInputData defaultInput;
+    CPPUNIT_ASSERT(0   == defaultInput.mInitialMode);
+    CPPUNIT_ASSERT(0.0 == defaultInput.mInitialVoltage);
 
     UT_PASS;
 }

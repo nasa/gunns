@@ -97,6 +97,14 @@ void UtGunnsElectConstantPowerUserLoad::testConfig()
     CPPUNIT_ASSERT(tPowerStandby      == tConfigData->mPowerStandby);
     CPPUNIT_ASSERT(tFuseCurrentLimit  == tConfigData->mFuseCurrentLimit);
 
+    /// @test    Configuration data default construction.
+    GunnsElectConstantPowerUserLoadConfigData defaultConfig;
+    CPPUNIT_ASSERT(""  == defaultConfig.mName);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mUnderVoltageLimit);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mPowerNormal);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mPowerStandby);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mFuseCurrentLimit);
+
     UT_PASS;
 }
 
@@ -110,6 +118,11 @@ void UtGunnsElectConstantPowerUserLoad::testInput()
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(tInitialMode    == tInputData->mInitialMode);
     CPPUNIT_ASSERT(tInitialVoltage == tInputData->mInitialVoltage);
+
+    /// @test    Input data default construction.
+    GunnsElectConstantPowerUserLoadInputData defaultInput;
+    CPPUNIT_ASSERT(0   == defaultInput.mInitialMode);
+    CPPUNIT_ASSERT(0.0 == defaultInput.mInitialVoltage);
 
     UT_PASS;
 }

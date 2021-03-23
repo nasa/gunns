@@ -47,11 +47,11 @@ class GunnsElectConstantPowerUserLoadConfigData : public GunnsElectUserLoadConfi
         double mPowerStandby;                /**< (W) trick_chkpnt_io(**) Power for standby mode. */
         /// @brief Default constructs this GUNNS Electrical Constant-Power User Load Spotter
         ///        configuration data.
-        GunnsElectConstantPowerUserLoadConfigData(const std::string& name,
-                                                  const double       underVoltageLimit,
-                                                  const double       powerNormal,
-                                                  const double       powerStandby,
-                                                  const double       fuseCurrentLimit);
+        GunnsElectConstantPowerUserLoadConfigData(const std::string& name              = "",
+                                                  const double       underVoltageLimit = 0.0,
+                                                  const double       powerNormal       = 0.0,
+                                                  const double       powerStandby      = 0.0,
+                                                  const double       fuseCurrentLimit  = 0.0);
         /// @brief Default destructs this GUNNS Electrical Constant-Power User Load Spotter
         ///        configuration data.
         virtual ~GunnsElectConstantPowerUserLoadConfigData();
@@ -74,8 +74,8 @@ class GunnsElectConstantPowerUserLoadInputData : public GunnsElectUserLoadInputD
     public:
         /// @brief Default constructs this GUNNS Electrical Constant-Power User Load Spotter input
         ///        data.
-        GunnsElectConstantPowerUserLoadInputData(const int    initialMode,
-                                                 const double initialVoltage);
+        GunnsElectConstantPowerUserLoadInputData(const int    initialMode    = 0.0,
+                                                 const double initialVoltage = 0.0);
         /// @brief Default destructs this GUNNS Electrical Constant-Power User Load Spotter input
         ///        data.
         virtual ~GunnsElectConstantPowerUserLoadInputData();

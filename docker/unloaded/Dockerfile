@@ -1,14 +1,14 @@
-# Start with NVIDIA's Centos 7 image. It's not required for this image, but any
-# image derived from this one that wants to run DOUG will need it. Since you
-# can't derive from more than one base image, we have to include it here.
-FROM nvidia/opengl:1.0-glvnd-devel-centos7
+# NOTE we recommend you tag this image as 'gunns_unloaded', as the 'loaded' image
+# uses that as its base.
+#
+# Start with Centos 7 image.
+FROM centos:7
 
-# Might as well install the epel repository and update yum for the same reason.
+# Install the epel repository and update yum.
 RUN yum install -y epel-release && yum update -y
 
 # cd to /home
 WORKDIR /home
-
 
 # Use all the cores!
 ENV MAKEFLAGS -j4
@@ -19,12 +19,14 @@ RUN yum install -y \
  clang-devel \
  cmake \
  curl-devel \
+ firefox \
  flex \
  gcc \
  gcc-c++ \
  git \
  glibc-devel \
  gtest-devel \
+ https://github.com/jgraph/drawio-desktop/releases/download/v14.5.1/drawio-x86_64-14.5.1.rpm \
  java-1.8.0-openjdk-devel \
  libX11-devel \
  libxml2-devel \
@@ -48,15 +50,21 @@ RUN yum install -y \
  sqlite-devel \
  swig \
  systemd-devel \
+ tkinter \
  udunits2-devel \
  which \
- zlib-devel \
- tkinter
+ zlib-devel
 
 # Clone Trick
 RUN git clone https://github.com/nasa/trick.git
 
-# Build Trick
+# Make Trick
 WORKDIR trick
 RUN ./configure && make
 WORKDIR ..
+
+# Set environment variables, assuming GUNNS will be cloned or mapped to /home/gunns.
+ENV TRICK_HOME /home/trick
+ENV GUNNS_TRICK_HOME /home/trick
+ENV GUNNS_HOME /home/gunns
+ENV PATH "$PATH:/home/trick/bin"

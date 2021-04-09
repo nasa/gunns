@@ -115,6 +115,7 @@ GunnsConfigData::~GunnsConfigData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Gunns::Gunns()
     :
+    mStepLog               (),
     mName                  (),
     mNumLinks              (0),
     mNumNodes              (0),
@@ -181,7 +182,6 @@ Gunns::Gunns()
     mDebugDesiredSlice     (0),
     mDebugDesiredStep      (0),
     mDebugDesiredNode      (-1),
-    mStepLog               (),
     mVerbose               (false),
     mSorActive             (false),
     mSorWeight             (1.0),

@@ -89,13 +89,19 @@ GunnsElectBattery::GunnsElectBattery()
 :
     GunnsBasicPotential(),
     mCells(0),
+    mMalfThermalRunawayFlag(false),
+    mMalfThermalRunawayDuration(0.0),
+    mMalfThermalRunawayInterval(0.0),
     mNumCells(0),
     mCellsInParallel(false),
     mInterconnectResistance(0.0),
     mSocVocTable(0),
     mSoc(0.0),
     mCurrent(0.0),
-    mVoltage(0.0)
+    mVoltage(0.0),
+    mHeat(0.0),
+    mThermalRunawayCell(0),
+    mThermalRunawayTimer(0.0)
 {
     // Nothing to to.
 }
@@ -139,8 +145,8 @@ void GunnsElectBattery::initialize(GunnsElectBatteryConfigData&  configData,
 
     GunnsElectBatteryCellConfigData cellConfig(configData.mCellResistance,
                                                configData.mMaxCapacity / mNumCells);
-    GunnsElectBatteryCellInputData  cellInput(false, false, false, 0.0, inputData.mSoc);
-    for (int i = 0; i < mNumCells; i++) {
+    GunnsElectBatteryCellInputData  cellInput(false, false, false, 0.0, false, 0.0, inputData.mSoc);
+    for (unsigned int i = 0; i < mNumCells; i++) {
         std::ostringstream cell;
         cell << i;
         mCells[i].initialize(cellConfig, cellInput, mName + "mCells_" + cell.str());
@@ -253,7 +259,7 @@ void GunnsElectBattery::updateState(const double timeStep __attribute__((unused)
 double GunnsElectBattery::computeParallelResistance() const
 {
     double conductance = 0.0;
-    for (int i = 0; i < mNumCells; i++ )
+    for (unsigned int i = 0; i < mNumCells; i++ )
     {
         conductance += 1.0 / std::max(mCells[i].getEffectiveResistance(), DBL_EPSILON);
     }
@@ -268,7 +274,7 @@ double GunnsElectBattery::computeParallelResistance() const
 double GunnsElectBattery::computeSeriesResistance() const
 {
     double resistance = 0.0;
-    for (int i = 0; i < mNumCells; i++ )
+    for (unsigned int i = 0; i < mNumCells; i++ )
     {
         resistance += mCells[i].getEffectiveResistance();
     }
@@ -283,7 +289,7 @@ double GunnsElectBattery::computeSeriesResistance() const
 double GunnsElectBattery::computeParallelVoc() const
 {
     double Voc = 0.0;
-    for (int i = 0; i < mNumCells; i++ )
+    for (unsigned int i = 0; i < mNumCells; i++ )
     {
         const double cellVoc = mCells[i].getEffectiveVoltage(mSocVocTable);
         if (cellVoc > Voc) {
@@ -301,7 +307,7 @@ double GunnsElectBattery::computeParallelVoc() const
 double GunnsElectBattery::computeSeriesVoc() const
 {
     double Voc = 0.0;
-    for (int i = 0; i < mNumCells; i++ )
+    for (unsigned int i = 0; i < mNumCells; i++ )
     {
         Voc += mCells[i].getEffectiveVoltage(mSocVocTable);
     }
@@ -318,6 +324,23 @@ void GunnsElectBattery::updateFlux(const double timeStep, const double flux __at
 {
     updateCells(timeStep);
     updateOutputs();
+
+    /// - Update the thermal runaway malfunction by sequencing each cell's malfunction in order,
+    ///   separated by the given time interval.
+    if (mMalfThermalRunawayFlag) {
+        if (mThermalRunawayCell >= mNumCells) {
+            mThermalRunawayCell = 0;
+        }
+        mCells[mThermalRunawayCell].setMalfThermalRunaway(true, mMalfThermalRunawayDuration);
+        mThermalRunawayTimer += timeStep;
+        if (mThermalRunawayTimer >= mMalfThermalRunawayInterval) {
+            mThermalRunawayTimer = 0.0;
+            mThermalRunawayCell++;
+        }
+    } else {
+        mThermalRunawayTimer = 0.0;
+        mThermalRunawayCell  = 0;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -331,7 +354,7 @@ void GunnsElectBattery::updateCells(const double timeStep)
 {
     /// - Count the number of cells contributing to the load.
     int count = 0;
-    for (int i = 0; i < mNumCells; i++) {
+    for (unsigned int i = 0; i < mNumCells; i++) {
         if (mCells[i].getEffectiveSoc() > DBL_EPSILON) {
             count++;
         }
@@ -342,25 +365,28 @@ void GunnsElectBattery::updateCells(const double timeStep)
     ///   the cell model.
     if (count > 0) {
         const double current = mFlux / count;
-        for (int i = 0; i < mNumCells; i++) {
-            mCells[i].updateSoc(current, timeStep);
+        for (unsigned int i = 0; i < mNumCells; i++) {
+            mCells[i].updateSoc(current, timeStep, mSocVocTable);
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Updates the output current, voltage and average State of Charge.
+/// @details  Updates the output current, voltage, heat and average State of Charge.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectBattery::updateOutputs()
 {
     mCurrent = mFlux;
     mVoltage = mPotentialVector[1];
-    double soc = 0.0;
+    double soc  = 0.0;
+    double heat = 0.0;
     if (mNumCells > 0) {
-        for (int i = 0; i < mNumCells; i++) {
-            soc += mCells[i].getEffectiveSoc();
+        for (unsigned int i = 0; i < mNumCells; i++) {
+            soc  += mCells[i].getEffectiveSoc();
+            heat += mCells[i].getRunawayPower();
         }
         soc /= mNumCells;
     }
-    mSoc = soc;
+    mSoc  = soc;
+    mHeat = heat + mFlux * mFlux / std::max(mEffectiveConductivity, DBL_EPSILON);
 }

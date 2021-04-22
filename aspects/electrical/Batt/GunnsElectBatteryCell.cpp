@@ -55,11 +55,13 @@ GunnsElectBatteryCellConfigData::GunnsElectBatteryCellConfigData(const GunnsElec
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] malfOpenCircuit   (--)     Initial failed open-circuit malfunction.
-/// @param[in] malfOpenCircuit   (--)     Initial failed short-circuit malfunction.
-/// @param[in] malfCapacityFlag  (--)     Initial capacity override malfunction activation flag.
-/// @param[in] malfCapacityValue (amp*hr) Initial capacity override malfunction value.
-/// @param[in] soc               (--)     Initial State of Charge (0-1).
+/// @param[in] malfOpenCircuit            (--)     Initial failed open-circuit malfunction.
+/// @param[in] malfOpenCircuit            (--)     Initial failed short-circuit malfunction.
+/// @param[in] malfCapacityFlag           (--)     Initial capacity override malfunction activation flag.
+/// @param[in] malfCapacityValue          (amp*hr) Initial capacity override malfunction value.
+/// @param[in] malfThermalRunawayFlag     (--)     Initial thermal runaway malfunction activation flag.
+/// @param[in] malfThermalRunawayDuration (s)      Initial thermal runaway malfunction duration.
+/// @param[in] soc                        (--)     Initial State of Charge (0-1).
 ///
 /// @details  Default constructs this GunnsElectBatteryCell input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,12 +69,16 @@ GunnsElectBatteryCellInputData::GunnsElectBatteryCellInputData(const bool   malf
                                                                const bool   malfShortCircuit,
                                                                const bool   malfCapacityFlag,
                                                                const double malfCapacityValue,
+                                                               const bool   malfThermalRunawayFlag,
+                                                               const double malfThermalRunawayDuration,
                                                                const double soc)
     :
     mMalfOpenCircuit(malfOpenCircuit),
     mMalfShortCircuit(malfShortCircuit),
     mMalfCapacityFlag(malfCapacityFlag),
     mMalfCapacityValue(malfCapacityValue),
+    mMalfThermalRunawayFlag(malfThermalRunawayFlag),
+    mMalfThermalRunawayDuration(malfThermalRunawayDuration),
     mSoc(soc)
 {
     // Nothing to to.
@@ -97,6 +103,8 @@ GunnsElectBatteryCellInputData::GunnsElectBatteryCellInputData(const GunnsElectB
     mMalfShortCircuit(that.mMalfShortCircuit),
     mMalfCapacityFlag(that.mMalfCapacityFlag),
     mMalfCapacityValue(that.mMalfCapacityValue),
+    mMalfThermalRunawayFlag(that.mMalfThermalRunawayFlag),
+    mMalfThermalRunawayDuration(that.mMalfThermalRunawayDuration),
     mSoc(that.mSoc)
 {
     // Nothing to to.
@@ -111,9 +119,13 @@ GunnsElectBatteryCell::GunnsElectBatteryCell()
     mMalfShortCircuit(false),
     mMalfCapacityFlag(false),
     mMalfCapacityValue(0.0),
+    mMalfThermalRunawayFlag(false),
+    mMalfThermalRunawayDuration(0.0),
     mResistance(0.0),
     mMaxCapacity(0.0),
-    mSoc(0.0)
+    mSoc(0.0),
+    mRunawayPower(0.0),
+    mRunawayPowerRate(0.0)
 {
     // Nothing to to.
 }
@@ -138,14 +150,16 @@ void GunnsElectBatteryCell::initialize(const GunnsElectBatteryCellConfigData& co
 		                               const std::string&                     name)
 {
     /// - Initialize from configuration and input data.
-    mResistance        = configData.mResistance;
-    mMaxCapacity       = configData.mMaxCapacity;
-    mMalfOpenCircuit   = inputData.mMalfOpenCircuit;
-    mMalfShortCircuit  = inputData.mMalfShortCircuit;
-    mMalfCapacityFlag  = inputData.mMalfCapacityFlag;
-    mMalfCapacityValue = inputData.mMalfCapacityValue;
-    mSoc               = inputData.mSoc;
-    mName              = name;
+    mResistance                 = configData.mResistance;
+    mMaxCapacity                = configData.mMaxCapacity;
+    mMalfOpenCircuit            = inputData.mMalfOpenCircuit;
+    mMalfShortCircuit           = inputData.mMalfShortCircuit;
+    mMalfCapacityFlag           = inputData.mMalfCapacityFlag;
+    mMalfCapacityValue          = inputData.mMalfCapacityValue;
+    mMalfThermalRunawayFlag     = inputData.mMalfThermalRunawayFlag;
+    mMalfThermalRunawayDuration = inputData.mMalfThermalRunawayDuration;
+    mSoc                        = inputData.mSoc;
+    mName                       = name;
 
     validate();
 }
@@ -184,15 +198,20 @@ void GunnsElectBatteryCell::validate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] current  (amp) Current through the cell.
-/// @param[in] timeStep (s)   Integration time step.
+/// @param[in] current     (amp) Current through the cell.
+/// @param[in] timeStep    (s)   Integration time step.
+/// @param[in] socVocTable (--)  Pointer to open-circuit voltage vs. State of Charge table.
 ///
 /// @details  Update this cell's State of Charge based on the accumulated current though it.  SOC is
 ///           limited to (0-1).  Positive current discharges, negative current charges.
-///           Short-circuit failure discharges the cell internally so its SOC goes to zero.  Open-
-///           circuit failure bypasses the cell so it sees no current and SOC remains the same.
+///           Short-circuit failure discharges the cell internally so its SOC goes to zero with no
+///           corresponding power or heat output, so this doesn't conserve energy.  Open-circuit
+///           failure bypasses the cell so it sees no current and SOC remains the same.  Thermal
+///           runaway failure models an accelerating discharge of the stored energy as heat over the
+///           malfunction duration.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectBatteryCell::updateSoc(const double current, const double timeStep)
+void GunnsElectBatteryCell::updateSoc(const double current, const double timeStep,
+                                      TsLinearInterpolator* socVocTable)
 {
     if (mMalfShortCircuit) {
         mSoc = 0.0;
@@ -202,11 +221,27 @@ void GunnsElectBatteryCell::updateSoc(const double current, const double timeSte
             capacity = mMalfCapacityValue;
         }
         if (capacity > DBL_EPSILON) {
-            mSoc -= current * timeStep / capacity / UnitConversion::SEC_PER_HR;
+            double runawayCurrent = 0.0;
+            if (mMalfThermalRunawayFlag and mSoc > 0.0) {
+                const double voltage = std::max(DBL_EPSILON, socVocTable->get(mSoc));
+                if (0.0 == mRunawayPower) {
+                    const double energyEstimate = mSoc * capacity * voltage
+                                                * UnitConversion::SEC_PER_HR;
+                    const double duration2 = mMalfThermalRunawayDuration * mMalfThermalRunawayDuration;
+                    mRunawayPowerRate = 2.0 * energyEstimate / std::max(DBL_EPSILON, duration2);
+                }
+                mRunawayPower += mRunawayPowerRate * timeStep;
+                runawayCurrent = mRunawayPower / voltage;
+            }
+            mSoc -= (current + runawayCurrent) * timeStep / capacity / UnitConversion::SEC_PER_HR;
         } else {
             mSoc = 0.0;
         }
         mSoc = MsMath::limitRange(0.0, mSoc, 1.0);
+    }
+    if (0.0 == mSoc or not mMalfThermalRunawayFlag) {
+        mRunawayPower     = 0.0;
+        mRunawayPowerRate = 0.0;
     }
 }
 
@@ -235,7 +270,7 @@ double GunnsElectBatteryCell::getEffectiveResistance() const
 {
     if (mMalfShortCircuit) {
         return DBL_EPSILON;
-    } else if (mMalfOpenCircuit) {
+    } else if (mMalfOpenCircuit or mMalfThermalRunawayFlag) {
         return 1.0 / DBL_EPSILON;
     } else {
         return mResistance;
@@ -253,7 +288,7 @@ double GunnsElectBatteryCell::getEffectiveResistance() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsElectBatteryCell::getEffectiveVoltage(TsLinearInterpolator* socVocTable) const
 {
-    if (mMalfOpenCircuit or mMalfShortCircuit) {
+    if (mMalfOpenCircuit or mMalfShortCircuit or mMalfThermalRunawayFlag) {
         return 0.0;
     } else {
         return socVocTable->get(mSoc);

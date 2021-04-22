@@ -116,10 +116,14 @@ class GunnsElectBattery: public GunnsBasicPotential
     TS_MAKE_SIM_COMPATIBLE (GunnsElectBattery);
 
     public:
-        /// @name    Embedded objects.
+        /// @name    Malfunction terms and embedded objects.
         /// @{
-        /// @details Embedded objects are public to allow access from the Trick events processor.
-        GunnsElectBatteryCell* mCells;                  /**< (--)     trick_chkpnt_io(**) Battery cells. */
+        /// @details Malfunctions and embedded objects are public to allow access from the Trick
+        ///          events processor.
+        GunnsElectBatteryCell* mCells;                      /**< (1) trick_chkpnt_io(**) Battery cells. */
+        bool                   mMalfThermalRunawayFlag;     /**< (1)                     Thermal runaway malfunction activation flag. */
+        double                 mMalfThermalRunawayDuration; /**< (s)                     Each cell thermal runaway malfunction duration. */
+        double                 mMalfThermalRunawayInterval; /**< (s)                     Time interval between malfunction trigger in each cell. */
         /// @}
         /// @brief   Electrical Battery Model default constructor.
         GunnsElectBattery();
@@ -139,15 +143,20 @@ class GunnsElectBattery: public GunnsBasicPotential
         virtual double getVoltage() const;
         /// @brief   Returns the state of charge.
         virtual double getSoc() const;
+        /// @brief   Returns the heat output.
+        double         getHeat() const;
 
     protected:
-        int                    mNumCells;               /**< (--)     trick_chkpnt_io(**) Number of battery cells. */
-        bool                   mCellsInParallel;        /**< (--)     trick_chkpnt_io(**) Whether the cells are in parallel (True) or series (False). */
-        double                 mInterconnectResistance; /**< (ohm)    trick_chkpnt_io(**) Total interconnect resistance between all cells. */
-        TsLinearInterpolator*  mSocVocTable;            /**< (--)     trick_chkpnt_io(**) Pointer to open-circuit voltage vs. State of Charge table. */
-        double                 mSoc;                    /**< (--)     trick_chkpnt_io(**) Battery average State Of Charge (0-1) of active cells. */
-        double                 mCurrent;                /**< (amp)    trick_chkpnt_io(**) Battery current. */
-        double                 mVoltage;                /**< (V)      trick_chkpnt_io(**) Output closed-circuit voltage under load. */
+        unsigned int          mNumCells;               /**< (1)   trick_chkpnt_io(**) Number of battery cells. */
+        bool                  mCellsInParallel;        /**< (1)   trick_chkpnt_io(**) Whether the cells are in parallel (True) or series (False). */
+        double                mInterconnectResistance; /**< (ohm) trick_chkpnt_io(**) Total interconnect resistance between all cells. */
+        TsLinearInterpolator* mSocVocTable;            /**< (1)   trick_chkpnt_io(**) Pointer to open-circuit voltage vs. State of Charge table. */
+        double                mSoc;                    /**< (1)   trick_chkpnt_io(**) Battery average State Of Charge (0-1) of active cells. */
+        double                mCurrent;                /**< (amp) trick_chkpnt_io(**) Battery current. */
+        double                mVoltage;                /**< (V)   trick_chkpnt_io(**) Output closed-circuit voltage under load. */
+        double                mHeat;                   /**< (W)   trick_chkpnt_io(**) Heat created by the battery. */
+        unsigned int          mThermalRunawayCell;     /**< (1)                       Current cell index for the thermal runaway cascade. */
+        double                mThermalRunawayTimer;    /**< (s)                       Elapsed time of the thermal runaway malfunction. */
         /// @brief   Validates the link's configuration and input data.
         void         validate(GunnsElectBatteryConfigData& configData,
                               GunnsElectBatteryInputData&  inputData);
@@ -197,6 +206,17 @@ inline double GunnsElectBattery::getVoltage() const
 inline double GunnsElectBattery::getSoc() const
 {
     return mSoc;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns double (W) Heat created by the battery.
+///
+/// @details Returns the heat created by the battery due to charging, discharging and thermal
+///          runaway.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBattery::getHeat() const
+{
+    return mHeat;
 }
 
 #endif

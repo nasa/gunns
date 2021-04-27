@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2021 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # Make sure the user has defined $GUNNS_HOME.
@@ -27,13 +27,13 @@ GUNNS_TRICK_IF := $(GUNNS_HOME)/lib/trick_if/libgunns.o
 # Enable library support if Trick >= 17.1 and the libraries are built.  Otherwise, let Trick
 # generate all of the io_* and py_* code as usual.
 ifeq ($(wildcard $(TRICK_HOME)/share/trick/makefiles/trickify.mk),)
-    $(info GUNNS trickified lib is NOT being included because this version of Trick doesn't support it.)
+    # GUNNS trickified lib is not being included because this version of Trick doesn't support it.
     
 else ifeq ($(wildcard $(GUNNS_TRICK)),)
-    $(info GUNNS trickified lib is NOT being included because $(GUNNS_TRICK) is missing.)
+    # GUNNS trickified lib is not being included because GUNNS_TRICK is missing.
     
 else ifeq ($(wildcard $(GUNNS_TRICK_IF)),)
-    $(info GUNNS trickified lib is NOT being included because $(GUNNS_TRICK_IF) is missing.)
+    # GUNNS trickified lib is not being included because GUNNS_TRICK_IF is missing.
     
 else
     $(info GUNNS trickified lib $(GUNNS_TRICK_IF) is being included.)

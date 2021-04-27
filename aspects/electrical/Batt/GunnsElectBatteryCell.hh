@@ -2,13 +2,13 @@
 #define GunnsElectBatteryCell_EXISTS
 
 /**
-@file
+@file     GunnsElectBatteryCell.hh
 @brief    GUNNS Electrical Battery Cell declarations
 
 @defgroup GUNNS_ELECTRICAL_BATTERY_CELL    GUNNS Electrical Battery Cell Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -99,8 +99,10 @@ class TsLinearInterpolator;
 ///           current through the cell, and open-circuit voltage of the cell is compute based on the
 ///           State of Charge and a given Voc vs. Soc lookup table (given by caller).
 ///
-///           The cell has short-circuit and open-circuit failure malfunctions.  The short-circuit
-///           signatures override the open-circuit signatures if both malfs are active.
+///           The cell has short-circuit, open-circuit and thermal runaway malfunctions.  The short-
+///           circuit signatures override the open-circuit signatures if both malfs are active.  The
+///           open-circuit and thermal runaway malfs both open the ciruit, and the thermal runaway
+///           also converts the stored energy into waste heat over a given time interval.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectBatteryCell
 {

@@ -1,8 +1,8 @@
 /**
-@file
+@file     GunnsElectBattery.cpp
 @brief    GUNNS Electrical Battery implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -57,19 +57,28 @@ GunnsElectBatteryConfigData::~GunnsElectBatteryConfigData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] malfBlockageFlag  (--) Initial blockage malfunction flag.
-/// @param[in] malfBlockageValue (--) Initial blockage malfunction fractional value (0-1).
-/// @param[in] sourcePotential   (--) Not used by this link.
-/// @param[in] soc               (--) Initial battery State of Charge (0-1).
+/// @param[in] malfBlockageFlag           (--) Initial blockage malfunction flag.
+/// @param[in] malfBlockageValue          (--) Initial blockage malfunction fractional value (0-1).
+/// @param[in] sourcePotential            (V)  Not used.
+/// @param[in] soc                        (--) Initial battery State of Charge (0-1).
+/// @param[in] malfThermalRunawayFlag     (--) Initial thermal runaway malfunction activation flag.
+/// @parmm[in] malfThermalRunawayDuration (s)  Initial duration of each cell thermal runaway malfunction.
+/// @parmm[in] malfThermalRunawayInterval (s)  Initial time interval between malfunction trigger in each cell.
 ///
 /// @details  Default constructs this GunnsElectBattery input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectBatteryInputData::GunnsElectBatteryInputData(const bool   malfBlockageFlag,
                                                        const double malfBlockageValue,
-                                                       const double soc)
+                                                       const double soc,
+                                                       const bool   malfThermalRunawayFlag,
+                                                       const double malfThermalRunawayDuration,
+                                                       const double malfThermalRunawayInterval)
     :
     GunnsBasicPotentialInputData(malfBlockageFlag, malfBlockageValue, 0.0),
-    mSoc(soc)
+    mSoc(soc),
+    mMalfThermalRunawayFlag(malfThermalRunawayFlag),
+    mMalfThermalRunawayDuration(malfThermalRunawayDuration),
+    mMalfThermalRunawayInterval(malfThermalRunawayInterval)
 {
     // Nothing to to.
 }
@@ -136,10 +145,13 @@ void GunnsElectBattery::initialize(GunnsElectBatteryConfigData&  configData,
     validate(configData, inputData);
 
     /// - Initialize from configuration and input data.
-    mNumCells               = configData.mNumCells;
-    mCellsInParallel        = configData.mCellsInParallel;
-    mInterconnectResistance = configData.mInterconnectResistance;
-    mSocVocTable            = configData.mSocVocTable;
+    mNumCells                   = configData.mNumCells;
+    mCellsInParallel            = configData.mCellsInParallel;
+    mInterconnectResistance     = configData.mInterconnectResistance;
+    mSocVocTable                = configData.mSocVocTable;
+    mMalfThermalRunawayFlag     = inputData.mMalfThermalRunawayFlag;
+    mMalfThermalRunawayDuration = inputData.mMalfThermalRunawayDuration;
+    mMalfThermalRunawayInterval = inputData.mMalfThermalRunawayInterval;
 
     allocateArrays();
 
@@ -232,6 +244,32 @@ void GunnsElectBattery::validate(GunnsElectBatteryConfigData& configData,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectBattery::updateState(const double timeStep __attribute__((unused)))
 {
+    /// - Update the thermal runaway malfunction by sequencing each cell's malfunction in order,
+    ///   separated by the given time interval.
+    if (mMalfThermalRunawayFlag) {
+        if (mThermalRunawayCell >= mNumCells) {
+            mThermalRunawayCell = 0;
+        }
+        mCells[mThermalRunawayCell].setMalfThermalRunaway(true, mMalfThermalRunawayDuration);
+        mThermalRunawayTimer += timeStep;
+        if (mThermalRunawayTimer >= mMalfThermalRunawayInterval) {
+            mThermalRunawayTimer = 0.0;
+            mThermalRunawayCell++;
+        }
+    } else {
+        if (mThermalRunawayTimer > 0.0) {
+            /// - On removal of this malfunction, shut off all the cell's malfunctions.  We only
+            ///   do this on the first pass after the malf is removed, so as to not interfere with
+            ///   individual cell's malf used at other times.
+            for (unsigned int i = 0; i < mNumCells; i++ )
+            {
+                mCells[i].setMalfThermalRunaway();
+            }
+        }
+        mThermalRunawayTimer = 0.0;
+        mThermalRunawayCell  = 0;
+    }
+
     /// - Total resistance = battery interconnect resistance + total cell resistance.
     double resistance = mInterconnectResistance;
     if (mCellsInParallel) {
@@ -324,23 +362,6 @@ void GunnsElectBattery::updateFlux(const double timeStep, const double flux __at
 {
     updateCells(timeStep);
     updateOutputs();
-
-    /// - Update the thermal runaway malfunction by sequencing each cell's malfunction in order,
-    ///   separated by the given time interval.
-    if (mMalfThermalRunawayFlag) {
-        if (mThermalRunawayCell >= mNumCells) {
-            mThermalRunawayCell = 0;
-        }
-        mCells[mThermalRunawayCell].setMalfThermalRunaway(true, mMalfThermalRunawayDuration);
-        mThermalRunawayTimer += timeStep;
-        if (mThermalRunawayTimer >= mMalfThermalRunawayInterval) {
-            mThermalRunawayTimer = 0.0;
-            mThermalRunawayCell++;
-        }
-    } else {
-        mThermalRunawayTimer = 0.0;
-        mThermalRunawayCell  = 0;
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -388,5 +409,5 @@ void GunnsElectBattery::updateOutputs()
         soc /= mNumCells;
     }
     mSoc  = soc;
-    mHeat = heat + mFlux * mFlux / std::max(mEffectiveConductivity, DBL_EPSILON);
+    mHeat = heat + mFlux * mFlux / std::max(mSystemConductance, DBL_EPSILON);
 }

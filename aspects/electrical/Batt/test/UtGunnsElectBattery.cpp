@@ -1,14 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (aspects/electrical/Batt/GunnsElectBattery.o)
-        (software/exceptions/TsInitializationException.o)
-        (math/approximation/TsLinearInterpolator.o)
-    )
-***************************************************************************************************/
 #include "software/exceptions/TsInitializationException.hh"
 #include "math/approximation/TsLinearInterpolator.hh"
 #include "UtGunnsElectBattery.hh"
@@ -40,6 +34,9 @@ UtGunnsElectBattery::UtGunnsElectBattery()
     tSocVocTable(0),
     tMalfBlockageFlag(false),
     tMalfBlockageValue(0.0),
+    tMalfThermalRunawayFlag(false),
+    tMalfThermalRunawayDuration(0.0),
+    tMalfThermalRunawayInterval(0.0),
     tSoc(0.0)
 {
     //do nothing
@@ -87,12 +84,18 @@ void UtGunnsElectBattery::setUp()
                                                                tSocVocTable);
 
     /// - Create nominal input data.
-    tMalfBlockageFlag        = true;
-    tMalfBlockageValue       = 0.5;
-    tSoc                     = 0.9;
-    tInputData               = new GunnsElectBatteryInputData(tMalfBlockageFlag,
-                                                              tMalfBlockageValue,
-                                                              tSoc);
+    tMalfBlockageFlag           = true;
+    tMalfBlockageValue          = 0.5;
+    tSoc                        = 0.9;
+    tMalfThermalRunawayFlag     = false;
+    tMalfThermalRunawayDuration = 0.0;
+    tMalfThermalRunawayInterval = 0.0;
+    tInputData                  = new GunnsElectBatteryInputData(tMalfBlockageFlag,
+                                                                 tMalfBlockageValue,
+                                                                 tSoc,
+                                                                 tMalfThermalRunawayFlag,
+                                                                 tMalfThermalRunawayDuration,
+                                                                 tMalfThermalRunawayInterval);
 
     /// - Create the test article.
     tPort0                   = 1;
@@ -154,15 +157,23 @@ void UtGunnsElectBattery::testInput()
     UT_RESULT;
 
     /// @test nominal input construction.
-    CPPUNIT_ASSERT(tMalfBlockageFlag  == tInputData->mMalfBlockageFlag);
-    CPPUNIT_ASSERT(tMalfBlockageValue == tInputData->mMalfBlockageValue);
-    CPPUNIT_ASSERT(tSoc               == tInputData->mSoc);
+    GunnsElectBatteryInputData nominalInput(tMalfBlockageFlag, tMalfBlockageValue, tSoc,
+                                            true, 10.0, 5.0);
+    CPPUNIT_ASSERT(tMalfBlockageFlag  == nominalInput.mMalfBlockageFlag);
+    CPPUNIT_ASSERT(tMalfBlockageValue == nominalInput.mMalfBlockageValue);
+    CPPUNIT_ASSERT(tSoc               == nominalInput.mSoc);
+    CPPUNIT_ASSERT(true               == nominalInput.mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(10.0               == nominalInput.mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(5.0                == nominalInput.mMalfThermalRunawayInterval);
 
     /// @test default input construction.
     GunnsElectBatteryInputData defaultInput;
     CPPUNIT_ASSERT(false              == defaultInput.mMalfBlockageFlag);
     CPPUNIT_ASSERT(false              == defaultInput.mMalfBlockageValue);
     CPPUNIT_ASSERT(0.0                == defaultInput.mSoc);
+    CPPUNIT_ASSERT(false              == defaultInput.mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0                == defaultInput.mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(0.0                == defaultInput.mMalfThermalRunawayInterval);
 
     UT_PASS;
 }
@@ -175,9 +186,12 @@ void UtGunnsElectBattery::testDefaultConstruction()
     UT_RESULT;
 
     /// @test state data.
-    CPPUNIT_ASSERT(false == tArticle->mMalfBlockageFlag);
-    CPPUNIT_ASSERT(0.0   == tArticle->mSourcePotential);
     CPPUNIT_ASSERT(0     == tArticle->mCells);
+    CPPUNIT_ASSERT(false == tArticle->mMalfBlockageFlag);
+    CPPUNIT_ASSERT(false == tArticle->mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfThermalRunawayInterval);
+    CPPUNIT_ASSERT(0.0   == tArticle->mSourcePotential);
     CPPUNIT_ASSERT(0     == tArticle->mNumCells);
     CPPUNIT_ASSERT(false == tArticle->mCellsInParallel);
     CPPUNIT_ASSERT(0.0   == tArticle->mInterconnectResistance);
@@ -185,6 +199,9 @@ void UtGunnsElectBattery::testDefaultConstruction()
     CPPUNIT_ASSERT(0.0   == tArticle->mSoc);
     CPPUNIT_ASSERT(0.0   == tArticle->mCurrent);
     CPPUNIT_ASSERT(0.0   == tArticle->mVoltage);
+    CPPUNIT_ASSERT(0.0   == tArticle->mHeat);
+    CPPUNIT_ASSERT(0     == tArticle->mThermalRunawayCell);
+    CPPUNIT_ASSERT(0.0   == tArticle->mThermalRunawayTimer);
 
     UT_PASS;
 }
@@ -197,15 +214,24 @@ void UtGunnsElectBattery::testNominalInitialization()
     UT_RESULT;
 
     /// @test initialize with initialization data and no exceptions.
+    tMalfThermalRunawayFlag                 = true;
+    tMalfThermalRunawayDuration             = 10.0;
+    tMalfThermalRunawayInterval             = 5.0;
+    tInputData->mMalfThermalRunawayFlag     = tMalfThermalRunawayFlag;
+    tInputData->mMalfThermalRunawayDuration = tMalfThermalRunawayDuration;
+    tInputData->mMalfThermalRunawayInterval = tMalfThermalRunawayInterval;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
-    CPPUNIT_ASSERT(tName                    == tArticle->mName);
-    CPPUNIT_ASSERT(tMalfBlockageFlag        == tArticle->mMalfBlockageFlag);
-    CPPUNIT_ASSERT(tMalfBlockageValue       == tArticle->mMalfBlockageValue);
-    CPPUNIT_ASSERT(tNumCells                == tArticle->mNumCells);
-    CPPUNIT_ASSERT(tCellsInParallel         == tArticle->mCellsInParallel);
-    CPPUNIT_ASSERT(tInterconnectResistance  == tArticle->mInterconnectResistance);
-    CPPUNIT_ASSERT(tSocVocTable             == tArticle->mSocVocTable);
-    CPPUNIT_ASSERT(0                        != tArticle->mCells);
+    CPPUNIT_ASSERT(tName                       == tArticle->mName);
+    CPPUNIT_ASSERT(tMalfBlockageFlag           == tArticle->mMalfBlockageFlag);
+    CPPUNIT_ASSERT(tMalfBlockageValue          == tArticle->mMalfBlockageValue);
+    CPPUNIT_ASSERT(tMalfThermalRunawayFlag     == tArticle->mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(tMalfThermalRunawayDuration == tArticle->mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(tMalfThermalRunawayInterval == tArticle->mMalfThermalRunawayInterval);
+    CPPUNIT_ASSERT(tNumCells                   == tArticle->mNumCells);
+    CPPUNIT_ASSERT(tCellsInParallel            == tArticle->mCellsInParallel);
+    CPPUNIT_ASSERT(tInterconnectResistance     == tArticle->mInterconnectResistance);
+    CPPUNIT_ASSERT(tSocVocTable                == tArticle->mSocVocTable);
+    CPPUNIT_ASSERT(0                           != tArticle->mCells);
 
     for (int i=0; i<tNumCells; ++i) {
         CPPUNIT_ASSERT(tCellResistance      == tArticle->mCells[i].getEffectiveResistance());
@@ -324,7 +350,7 @@ void UtGunnsElectBattery::testUpdateStateParallel()
     ///       Voc output is lowered.
     // and verify its VOC gets used.
     for (int i=1; i<tNumCells; ++i) {
-        tArticle->mCells[i].updateSoc(10.0, 1.0);
+        tArticle->mCells[i].updateSoc(10.0, 1.0, tSocVocTable);
     }
     tArticle->step(0.0);
     CPPUNIT_ASSERT(expectedP > tArticle->mSourcePotential);
@@ -392,8 +418,11 @@ void UtGunnsElectBattery::testUpdateFlux()
     tArticle->step(dt);
     tArticle->computeFlows(dt);
 
-    double expectedCellSoc = tSoc - tArticle->mFlux * dt * tNumCells / tMaxCapacity / 3600.0;
+    double current         = tArticle->mFlux;
+    double expectedCellSoc = tSoc - current * dt * tNumCells / tMaxCapacity / 3600.0;
+    double expectedHeat    = current * current / tArticle->mAdmittanceMatrix[0];
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCellSoc, tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->getHeat(),    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,            tArticle->getVoltage(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux, tArticle->mCurrent,     DBL_EPSILON);
 
@@ -402,13 +431,115 @@ void UtGunnsElectBattery::testUpdateFlux()
     tArticle->computeFlows(dt);
     expectedCellSoc -= tArticle->mFlux * dt * (tNumCells - 1) / tMaxCapacity / 3600.0;
     double expectedSoc = expectedCellSoc * (tNumCells - 1) / tNumCells;
-
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc,     tArticle->mSoc,         DBL_EPSILON);
 
     /// @test method can handle number of cells being zeroed.
     tArticle->mNumCells = 0;
     tArticle->computeFlows(dt);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tArticle->mSoc,         DBL_EPSILON);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the thermal runaway malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectBattery::testThermalRunaway()
+{
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+
+    /// @test inactive malfunction doesn't preclude cell's malfunction.
+    const double dt = 0.1;
+    tArticle->mCells[0].setMalfThermalRunaway(true, 10.0);
+    tArticle->step(dt);
+    CPPUNIT_ASSERT(10.0        == tArticle->mCells[0].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(true        == tArticle->mCells[0].mMalfThermalRunawayFlag);
+
+    /// @test malf setter method and first step.
+    tArticle->setMalfThermalRunaway(true, 10.0, 5.0);
+    tArticle->step(dt);
+    CPPUNIT_ASSERT(10.0        == tArticle->mCells[0].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(true        == tArticle->mCells[0].mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(1.0 / DBL_EPSILON == tArticle->mCells[0].getEffectiveResistance());
+    CPPUNIT_ASSERT(0.0   == tArticle->mCells[1].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(false == tArticle->mCells[1].mMalfThermalRunawayFlag);
+    double expectedA = 0.5 / (tInterconnectResistance + tCellResistance / (tNumCells - 1));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+    CPPUNIT_ASSERT(0.0 < tArticle->mSourceVector[1]);
+
+    tArticle->mPotentialVector[0] = 0.0;
+    tArticle->mPotentialVector[1] = tArticle->mSourceVector[1] * 0.999 / tArticle->mAdmittanceMatrix[0];
+    tArticle->computeFlows(dt);
+    double current1      = tArticle->mFlux;
+    double expectedHeat1 = current1 * current1 / tArticle->mAdmittanceMatrix[0]
+                         + tArticle->mCells[0].getRunawayPower();
+    CPPUNIT_ASSERT(0.0 > tArticle->mPotentialDrop);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat1, tArticle->getHeat(), DBL_EPSILON);
+    CPPUNIT_ASSERT(0.0 < current1);
+    CPPUNIT_ASSERT(0.0 < tArticle->mCells[0].getRunawayPower());
+
+    /// @test malf progression on the initial cell.
+    tArticle->step(dt);
+    CPPUNIT_ASSERT(10.0  == tArticle->mCells[0].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(true  == tArticle->mCells[0].mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mCells[1].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(false == tArticle->mCells[1].mMalfThermalRunawayFlag);
+
+    tArticle->computeFlows(dt);
+    double current2      = tArticle->mFlux;
+    double expectedHeat2 = current2 * current2 / tArticle->mAdmittanceMatrix[0]
+                         + tArticle->mCells[0].getRunawayPower();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat2, tArticle->getHeat(), DBL_EPSILON);
+    CPPUNIT_ASSERT(0.0           < current2);
+    CPPUNIT_ASSERT(current2      < current1);
+    CPPUNIT_ASSERT(expectedHeat1 < expectedHeat2);
+    CPPUNIT_ASSERT(0.0           < tArticle->mCells[0].getRunawayPower());
+
+    /// @test progression into the next cell, and both cells with active malf.
+    for (unsigned int i=2; i<52; ++i) {
+        tArticle->step(dt);
+        tArticle->computeFlows(dt);
+    }
+    CPPUNIT_ASSERT(10.0  == tArticle->mCells[0].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(true  == tArticle->mCells[0].mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(10.0  == tArticle->mCells[1].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(true  == tArticle->mCells[1].mMalfThermalRunawayFlag);
+    double current3      = tArticle->mFlux;
+    double expectedHeat3 = current3 * current3 / tArticle->mAdmittanceMatrix[0]
+                         + tArticle->mCells[0].getRunawayPower()
+                         + tArticle->mCells[1].getRunawayPower();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat3, tArticle->getHeat(), DBL_EPSILON);
+    CPPUNIT_ASSERT(0.0           < tArticle->mCells[0].getRunawayPower());
+    CPPUNIT_ASSERT(0.0           < tArticle->mCells[1].getRunawayPower());
+
+    /// @test malfunction reset.
+    tArticle->setMalfThermalRunaway();
+    tArticle->step(dt);
+    CPPUNIT_ASSERT(0.0   == tArticle->mCells[0].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(false == tArticle->mCells[0].mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mCells[1].mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(false == tArticle->mCells[1].mMalfThermalRunawayFlag);
+    tArticle->computeFlows(dt);
+    double current4      = tArticle->mFlux;
+    double expectedHeat4 = current4 * current4 / tArticle->mAdmittanceMatrix[0];
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat4, tArticle->getHeat(), DBL_EPSILON);
+
+    /// @test malfunction restart, results after all cells have finished.
+    tArticle->setMalfThermalRunaway(true, 1.0, 1.0);
+    for (unsigned int i=0; i<11*tNumCells; ++i) {
+        tArticle->step(dt);
+        tArticle->computeFlows(dt);
+    }
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSoc,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getHeat(), FLT_EPSILON);
+
+    /// @test protection against someone forcing cell count out of bounds.
+    tArticle->mThermalRunawayCell = tNumCells + 2;
+    CPPUNIT_ASSERT_NO_THROW(tArticle->step(dt));
+    CPPUNIT_ASSERT(0 == tArticle->mThermalRunawayCell);
 
     UT_PASS;
 }

@@ -1,14 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (aspects/electrical/Batt/GunnsElectBatteryCell.o)
-        (software/exceptions/TsInitializationException.o)
-        (math/approximation/TsLinearInterpolator.o)
-    )
-***************************************************************************************************/
 #include "software/exceptions/TsInitializationException.hh"
 #include "math/approximation/TsLinearInterpolator.hh"
 #include "UtGunnsElectBatteryCell.hh"
@@ -32,6 +26,8 @@ UtGunnsElectBatteryCell::UtGunnsElectBatteryCell()
     tMalfShortCircuit(false),
     tMalfCapacityFlag(false),
     tMalfCapacityValue(0.0),
+    tMalfThermalRunawayFlag(false),
+    tMalfThermalRunawayDuration(0.0),
     tSoc(0.0),
     tName(),
     tSocVocTable(0)
@@ -58,14 +54,20 @@ void UtGunnsElectBatteryCell::setUp()
     tConfigData       = new GunnsElectBatteryCellConfigData(tResistance, tMaxCapacity);
 
     /// - Create nominal input data.
-    tMalfOpenCircuit   = false;
-    tMalfShortCircuit  = false;
-    tMalfCapacityFlag  = false;
-    tMalfCapacityValue = 0.0;
-    tSoc               = 0.9;
-    tInputData         = new GunnsElectBatteryCellInputData(tMalfOpenCircuit, tMalfShortCircuit,
-                                                            tMalfCapacityFlag, tMalfCapacityValue,
-                                                            tSoc);
+    tMalfOpenCircuit            = false;
+    tMalfShortCircuit           = false;
+    tMalfCapacityFlag           = false;
+    tMalfCapacityValue          = 0.0;
+    tMalfThermalRunawayFlag     = false;
+    tMalfThermalRunawayDuration = 0.0;
+    tSoc                        = 0.9;
+    tInputData                  = new GunnsElectBatteryCellInputData(tMalfOpenCircuit,
+                                                                     tMalfShortCircuit,
+                                                                     tMalfCapacityFlag,
+                                                                     tMalfCapacityValue,
+                                                                     tMalfThermalRunawayFlag,
+                                                                     tMalfThermalRunawayDuration,
+                                                                     tSoc);
 
     /// - Create the SOC/VOC table and set it up so it will interpolate to the same Voc output as
     ///   SOC in (0 - 1).
@@ -125,11 +127,13 @@ void UtGunnsElectBatteryCell::testInput()
     UT_RESULT;
 
     /// @test nominal input construction.
-    GunnsElectBatteryCellInputData nominalInput(true, true, true, 5.0, 1.0);
+    GunnsElectBatteryCellInputData nominalInput(true, true, true, 5.0, true, 10.0, 1.0);
     CPPUNIT_ASSERT(true  == nominalInput.mMalfOpenCircuit);
     CPPUNIT_ASSERT(true  == nominalInput.mMalfShortCircuit);
     CPPUNIT_ASSERT(true  == nominalInput.mMalfCapacityFlag);
     CPPUNIT_ASSERT(5.0   == nominalInput.mMalfCapacityValue);
+    CPPUNIT_ASSERT(true  == nominalInput.mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(10.0  == nominalInput.mMalfThermalRunawayDuration);
     CPPUNIT_ASSERT(1.0   == nominalInput.mSoc);
 
     /// @test default input construction.
@@ -138,6 +142,8 @@ void UtGunnsElectBatteryCell::testInput()
     CPPUNIT_ASSERT(false == defaultInput.mMalfShortCircuit);
     CPPUNIT_ASSERT(false == defaultInput.mMalfCapacityFlag);
     CPPUNIT_ASSERT(0.0   == defaultInput.mMalfCapacityValue);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfThermalRunawayDuration);
     CPPUNIT_ASSERT(0.0   == defaultInput.mSoc);
 
     /// @test copy input construction.
@@ -146,6 +152,8 @@ void UtGunnsElectBatteryCell::testInput()
     CPPUNIT_ASSERT(true  == copyInput.mMalfShortCircuit);
     CPPUNIT_ASSERT(true  == copyInput.mMalfCapacityFlag);
     CPPUNIT_ASSERT(5.0   == copyInput.mMalfCapacityValue);
+    CPPUNIT_ASSERT(true  == copyInput.mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(10.0  == copyInput.mMalfThermalRunawayDuration);
     CPPUNIT_ASSERT(1.0   == copyInput.mSoc);
 
     UT_PASS;
@@ -163,9 +171,13 @@ void UtGunnsElectBatteryCell::testDefaultConstruction()
     CPPUNIT_ASSERT(false == tArticle->mMalfShortCircuit);
     CPPUNIT_ASSERT(false == tArticle->mMalfCapacityFlag);
     CPPUNIT_ASSERT(0.0   == tArticle->mMalfCapacityValue);
+    CPPUNIT_ASSERT(false == tArticle->mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfThermalRunawayDuration);
     CPPUNIT_ASSERT(0.0   == tArticle->mResistance);
     CPPUNIT_ASSERT(0.0   == tArticle->mMaxCapacity);
     CPPUNIT_ASSERT(0.0   == tArticle->mSoc);
+    CPPUNIT_ASSERT(0.0   == tArticle->mRunawayPower);
+    CPPUNIT_ASSERT(0.0   == tArticle->mRunawayPowerRate);
 
     /// @test default new & delete for code coverage.
     GunnsElectBatteryCell* article = new GunnsElectBatteryCell;
@@ -181,26 +193,33 @@ void UtGunnsElectBatteryCell::testNominalInitialization()
 {
     UT_RESULT;
 
-    tMalfOpenCircuit               = true;
-    tMalfShortCircuit              = true;
-    tMalfCapacityFlag              = true;
-    tMalfCapacityValue             = 16.0;
-    tInputData->mMalfOpenCircuit   = tMalfOpenCircuit;
-    tInputData->mMalfShortCircuit  = tMalfShortCircuit;
-    tInputData->mMalfCapacityFlag  = tMalfCapacityFlag;
-    tInputData->mMalfCapacityValue = tMalfCapacityValue;
+    tMalfOpenCircuit                        = true;
+    tMalfShortCircuit                       = true;
+    tMalfCapacityFlag                       = true;
+    tMalfCapacityValue                      = 16.0;
+    tMalfThermalRunawayFlag                 = true;
+    tMalfThermalRunawayDuration             = 10.0;
+    tInputData->mMalfOpenCircuit            = tMalfOpenCircuit;
+    tInputData->mMalfShortCircuit           = tMalfShortCircuit;
+    tInputData->mMalfCapacityFlag           = tMalfCapacityFlag;
+    tInputData->mMalfCapacityValue          = tMalfCapacityValue;
+    tInputData->mMalfThermalRunawayFlag     = tMalfThermalRunawayFlag;
+    tInputData->mMalfThermalRunawayDuration = tMalfThermalRunawayDuration;
 
     /// @test initialize with initialization data and no exceptions.
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tName));
-    CPPUNIT_ASSERT(tResistance        == tArticle->mResistance);
-    CPPUNIT_ASSERT(tMaxCapacity       == tArticle->mMaxCapacity);
-    CPPUNIT_ASSERT(tResistance        == tArticle->mResistance);
-    CPPUNIT_ASSERT(tMalfOpenCircuit   == tArticle->mMalfOpenCircuit);
-    CPPUNIT_ASSERT(tMalfShortCircuit  == tArticle->mMalfShortCircuit);
-    CPPUNIT_ASSERT(tMalfCapacityFlag  == tArticle->mMalfCapacityFlag);
-    CPPUNIT_ASSERT(tMalfCapacityValue == tArticle->mMalfCapacityValue);
-    CPPUNIT_ASSERT(tSoc               == tArticle->mSoc);
-    CPPUNIT_ASSERT(tName              == tArticle->mName);
+    CPPUNIT_ASSERT(tResistance                 == tArticle->mResistance);
+    CPPUNIT_ASSERT(tMaxCapacity                == tArticle->mMaxCapacity);
+    CPPUNIT_ASSERT(tResistance                 == tArticle->mResistance);
+    CPPUNIT_ASSERT(tMalfOpenCircuit            == tArticle->mMalfOpenCircuit);
+    CPPUNIT_ASSERT(tMalfShortCircuit           == tArticle->mMalfShortCircuit);
+    CPPUNIT_ASSERT(tMalfCapacityFlag           == tArticle->mMalfCapacityFlag);
+    CPPUNIT_ASSERT(tMalfCapacityValue          == tArticle->mMalfCapacityValue);
+    CPPUNIT_ASSERT(tMalfThermalRunawayFlag     == tArticle->mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(tMalfThermalRunawayDuration == tArticle->mMalfThermalRunawayDuration);
+    CPPUNIT_ASSERT(tSoc                        == tArticle->mSoc);
+    CPPUNIT_ASSERT(0.0                         == tArticle->mRunawayPower);
+    CPPUNIT_ASSERT(0.0                         == tArticle->mRunawayPowerRate);
 
     UT_PASS;
 }
@@ -250,7 +269,7 @@ void UtGunnsElectBatteryCell::testUpdate()
     double       current     = 100.0;
     double       expectedSoc = tSoc - current * dt / tMaxCapacity / 3600.0;
     double       expectedR   = tResistance;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -258,7 +277,7 @@ void UtGunnsElectBatteryCell::testUpdate()
 
     /// @test SOC rises with reverse current.
     current = -100.0;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,        tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,        tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -266,7 +285,7 @@ void UtGunnsElectBatteryCell::testUpdate()
 
     /// @test SOC limited to 1.0.
     current = -1.0e15;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,         tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,         tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -274,7 +293,7 @@ void UtGunnsElectBatteryCell::testUpdate()
 
     /// @test SOC limited to 0.0.
     current = 1.0e15;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -283,7 +302,7 @@ void UtGunnsElectBatteryCell::testUpdate()
     /// @test protects against divide-by-zero in max capacity.
     tArticle->mMaxCapacity = 0.0;
     tArticle->mSoc         = 1.0;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -311,7 +330,7 @@ void UtGunnsElectBatteryCell::testUpdateMalfOpen()
     double       current     = 100.0;
     double       expectedSoc = tSoc;
     double       expectedR   = 1.0 / DBL_EPSILON;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -319,7 +338,7 @@ void UtGunnsElectBatteryCell::testUpdateMalfOpen()
 
     /// @test SOC remains constant with reverse current.
     current = -100.0;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -350,7 +369,7 @@ void UtGunnsElectBatteryCell::testUpdateMalfShort()
     const double dt          =   0.1;
     double       current     = 100.0;
     double       expectedR   = DBL_EPSILON;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -381,7 +400,7 @@ void UtGunnsElectBatteryCell::testUpdateMalfBoth()
     const double dt          =   0.1;
     double       current     = 100.0;
     double       expectedR   = DBL_EPSILON;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -408,7 +427,7 @@ void UtGunnsElectBatteryCell::testUpdateMalfCapacity()
     double       current     = 100.0;
     double       expectedSoc = tSoc - current * dt / 16.0 / 3600.0;
     double       expectedR   = tResistance;
-    tArticle->updateSoc(current, dt);
+    tArticle->updateSoc(current, dt, tSocVocTable);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->mSoc,                              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
@@ -418,6 +437,78 @@ void UtGunnsElectBatteryCell::testUpdateMalfCapacity()
     tArticle->setMalfCapacity();
     CPPUNIT_ASSERT(false == tArticle->mMalfCapacityFlag);
     CPPUNIT_ASSERT(0.0   == tArticle->mMalfCapacityValue);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test updates with the thermal runaway malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectBatteryCell::testUpdateMalfRunaway()
+{
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tName);
+
+    double voltage = tArticle->getEffectiveVoltage(tSocVocTable);
+
+    /// - Set the thermal runaway malfunction.
+    const double duration = 10.0;
+    tArticle->setMalfThermalRunaway(true, duration);
+
+    /// @test single update to start the thermal runaway.
+    const double dt              = 0.1;
+    double       current         = 100.0;
+    const double expectedPwrRate = 2.0 * tSoc * tMaxCapacity * voltage * 3600.0 / duration / duration;
+    double       expectedPwr     = dt * expectedPwrRate;
+    const double expectedR       = 1.0 / DBL_EPSILON;
+    double       expectedIrun    = expectedPwr / voltage;
+    double       expectedSoc     = tSoc - (current + expectedIrun) * dt / tMaxCapacity / 3600.0;
+    tArticle->updateSoc(current, dt, tSocVocTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,     tArticle->mRunawayPower,                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwrRate, tArticle->mRunawayPowerRate,                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc,     tArticle->getEffectiveSoc(),                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,       tArticle->getEffectiveResistance(),          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+
+    /// @test second update with increasing power trend.  Current will now be zero because
+    ///       the cell is acting like open-circuit.
+    current      = 0.0;
+    expectedPwr += dt * expectedPwrRate;
+    voltage      = tSocVocTable->get(expectedSoc);
+    expectedIrun = expectedPwr / voltage;
+    expectedSoc -= (current + expectedIrun) * dt / tMaxCapacity / 3600.0;
+    tArticle->updateSoc(current, dt, tSocVocTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,     tArticle->mRunawayPower,                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwrRate, tArticle->mRunawayPowerRate,                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc,     tArticle->getEffectiveSoc(),                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,       tArticle->getEffectiveResistance(),          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+
+    /// @test resetting the malfunction mid-duration.
+    tArticle->setMalfThermalRunaway();
+    CPPUNIT_ASSERT(false == tArticle->mMalfThermalRunawayFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfThermalRunawayDuration);
+    voltage = tSocVocTable->get(expectedSoc);
+    tArticle->updateSoc(current, dt, tSocVocTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->mRunawayPower,                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,         tArticle->mRunawayPowerRate,                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveSoc(),                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tResistance, tArticle->getEffectiveResistance(),          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(voltage,     tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+
+    /// @test resume malfunction and loop updates to the end of the malfunction duration.
+    ///       This cell runs out of juice well before the given duration, because the duration
+    ///       logic assumes voltage is constant.  This cell has a steep voltage drop v. SoC,
+    ///       which throws off the duration a lot.
+    tArticle->setMalfThermalRunaway(true, duration);
+    for (unsigned int step=0; step<100; step++) {
+        tArticle->updateSoc(current, dt, tSocVocTable);
+    }
+    CPPUNIT_ASSERT(0.0 == tArticle->getEffectiveSoc());
+    CPPUNIT_ASSERT(0.0 == tArticle->mRunawayPower);
+    CPPUNIT_ASSERT(0.0 == tArticle->mRunawayPowerRate);
 
     UT_PASS_LAST;
 }

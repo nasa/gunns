@@ -21,7 +21,8 @@ REFERENCE:
 - (TBD)
 
 ASSUMPTIONS AND LIMITATIONS:
-- (TBD)
+- ((Assume fluid is incompressible.)
+   (For accumulator links we assume column height is linear with bellows position.))
 
 LIBRARY DEPENDENCY:
 - ((GunnsFluidPressureHead.o))
@@ -45,16 +46,20 @@ PROGRAMMERS:
 class GunnsFluidPressureHeadConfigData : public GunnsNetworkSpotterConfigData
 {
     public:
-        double* mFluidColumn;       /**< (m)    trick_chkpnt_io(**) Height and orientation vector of the fluid column in its local reference frame. */
-        double* mAcceleration;      /**< (m/s2) trick_chkpnt_io(**) Pointer to the acceleration vector. */
-        double* mRotationDcm;       /**< (1)    trick_chkpnt_io(**) Pointer to the rotation direction cosine matrix. */
-        bool    mTransposeRotation; /**< (1)    trick_chkpnt_io(**) Reverse the frame transformation direction. */
+        double        mFluidColumn[3];      /**< (m)    trick_chkpnt_io(**) Height and orientation vector of the fluid column in the structure reference frame. */
+        const double* mAcceleration;        /**< (m/s2) trick_chkpnt_io(**) Pointer to the acceleration vector. */
+        bool          mReverseAcceleration; /**< (1)    trick_chkpnt_io(**) Reverse the acceleration vector direction. */
+        const double* mRotationDcm;         /**< (1)    trick_chkpnt_io(**) Pointer to the rotation direction cosine matrix. */
+        bool          mTransposeRotation;   /**< (1)    trick_chkpnt_io(**) Reverse the frame transformation direction. */
         /// @brief  Default constructs this GUNNS Fluid Pressure Head Spotter configuration data.
         GunnsFluidPressureHeadConfigData(const std::string& name,
-                                         const double*      fluidColumn       = 0,
-                                         const double*      acceleration      = 0,
-                                         const double*      rotationDcm       = 0,
-                                         const bool         transposeRotation = false);
+                                         const double       fluidColumnX        = 0.0,
+                                         const double       fluidColumnY        = 0.0,
+                                         const double       fluidColumnZ        = 0.0,
+                                         const double*      acceleration        = 0,
+                                         const bool         reverseAcceleration = false,
+                                         const double*      rotationDcm         = 0,
+                                         const bool         transposeRotation   = false);
         /// @brief  Default destructs this GUNNS Fluid Pressure Head Spotter configuration data.
         virtual ~GunnsFluidPressureHeadConfigData();
 
@@ -74,9 +79,8 @@ class GunnsFluidPressureHeadConfigData : public GunnsNetworkSpotterConfigData
 class GunnsFluidPressureHeadInputData : public GunnsNetworkSpotterInputData
 {
     public:
-//        int mLinkPort;   /**< (--) trick_chkpnt_io(**) Which of the link's port nodes to monitor. */
         /// @brief  Default constructs this GUNNS Fluid Pressure Head Spotter input data.
-        GunnsFluidPressureHeadInputData(const int linkPort = 0);
+        GunnsFluidPressureHeadInputData();
         /// @brief  Default destructs this GUNNS Fluid Pressure Head Spotter input data.
         virtual ~GunnsFluidPressureHeadInputData();
 
@@ -88,67 +92,66 @@ class GunnsFluidPressureHeadInputData : public GunnsNetworkSpotterInputData
 };
 
 // Forward-declare referenced types.
-struct GunnsNodeList;
 class GunnsFluidLink;
+class GunnsFluidPotential;
+class GunnsFluidAccum;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Fluid Pressure Head Spotter Class.
 ///
-/// @details  This spotter is used to peek at the non-sense-able fluid parameters of a node, such as
-///           volume, total mass, partial masses & moles.  This spotter attaches to a link and looks
-///           at the node attached at the designated link's port.  This allows the spotter to keep
-///           monitoring the link's attached node when the link changes nodes in the network.
+/// @details  This spotter automates the calculation of the pressure created by a column of fluid
+///           under acceleration.  This receives an acceleration vector and optional frame rotation,
+///           and outputs the resulting pressure head (delta-pressure) to an attached
+///           GunnsFluidPotential or GunnsFluidAccum link.  This spotter is configured with the
+///           direction vector of the fluid column in its structural reference frame.
+///
+///           Both link types define the 'bottom' of their column vector at port 1, and port 0 is
+///           towards the 'top'.  By default, the acceleration is defined such that if the vehicle
+///           is accelerating towards the direction of the 'top' end of the column, the acceleration
+///           vector points in that direction, and this creates a pressure increase at the bottom of
+///           the fluid column.
+///
+///           If the user is stuck with an acceleration vector that is defined opposite of the above
+///           they can set the mReverseAcceleration flag to cause us to flip their direction to our
+///           convention.  Likewise, the rotation direction cosine matrix (DCM), which normally
+///           rotates an acceleration reference frame vector into the structural reference frame,
+///           can be made to do the reverse rotation instead.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidPressureHead : public GunnsNetworkSpotter
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidPressureHead);
     public:
         /// @brief  Default Constructor
-        GunnsFluidPressureHead(const GunnsFluidLink& link);
-        /// @brief   Default destructor.
+        GunnsFluidPressureHead(GunnsFluidLink& link);
+        /// @brief  Default destructor.
         virtual     ~GunnsFluidPressureHead();
-        /// @brief   Initializes the GUNNS Fluid Pressure Head Spotter with configuration and
-        ///          input data.
+        /// @brief  Initializes the GUNNS Fluid Pressure Head Spotter with configuration and
+        ///         input data.
         virtual void initialize(const GunnsNetworkSpotterConfigData* configData,
                                 const GunnsNetworkSpotterInputData*  inputData);
-        /// @brief   Steps the GUNNS Fluid Pressure Head Spotter prior to the GUNNS solver step.
+        /// @brief  Steps the GUNNS Fluid Pressure Head Spotter prior to the GUNNS solver step.
         virtual void stepPreSolver(const double dt);
-        /// @brief   Steps the GUNNS Fluid Pressure Head Spotter after the GUNNS solver step.
+        /// @brief  Steps the GUNNS Fluid Pressure Head Spotter after the GUNNS solver step.
         virtual void stepPostSolver(const double dt);
-//        /// @brief   Gets the total mass of the node contents.
-//        double       getMass() const;
-//        /// @brief   Gets the mass fraction of the specified constituent index in the node contents.
-//        double       getMassFraction(const int index) const;
-//        /// @brief   Gets the mole fraction of the specified constituent index in the node contents.
-//        double       getMoleFraction(const int index) const;
-//        /// @brief   Gets the total volume of the node.
-//        double       getVolume() const;
+        /// @brief  Returns the pressure head value.
+        double       getPressureHead() const;
 
     protected:
-        GunnsFluidPotential* mPotentialLink; /**< ** (1) trick_chkpnt_io(**) Pointer to the fluid potential link. */
-        GunnsFluidAccum*     mAccumLink;     /**< ** (1) trick_chkpnt_io(**) Pointer to the fluid accumulator link. */
-        double  mFluidColumn[3];    /**< (m)    trick_chkpnt_io(**) Orientation unit vector of the fluid column in the structure reference frame. */
-        double  mColumnLength;      /**< (m)    trick_chkpnt_io(**) Length of the fluid column. */
-        double* mAcceleration;      /**< (m/s2) trick_chkpnt_io(**) Pointer to the acceleration vector. */
-        double* mRotationDcm;       /**< (1)    trick_chkpnt_io(**) Pointer to the rotation direction cosine matrix. */
-        bool    mTransposeRotation; /**< (1)    trick_chkpnt_io(**) Reverse the frame transformation direction. */
-        double  mPressureHead;      /**< (kPa)  trick_chkpnt_io(**) Output pressure head value. */
-//        const GunnsNodeList&  mNodeList;             /**< *o (--) trick_chkpnt_io(**) Reference to the network node list. */
-//        int                   mLinkPort;             /**<    (--)                     Which of the link's port nodes to monitor. */
-//        int                   mNumFluidConstituents; /**< *o (--) trick_chkpnt_io(**) Number of fluid constituents in the network. */
-//        double                mNodeMass;             /**< *o (kg) trick_chkpnt_io(**) Total mass of the node contents. */
-//        double*               mNodeMassFractions;    /**< *o (--) trick_chkpnt_io(**) Mass fractions of the node contents. */
-//        double*               mNodeMoleFractions;    /**< *o (--) trick_chkpnt_io(**) Mole fractions of the node contents. */
-//        double*               mNodeTcMoleFractions;  /**< *o (--) trick_chkpnt_io(**) Mole fractions of the node trace compounds contents. */
-//        double                mNodeVolume;           /**< *o (m3) trick_chkpnt_io(**) Total volume of the node. */
-        /// @brief   Validates the supplied configuration data.
+        GunnsFluidLink*      mLink;             /**< ** (1)    trick_chkpnt_io(**) Pointer to the link. */
+        GunnsFluidPotential* mPotentialLink;    /**< ** (1)    trick_chkpnt_io(**) Pointer to the fluid potential link. */
+        GunnsFluidAccum*     mAccumLink;        /**< ** (1)    trick_chkpnt_io(**) Pointer to the fluid accumulator link. */
+        double               mFluidColumn[3];      /**< (m)    trick_chkpnt_io(**) Height and orientation of the fluid column in the structure reference frame. */
+        const double*        mAcceleration;        /**< (m/s2) trick_chkpnt_io(**) Pointer to the acceleration vector. */
+        bool                 mReverseAcceleration; /**< (1)    trick_chkpnt_io(**) Reverse the acceleration vector direction. */
+        const double*        mRotationDcm;         /**< (1)    trick_chkpnt_io(**) Pointer to the rotation direction cosine matrix. */
+        bool                 mTransposeRotation;   /**< (1)    trick_chkpnt_io(**) Reverse the frame transformation direction. */
+        double               mPressureHead;        /**< (kPa)  trick_chkpnt_io(**) Output pressure head. */
+        /// @brief  Validates the supplied configuration data.
         const GunnsFluidPressureHeadConfigData* validateConfig(const GunnsNetworkSpotterConfigData* config);
-        /// @brief   Validates the supplied input data.
+        /// @brief  Validates the supplied input data.
         const GunnsFluidPressureHeadInputData*  validateInput (const GunnsNetworkSpotterInputData* input);
 
     private:
-        /// @brief   Deletes dynamic memory.
-        void         cleanup();
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         GunnsFluidPressureHead(const GunnsFluidPressureHead& that);
         /// @brief  Assignment operator unavailable since declared private and not implemented.
@@ -158,49 +161,13 @@ class GunnsFluidPressureHead : public GunnsNetworkSpotter
 /// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double (kg) Total mass of all fluid in the node contents.
+/// @returns  double  (kPa)  Pressure head.
 ///
-/// @details  Returns the total mass of all fluid in the node contents.
+/// @details  Returns the value of the mPressureHead attribute.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//inline double GunnsFluidPressureHead::getMass() const
-//{
-//    return mNodeMass;
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  index (--) Index of the fluid constituent to get the mass fraction of.
-///
-/// @returns  double (--) Mass fraction (0-1) of the specified constituent in the node contents.
-///
-/// @details  Returns the mass fraction (0-1) of the specified fluid constituent in the node
-///           contents.  The given index is limited to the valid range of fluid constituents.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//inline double GunnsFluidPressureHead::getMassFraction(const int index) const
-//{
-//    return mNodeMassFractions[MsMath::limitRange(0, index, mNumFluidConstituents-1)];
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  index (--) Index of the fluid constituent to get the mole fraction of.
-///
-/// @returns  double (--) Mole fraction (0-1) of the specified constituent in the node contents.
-///
-/// @details  Returns the mole fraction (0-1) of the specified fluid constituent in the node
-///           contents.  The given index is limited to the valid range of fluid constituents.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//inline double GunnsFluidPressureHead::getMoleFraction(const int index) const
-//{
-//    return mNodeMoleFractions[MsMath::limitRange(0, index, mNumFluidConstituents-1)];
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double (m3) Total volume of the node.
-///
-/// @details  Returns the total volume of the node.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//inline double GunnsFluidPressureHead::getVolume() const
-//{
-//    return mNodeVolume;
-//}
+inline double GunnsFluidPressureHead::getPressureHead() const
+{
+    return mPressureHead;
+}
 
 #endif

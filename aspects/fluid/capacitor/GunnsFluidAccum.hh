@@ -199,6 +199,8 @@ class GunnsFluidAccum : public GunnsFluidLink {
         void setTemperature(double temperature);
         /// @brief Sets accumulator spring coefficients.
         void setSpringCoeffs(const double coeff0 = 0.0, const double coeff1 = 0.0, const double coeff2 = 0.0);
+        /// @brief Sets extra pressure at exit due to liquid column under acceleration.
+        void setAccelPressureHead(const double pressure);
 
     protected:
         static const int LIQUID_PORT;        /**< (--)                      Liquid port number. */
@@ -245,6 +247,7 @@ class GunnsFluidAccum : public GunnsFluidLink {
         bellowsZoneType mBellowsZone;        /**< (--)  trick_chkpnt_io(**) Bellows zone for computing effective conductivity scale. */
         double mFillModePressureThreshold;   /**< (kPa) trick_chkpnt_io(**) Threshold for computing Fill Mode. Non-zero activates "one way" mEffConductivityScale ramping. */
         double mEffCondScaleOneWayRate;      /**< (--)  trick_chkpnt_io(**) Fraction/sec, "One way" mEffConductivityScale ramping. Used if mFillModePressureThreshold > 0 */
+        double mAccelPressureHead;           /**< (kPa)                     Extra pressure head at exit due to liquid column under acceleration. */
 
         /// @brief Updates the admittance matrix.
         void buildConductance();
@@ -425,6 +428,16 @@ inline void GunnsFluidAccum::setSpringCoeffs(const double coeff0, const double c
     mSpringCoeff0 = coeff0;
     mSpringCoeff1 = coeff1;
     mSpringCoeff2 = coeff2;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] pressure (kPa) Extra pressure head at exit due to liquid column under acceleration.
+///
+/// @details  Sets the mAccelPressureHead attribute to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidAccum::setAccelPressureHead(const double pressure)
+{
+    mAccelPressureHead = pressure;
 }
 
 #endif  /* GunnsFluidAccum_EXISTS */

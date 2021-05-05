@@ -12,6 +12,7 @@
 #include "UtGunnsGasFan.hh"
 #include "UtGunnsPumpCavitation.hh"
 #include "UtGunnsLiquidCentrifugalPump.hh"
+#include "UtGunnsFluidPressureHead.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    int     --  not used
@@ -29,6 +30,7 @@ int main(int, char**)
     runner.addTest(UtGunnsGasFan::suite());
     runner.addTest(UtGunnsPumpCavitation::suite());
     runner.addTest(UtGunnsLiquidCentrifugalPump::suite());
+    runner.addTest(UtGunnsFluidPressureHead::suite());
 
     runner.run();
 

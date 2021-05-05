@@ -442,5 +442,5 @@ void UtGunnsLiquidCentrifugalPump::testUpdateState()
     tArticle->updateState(tTimeStep);
     CPPUNIT_ASSERT(nominalSourcePressure > tArticle->mSourcePressure);
 
-    UT_PASS_FINAL;
+    UT_PASS_LAST;
 }

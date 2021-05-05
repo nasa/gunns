@@ -7,29 +7,50 @@
 
 LIBRARY DEPENDENCY:
   ((core/GunnsNetworkSpotter.o)
-   (core/GunnsFluidNode.o)
-   (core/GunnsFluidLink.o)
+   (core/GunnsFluidPotential.hh)
+   (aspects/fluid/capacitor/GunnsFluidAccum.hh)
    (simulation/hs/TsHsMsg.o)
    (software/exceptions/TsInitializationException.o)
    (aspects/dynamics/GunnsDynUtils.o))
 */
 
 #include "GunnsFluidPressureHead.hh"
-#include "core/GunnsFluidNode.hh"
-#include "core/GunnsFluidLink.hh"
+#include "core/GunnsFluidPotential.hh"
+#include "aspects/fluid/capacitor/GunnsFluidAccum.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "aspects/dynamics/GunnsDynUtils.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name  (--)  Instance name for self-identification in messages.
+/// @param[in] name                 (--)   Instance name for self-identification in messages.
+/// @param[in] fluidColumnX         (m)    X-axis component of the orientation vector of the fluid column in the structure reference frame.
+/// @param[in] fluidColumnY         (m)    Y-axis component of the orientation vector of the fluid column in the structure reference frame.
+/// @param[in] fluidColumnZ         (m)    Z-axis component of the orientation vector of the fluid column in the structure reference frame.
+/// @param[in] acceleration         (m/s2) Pointer to the acceleration vector.
+/// @param[in] mReverseAcceleration (--)   Reverse the acceleration vector direction.
+/// @param[in] mRotationDcm         (--)   Pointer to the rotation direction cosine matrix.
+/// @param[in] mTransposeRotation   (--)   Reverse the frame transformation direction.
 ///
 /// @details  Default constructs this GUNNS Fluid Pressure Head Spotter configuration data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidPressureHeadConfigData::GunnsFluidPressureHeadConfigData(const std::string& name)
+GunnsFluidPressureHeadConfigData::GunnsFluidPressureHeadConfigData(const std::string& name,
+                                                                   const double       fluidColumnX,
+                                                                   const double       fluidColumnY,
+                                                                   const double       fluidColumnZ,
+                                                                   const double*      acceleration,
+                                                                   const bool         reverseAcceleration,
+                                                                   const double*      rotationDcm,
+                                                                   const bool         transposeRotation)
     :
-    GunnsNetworkSpotterConfigData(name)
+    GunnsNetworkSpotterConfigData(name),
+    mFluidColumn(),
+    mAcceleration(acceleration),
+    mReverseAcceleration(reverseAcceleration),
+    mRotationDcm(rotationDcm),
+    mTransposeRotation(transposeRotation)
 {
-    // nothing to do
+    mFluidColumn[0] = fluidColumnX;
+    mFluidColumn[1] = fluidColumnY;
+    mFluidColumn[2] = fluidColumnZ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,13 +62,11 @@ GunnsFluidPressureHeadConfigData::~GunnsFluidPressureHeadConfigData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  linkPort (--) Which of the link's port nodes to monitor.
-///
 /// @details  Default constructs this GUNNS Fluid Pressure Head Spotter input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidPressureHeadInputData::GunnsFluidPressureHeadInputData(const int linkPort)
+GunnsFluidPressureHeadInputData::GunnsFluidPressureHeadInputData()
     :
-    mLinkPort(linkPort)
+    GunnsNetworkSpotterInputData()
 {
     // nothing to do
 }
@@ -61,17 +80,18 @@ GunnsFluidPressureHeadInputData::~GunnsFluidPressureHeadInputData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  link  (--)  Reference to the link of interest.
+/// @param[in]  link  (--)  Reference to the connected link.
 ///
 /// @details Default constructs this GUNNS Fluid Pressure Head Spotter.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidPressureHead::GunnsFluidPressureHead(const GunnsFluidLink& link)
+GunnsFluidPressureHead::GunnsFluidPressureHead(GunnsFluidLink& link)
     :
-    mPotentialLink(dynamic_cast<GunnsFluidPotential*>(link)),
-    mAccumLink(dynamic_cast<GunnsFluidAccum*>(link)),
+    mLink(&link),
+    mPotentialLink(0),
+    mAccumLink(0),
     mFluidColumn(),
-    mColumnLength(0.0),
     mAcceleration(0),
+    mReverseAcceleration(false),
     mRotationDcm(0),
     mTransposeRotation(false),
     mPressureHead(0.0)
@@ -105,22 +125,30 @@ void GunnsFluidPressureHead::initialize(const GunnsNetworkSpotterConfigData* con
     /// - Reset the init flag.
     mInitFlag = false;
 
-    //TODO validate provided link type
-    if (not mPotentialLink or mAccumLink) {
-        //TODO throw, no link was provided
+    /// - Cast the given fluid link to either a potential or accumulator.
+    ///   We'd rather do the cast up in the constructor, then wouldn't need to store mLink.  But
+    ///   that would fail because spotters are constructed before links in the network, so the link
+    ///   hasn't been constructed yet when our constructor runs.
+    mPotentialLink = dynamic_cast<GunnsFluidPotential*>(mLink);
+    mAccumLink     = dynamic_cast<GunnsFluidAccum*>(mLink);
+
+    /// - Error out if a valid link was not provided.
+    if (not (mPotentialLink or mAccumLink)) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "a valid link was not provided.");
     }
 
     /// - Validate & initialize from config & input data.
-    const GunnsFluidPressureHeadConfigData* config = validateInput(configData);
-    const GunnsFluidPressureHeadInputData*  input  = validateInput(inputData);
-    mLinkPort = input->mLinkPort;
+    const GunnsFluidPressureHeadConfigData* config = validateConfig(configData);
+    validateInput(inputData);
 
-    mColumnLength = std::max(GunnsDynUtils::magV(config->mFluidColumn, 3), DBL_EPSILON);
-    GunnsDynUtils::scaleV(mFluidColumn, config->mFluidColumn, 1/mColumnLength, 3);
-
-
-    /// - Step to initialize the outputs.
-    stepPostSolver(0.0);
+    mFluidColumn[0]      = config->mFluidColumn[0];
+    mFluidColumn[1]      = config->mFluidColumn[1];
+    mFluidColumn[2]      = config->mFluidColumn[2];
+    mAcceleration        = config->mAcceleration;
+    mReverseAcceleration = config->mReverseAcceleration;
+    mRotationDcm         = config->mRotationDcm;
+    mTransposeRotation   = config->mTransposeRotation;
 
     /// - Set the init flag.
     mInitFlag = true;
@@ -143,6 +171,13 @@ const GunnsFluidPressureHeadConfigData* GunnsFluidPressureHead::validateConfig(c
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Bad config data pointer type.");
     }
+
+    /// - Error out if the acceleration vector is not provided.
+    if (not result->mAcceleration) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "acceleration vector pointer is missing.");
+    }
+
     return result;
 }
 
@@ -169,104 +204,74 @@ const GunnsFluidPressureHeadInputData* GunnsFluidPressureHead::validateInput(con
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  Execution time step (not used).
 ///
-/// @details  TODO does the dP = rho*g*h
+/// @details  Does the dP = rho*g*h calculation and sends dP to the attached link.  The incoming
+///           acceleration vector is rotated from its own reference frame to the link's structure
+///           reference frame, if the rotation DCM is provided.  This rotation can be flipped in
+///           direction if the supplied DCM is in the opposite direction.  Likewise, the
+///           acceleration vector itself can be flipped in direction.  These options accommodate
+///           whatever vector & DCM convention the user supplies.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidPressureHead::stepPreSolver(const double dt __attribute__((unused)))
 {
-    //TODO option to flip accel sign as well?
-
-    //TODO hang on: for the accum, height is some function of accum bellows position and isn't fixed
-    //     like in the Potential.  So not only is density handled differently, but also height.
-    //     Maybe that means these should be separate spotters for Potential vs. Accum?
-    //     For accum, user will have to configure ratio of height to bellows position, so
-    //     0.5 (m) would give 0.1 (m) high at bellows position = 0.2 (0.5 * 0.2).  Or rather, the
-    //     exisitng fluid column config vector is from the bottom of accum outlet to the top center
-    //     of the full bellows.
-
-    // accum's connect port 1 to teh liquid outlet.  So the column vector is from the port 1 location
-    // to the top center of the full accum (toward port 0).  For consistency, we should then make the
-    // Potential's column also from port 1 to port 0, so port 1 is considered teh 'bottom' of the
-    // column in the accel field, and port 0 the 'top'.  Then positive dP from rho*g*h is a positive
-    // dP rise from port 0 to 1 in the Potential.  In terrestrial 1 g, the sensed 1 g (downward) is
-    // consistent with accelerating upwards at 1 g in zero gravity.  So the acceleration vector of
-    // terrestrial 1 g is actually upwards.  Since the column vector is defined from bottom to top,
-    // this aligns with the accel (1 g), so the dot product of g and h creates the correct sign.
-
-    //TODO get fluid density from the link.
-    // - assume incompressible
+    // - Get fluid density from the link.
     double density = 0.0;
     if (mPotentialLink) {
-        //TODO get both port rho, take the lower value.
-        // we know that the FluidPotential will add our positive value as an increase in P from
-        // port 0 to 1.   If we used port 1's rho, and it's a compressible gas, then with enough g
-        // we'd increase port 1 rho further, which feeds back into rho*g*h, and might blow up the model.
-        // So just in case this is being used on a gas (compressible, we should use the port rho
-        // for the 'top' of the column wrt/ accel field.  But we don't know which direction the
-        // field is until we do the dot product below.   So maybe move this below there...
-        //OR.... we make this link only work with liquids and error out if attached to gas nodes...
-
-        // we could get fancy and use whichever node is at the top of the column wrt/ the acceleration
-        // direction, but a noisy acceleration combined with the lag in density value form last pass
-        // will make this unreliable.  So we just use the lower of the two densities: the acceleration
-        // will make this tend to be the 'top' node on its own, and is much simpler.
+        /// - We could get fancy and use whichever node is at the top of the column wrt/ the
+        ///   acceleration direction, but a noisy acceleration combined with the lag in density
+        ///   values form last pass would make this unreliable.  So we just use the lower of the
+        ///   two densities: the acceleration will make this float to the 'top' node on its own,
+        ///   and is much simpler.
         density = std::min(mPotentialLink->getNodeContent(0)->getDensity(),
                            mPotentialLink->getNodeContent(1)->getDensity());
     } else if (mAccumLink) {
-        //TODO liquid density can be assumed incompressible, so just use rho of the accum liquid
-        density = mPotentialLink->getNodeContent(1)->getDensity();
+        density = mAccumLink->getNodeContent(1)->getDensity();
+    } //else we already checked for no link during initialization
+
+    /// - Flip acceleration vector direction if so configured.
+    double accelArf[3] = {0.0, 0.0, 0.0}; // Acceleration vector, acceleration reference frame
+    if (mReverseAcceleration) {
+        GunnsDynUtils::scaleV(accelArf, mAcceleration, -1.0, 3);
     } else {
-        //TODO throw, there is no link.  Should be caught during init so will be untestable here
-        //   unless we hack the link pointers to zero in the UT...
+        GunnsDynUtils::setV(accelArf, mAcceleration, 3);
     }
-    //rotate accel into structure frame
-    //the column is in the 'structure' reference frame
-    //the DCM defines rotation from accel_frame -> struct_frame
-    // OR, if transpose flag is set, it defines struct_frame -> accel_frame
-    //
-    double accelSrf[3] = {0.0, 0.0, 0.0};
-    // rotation DCM is optional; skip if not provided
+
+    /// - Rotate acceleration into the structure reference frame, if the optional DCM is
+    ///   provided.  If not provided, we assume acceleration and structure frames coincide.
+    ///   By default, DCM defines the rotation from the acceleration to the structure frame.
+    ///   If the transpose flag is set, then the DCM is transposed, reversing the rotation.
+    double accelSrf[3] = {0.0, 0.0, 0.0}; // Acceleration vector, structure reference frame
     if (mRotationDcm) {
         if (mTransposeRotation) {
-            //              T
-            // a_lrf = [dcm] * {a_arf}
-            GunnsDynUtils::multiplyMtV(accelSrf, mRotationDcm, mAcceleration, 3);
+            GunnsDynUtils::multiplyMtV(accelSrf, mRotationDcm, accelArf, 3);
         } else {
-            // a_lrf = [dcm] * {a_arf}
-            GunnsDynUtils::multiplyMV(accelSrf, mRotationDcm, mAcceleration, 3);
+            GunnsDynUtils::multiplyMV(accelSrf, mRotationDcm, accelArf, 3);
         }
     } else {
-        GunnsDynUtils::setV(accelSrf, mAcceleration, 3);
+        GunnsDynUtils::setV(accelSrf, accelArf, 3);
     }
-    // g is magnitude of accel
-    const double g = std::max(GunnsDynUtils::magV(accelSrf, 3), DBL_EPSILON);
-    double accelSrfUnit[3] = {0.0, 0.0, 0.0};
-    const double accelSrfUnit = GunnsDynUtils::scaleV(accelSrfUnit, accelSrf, 1/g, 3);
 
-    const double aDotH = GunnsDynUtils::dotV(accelSrfUnit, mFluidColumn, 3);
+    /// - For the accumulator, the column height is scaled by the bellows position, assuming
+    ///   the height is linear with bellows position.
+    double column[3];
+    GunnsDynUtils::setV(column, mFluidColumn, 3);
+    if (mAccumLink) {
+        GunnsDynUtils::scaleV(column, column, mAccumLink->getBellowsPosition(), 3);
+    }
 
-//    mPressureHead = density * g * mColumnLength * aDotH * UnitConversion::KILO_PER_UNIT;
-    // (kPa/m = kN/m3), or pressure per length of fluid column
-    const double forceDensity = density * g * aDotH * UnitConversion::KILO_PER_UNIT;
-
-    //get pressure to the link
+    /// - Compute pressure head and send it to the link.
+    mPressureHead = density * GunnsDynUtils::dotV(accelSrf, column, 3)
+                  * UnitConversion::KILO_PER_UNIT;
     if (mPotentialLink) {
-        // pressure head (kPa) = force density (kN/m3) * length (m)
-        const double pressureHead = forceDensity * mColumnLength;
-        mPotentialLink->setSourcePressure(pressureHead);
+        mPotentialLink->setSourcePressure(mPressureHead);
     } else if (mAccumLink) {
-        //TODO problem: we're stomping on old values of the bellows coeffs and this doesn't play
-        // nice with the accum's configured values, or other drivers (like evaporation).
-        // it would be better if accum had a dedicated input for the forceDensity, which it then
-        // applied to its bellows pressure as an addition to the normal coeff1 term, i.e:
-        // P = coeff0 + coeff1*(bellows position + forceDensity) + coeff2*(bellows position)^2
-        mAccumLink->setSpringCoeffs(0.0, forceDensity, 0.0);
-    } //else we already checked for no link
+        mAccumLink->setAccelPressureHead(mPressureHead);
+    } //else we already checked for no link during initialization
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  Execution time step (not used).
 ///
-/// @details  TODO
+/// @details  This spotter has no post-solver functionality, so this function does nothing.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidPressureHead::stepPostSolver(const double dt __attribute__((unused)))
 {

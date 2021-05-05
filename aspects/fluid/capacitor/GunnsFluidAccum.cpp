@@ -229,7 +229,8 @@ GunnsFluidAccum::GunnsFluidAccum()
     mFillMode(GunnsFluidAccum::EQUALIZED),
     mBellowsZone(GunnsFluidAccum::MIDDLE),
     mFillModePressureThreshold(0.0),
-    mEffCondScaleOneWayRate(0.0)
+    mEffCondScaleOneWayRate(0.0),
+    mAccelPressureHead(0.0)
 
 {
     // Nothing to do
@@ -1293,15 +1294,19 @@ void GunnsFluidAccum::updatePressurizerState(const double dt __attribute__((unus
 ///
 /// @return     Void
 ///
-/// @details    Update pressurure of liquid chamber. Combine spring force and gas chamber
+/// @details    Update pressure of liquid chamber. Combine spring force and gas chamber
 ///             pressure if present.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidAccum::updatePressure(const double dt __attribute__((unused)))
 {
     /// - Update spring pressure
     mSpringPressure = mBellowsPosition * mBellowsPosition * mSpringCoeff2 + mBellowsPosition * mSpringCoeff1 + mSpringCoeff0;
-    /// - Update the liquid pressure to be the combination of spring and gas chamber pressures.
-    mInternalFluid->setPressure(MsMath::limitRange(DBL_EPSILON, mSpringPressure + getPressurizerPressure(), mMaxPressure));
+    /// - Update the liquid pressure to be the combination of spring, acceleration pressure head,
+    ///   and gas chamber pressures.  When acceleration pressure head is used, the resulting total
+    ///   pressure is for the 'bottom' of the liquid column, which should be the liquid entrance/exit.
+    mInternalFluid->setPressure(MsMath::limitRange(DBL_EPSILON,
+                                                   mSpringPressure + mAccelPressureHead + getPressurizerPressure(),
+                                                   mMaxPressure));
     /// - Update the liquid pressure reading to be the same as the liquid node pressure.
     ///   When conditions arise that would make the liquid and gas pressures to diverge,
     ///   it is seen through the pressure "readings". This is done by closing off

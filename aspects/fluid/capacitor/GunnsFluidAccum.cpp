@@ -954,7 +954,8 @@ void GunnsFluidAccum::transportFlows(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidAccum::updateCapacitance()
 {
-    double pressureSlope = 2 * mBellowsPosition * mSpringCoeff2 + mSpringCoeff1;
+    double pressureSlope = 2 * mBellowsPosition * mSpringCoeff2 + mSpringCoeff1
+                         + mAccelPressureHead / std::max(mBellowsPosition, DBL_EPSILON);
     if (pressureSlope > DBL_EPSILON) {
         mSpringCapacitance = 1.0/pressureSlope * mActiveVolRange * mInternalFluid->getDensity() / mInternalFluid->getMWeight();
     } else {       // If this case exists, then the derived class must compute the capacitance with a derived function.

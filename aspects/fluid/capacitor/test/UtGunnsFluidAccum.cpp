@@ -1,13 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-(
-   (aspects/fluid/capacitor/GunnsFluidAccum.o)
-   (software/exceptions/TsInitializationException.o)
-)
-***************************************************************************************************/
+*/
 
 #include "software/exceptions/TsInitializationException.hh"
 #include "strings/UtResult.hh"
@@ -554,6 +548,12 @@ void UtGunnsFluidAccum::testStep()
     tNodes[0].setPotential(205.0);
     tNodes[0].getContent()->setPressure(205.0);
 
+    const double accelPressureHead = 1.0;
+    tModel->setAccelPressureHead(accelPressureHead);
+    const double expectedPslope = 2.0 * tInitialBellowsPosition * tSpringCoeff2 + tSpringCoeff1
+                                + accelPressureHead / tInitialBellowsPosition;
+    const double expectedCap = tModel->mActiveVolRange * tModel->mInternalFluid->getDensity()
+                             / tModel->mInternalFluid->getMWeight() / expectedPslope;
     tModel->step(tTimeStep);
 
     /// - Conductor should always have a positive admittance and zero potential
@@ -567,6 +567,8 @@ void UtGunnsFluidAccum::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tModel->mSourceVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tModel->mInternalFluid->getPressure() *
                                  tModel->mAdmittanceMatrix[3], tModel->mSourceVector[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCap, tModel->mSpringCapacitance, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCap, tModel->mLiqCapacitance,    DBL_EPSILON);
 
     tNodes[0].setPotential(200.0);
     tNodes[0].getContent()->setPressure(200.0);
@@ -589,6 +591,8 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowIn()
     tNodes[0].getContent()->setPressure(200.1);
     tNodes[0].resetFlows();
 
+    const double accelPressureHead = 1.0;
+    tModel->setAccelPressureHead(accelPressureHead);
     tModel->step(tTimeStep);
     tModel->computeFlows(tTimeStep);
 
@@ -599,10 +603,17 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowIn()
     CPPUNIT_ASSERT(0.0                    == tNodes[tPort0].getScheduledOutflux());
 
     tModel->transportFlows(tTimeStep);
+    const double newBellowsPosition = tModel->mBellowsPosition;
 
     CPPUNIT_ASSERT(0.0 < tModel->mFlowRate);
-    CPPUNIT_ASSERT(prevBellowsPosition < tModel->mBellowsPosition);
+    CPPUNIT_ASSERT(prevBellowsPosition < newBellowsPosition);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mFlowRate), tNodes[0].getOutflux(), tTolerance);
+
+    const double expectedSpringP = newBellowsPosition * newBellowsPosition * tSpringCoeff2
+                                 + newBellowsPosition * tSpringCoeff1 + tSpringCoeff0;
+    const double expectedLiquidP = expectedSpringP + accelPressureHead;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSpringP, tModel->mSpringPressure,               DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedLiquidP, tModel->mInternalFluid->getPressure(), DBL_EPSILON);
 
     UT_PASS;
 }
@@ -1752,6 +1763,10 @@ void UtGunnsFluidAccum::testAccessMethods()
     CPPUNIT_ASSERT(0.0 == tModel->mSpringCoeff0);
     CPPUNIT_ASSERT(0.0 == tModel->mSpringCoeff1);
     CPPUNIT_ASSERT(0.0 == tModel->mSpringCoeff2);
+
+    /// @test   The acceleration pressure head setter.
+    tModel->setAccelPressureHead(42.0);
+    CPPUNIT_ASSERT(42.0 == tModel->mAccelPressureHead);
 
     UT_PASS;
 }

@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_ELECTRICAL_BATTERY_CELL    GUNNS Electrical Battery Cell Unit Test
 /// @ingroup  UT_GUNNS_ELECTRICAL_BATTERY
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Electrical Battery Cell model.
@@ -62,6 +62,7 @@ class UtGunnsElectBatteryCell: public CppUnit::TestFixture
         void testUpdateMalfShort();
         void testUpdateMalfBoth();
         void testUpdateMalfCapacity();
+        void testUpdateMalfRunaway();
 
     private:
         CPPUNIT_TEST_SUITE(UtGunnsElectBatteryCell);
@@ -75,20 +76,23 @@ class UtGunnsElectBatteryCell: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateMalfShort);
         CPPUNIT_TEST(testUpdateMalfBoth);
         CPPUNIT_TEST(testUpdateMalfCapacity);
+        CPPUNIT_TEST(testUpdateMalfRunaway);
         CPPUNIT_TEST_SUITE_END();
-        GunnsElectBatteryCellConfigData* tConfigData;        /**< (--)     Pointer to nominal config data. */
-        GunnsElectBatteryCellInputData*  tInputData;         /**< (--)     Pointer to nominal input data. */
-        FriendlyGunnsElectBatteryCell*   tArticle;           /**< (--)     Pointer to test article. */
-        double                           tResistance;        /**< (ohm)    Nominal config data. */
-        double                           tMaxCapacity;       /**< (amp*hr) Nominal config data. */
-        bool                             tMalfOpenCircuit;   /**< (--)     Nominal input data. */
-        bool                             tMalfShortCircuit;  /**< (--)     Nominal input data. */
-        bool                             tMalfCapacityFlag;  /**< (--)     Nominal input data. */
-        double                           tMalfCapacityValue; /**< (amp*hr) Nominal input data. */
-        double                           tSoc;               /**< (--)     Nominal input data. */
-        std::string                      tName;              /**< (--)     Nominal initialization data. */
-        TsLinearInterpolator*            tSocVocTable;       /**< (--)     Nominal run-time data. */
-        static int                       TEST_ID;            /**< (--)     Test identification number. */
+        GunnsElectBatteryCellConfigData* tConfigData;                 /**< (--)     Pointer to nominal config data. */
+        GunnsElectBatteryCellInputData*  tInputData;                  /**< (--)     Pointer to nominal input data. */
+        FriendlyGunnsElectBatteryCell*   tArticle;                    /**< (--)     Pointer to test article. */
+        double                           tResistance;                 /**< (ohm)    Nominal config data. */
+        double                           tMaxCapacity;                /**< (amp*hr) Nominal config data. */
+        bool                             tMalfOpenCircuit;            /**< (--)     Nominal input data. */
+        bool                             tMalfShortCircuit;           /**< (--)     Nominal input data. */
+        bool                             tMalfCapacityFlag;           /**< (--)     Nominal input data. */
+        double                           tMalfCapacityValue;          /**< (amp*hr) Nominal input data. */
+        bool                             tMalfThermalRunawayFlag;     /**< (--)     Nominal input data. */
+        double                           tMalfThermalRunawayDuration; /**< (s)      Nominal input data. */
+        double                           tSoc;                        /**< (--)     Nominal input data. */
+        std::string                      tName;                       /**< (--)     Nominal initialization data. */
+        TsLinearInterpolator*            tSocVocTable;                /**< (--)     Nominal run-time data. */
+        static int                       TEST_ID;                     /**< (--)     Test identification number. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtGunnsElectBatteryCell(const UtGunnsElectBatteryCell& that);
         /// @brief Assignment operator unavailable since declared private and not implemented.

@@ -42,6 +42,9 @@ RUN yum install -y \
  mesa-libGLU-devel \
  maven \
  cppunit \
+ cppunit-devel \
+ lcov \
+ valgrind \
  ncurses-devel \
  openmotif-devel \
  perl-Digest-MD5 \

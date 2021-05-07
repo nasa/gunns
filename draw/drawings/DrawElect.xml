@@ -1,8 +1,8 @@
-<mxGraphModel arrows="0" connect="1" dx="702" dy="1002" fold="1" grid="1" gridSize="10" guides="0" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
+<mxGraphModel arrows="0" connect="1" dx="1106" dy="830" fold="1" grid="1" gridSize="10" guides="0" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
   <root>
     <mxCell id="0" />
     <mxCell id="yyIIFE6Wr_zv9eaOOcSJ-1" parent="0" value="Notices" />
-    <object About="Notice of Copyright" id="5xh1K6Ib7SINsnavs5rp-1" label="Copyright 2019 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
+    <object About="Notice of Copyright" id="5xh1K6Ib7SINsnavs5rp-1" label="Copyright 2021 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
       <gunns subtype="copyright" type="Dox" />
       <mxCell parent="yyIIFE6Wr_zv9eaOOcSJ-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" vertex="1">
         <mxGeometry as="geometry" height="30" width="470" x="20" y="20" />
@@ -227,7 +227,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Battery" Ports="0=in, 1=out" c00.numCells="1" c01.cellsInParallel="false" c02.cellResistance="0.01" c03.interconnectResistance="0.01" c04.maxCapacity="1.0" c05.socVocTable="&amp;network-&gt;batterySocVoc" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.soc="1.0" id="cl184UrhjxjfbnMy3DYb-1" label="battery">
+    <object About="Battery" Ports="0=in, 1=out" c00.numCells="1" c01.cellsInParallel="false" c02.cellResistance="0.01" c03.interconnectResistance="0.01" c04.maxCapacity="1.0" c05.socVocTable="&amp;network-&gt;batterySocVoc" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.soc="1.0" i03.malfThermalRunawayFlag="false" i04.malfThermalRunawayDuration="0.0" i05.malfThermalRunawayInterval="0.0" id="cl184UrhjxjfbnMy3DYb-1" label="battery">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/Batt/GunnsElectBattery" type="Link" />
       <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#000000;strokeColor=#000000;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.miscellaneous.monocell_battery;flipH=1;" vertex="1">
         <mxGeometry as="geometry" height="40" width="40" x="530" y="330" />

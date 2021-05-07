@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_ELECTRICAL_BATTERY_LINK    GUNNS Electrical Battery Unit Test
 /// @ingroup  UT_GUNNS_ELECTRICAL_BATTERY
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Electrical Battery model.
@@ -61,6 +61,7 @@ class UtGunnsElectBattery: public CppUnit::TestFixture
         void testUpdateStateParallel();
         void testUpdateStateSeries();
         void testUpdateFlux();
+        void testThermalRunaway();
         void testAccessors();
 
     private:
@@ -74,28 +75,32 @@ class UtGunnsElectBattery: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateStateParallel);
         CPPUNIT_TEST(testUpdateStateSeries);
         CPPUNIT_TEST(testUpdateFlux);
+        CPPUNIT_TEST(testThermalRunaway);
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         enum {N_NODES = 2};
-        GunnsElectBatteryConfigData* tConfigData;             /**< (--)     Pointer to nominal config data. */
-        GunnsElectBatteryInputData*  tInputData;              /**< (--)     Pointer to nominal input data. */
-        FriendlyGunnsElectBattery*   tArticle;                /**< (--)     Pointer to test article. */
-        std::vector<GunnsBasicLink*> tLinks;                  /**< (--)     Links vector. */
-        std::string                  tName;                   /**< (--)     Nominal name. */
-        GunnsBasicNode               tNodes[N_NODES];         /**< (--)     Nominal connected nodes. */
-        GunnsNodeList                tNodeList;               /**< (--)     Network node structure. */
-        int                          tPort0;                  /**< (--)     Nominal inlet port index. */
-        int                          tPort1;                  /**< (--)     Nominal outlet port index. */
-        int                          tNumCells;               /**< (--)     Nominal config data. */
-        bool                         tCellsInParallel;        /**< (--)     Nominal config data. */
-        double                       tCellResistance;         /**< (ohm)    Nominal config data. */
-        double                       tInterconnectResistance; /**< (ohm)    Nominal config data. */
-        double                       tMaxCapacity;            /**< (amp*hr) Nominal config data. */
-        TsLinearInterpolator*        tSocVocTable;            /**< (--)     Nominal config data. */
-        bool                         tMalfBlockageFlag;       /**< (--)     Nominal input data. */
-        double                       tMalfBlockageValue;      /**< (--)     Nominal input data. */
-        double                       tSoc;                    /**< (--)     Nominal input data. */
-        static int                   TEST_ID;                 /**< (--)     Test identification number. */
+        GunnsElectBatteryConfigData* tConfigData;                 /**< (--)     Pointer to nominal config data. */
+        GunnsElectBatteryInputData*  tInputData;                  /**< (--)     Pointer to nominal input data. */
+        FriendlyGunnsElectBattery*   tArticle;                    /**< (--)     Pointer to test article. */
+        std::vector<GunnsBasicLink*> tLinks;                      /**< (--)     Links vector. */
+        std::string                  tName;                       /**< (--)     Nominal name. */
+        GunnsBasicNode               tNodes[N_NODES];             /**< (--)     Nominal connected nodes. */
+        GunnsNodeList                tNodeList;                   /**< (--)     Network node structure. */
+        int                          tPort0;                      /**< (--)     Nominal inlet port index. */
+        int                          tPort1;                      /**< (--)     Nominal outlet port index. */
+        int                          tNumCells;                   /**< (--)     Nominal config data. */
+        bool                         tCellsInParallel;            /**< (--)     Nominal config data. */
+        double                       tCellResistance;             /**< (ohm)    Nominal config data. */
+        double                       tInterconnectResistance;     /**< (ohm)    Nominal config data. */
+        double                       tMaxCapacity;                /**< (amp*hr) Nominal config data. */
+        TsLinearInterpolator*        tSocVocTable;                /**< (--)     Nominal config data. */
+        bool                         tMalfBlockageFlag;           /**< (--)     Nominal input data. */
+        double                       tMalfBlockageValue;          /**< (--)     Nominal input data. */
+        bool                         tMalfThermalRunawayFlag;     /**< (--)     Nominal input data. */
+        double                       tMalfThermalRunawayDuration; /**< (s)      Nominal input data. */
+        double                       tMalfThermalRunawayInterval; /**< (s)      Nominal input data. */
+        double                       tSoc;                        /**< (--)     Nominal input data. */
+        static int                   TEST_ID;                     /**< (--)     Test identification number. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtGunnsElectBattery(const UtGunnsElectBattery& that);
         /// @brief Assignment operator unavailable since declared private and not implemented.

@@ -1,8 +1,8 @@
 /**
-@file
+@file     GunnsElectUserLoadSwitch.cpp
 @brief    GUNNS Electrical User Load Switch Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -10,10 +10,12 @@ LIBRARY DEPENDENCY:
      (core/GunnsBasicConductor.o)
      (GunnsElectSwitchUtil.o)
      (aspects/electrical/UserLoad/GunnsElectUserLoad.o)
+     (aspects/electrical/UserLoad/UserLoadBase.o)
      (aspects/electrical/resistive/GunnsShortUtil.o)
      (software/exceptions/TsInitializationException.o)
   )
 */
+
 #include "GunnsElectUserLoadSwitch.hh"
 #include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"

@@ -31,7 +31,7 @@ jobs:
         java-1.8.0-openjdk-devel libX11-devel libxml2-devel libXi-devel libXmu-devel libXt-devel
         llvm-devel llvm-static make tcsh csh mesa-libGL-devel mesa-libGLU-devel maven cppunit ncurses-devel
         openmotif-devel perl-Digest-MD5 protobuf-devel python-devel sqlite-devel swig systemd-devel
-        udunits2-devel which zlib-devel tkinter
+        udunits2-devel which zip zlib-devel tkinter
 
     - name: Build Trick
       # Failure here is likely due to new or changed dependencies of Trick, see above

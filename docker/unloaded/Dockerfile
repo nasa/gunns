@@ -56,6 +56,7 @@ RUN yum install -y \
  tkinter \
  udunits2-devel \
  which \
+ zip \
  zlib-devel
 
 # Clone Trick

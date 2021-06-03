@@ -8,7 +8,7 @@
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_TRIPS    GUNNS Photovoltaic Regulator Trip Functions
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -22,7 +22,7 @@ ASSUMPTIONS AND LIMITATIONS:
 - (TBD)
 
 LIBRARY DEPENDENCY:
-- ((GunnsElectPvRegSensors.o))
+- ((GunnsElectPvRegTrips.o))
 
 PROGRAMMERS:
 - ((Jason Harvey) (CACI) (2017-12) (Initial))

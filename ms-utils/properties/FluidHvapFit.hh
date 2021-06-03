@@ -8,7 +8,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_FLUID_TSAT_FIT Fluid Heat of Vaporization Curve Fit
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -16,7 +16,7 @@ PURPOSE:
 - (Provides the class for a Fluid Heat of Vaporization curve fit.)
 
  LIBRARY DEPENDENCY:
-- ((FluidTsatFit.o))
+- ((FluidHvapFit.o))
 
  PROGRAMMERS:
 - ((Jason Harvey) (L-3 Communications) (Initial) (2015-01))

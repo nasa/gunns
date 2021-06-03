@@ -5,7 +5,7 @@
 @defgroup  TSM_UTILITIES_SIMULATION_HS_MESSAGE QUEUE Message Queue
 @ingroup   TSM_UTILITIES_SIMULATION_HS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -23,7 +23,7 @@ ASSUMPTIONS AND LIMITATIONS:
 - (TBD)
 
 LIBRARY DEPENDENCY:
-- ()
+- ((TsHsMsgQueue.o))
 
 PROGRAMMERS:
 - (

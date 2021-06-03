@@ -20,12 +20,20 @@
 
 # duration?
 # on zentraedi, ~40 minutes
+# 2nd round: ~40 minutes
+# This could be parallelized to run faster, but would take a lot of effort to set up.
+# Each core could run a separate class build, but would have to use separate ClassTest.sm
+# files and sim folders to avoid stepping on each other.
 
 import os
 import sys
 
 # Make & build the test sim for the given class header file, concatenate any build errors
 # to the overall output errors file.
+# TODO deprecated warnings show up too, so a pass/fail check from CI will have to scan
+# the file for specific things, instead of expecting an empty file.  Search for:
+# - 'error'
+# - 'undefined reference'
 def testtype(classpath):
     os.system('make clean')
     os.system('python gen_sm.py ' + classpath)

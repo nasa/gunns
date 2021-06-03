@@ -5,7 +5,7 @@
 @defgroup  TSM_SENSORS_LimitSwitchAnalog  Limit switch with analog rather than boolean input
 @ingroup   TSM_SENSORS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -20,7 +20,7 @@ PURPOSE:
  - ()
 
  LIBRARY DEPENDENCY:
- - ()
+ - ((TsLimitSwitchAnalog.o))
 
  PROGRAMMERS:
  - ((Chuck Sorensen) (LZT) (Dec 2011) (TS21) (initial))

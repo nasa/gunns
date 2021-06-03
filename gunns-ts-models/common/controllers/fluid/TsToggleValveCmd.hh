@@ -8,7 +8,7 @@
 @defgroup  TSM_CONTROLLER_FLUID_TOGGLE_VALVE_CMD  Toggle Valve Command
 @ingroup   TSM_CONTROLLER_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:   (Type to use as command for a TS21 Fluid Controller powered valve with command data consisting of an enable flag
@@ -22,7 +22,7 @@ PURPOSE:   (Type to use as command for a TS21 Fluid Controller powered valve wit
  - (The user of this class is responsible for determining the position to toggle to.)
 
  LIBRARY DEPENDENCY:
- - ()
+ - ((TsToggleValveCmd.o))
 
  PROGRAMMERS:
 - ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2012-10)

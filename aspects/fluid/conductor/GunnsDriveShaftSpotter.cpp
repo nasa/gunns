@@ -2,13 +2,15 @@
 @file
 @brief     GUNNS Drive Shaft Network Spotter implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
   ((core/GunnsNetworkSpotter.o)
    (core/GunnsBasicConductor.o)
-   (GunnsDriveShaftSpotter.o)
+   (aspects/fluid/potential/GunnsGasFan.o)
+   (aspects/fluid/conductor/GunnsGasTurbine.o)
+   (math/UnitConversion.o)
    (simulation/hs/TsHsMsg.o)
    (software/exceptions/TsInitializationException.o))
 **************************************************************************************************/

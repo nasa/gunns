@@ -2,13 +2,14 @@
 @file
 @brief    GUNNS Electrical Photovoltaic Array Link Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
   (
    (core/GunnsBasicLink.o)
    (core/GunnsBasicNode.o)
+   (GunnsElectPvSection.o)
    (software/exceptions/TsInitializationException.o)
    (software/exceptions/TsOutOfBoundsException.o)
   )

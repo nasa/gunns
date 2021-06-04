@@ -1,5 +1,5 @@
 /*********************** TRICK HEADER *************************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -15,10 +15,7 @@
  (none)
 
  LIBRARY DEPENDENCY:
- (
- (GunnsBasicLink.o)
- (DiodeElect.o)
- )
+ ((DiodeElect.o))
 
  PROGRAMMERS:
  (

@@ -20,6 +20,7 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'GunnsTripLogic',
                      'GunnsBasicLink',
                      'GunnsBasicJumperPlug',
+                     'GunnsFluidLink',
                      'GunnsFluidJumperPlug',
                      'GunnsFluidUtils',
                      'GunnsNetworkBase',
@@ -41,9 +42,7 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'LaguerreMethod',
                      'BrentMethod',
                      'ParseTool',
-                     'tinystr.hh',         # possibly to be handled with class_custom_construction
-                     'tinyxml.hh',         # possibly to be handled with class_custom_construction
-                     'tinyxmlparser.hh',   # possibly to be handled with class_custom_construction
+                     'tinyxmlparser.hh',
                      'TsHsOutputPlugin.hh',
                      'TsHsMngr',
                      'TsHsMsgFilter',

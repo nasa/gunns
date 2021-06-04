@@ -17,18 +17,35 @@ import sys
 if (len(sys.argv) != 2):
     quit();
 
+# Python 2.7 vs. 3 by feature detection.
+try:
+    execfile('class_custom_construction.py')
+except NameError:
+    exec(compile(open('class_custom_construction.py', "rb").read(), 'class_custom_construction.py', 'exec'))
+
 # extract class type from the given path:
 classType = os.path.basename(sys.argv[1]).split('.')[0]
 
+if classType in class_custom_construction:
+    includeStatement   = class_custom_construction[classType]['include']
+    declareStatement   = class_custom_construction[classType]['declare']
+    constructStatement = class_custom_construction[classType]['construct']
+else:
+    # default syntax
+    includeStatement   = '##include "' + sys.argv[1] + '"\n'
+    declareStatement   = '        ' + classType + ' code; /**< (1) code under test */\n'
+    constructStatement = ''
+
 with open('ClassTest.sm', 'w') as fout:
     fout.write('//Include the code under test:\n')
-    fout.write('##include "' + sys.argv[1] + '"\n')
+    fout.write(includeStatement)
     fout.write('\n')
     fout.write('class ClassTestSimObject: public Trick::SimObject\n')
     fout.write('{\n')
     fout.write('    public:\n')
-    fout.write('        ' + classType + ' code; /**< (1) code under test */\n')
+    fout.write(declareStatement)
     fout.write('        ClassTestSimObject()\n')
+    fout.write(constructStatement)
     fout.write('        {\n')
     fout.write('            // nothing to do\n')
     fout.write('        }\n')

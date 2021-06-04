@@ -121,10 +121,13 @@ def getPortLink(port, links):
 
 # TODO refactor with netexport.py
 def getNodeName(node):
+    if node is None:
+        return ''
     if node.find('gunns').attrib['subtype'] == 'Ground':
         return 'Ground'
     else:
         return 'node ' + node.attrib['label']
+    return ''
 
 # TODO
 def getPortNode(port, nodes, gnds):

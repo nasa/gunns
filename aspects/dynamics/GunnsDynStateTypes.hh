@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_DYNAMICS_STATE_TYPES  GUNNS Dynamics State Types
 @ingroup   TSM_GUNNS_DYNAMICS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -22,7 +22,7 @@ ASSUMPTIONS AND LIMITATIONS:
   ()
 
 LIBRARY_DEPENDENCY:
-  (GunnsDynStateTypes.o)
+  ()
 
 PROGRAMMERS:
   (

@@ -44,8 +44,11 @@ def testtype(classpath):
 # Begin Main Script
 ###################
 
-#TODO change to the Python3 compatible way:
-execfile('class_ignore_list.py')
+# Python 2.7 vs. 3 by feature detection.
+try:
+    execfile('class_ignore_list.py')
+except NameError:
+    exec(compile(open('class_ignore_list.py', "rb").read(), 'class_ignore_list.py', 'exec'))
 
 os.system('rm test_all_output_errors')
 

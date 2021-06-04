@@ -17,10 +17,7 @@
 # - build the sim and handle & report on build errors.
 #
 # This requires Trick 19 or later.
-
-# duration?
-# on zentraedi, ~40 minutes
-# 2nd round: ~40 minutes
+#
 # This could be parallelized to run faster, but would take a lot of effort to set up.
 # Each core could run a separate class build, but would have to use separate ClassTest.sm
 # files and sim folders to avoid stepping on each other.
@@ -30,10 +27,6 @@ import sys
 
 # Make & build the test sim for the given class header file, concatenate any build errors
 # to the overall output errors file.
-# TODO deprecated warnings show up too, so a pass/fail check from CI will have to scan
-# the file for specific things, instead of expecting an empty file.  Search for:
-# - 'error'
-# - 'undefined reference'
 def testtype(classpath):
     os.system('make clean')
     os.system('python gen_sm.py ' + classpath)
@@ -52,7 +45,6 @@ except NameError:
 
 os.system('rm test_all_output_errors')
 
-#TODO
 # read gunns/lib/trick_if/S_source.hh (requires lib/trick to have been built).
 with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
     # each line is similar to:
@@ -70,3 +62,10 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
                 if classtype not in class_ignore_list:
                     testtype(classpath)
             
+# Scan the output file for errors, output overall pass/fail
+results = open(os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors").read()
+if 'error' in results or 'undefined' in results or 'unresolved' in results:
+    print('TEST FAILED')
+    sys.exit(1)
+
+print('TEST PASSED')

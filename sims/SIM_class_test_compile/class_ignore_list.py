@@ -12,6 +12,7 @@
 # This should contain the classes that cannot be directly instantiated (either pure virtual
 # or have private & unimplemented non-default constructors).  These are usually base
 # classes for other derived types, and get tested when their derived types are tested.
+# Other things that are skipped are classes with no body (no compiled object), and C code.
 class_ignore_list = ['GunnsDynEulerBase',
                      'GunnsDynStateTypes',
                      'GunnsDynUtils',
@@ -42,8 +43,9 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'LaguerreMethod',
                      'BrentMethod',
                      'ParseTool',
-                     'tinyxmlparser.hh',
-                     'TsHsOutputPlugin.hh',
+                     'tinyxmlparser',
+                     'TsHsOutputPlugin',
                      'TsHsMngr',
                      'TsHsMsgFilter',
+                     'TsHsMsgWrapper',
                     ]

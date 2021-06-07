@@ -1,6 +1,6 @@
-name: Test Trick Sim
+name: Trick Library Dependencies
 
-# For more info and troubleshooting help for this workflow, see the Continuous Integration 
+# For more info and troubleshooting help for this workflow, see the Continuous Integration
 # page in the GUNNS Wiki.
 #
 # We'd rather use a pre-built Docker image with the dependencies already installed, but we
@@ -13,10 +13,10 @@ on:
     paths-ignore:
     - 'README.md'
     - '.github/workflows/**'
-    - '!.github/workflows/sim_test.yml'
+    - '!.github/workflows/lib_deps.yml'
 
 jobs:
-  sim_test:
+  lib_deps:
     runs-on: ubuntu-latest
     container: docker://centos:7
 
@@ -47,32 +47,21 @@ jobs:
         make
 
     # TODO use better way to define env vars globally for all steps
-    - name: Build sim
+    - name: Build gunns/lib/trick
+      run: |
+        export MAKEFLAGS=-j`nproc`
+        export GUNNS_TRICK_HOME="/home/trick"
+        export GUNNS_HOME=`pwd`
+        cd lib/trick
+        make OPTS='-O2'
+
+    - name: Run test suite, check for pass/fail
       run: |
         export TRICK_HOME="/home/trick"
         export MAKEFLAGS=-j`nproc`
         export GUNNS_HOME=`pwd`
         export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
         export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
-        export HS_CONFIG_PATH="${GUNNS_HOME}/sims/Modified_data"
-        cd sims/SIM_test
-        ${TRICK_HOME}/bin/trick-CP
+        cd sims/SIM_class_test_compile
+        python ./test_all.py
         
-    - name: Run sim
-      run: |
-        export TRICK_HOME="/home/trick"
-        export MAKEFLAGS=-j`nproc`
-        export GUNNS_HOME=`pwd`
-        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
-        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
-        export HS_CONFIG_PATH="${GUNNS_HOME}/sims/Modified_data"
-        cd sims/SIM_test
-        ./S_main* RUN_test/input_int_test.py
-
-    - name: Check sim outputs for pass/fail
-      run: |
-        export GUNNS_HOME=`pwd`
-        cd test/CI
-        chmod +x sim_test.py
-        python ./sim_test.py
-

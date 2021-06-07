@@ -1,4 +1,4 @@
-[![Unit Tests](https://github.com/nasa/gunns/actions/workflows/unit_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/unit_test.yml) [![Test Trick Sim](https://github.com/nasa/gunns/actions/workflows/sim_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/sim_test.yml)
+[![Unit Tests](https://github.com/nasa/gunns/actions/workflows/unit_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/unit_test.yml) [![Test Trick Sim](https://github.com/nasa/gunns/actions/workflows/sim_test.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/sim_test.yml) [![Trick Library Dependencies](https://github.com/nasa/gunns/actions/workflows/lib_deps.yml/badge.svg)](https://github.com/nasa/gunns/actions/workflows/lib_deps.yml)
 
 # General-Use Nodal Network Solver (GUNNS)
 

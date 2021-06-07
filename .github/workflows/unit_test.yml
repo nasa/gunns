@@ -1,5 +1,8 @@
 name: Unit Tests
 
+# For more info and troubleshooting help for this workflow, see the Continuous Integration 
+# page in the GUNNS Wiki.
+
 on:
   push:
     paths-ignore:

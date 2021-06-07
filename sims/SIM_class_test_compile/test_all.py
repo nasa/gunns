@@ -43,7 +43,8 @@ try:
 except NameError:
     exec(compile(open('class_ignore_list.py', "rb").read(), 'class_ignore_list.py', 'exec'))
 
-os.system('rm test_all_output_errors')
+outputfile = 'test_all_output_errors'
+os.system('rm ' + outputfile)
 
 # read gunns/lib/trick_if/S_source.hh (requires lib/trick to have been built).
 with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
@@ -63,9 +64,14 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
                     testtype(classpath)
             
 # Scan the output file for errors, output overall pass/fail
-results = open(os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors").read()
-if 'error' in results or 'undefined' in results or 'unresolved' in results:
+outputfile = os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors"
+if os.path.isfile(outputfile):
+    results = open(outputfile).read()
+    if 'error' in results or 'undefined' in results or 'unresolved' in results:
+        print('TEST FAILED')
+        sys.exit(1)
+else:
     print('TEST FAILED')
     sys.exit(1)
-
+    
 print('TEST PASSED')

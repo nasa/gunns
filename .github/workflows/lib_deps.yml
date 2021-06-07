@@ -55,6 +55,7 @@ jobs:
         cd lib/trick
         make OPTS='-O2'
 
+#TODO add:        export PATH="${PATH}:${TRICK_HOME}/bin"
     - name: Run test suite, check for pass/fail
       run: |
         export TRICK_HOME="/home/trick"

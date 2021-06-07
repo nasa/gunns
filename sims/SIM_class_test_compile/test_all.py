@@ -31,7 +31,8 @@ def testtype(classpath):
     os.system('make clean')
     os.system('python gen_sm.py ' + classpath)
     os.system('trick-CP')
-    os.system('cat build/MAKE_err >> test_all_output_errors')
+    if os.path.isfile('build/MAKE_err') and os.path.isfile('test_all_output_errors'):
+        os.system('cat build/MAKE_err >> test_all_output_errors')
 
 ###################
 # Begin Main Script

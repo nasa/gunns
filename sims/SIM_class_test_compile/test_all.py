@@ -31,7 +31,7 @@ def testtype(classpath):
     os.system('make clean')
     os.system('python gen_sm.py ' + classpath)
     os.system('trick-CP')
-    if os.path.isfile('build/MAKE_err') and os.path.isfile('test_all_output_errors'):
+    if os.path.isfile('build/MAKE_err'):
         os.system('cat build/MAKE_err >> test_all_output_errors')
 
 ###################
@@ -68,10 +68,13 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
 outputfile = os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors"
 if os.path.isfile(outputfile):
     results = open(outputfile).read()
+    print('\n\nContents of test_all_output_errors file:\n')
+    print(results)
     if 'error' in results or 'undefined' in results or 'unresolved' in results:
         print('TEST FAILED')
         sys.exit(1)
 else:
+    print('test_all_output_errors file is missing!')
     print('TEST FAILED')
     sys.exit(1)
     

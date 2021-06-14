@@ -191,6 +191,9 @@ class Gunns
         /// @brief Points the solver to use the given flow orchestrator.
         void setFlowOrchestrator(GunnsBasicFlowOrchestrator* orchestrator);
 
+        /// @brief Sets the slave potential vector values to the given array values.
+        void setSlavePotentialVector(const double* potentials);
+
         /// @brief Gets the Admittance Matrix.
         double* getAdmittanceMatrix() const;
 
@@ -598,6 +601,22 @@ inline void Gunns::setPauseMode()
 inline void Gunns::setWorstCaseTiming(const bool flag)
 {
     mWorstCaseTiming = flag;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] potentials (--) Array of node potentials to use for SLAVE mode.
+///
+/// @details  This copies the values from the given array into mSlavePotentialVector, but only when
+///           the solver is in SLAVE mode, otherwise does nothing.  This assumes that the given
+///           potentials array is as large as the network size.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void Gunns::setSlavePotentialVector(const double* potentials)
+{
+    if (SLAVE == mSolverMode) {
+        for (int node = 0; node < mNetworkSize; ++node) {
+            mSlavePotentialVector[node] = potentials[node];
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

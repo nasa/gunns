@@ -1649,7 +1649,9 @@ void UtGunns::testSlaveMode()
 
     /// - Put the network in SLAVE mode and set up the slave potential vector.
     tNetwork.setSlaveMode();
-    tNetwork.mSlavePotentialVector[0] = 100.0;
+    const double slavePotentials[1] = {100.0};
+    tNetwork.setSlavePotentialVector(slavePotentials);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, tNetwork.mSlavePotentialVector[0], 0.0);
 
     /// - Step the network and verify the solution vector takes the slave values.
     tNetwork.step(tDeltaTime);
@@ -1660,6 +1662,11 @@ void UtGunns::testSlaveMode()
     tNetwork.step(tDeltaTime);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(9.990009990009990e+01, tConductor1.getPotentialVector()[0],
                                  DBL_EPSILON);
+
+    /// - Verify setSlavePotentials does nothing when not in SLAVE mode.
+    tNetwork.mSlavePotentialVector[0] = 0.0;
+    tNetwork.setSlavePotentialVector(slavePotentials);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNetwork.mSlavePotentialVector[0], 0.0);
 
     std::cout << "... Pass";
 }

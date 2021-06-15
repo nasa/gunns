@@ -1,6 +1,6 @@
 PUI     SYS     BUS     SUBSYS  VAR_NAME        ACTION  RATE            SIM_OBJECT              SIM_VAR_NAME                            TYPE    UNITS   COMMENTS
 
-# Copyright 2019 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+# Copyright 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # Cabin air temperature and heat flux from shell:
 xxxx	gunns	simbus	test	cabinAirT	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	cabinFluid.cabinVolume.mTemperature	double	(K)	Cabin air temperature
@@ -230,4 +230,8 @@ xxxx	gunns	simbus	test	cabinFanMotorQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObj
 
 xxxx	gunns	simbus	test	pumpMotorQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	signal.pump.mTotalWasteHeat	double	(W)	Waste heat
 xxxx	gunns	simbus	test	pumpMotorQ	READ	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.pump.mExternalHeatFlux[1]	double	(W)	Waste heat
+
+# Solar array elect-thermal interface
+xxxx	gunns	simbus	test	solarArrayPwrQ	WRITE	MODELS_10HZ	ExampleSpaceVehicleSimObject vehicle	powerElect.solarArray.mSections[0].mTerminalPower	double	(W)	Solar array output electrical power
+xxxx	gunns	simbus	test	solarArrayPwrQ	READ	MODELS_1HZ	ExampleSpaceVehicleSimObject vehicle	passiveThermal.solarArrayElectIf.mQueues[0].mHeat	double	(W)	QUEUE Solar array output electrical power
 

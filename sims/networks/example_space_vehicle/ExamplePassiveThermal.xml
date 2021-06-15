@@ -1,4 +1,4 @@
-<mxGraphModel arrows="0" connect="1" dx="702" dy="1002" fold="1" grid="1" gridSize="10" guides="1" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
+<mxGraphModel arrows="0" connect="1" dx="1106" dy="830" fold="1" grid="1" gridSize="10" guides="1" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
   <root>
     <mxCell id="0" />
     <mxCell id="6v0ne1GvJITEwgX7-mln-1" parent="0" value="Notices" />
@@ -69,7 +69,7 @@
         <mxPoint as="targetPoint" x="310" y="510" />
       </mxGeometry>
     </mxCell>
-    <object About="Notice of Copyright" id="B1USjxH68V4Tsz_aS_eI-1" label="Copyright 2019 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
+    <object About="Notice of Copyright" id="B1USjxH68V4Tsz_aS_eI-1" label="Copyright 2021 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
       <gunns subtype="copyright" type="Dox" />
       <mxCell parent="5SK9866ROKJN82IODIW7-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" vertex="1">
         <mxGeometry as="geometry" height="30" width="470" x="20" y="20" />
@@ -895,6 +895,41 @@
             <mxPoint x="310" y="700" />
           </Array>
         </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="0.0" id="ItpC1-V1kg1f5524qawb-1" label="11">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell parent="5SK9866ROKJN82IODIW7-2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000000;fontSize=12;fontColor=#000000;fillColor=#FFFFFF;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="770" y="770" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="50000.0" i03.potential="294.261" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="294.261" id="ItpC1-V1kg1f5524qawb-2" label="solarArray">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell parent="5SK9866ROKJN82IODIW7-2" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=west;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="10" x="720" y="770" />
+      </mxCell>
+    </object>
+    <object About="Link Port" id="ItpC1-V1kg1f5524qawb-3" label="0">
+      <gunns type="Port" />
+      <mxCell edge="1" parent="5SK9866ROKJN82IODIW7-2" source="ItpC1-V1kg1f5524qawb-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="ItpC1-V1kg1f5524qawb-2">
+        <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.3333">
+          <mxPoint as="sourcePoint" x="760" y="810" />
+          <mxPoint as="targetPoint" x="780" y="810" />
+          <Array as="points">
+            <mxPoint x="760" y="780" />
+            <mxPoint x="760" y="780" />
+          </Array>
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="ItpC1-V1kg1f5524qawb-4" parent="5SK9866ROKJN82IODIW7-2" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" value="&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;Radiation links are omitted as this is intended to interface with the pending radiation aspect model.&lt;/span&gt;&lt;/div&gt;" vertex="1">
+      <mxGeometry as="geometry" height="70" width="170" x="800" y="750" />
+    </mxCell>
+    <object About="Spotter" Class="aspects/thermal/GunnsThermalCapacitorHeatQueues" ConstructorArgs="solarArray" id="ItpC1-V1kg1f5524qawb-5" label="solarArrayElectIf">
+      <gunns type="Spotter" />
+      <mxCell parent="5SK9866ROKJN82IODIW7-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=middle;verticalAlign=middle;align=right;labelPosition=left;" vertex="1">
+        <mxGeometry as="geometry" height="20" width="20" x="690" y="770" />
       </mxCell>
     </object>
   </root>

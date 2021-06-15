@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 #trick setup
@@ -21,6 +21,16 @@ trick_sys.sched.set_freeze_command(True)
 ####################
 # Put this network's solver in dummy mode to save CPU.
 vehicle.hxThermal.netSolver.setDummyMode()
+
+#####################
+# Solar Array Thermal
+#####################
+# Pending the eventual radiation model providing heat flux with the environment,
+# we need to add some absorbed heat from sunlight to the solar array to balance out
+# the power that is converted electrical output, to keep the thermal aspect from
+# getting too cold.  At this point it is an incomplete model, and the temperature
+# will still drift to unrealistic values.
+trick.add_read(1.0, """vehicle.passiveThermal.solarArray.setExternalHeatFlux(1, 1825.0)""" )
 
 ####################
 # Cabin Fluid Setup:

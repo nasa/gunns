@@ -558,18 +558,25 @@ print('  Backup copy saved to ' + inputFile + '.bak.')
 tree = ET.parse(inputPathFile)
 root = tree.getroot()
 # Handle draw.io's compressed vs. uncompressed xml file formats.
-# If root node = mxGraphModel then this is uncompressed.
-# If root node = mxfile then this is compressed, and the mxGraphModel
+# The meat of the drawing is in the <mxGraphModel> element.
+# If root node = mxGraphModel, or the first elements are:
+# <mxfile><diagram><mxGraphModel>, then this is uncompressed.
+# Otherwise, this is compressed, and the mxGraphModel
 # section is compressed in the <mxfile><diagram>text</diagram></mxfile>.
 if root.tag.startswith('mxfile'):
-    print('  Decompressing diagram data...')
-    compressed_diagram = root[0].text
-    diagram = compression.decompress(compressed_diagram)
-    # Reset the root and tree after decompressing.  This discards
-    # the outer <mxfile><diagram> elements and makes a consistent
-    # tree structure with the un-compressed source file.
-    root = ET.fromstring(diagram)
-    tree._setroot(root)
+    uncompressed_graph = root.find('./diagram/mxGraphModel')
+    if uncompressed_graph is not None:
+        root = uncompressed_graph
+        tree._setroot(root)
+    else:
+        print('  Decompressing diagram data...')
+        compressed_diagram = root[0].text
+        diagram = compression.decompress(compressed_diagram)
+        # Reset the root and tree after decompressing.  This discards
+        # the outer <mxfile><diagram> elements and makes a consistent
+        # tree structure with the un-compressed source file.
+        root = ET.fromstring(diagram)
+        tree._setroot(root)
 
 if not root.tag.startswith('mxGraphModel'):
     sys.exit(console.abort('this is not a recognized file.'))

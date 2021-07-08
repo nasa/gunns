@@ -16,6 +16,11 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
+/// @details  Heat is 48.6 kJ/mol, converted to J/kg*mol.  Source: NREL/CP-550-47302,
+///           "Hydrogen Production: Fundamentals and Case Study Summaries", Harrison, et.al.,
+///           National Renewable Energy Laboratory, Jan. 2010
+const double GunnsFluidSimpleH2Redox::mReactionHeat = 4.86e7;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]      name                (--)        Name of object.
 /// @param[in,out]  nodes               (--)        Pointer to nodes.
@@ -94,6 +99,7 @@ GunnsFluidSimpleH2Redox::GunnsFluidSimpleH2Redox()
     mCurrent(0.0),
     mTrippedOff(false),
     mOutputStackVoltage(0.0),
+    mOutputHeat(0.0),
     mEfficiency(0.0),
     mH2MassRate(0.0),
     mO2MassRate(0.0),
@@ -327,6 +333,10 @@ void GunnsFluidSimpleH2Redox::step(const double dt __attribute__((unused)))
     } else {
         mOutputStackVoltage = mCellVoltageLoaded * mNumCells;
     }
+
+    /// - Output heat to thermal aspect.  Output heat is positive (exothermic) for fuel-cell
+    ///   reaction, which has negative H2 rate, so flip the sign here.
+    mOutputHeat = mReactionHeat * -mH2MoleRate;
 
     /// - Update the link source vector.
     buildSource();

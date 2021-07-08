@@ -323,6 +323,10 @@ void UtGunnsFluidSimpleH2Redox::testAccessors()
     tArticle->mOutputStackVoltage = 100.0;
     CPPUNIT_ASSERT(100.0 == tArticle->getOutputStackVoltage());
 
+    /// @test    getOutputHeat.
+    tArticle->mOutputHeat = -7.0;
+    CPPUNIT_ASSERT(-7.0 == tArticle->getOutputHeat());
+
     /// @test    getH2MassRate
     tArticle->mH2MassRate = -2.0;
     CPPUNIT_ASSERT(-2.0 == tArticle->getH2MassRate());
@@ -408,6 +412,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     double expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
     double expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
     double expectedVolts   =  tCellVoltageLoaded * tNumCells;
+    double expectedHeat    = fabs(expectedH2mole) * 4.86e7;
     double expectedW[2]    = {expectedH2mole + expectedH2Omole, expectedO2mole};
     CPPUNIT_ASSERT_EQUAL        (false,           tArticle->mTrippedOff);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mass,  tArticle->mH2MassRate,         DBL_EPSILON);
@@ -417,6 +422,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2mole,  tArticle->mO2MoleRate,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2Omole, tArticle->mH2OMoleRate,        DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVolts,   tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->mOutputHeat,         FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW[0],    tArticle->mSourceVector[0],    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW[1],    tArticle->mSourceVector[1],    DBL_EPSILON);
 
@@ -431,20 +437,22 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mO2MoleRate,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mH2OMoleRate,        DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVolts, tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mOutputHeat,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[0],    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tArticle->mSourceVector[1],    DBL_EPSILON);
 
-    /// @test    Nominal outputs for reverse (electrolysis) reaction.
+    /// @test    Nominal outputs for reverse (electrolysis) reaction, and no blockage malf.
     tArticle->setCurrent(-tCurrent);
+    tArticle->setMalfBlockage();
     tArticle->step(tTimeStep);
-    expectedH2mass  = -tCellH2ReactRate * tNumCells * tCurrent
-                    * tMaxEfficiency * (1.0 - tMalfBlockageValue);
+    expectedH2mass  = -tCellH2ReactRate * tNumCells * tCurrent * tMaxEfficiency;
     expectedH2mole  =  expectedH2mass  / 2.01588;    // MW of H2
     expectedO2mole  =  expectedH2mole  * 0.5;
     expectedH2Omole = -expectedH2mole  * 1.0;
     expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
     expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
     expectedVolts   =  tCellVoltageLoaded * tNumCells;
+    expectedHeat    =  fabs(expectedH2mole) * -4.86e7;
     expectedW[0]    =  expectedH2mole + expectedH2Omole;
     expectedW[1]    =  expectedO2mole;
     CPPUNIT_ASSERT_EQUAL        ( false,           tArticle->mTrippedOff);
@@ -455,6 +463,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedO2mole,  tArticle->mO2MoleRate,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedH2Omole, tArticle->mH2OMoleRate,        DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedVolts,   tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedHeat,    tArticle->mOutputHeat,         FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW[0],    tArticle->mSourceVector[0],    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW[1],    tArticle->mSourceVector[1],    DBL_EPSILON);
 
@@ -470,6 +479,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mO2MoleRate,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mH2OMoleRate,        DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mOutputStackVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mOutputHeat,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[0],    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->mSourceVector[1],    DBL_EPSILON);
 

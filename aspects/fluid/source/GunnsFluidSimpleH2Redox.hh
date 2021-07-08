@@ -25,7 +25,6 @@ ASSUMPTIONS AND LIMITATIONS:
 - (
    (H2, O2 and H2O are in gaseous phase and are ideal gas.)
    (Effects of temperature are not modeled.)
-   (Heats of reaction and phase change are not modeled.)
    (Energy is not conserved, because of the lack of reaction heat.)
    (Output voltage is constant, not a function of temperature or load.)
    (Reaction efficiency is constant.)
@@ -121,7 +120,6 @@ class GunnsFluidSimpleH2RedoxInputData : public GunnsFluidLinkInputData
 ///           - Model reaction efficiency as function of power load.
 ///           - Model non-zero unloaded reaction rate.
 ///           - Allow mixed fluid phases, although this might depend on other GUNNS upgrades.
-///           - Model heats of reaction and phase change.
 ///           - Model absorption/desorption of contaminants and their effects on efficiency.  This
 ///             might be best achieved with a separate absorber link that communicates the types and
 ///             amounts of absorbed contaminants to the H2 redox link.
@@ -153,6 +151,8 @@ class GunnsFluidSimpleH2Redox : public GunnsFluidLink
         void         setCurrent(const double current);
         /// @brief    Gets the output stack voltage of this Simple H2 Redox.
         double       getOutputStackVoltage() const;
+        /// @brief    Gets the output reaction heat of this Simple H2 Redox.
+        double       getOutputHeat() const;
         /// @brief    Gets the mass rate of H2 in the Simple H2 Redox.
         double       getH2MassRate() const;
         /// @brief    Gets the mass rate of O2 in the Simple H2 Redox.
@@ -168,6 +168,7 @@ class GunnsFluidSimpleH2Redox : public GunnsFluidLink
         double     mCurrent;            /**< (amp)                          Electrical stack current driving the reaction. */
         bool       mTrippedOff;         /**< (1)                            Reaction is disabled. */
         double     mOutputStackVoltage; /**< (V)                            Output voltage of the stack. */
+        double     mOutputHeat;         /**< (W)                            Output heat of the reaction. */
         double     mEfficiency;         /**< (1)        trick_chkpnt_io(**) Actual efficiency. */
         double     mH2MassRate;         /**< (kg/s)     trick_chkpnt_io(**) Produced mass rate of H2 from the reaction. */
         double     mO2MassRate;         /**< (kg/s)     trick_chkpnt_io(**) Produced mass rate of O2 from the reaction. */
@@ -178,6 +179,7 @@ class GunnsFluidSimpleH2Redox : public GunnsFluidLink
         PolyFluid* mH2Fluid;            /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the fuel constituent (H2). */
         PolyFluid* mO2Fluid;            /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the oxidizer constituent (O2). */
         PolyFluid* mH2OFluid;           /**< (1)        trick_chkpnt_io(**) Pointer to an internal fluid for the water constituent (H2O). */
+        static const double mReactionHeat; /**< (J/kg*mol) trick_chkpnt_io(**) Heat output to environment per mass of H2 reacted. */
         /// @brief    Validates the initialization inputs of this Simple H2 Redox.
         void         validate(const GunnsFluidSimpleH2RedoxConfigData& configData,
                               const GunnsFluidSimpleH2RedoxInputData&  inputData);
@@ -220,6 +222,17 @@ inline void GunnsFluidSimpleH2Redox::setCurrent(const double current)
 inline double GunnsFluidSimpleH2Redox::getOutputStackVoltage() const
 {
     return mOutputStackVoltage;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double  (W)  Heat output from the reaction.
+///
+/// @details  Returns the output heat from the reaction.  Positive values are exothermic fuel-cell
+///           reactions, and negative values are endothermic electrolysis reactions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidSimpleH2Redox::getOutputHeat() const
+{
+    return mOutputHeat;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

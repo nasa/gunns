@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Node implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -687,9 +687,12 @@ void GunnsFluidNode::integrateFlows(const double dt)
     /// - Calculate mass discrepancy between the solution density and the actual mass / volume.
     computeMassError();
 
-    /// - Mix through flow of final contents to the outflow, and balance outflow properties.
+    /// - Mix through flow of final contents to the outflow, and balance outflow properties.  If
+    ///   there weren't any outflows, then set the outflow state to the new contents.
     if (outFlowThru > 0.0) {
         mOutflow.addState(&mContent, outFlowThru);
+    } else if (outFlowContent <= 0.0) {
+        mOutflow.setState(&mContent);
     }
     mOutflow.setPressure(mContent.getPressure());
 

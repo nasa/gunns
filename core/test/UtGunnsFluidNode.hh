@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_FLUID_NODE    Gunns Fluid Node Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Node class
@@ -65,6 +65,7 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         CPPUNIT_TEST(testResetFlows);
         CPPUNIT_TEST(testFlowsToCapacitiveNode);
         CPPUNIT_TEST(testIntegrateFlowsNoInflow);
+        CPPUNIT_TEST(testIntegrateFlowsNoOutflow);
         CPPUNIT_TEST(testOutflowOverflow);
         CPPUNIT_TEST(testInflowOverflow);
         CPPUNIT_TEST(testFlowsToNonCapacitiveNode);
@@ -115,6 +116,7 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         void testResetFlows();
         void testFlowsToCapacitiveNode();
         void testIntegrateFlowsNoInflow();
+        void testIntegrateFlowsNoOutflow();
         void testOutflowOverflow();
         void testInflowOverflow();
         void testFlowsToNonCapacitiveNode();

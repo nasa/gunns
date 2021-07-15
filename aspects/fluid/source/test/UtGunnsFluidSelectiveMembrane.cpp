@@ -1,14 +1,9 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (aspects/fluid/source/GunnsFluidSelectiveMembrane.o)
-    )
-***************************************************************************************************/
 #include "UtGunnsFluidSelectiveMembrane.hh"
-
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -641,9 +636,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
 
     /// @test Flow transport between the nodes.
     tNodes[tPort1].integrateFlows(tTimeStep);
-    double oldDownH         = tNodes[tPort1].getOutflow()->getSpecificEnthalpy();
     double expectedDownQ    = tNodes[tPort0].getOutflow()->getSpecificEnthalpy() * expectedFlow
-                            - oldDownH * tArticle->mMembraneFlowRate
                             + tArticle->mPhaseChangeHeat;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort0].getInflux(),      DBL_EPSILON);
@@ -731,9 +724,8 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
 
     /// @test Flow transport between the nodes.
     tNodes[tPort0].integrateFlows(tTimeStep);
-    oldDownH         = tNodes[tPort0].getOutflow()->getSpecificEnthalpy();
     expectedDownQ    = tNodes[tPort1].getOutflow()->getSpecificEnthalpy() * -expectedFlow
-                     - oldDownH * tArticle->mMembraneFlowRate + tArticle->mPhaseChangeHeat;
+                     + tArticle->mPhaseChangeHeat;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlow,    tNodes[tPort0].getInflux(),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort0].getOutflux(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNodes[tPort1].getInflux(),  DBL_EPSILON);

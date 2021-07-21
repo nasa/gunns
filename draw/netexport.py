@@ -157,6 +157,18 @@ def getInputData(attr):
 def getLinkName(link):
     return link.attrib['label']
 
+# Strips out any xml tags from the given object label attribute.  If there were any,
+# stores the cleaned version back into the attribute and flags the content change for
+# the drawing maintenance updates.
+def cleanLabel(object):
+    label = object.attrib['label']
+    clean_label = re.sub('<.*?>', '', label)
+    if (label != clean_label):
+        print('    ' + console.note('cleaned shape name from ' + label + ' to ' + clean_label + '.'))
+        object.attrib['label'] = clean_label
+        return True
+    return False
+    
 # Returns as a string the given link's or spotter's config or input data constructor body
 # for loading vectors.
 # Note this works for links and spotters.
@@ -810,11 +822,11 @@ if 0 < len(customLibs):
 allShapeMasters = shapeLibs.shapeTree.findall('./object')
 for link in links:
     master = shapeLibs.getLinkShapeMaster(link, allShapeMasters)
-    if updateLinkShapeData(link, master):
+    if updateLinkShapeData(link, master) or cleanLabel(link):
         contentsUpdated = True
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
-    if updateSpotterShapeData(spotter, master):
+    if updateSpotterShapeData(spotter, master) or cleanLabel(spotter):
         contentsUpdated = True
 
 # Check the port connections, each must connect between a node and a link.

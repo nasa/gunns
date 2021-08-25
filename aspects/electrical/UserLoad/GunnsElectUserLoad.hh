@@ -8,7 +8,7 @@
 @defgroup TSM_GUNNS_ELECTRICAL_USERLOADBASE_SPOTTER GUNNS Electrical User Load Base Spotter
 @ingroup  TSM_GUNNS_ELECTRICAL_USERLOADBASE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -45,11 +45,15 @@ class GunnsElectUserLoadConfigData : public GunnsNetworkSpotterConfigData
     public:
         double mUnderVoltageLimit;  /**< (V)   trick_chkpnt_io(**) Low voltage limit for operation. */
         double mFuseCurrentLimit;   /**< (amp) trick_chkpnt_io(**) Current above which the fuse blows. */
+        double mDutyCycleFraction;  /**< (1)   trick_chkpnt_io(**) Fraction of time the load spends in the on state in its duty cycle. */
+        double mDutyCyclePeriod;    /**< (s)   trick_chkpnt_io(**) Duration of each duty cycle. */
         /// @brief Default constructs this GUNNS Electrical User Load Base Spotter configuration
         ///        data.
         GunnsElectUserLoadConfigData(const std::string& name,
                                      const double       underVoltageLimit,
-                                     const double       fuseCurrentLimit);
+                                     const double       fuseCurrentLimit,
+                                     const double       dutyCycleFraction,
+                                     const double       dutyCyclePeriod);
         /// @brief Default destructs this GUNNS Electrical User Load Base Spotter configuration
         ///        data.
         virtual ~GunnsElectUserLoadConfigData();
@@ -70,11 +74,13 @@ class GunnsElectUserLoadConfigData : public GunnsNetworkSpotterConfigData
 class GunnsElectUserLoadInputData : public GunnsNetworkSpotterInputData
 {
     public:
-        int    mInitialMode;                 /**< (--) trick_chkpnt_io(**) Initial mode. */
-        double mInitialVoltage;              /**< (V)  trick_chkpnt_io(**) Initial input voltage. */
+        int    mInitialMode;        /**< (1) trick_chkpnt_io(**) Initial mode. */
+        double mInitialVoltage;     /**< (V) trick_chkpnt_io(**) Initial input voltage. */
+        double mDutyCycleTimer;     /**< (s) trick_chkpnt_io(**) Initial duty cycle elapsed time. */
         /// @brief Default constructs this GUNNS Electrical User Load Base Spotter input data.
         GunnsElectUserLoadInputData(const int    initialMode,
-                                    const double initialVoltage);
+                                    const double initialVoltage,
+                                    const double dutyCycleTimer);
         /// @brief Default destructs this GUNNS Electrical User Load Base Spotter input data.
         virtual ~GunnsElectUserLoadInputData();
 
@@ -102,7 +108,7 @@ class GunnsElectUserLoad : public GunnsNetworkSpotter
         virtual     ~GunnsElectUserLoad();
         /// @brief Loads the derived class config & input data.
         virtual void          initialize(GunnsNetworkSpotterConfigData* configData,
-                                         GunnsNetworkSpotterInputData*  inputData) = 0;
+                                         GunnsNetworkSpotterInputData*  inputData);
         /// @brief Initializes the derived class and its contained User Load.
         virtual void          initLoad() = 0;
         /// @brief Provides interface to the User Load contained in a derived class.
@@ -115,9 +121,18 @@ class GunnsElectUserLoad : public GunnsNetworkSpotter
         void                  setSupplyVoltage(const double voltage);
         /// @brief Updates the user load object and updates the supply load.
         void                  step();
+        /// @brief Updates the user load duty cycle function.
+        void                  stepDutyCycle(const double dt);
 
     protected:
-        double mSupplyVoltage; /**< (V)                      Voltage input from the power supply. */
+        double mDutyCycleFraction;  /**< (1) trick_chkpnt_io(**) Fraction of time the load spends in the on state in its duty cycle. */
+        double mDutyCyclePeriod;    /**< (s) trick_chkpnt_io(**) Duration of each duty cycle. */
+        double mDutyCycleTimer;     /**< (s)                     Duty cycle elapsed time. */
+        double mSupplyVoltage;      /**< (V)                     Voltage input from the power supply. */
+        /// @brief Validates the supplied configuration data.
+        GunnsElectUserLoadConfigData* validateConfig(GunnsNetworkSpotterConfigData* config);
+        /// @brief Validates the supplied input data.
+        GunnsElectUserLoadInputData*  validateInput (GunnsNetworkSpotterInputData* input);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

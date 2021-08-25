@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Constant-Power User Load Spotter implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -15,11 +15,13 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name               (--)  Instance name for self-identification in messages.
-/// @param[in]  underVoltageLimit  (v)   Low voltage limit for operation.
-/// @param[in]  powerNormal        (W)   Power for normal mode.
-/// @param[in]  powerStandby       (W)   Power for standby mode.
-/// @param[in]  fuseCurrentLimit   (amp) Current above which the fuse blows.
+/// @param[in] name              (--)  Instance name for self-identification in messages.
+/// @param[in] underVoltageLimit (v)   Low voltage limit for operation.
+/// @param[in] powerNormal       (W)   Power for normal mode.
+/// @param[in] powerStandby      (W)   Power for standby mode.
+/// @param[in] fuseCurrentLimit  (amp) Current above which the fuse blows.
+/// @param[in] dutyCycleFraction (--)  Fraction of time the load spends in the on state in its duty cycle.
+/// @param[in] dutyCyclePeriod   (s)   Duration of each duty cycle.
 ///
 /// @details  Default constructs this GUNNS Electrical Constant-Power User Load Spotter
 ///           configuration data.
@@ -29,9 +31,11 @@ GunnsElectConstantPowerUserLoadConfigData::GunnsElectConstantPowerUserLoadConfig
         const double       underVoltageLimit,
         const double       powerNormal,
         const double       powerStandby,
-        const double       fuseCurrentLimit)
+        const double       fuseCurrentLimit,
+        const double       dutyCycleFraction,
+        const double       dutyCyclePeriod)
     :
-    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit),
+    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit, dutyCycleFraction, dutyCyclePeriod),
     mPowerNormal(powerNormal),
     mPowerStandby(powerStandby)
 {
@@ -55,9 +59,10 @@ GunnsElectConstantPowerUserLoadConfigData::~GunnsElectConstantPowerUserLoadConfi
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectConstantPowerUserLoadInputData::GunnsElectConstantPowerUserLoadInputData(
         const int    initialMode,
-        const double initialVoltage)
+        const double initialVoltage,
+        const double dutyCycleTimer)
     :
-    GunnsElectUserLoadInputData(initialMode, initialVoltage)
+    GunnsElectUserLoadInputData(initialMode, initialVoltage, dutyCycleTimer)
 {
     // nothing to do
 }
@@ -111,6 +116,9 @@ GunnsElectConstantPowerUserLoad::~GunnsElectConstantPowerUserLoad()
 void GunnsElectConstantPowerUserLoad::initialize(GunnsNetworkSpotterConfigData* configData,
                                                  GunnsNetworkSpotterInputData*  inputData)
 {
+    /// - Initialize the base class.
+    GunnsElectUserLoad::initialize(configData, inputData);
+
     /// - Validate & store config & input data pointers.
     mConfig = validateConfig(configData);
     mInput  = validateInput(inputData);

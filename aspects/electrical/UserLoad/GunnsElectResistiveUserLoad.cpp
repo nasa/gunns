@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Resistive User Load Spotter implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -15,11 +15,13 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name               (--)   Instance name for self-identification in messages.
-/// @param[in]  underVoltageLimit  (v)    Low voltage limit for operation.
-/// @param[in]  resistanceNormal   (ohm)  Resistance for normal mode.
-/// @param[in]  resistanceStandby  (ohm)  Resistance for standby mode.
-/// @param[in]  fuseCurrentLimit   (amp)  Current above which the fuse blows.
+/// @param[in] name              (--)  Instance name for self-identification in messages.
+/// @param[in] underVoltageLimit (v)   Low voltage limit for operation.
+/// @param[in] resistanceNormal  (ohm) Resistance for normal mode.
+/// @param[in] resistanceStandby (ohm) Resistance for standby mode.
+/// @param[in] fuseCurrentLimit  (amp) Current above which the fuse blows.
+/// @param[in] dutyCycleFraction (--)  Fraction of time the load spends in the on state in its duty cycle.
+/// @param[in] dutyCyclePeriod   (s)   Duration of each duty cycle.
 ///
 /// @details  Default constructs this GUNNS Electrical Resistive User Load Spotter configuration
 ///           data.
@@ -29,9 +31,11 @@ GunnsElectResistiveUserLoadConfigData::GunnsElectResistiveUserLoadConfigData(
         const double       underVoltageLimit,
         const double       resistanceNormal,
         const double       resistanceStandby,
-        const double       fuseCurrentLimit)
+        const double       fuseCurrentLimit,
+        const double       dutyCycleFraction,
+        const double       dutyCyclePeriod)
     :
-    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit),
+    GunnsElectUserLoadConfigData(name, underVoltageLimit, fuseCurrentLimit, dutyCycleFraction, dutyCyclePeriod),
     mResistanceNormal(resistanceNormal),
     mResistanceStandby(resistanceStandby)
 {
@@ -50,14 +54,16 @@ GunnsElectResistiveUserLoadConfigData::~GunnsElectResistiveUserLoadConfigData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  initialMode     (--)  Initial mode.
 /// @param[in]  initialVoltage  (v)   Initial input voltage.
+/// @param[in]  dutyCycleTimer  (s)   Initial duty cycle elapsed time.
 ///
 /// @details  Default constructs this GUNNS Electrical Resistive User Load Spotter input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectResistiveUserLoadInputData::GunnsElectResistiveUserLoadInputData(
         const int    initialMode,
-        const double initialVoltage)
+        const double initialVoltage,
+        const double dutyCycleTimer)
     :
-    GunnsElectUserLoadInputData(initialMode, initialVoltage)
+    GunnsElectUserLoadInputData(initialMode, initialVoltage, dutyCycleTimer)
 {
     // nothing to do
 }
@@ -111,6 +117,9 @@ GunnsElectResistiveUserLoad::~GunnsElectResistiveUserLoad()
 void GunnsElectResistiveUserLoad::initialize(GunnsNetworkSpotterConfigData* configData,
                                              GunnsNetworkSpotterInputData*  inputData)
 {
+    /// - Initialize the base class.
+    GunnsElectUserLoad::initialize(configData, inputData);
+
     /// - Validate & store config & input data pointers.
     mConfig = validateConfig(configData);
     mInput  = validateInput(inputData);
@@ -170,6 +179,7 @@ GunnsElectResistiveUserLoadConfigData* GunnsElectResistiveUserLoad::validateConf
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Bad config data pointer type.");
     }
+
     return result;
 }
 

@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_SWITCH_USER_LOAD    GUNNS Electrical User Load Switch Link
 @ingroup   TSM_GUNNS_ELECTRICAL_SWITCH
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -137,6 +137,8 @@ class GunnsElectUserLoadSwitch : public GunnsBasicConductor
                         std::vector<GunnsBasicLink*>&             networkLinks,
                         const int                                 port0,
                         const int                                 port1);
+        /// @brief Updates the link contributions to the system of equations.
+        virtual void step(const double dt);
         /// @brief Updates the link effective conductance.
         virtual void updateState(const double dt);
         /// @brief Puts the given user load object on the switch.
@@ -213,7 +215,7 @@ inline bool GunnsElectUserLoadSwitch::isNonLinear()
 inline void GunnsElectUserLoadSwitch::minorStep(const double dt,
                                                 const int    minorStep __attribute__((unused)))
 {
-    step(dt);
+    GunnsBasicConductor::step(dt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

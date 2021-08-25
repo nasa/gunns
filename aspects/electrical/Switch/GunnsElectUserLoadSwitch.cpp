@@ -181,6 +181,24 @@ void GunnsElectUserLoadSwitch::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Integration time step
+///
+/// @details  This updates all of the user load objects' duty cycle function, then calls the base
+///           class step function to complete the major step updates.
+///
+/// @notes  To ensure that the user load's duty cycle only gets called once per network major step,
+///         this function should only be called on the first network major step, and subsequent
+///         minor steps should skip this and call GunnsBasicConductor::step directly instead.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectUserLoadSwitch::step(const double dt)
+{
+    for (unsigned int i=0; i<mUserLoads.size(); ++i) {
+        mUserLoads[i]->stepDutyCycle(dt);
+    }
+    GunnsBasicConductor::step(dt);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  Integration time step, not used.
 ///
 /// @throws   TsInitializationException

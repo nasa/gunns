@@ -1,9 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
- LIBRARY DEPENDENCY:
-    ((aspects/electrical/UserLoad/ResistiveLoad.o))
- ***************************************************************************************************/
+ */
 #include "aspects/electrical/UserLoad/UserLoadBase.hh"
 #include "UtResistiveLoad.hh"
 #include <iostream>
@@ -474,6 +472,12 @@ void UtResistiveLoad::testComputeActualPowerStandbyResistanceEqualToZero() {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(UserLoadBase::MAXIMUM_RESISTANCE, tArticle->mEquivalentResistance, FLT_EPSILON);
     tArticle->computeActualPower();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(UserLoadBase::MAXIMUM_RESISTANCE, tArticle->mEquivalentResistance, FLT_EPSILON);
+
+    /// @test   zero equivalent resistance in computeActualPower
+    tArticle->mEquivalentResistance = 0.0;
+    tArticle->mPrintMessageOnce     = false; // for code coverage
+    tArticle->computeActualPower();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(UserLoadBase::DEFAULT_RESISTANCE, tArticle->mEquivalentResistance, 0.0);
 
     UT_PASS;
 }

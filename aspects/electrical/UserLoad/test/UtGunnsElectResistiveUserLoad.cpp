@@ -1,9 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
- LIBRARY DEPENDENCY:
-    ((aspects/electrical/Switch/GunnsElectResistiveUserLoad.o))
-***************************************************************************************************/
+*/
 
 #include "UtGunnsElectResistiveUserLoad.hh"
 
@@ -24,9 +22,12 @@ UtGunnsElectResistiveUserLoad::UtGunnsElectResistiveUserLoad()
     tResistanceNormal(0.0),
     tResistanceStandby(0.0),
     tFuseCurrentLimit(0.0),
+    tDutyCycleFraction(0.0),
+    tDutyCyclePeriod(0.0),
     tConfigData(0),
     tInitialMode(0),
     tInitialVoltage(0.0),
+    tDutyCycleTimer(0.0),
     tInputData(0),
     tArticle(0)
 {
@@ -53,16 +54,23 @@ void UtGunnsElectResistiveUserLoad::setUp()
     tResistanceNormal   = 40.0;
     tResistanceStandby  = 500.0;
     tFuseCurrentLimit   = 3.0;
+    tDutyCycleFraction  = 0.9;
+    tDutyCyclePeriod    = 10.0;
     tConfigData         = new GunnsElectResistiveUserLoadConfigData(tName,
                                                                     tUnderVoltageLimit,
                                                                     tResistanceNormal,
                                                                     tResistanceStandby,
-                                                                    tFuseCurrentLimit);
+                                                                    tFuseCurrentLimit,
+                                                                    tDutyCycleFraction,
+                                                                    tDutyCyclePeriod);
 
     /// - Define the nominal input data.
     tInitialMode        = 1;
     tInitialVoltage     = 120.0;
-    tInputData          = new GunnsElectResistiveUserLoadInputData(tInitialMode, tInitialVoltage);
+    tDutyCycleTimer     = 8.5;
+    tInputData          = new GunnsElectResistiveUserLoadInputData(tInitialMode,
+                                                                   tInitialVoltage,
+                                                                   tDutyCycleTimer);
 
     /// - Default construct the nominal test article.
     tArticle            = new FriendlyGunnsElectResistiveUserLoad(tConfigData, tInputData);
@@ -95,6 +103,8 @@ void UtGunnsElectResistiveUserLoad::testConfig()
     CPPUNIT_ASSERT(tResistanceNormal  == tConfigData->mResistanceNormal);
     CPPUNIT_ASSERT(tResistanceStandby == tConfigData->mResistanceStandby);
     CPPUNIT_ASSERT(tFuseCurrentLimit  == tConfigData->mFuseCurrentLimit);
+    CPPUNIT_ASSERT(tDutyCycleFraction == tConfigData->mDutyCycleFraction);
+    CPPUNIT_ASSERT(tDutyCyclePeriod   == tConfigData->mDutyCyclePeriod);
 
     /// @test    Configuration data default construction.
     GunnsElectResistiveUserLoadConfigData defaultConfig;
@@ -103,6 +113,8 @@ void UtGunnsElectResistiveUserLoad::testConfig()
     CPPUNIT_ASSERT(0.0 == defaultConfig.mResistanceNormal);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mResistanceStandby);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mFuseCurrentLimit);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mDutyCycleFraction);
+    CPPUNIT_ASSERT(0.0 == defaultConfig.mDutyCyclePeriod);
 
     UT_PASS;
 }
@@ -117,11 +129,13 @@ void UtGunnsElectResistiveUserLoad::testInput()
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(tInitialMode    == tInputData->mInitialMode);
     CPPUNIT_ASSERT(tInitialVoltage == tInputData->mInitialVoltage);
+    CPPUNIT_ASSERT(tDutyCycleTimer == tInputData->mDutyCycleTimer);
 
     /// @test    Input data default construction.
     GunnsElectResistiveUserLoadInputData defaultInput;
     CPPUNIT_ASSERT(0   == defaultInput.mInitialMode);
     CPPUNIT_ASSERT(0.0 == defaultInput.mInitialVoltage);
+    CPPUNIT_ASSERT(0.0 == defaultInput.mDutyCycleTimer);
 
     UT_PASS;
 }
@@ -271,6 +285,57 @@ void UtGunnsElectResistiveUserLoad::testInitializationExceptions()
     tArticle->initialize(tConfigData, tInputData);
     CPPUNIT_ASSERT_THROW(tArticle->initLoad(), TsInitializationException);
     CPPUNIT_ASSERT(!tArticle->isInitialized());
+
+    /// @test    Exception thrown from duty cycle fraction < 0.
+    tConfigData->mDutyCycleFraction = -0.1;
+    CPPUNIT_ASSERT_THROW(tArticle->initLoad(), TsInitializationException);
+    tConfigData->mDutyCycleFraction = 1.1;
+    CPPUNIT_ASSERT_THROW(tArticle->initLoad(), TsInitializationException);
+    tConfigData->mDutyCycleFraction = tDutyCycleFraction;
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests for GUNNS Electrical Resistive User Load Spotter stepDutyCycle function.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectResistiveUserLoad::testDutyCycle()
+{
+    UT_RESULT;
+
+    CPPUNIT_ASSERT_NO_THROW(tArticle->initLoad());
+
+    /// @test    step with duty cycle turned off.
+    int lastMode = tArticle->getLoad()->getLoadOperMode();
+    tArticle->mDutyCyclePeriod = 0.0;
+    const double timestep = 0.1;
+    tArticle->stepDutyCycle(0.1);
+    CPPUNIT_ASSERT(tDutyCycleTimer == tArticle->mDutyCycleTimer);
+    CPPUNIT_ASSERT(lastMode        == tArticle->getLoad()->getLoadOperMode());
+
+    /// @test    step with duty cycle on, load results in on.
+    tArticle->mDutyCyclePeriod = tDutyCyclePeriod;
+    double expectedTimer = tDutyCycleTimer + timestep;
+    int    expectedMode = static_cast<int>(LoadON);
+    tArticle->stepDutyCycle(0.1);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTimer, tArticle->mDutyCycleTimer, DBL_EPSILON);
+    CPPUNIT_ASSERT(expectedMode == tArticle->getLoad()->getLoadOperMode());
+
+    /// @test    step several more times to get into the off portion of the cycle.
+    for (unsigned int steps = 0; steps < 5; steps++) {
+        tArticle->stepDutyCycle(timestep);
+    }
+    expectedMode = static_cast<int>(LoadOFF);
+    CPPUNIT_ASSERT(expectedMode == tArticle->getLoad()->getLoadOperMode());
+
+    /// @test    step several times to wrap around back to the start of the cycle.
+    for (unsigned int steps = 0; steps < 10; steps++) {
+        tArticle->stepDutyCycle(timestep);
+    }
+    expectedMode  = static_cast<int>(LoadON);
+    expectedTimer = 0.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTimer, tArticle->mDutyCycleTimer, DBL_EPSILON);
+    CPPUNIT_ASSERT(expectedMode == tArticle->getLoad()->getLoadOperMode());
 
     UT_PASS_LAST;
 }

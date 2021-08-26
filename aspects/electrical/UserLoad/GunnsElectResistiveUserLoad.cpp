@@ -117,12 +117,12 @@ GunnsElectResistiveUserLoad::~GunnsElectResistiveUserLoad()
 void GunnsElectResistiveUserLoad::initialize(GunnsNetworkSpotterConfigData* configData,
                                              GunnsNetworkSpotterInputData*  inputData)
 {
-    /// - Initialize the base class.
-    GunnsElectUserLoad::initialize(configData, inputData);
-
     /// - Validate & store config & input data pointers.
     mConfig = validateConfig(configData);
     mInput  = validateInput(inputData);
+
+    /// - Initialize the base class.
+    GunnsElectUserLoad::initialize(configData, inputData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

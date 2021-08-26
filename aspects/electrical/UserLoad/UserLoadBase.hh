@@ -1,11 +1,11 @@
 #ifndef _USER_LOAD_BASE_HH_
 #define _USER_LOAD_BASE_HH_
 
-/*********************** TRICK HEADER *************************************************************
+/*
 @defgroup  TSM_GUNNS_ELECTRICAL_USERLOAD  User Load Base
 @ingroup   TSM_GUNNS_ELECTRICAL_USERLOADBASE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -49,7 +49,7 @@ PURPOSE:
      ((Shailaja Janapati) (L-3) (Initial) (October 2011))
  )
  @{
- **************************************************************************************************/
+ */
 #include <string>
 #include <vector>
 
@@ -308,9 +308,6 @@ protected:
     /// @brief validate the input data
     void  validate(const UserLoadBaseConfigData &config,
                    const UserLoadBaseInputData &input);
-
-    /// @brief cleanup the allocated memory
-    void  cleanup();
 
     /// @brief utility function to tokenize a string based on an arbitrary delimiter.
     void tokenize(std::vector<std::string>& theStringVector,

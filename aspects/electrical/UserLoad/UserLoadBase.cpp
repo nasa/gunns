@@ -1,5 +1,5 @@
-/*********************** TRICK HEADER *************************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -25,7 +25,7 @@
  (
      (Shailaja Janapati) (L-3) (Initial) (October 2011)
  )
- **************************************************************************************************/
+ */
 #include "UserLoadBase.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -171,20 +171,9 @@ UserLoadBase::UserLoadBase():
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-///
-/// @details  Default destructs this UserLoadBase object. Class the cleanup method
-///           to delete the allocated memory.
+/// @details  Default destructs this UserLoadBase object.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 UserLoadBase::~UserLoadBase()
-{
-    cleanup();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-///
-/// @details  Deletes allocated memory.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void UserLoadBase::cleanup()
 {
     // nothing to do
 }
@@ -232,6 +221,9 @@ void UserLoadBase::initialize(const UserLoadBaseConfigData &configData,
     mUserLoadType = configData.mUserLoadType;
     mUnderVoltageLimit = configData.mUnderVoltageLimit;
     mFuseCurrentLimit = configData.mFuseCurrentLimit;
+
+    //TODO all this mCardId, mNameLoad and mPrettyNameLoad stuff is very TS21-
+    // specific and should be removed....
 
     // Initialize load card number and switch number.
     // This data is set from the config data. It is

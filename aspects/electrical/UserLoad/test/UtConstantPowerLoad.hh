@@ -5,7 +5,7 @@
 /// @defgroup UT_CONSTANT_POWER_USER_LOAD  Gunns Electrical Constant Power User Load Unit test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns User Load model

@@ -1,9 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
- LIBRARY DEPENDENCY:
- ((aspects/electrical/UserLoad/ConstantPowerLoad.o))
- ***************************************************************************************************/
+ */
 #include "UtConstantPowerLoad.hh"
 #include <iostream>
 
@@ -261,6 +259,12 @@ void UtConstantPowerLoad::testValidation() {
 
     UT_RESULT;
 
+    /// @test empty object name
+    tConfigData->mName = "";
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData,
+            tnetworkLoads, tCardId, tLoadSwitchId), TsInitializationException);
+    tConfigData->mName = tloadName;
+
     /// @test voltage validation
     tConfigData->mUserLoadType = 3; // something other than constant power or constant resistance
 
@@ -435,6 +439,13 @@ void UtConstantPowerLoad::testUpdateState() {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->getCurrent(),
                0.0, tTolerance);
 
+    /// @test   Magic power voltage
+    tArticle->mMagicPowerFlag = true;
+    tArticle->mMagicPowerValue = 24.0;
+    tArticle->step(tInitialPotential);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(24.0, tArticle->mVoltage, tTolerance);
+    tArticle->mMagicPowerFlag = false;
+
     tArticle->mPowerValid = true;
     CPPUNIT_ASSERT(tArticle->getPowerValid());
 
@@ -442,7 +453,6 @@ void UtConstantPowerLoad::testUpdateState() {
     tArticle->mPowerNormal = -1.0;
 
     CPPUNIT_ASSERT_THROW(tArticle->calculateConstantPowerLoad(), TsNumericalException);
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// - Create a new article, and initialize with zero capacitance.
@@ -607,6 +617,8 @@ void UtConstantPowerLoad::testSetters() {
     const double result = 1234.5;
     tArticle->setPowerNormal(result);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mPowerNormal, result, tTolerance);
+    tArticle->setLoadOperMode(LoadSTANDBY);
+    CPPUNIT_ASSERT(LoadSTANDBY == tArticle->mLoadOperMode);
 
     UT_PASS_LAST;
 }

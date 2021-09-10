@@ -928,7 +928,7 @@ for link in links:
     # Check that all required ports are present
     for req_port in req_ports:
         port_found = False
-        if not (-1 < int(req_port) < max(1, num_ports)):
+        if (num_ports > 0) and not (-1 < int(req_port) < max(1, num_ports)):
             sys.exit(console.abort(getLinkName(link) + ' link\'s shape master has invalid required port # ' + req_port + '.'))
         for link_port in link_ports:
             if req_port == link_port.attrib['label']:

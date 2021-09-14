@@ -493,7 +493,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
     /// - mSepBufferExit is the flow that was removed from the bulk flow last pass, reflected
     ///   in the source vector this pass, and added to the exit ports this pass.
     for (int i=0; i<mNumSepTypes; ++i) {
-        mSepBufferThru[i] = mSepFraction[i] * mFlux
+        mSepBufferThru[i] = mSepFraction[i] * fabs(mFlux)
                 * mNodes[upstreamPort]->getOutflow()->getMoleFraction(mSepIndex[i]);
         if (mSepBufferExit[i] > DBL_EPSILON) {
             mPortDirections[mSepPort[i]] = SOURCE;
@@ -547,7 +547,7 @@ void GunnsFluidMultiSeparator::transportFlows(const double dt __attribute__((unu
         }
     }
 
-    const double flux = abs(mFlux);
+    const double flux = fabs(mFlux);
     if (flux > DBL_EPSILON) {
         /// - The bulk through flow has the separated fluids removed from it before being given to
         ///   the downstream node, using the separation flow rates from this pass, which will be
@@ -563,7 +563,7 @@ void GunnsFluidMultiSeparator::transportFlows(const double dt __attribute__((unu
         }
         for (int i=0; i<mNumSepTypes; ++i) {
             moleFractions[mSepIndex[i]] -= mSepBufferThru[i];
-            exitFlux                                   -= mSepBufferThru[i];
+            exitFlux                    -= mSepBufferThru[i];
         }
         if (exitFlux > DBL_EPSILON) {
             /// - Now moleFractions is normalized back into fractions.

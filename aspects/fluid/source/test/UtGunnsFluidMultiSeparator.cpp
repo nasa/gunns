@@ -601,7 +601,7 @@ void UtGunnsFluidMultiSeparator::testComputeFlows()
     tArticle->mAdmittanceMatrix[5] =  expectedA;
 
     const double expectedDp     = p0 - p1;
-    const double expectedFlux   = expectedA * (p0 - p1);
+    const double expectedFlux   = expectedA * expectedDp;
     const double expectedMdot   = expectedFlux * expectedMwIn;
     const double expectedQ      = expectedMdot / expectedRhoIn;
     const double expectedPwr    = -expectedQ * expectedDp * 1000.0;
@@ -612,20 +612,68 @@ void UtGunnsFluidMultiSeparator::testComputeFlows()
     tArticle->mSepBufferExit[0] = expectedSepH2O;
     tArticle->mSepBufferExit[1] = expectedSepH2;
 
+    /// @test forward bulk flow.
     tArticle->computeFlows(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot,   tArticle->mFlowRate,         FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mVolFlowRate,      FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,    tArticle->mPower,            0.001);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepH2O, tArticle->mSepBufferThru[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepH2,  tArticle->mSepBufferThru[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,     tArticle->mPotentialDrop,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot,   tArticle->mFlowRate,             FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mVolFlowRate,          FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,    tArticle->mPower,                0.001);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepH2O, tArticle->mSepBufferThru[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepH2,  tArticle->mSepBufferThru[1],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tNodes[0].getScheduledOutflux(), DBL_EPSILON);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[1]);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[2]);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[3]);
-    //TODO complete checks
+
+    tNodes[4].setPotential(p0);
+    tNodes[4].updateMass();
+    tArticle->mPotentialVector[1] = p0;
+    tNodes[0].resetFlows();
+
+    /// @test zero bulk flow.
+    tArticle->computeFlows(tTimeStep);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPotentialDrop,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mFlux,                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mFlowRate,             FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mVolFlowRate,          FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPower,                0.001);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSepBufferThru[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSepBufferThru[1],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[0].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[4].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE   == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE   == tArticle->mPortDirections[1]);
+    CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[2]);
+    CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[3]);
+
+    /// - Swap ports 0 & 1 nodes and set up reverse bulk flow direction.
+    /// @test reverse bulk flow.
+    CPPUNIT_ASSERT(tArticle->setPort(0, 4));
+    CPPUNIT_ASSERT(tArticle->setPort(1, 0));
+    tArticle->mPotentialVector[0] = p1;
+    tArticle->mPotentialVector[1] = p0;
+    tArticle->mSepBufferExit[1]   = 0.0;
+    tArticle->setSeparationFraction(FluidProperties::GUNNS_H2, 0.0);
+    tNodes[0].resetFlows();
+
+    tArticle->computeFlows(tTimeStep);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedDp,    tArticle->mPotentialDrop,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux,  tArticle->mFlux,                 DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedMdot,  tArticle->mFlowRate,             FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedQ,     tArticle->mVolFlowRate,          FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,    tArticle->mPower,                0.001);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepH2O, tArticle->mSepBufferThru[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mSepBufferThru[1],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tNodes[0].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
+    CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[2]);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE   == tArticle->mPortDirections[3]);
 
     UT_PASS;
 }
@@ -642,8 +690,76 @@ void UtGunnsFluidMultiSeparator::testTransportFlows()
     std::vector<int> ports (array, array + sizeof(array) / sizeof(int));
     tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports);
 
-    //TODO setup inputs and check outputs
+    double p0 = 101.325; // inlet
+    double p1 = 0.0;     // exit to Ground
+    double p2 = 101.325; // H2O separation exit
+    double p3 = 101.325; // H2 separation exit
+    tNodes[tPort0].setPotential(p0);
+    tNodes[tPort1].setPotential(p1);
+    tNodes[tPort2].setPotential(p2);
+    tNodes[tPort3].setPotential(p3);
+    tNodes[tPort0].updateMass();
+    tNodes[tPort1].updateMass();
+    tNodes[tPort2].updateMass();
+    tNodes[tPort3].updateMass();
+    tArticle->mPotentialVector[0] = p0;
+    tArticle->mPotentialVector[1] = p1;
+    tArticle->mPotentialVector[2] = p2;
+    tArticle->mPotentialVector[3] = p3;
+    tArticle->setMalfBlockage(true, 0.1);
+    const double expectedG = tMaxConductance * 0.9;
+    const double expectedRhoIn =  1.13976; // from testComputeFlows()
+    const double expectedMwIn  = 27.521;   // from testComputeFlows()
+    const double expectedDp    = p0 - p1;
+    const double expectedA     = expectedG * sqrt(1000.0 * 0.5 * expectedRhoIn / expectedDp)
+                               / expectedMwIn;
+    tArticle->mAdmittanceMatrix[0] =  expectedA;
+    tArticle->mAdmittanceMatrix[1] = -expectedA;
+    tArticle->mAdmittanceMatrix[4] = -expectedA;
+    tArticle->mAdmittanceMatrix[5] =  expectedA;
+    const double expectedFlux   = expectedA * expectedDp;
+    const double expectedMdot   = expectedFlux * expectedMwIn;
+    const double expectedQ      = expectedMdot / expectedRhoIn;
+    const double expectedPwr    = -expectedQ * expectedDp * 1000.0;
+    const double xH2O           = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2O);
+    const double xH2            = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2);
+    const double expectedSepH2O = expectedFlux * xH2O * tFluidFractions[0];
+    const double expectedSepH2  = expectedFlux * xH2  * tFluidFractions[1];
+    tArticle->mSepBufferExit[0] = expectedSepH2O;
+    tArticle->mSepBufferExit[1] = expectedSepH2;
+    const double expectedMdotH2O = expectedSepH2O * 18.0153; // MW of H2O
+    const double expectedMdotH2  = expectedSepH2  * 2.01588; // MW of H2
+    const double expectedMdotDown = expectedMdot - expectedMdotH2O - expectedMdotH2;
+
+    /// - Compute expected mole fraction of bulk flow into downstream node.
+    double expectedX[4] = {
+            tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_N2),
+            tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_WATER),
+            tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2O),
+            tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2)
+    };
+    expectedX[2] *= (1.0 - tFluidFractions[0]);  // removed fluids
+    expectedX[3] *= (1.0 - tFluidFractions[1]);
+    /// - Normalize:
+    const double sumX = expectedX[0] + expectedX[1] + expectedX[2] + expectedX[3];
+    expectedX[0] /= sumX;
+    expectedX[1] /= sumX;
+    expectedX[2] /= sumX;
+    expectedX[3] /= sumX;
+    tArticle->computeFlows(tTimeStep);
     tArticle->transportFlows(tTimeStep);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotH2O,  tNodes[1].getInflux(),                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotH2,   tNodes[2].getInflux(),                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[0],     tNodes[4].getInflow()->getMoleFraction(0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[1],     tNodes[4].getInflow()->getMoleFraction(1), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[2],     tNodes[4].getInflow()->getMoleFraction(2), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[3],     tNodes[4].getInflow()->getMoleFraction(3), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot,     tNodes[0].getOutflux(),                    FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotDown, tNodes[4].getInflux(),                     FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getContent()->getTemperature(), tNodes[1].getInflow()->getTemperature(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getContent()->getTemperature(), tNodes[2].getInflow()->getTemperature(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getContent()->getTemperature(), tNodes[4].getInflow()->getTemperature(), FLT_EPSILON);
 
     UT_PASS;
 }

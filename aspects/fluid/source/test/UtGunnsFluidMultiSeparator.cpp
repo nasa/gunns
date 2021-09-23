@@ -38,6 +38,7 @@ UtGunnsFluidMultiSeparator::UtGunnsFluidMultiSeparator()
     tPort3(),
     tTimeStep(),
     tFluidProperties(),
+    tTcConfig(),
     tFluidConfig(),
     tFluidInput0(),
     tFluidInput1(),
@@ -72,6 +73,7 @@ void UtGunnsFluidMultiSeparator::tearDown()
     delete tFluidConfig;
     delete [] fractions;
     delete tFluidProperties;
+    delete tTcConfig;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ void UtGunnsFluidMultiSeparator::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidMultiSeparator::setUp()
 {
-    tLinkName           = "Test Fluid Selective Membrane";
+    tLinkName           = "Test Fluid Multi-Separator";
     tNodeList.mNumNodes = 5;
     tNodeList.mNodes    = tNodes;
     tPort0              = 0;
@@ -89,24 +91,30 @@ void UtGunnsFluidMultiSeparator::setUp()
     tTimeStep           = 0.1;
 
     /// - Setup some fluid nodes
+    ChemicalCompound::Type tcTypes[2] = {ChemicalCompound::CO2, ChemicalCompound::CH4};
+    tTcConfig = new GunnsFluidTraceCompoundsConfigData(tcTypes, 2, "tTcConfig");
+
     tFluidProperties = new DefinedFluidProperties();
     FluidProperties::FluidType types[4];
     types[0]     = FluidProperties::GUNNS_N2;
     types[1]     = FluidProperties::GUNNS_WATER;
     types[2]     = FluidProperties::GUNNS_H2O;
     types[3]     = FluidProperties::GUNNS_H2;
-    tFluidConfig = new PolyFluidConfigData(tFluidProperties, types, 4);
+    tFluidConfig = new PolyFluidConfigData(tFluidProperties, types, 4, tTcConfig);
 
     fractions = new double[4];
     fractions[0] = 0.99;
     fractions[1] = 0.0;
     fractions[2] = 0.009;
     fractions[3] = 0.001;
+    double tcX[2] = {1.0e-6, 1.0e-7};
+    GunnsFluidTraceCompoundsInputData tcInput(tcX);
     tFluidInput0 = new PolyFluidInputData(294.261,                  //temperature
                                           101.325,                  //pressure
                                           0.0,                      //flowRate
                                           0.0,                      //mass
-                                          fractions);               //massFractions
+                                          fractions,                //mass fractions
+                                          &tcInput);                //TC mole fractions
 
     /// - Have to initialize the nodes with the fluid configs (normally done by GUNNS)
     tNodes[0].initialize("UtTestNode0", tFluidConfig, tFluidInput0);
@@ -120,7 +128,7 @@ void UtGunnsFluidMultiSeparator::setUp()
                                           101.325,                  //pressure
                                           0.0,                      //flowRate
                                           0.0,                      //mass
-                                          fractions);               //massFractions
+                                          fractions);               //mass fractions
 
     tNodes[1].initialize("UtTestNode1", tFluidConfig, tFluidInput1);
     tNodes[1].resetFlows();
@@ -133,7 +141,7 @@ void UtGunnsFluidMultiSeparator::setUp()
                                           101.325,                  //pressure
                                           0.0,                      //flowRate
                                           0.0,                      //mass
-                                          fractions);               //massFractions
+                                          fractions);               //mass fractions
 
     tNodes[2].initialize("UtTestNode2", tFluidConfig, tFluidInput2);
     tNodes[2].resetFlows();
@@ -146,7 +154,7 @@ void UtGunnsFluidMultiSeparator::setUp()
                                           101.325,                  //pressure
                                           0.0,                      //flowRate
                                           0.0,                      //mass
-                                          fractions);               //massFractions
+                                          fractions);               //mass fractions
 
     tNodes[3].initialize("UtTestNode3", tFluidConfig, tFluidInput3);
     tNodes[3].resetFlows();
@@ -280,13 +288,21 @@ void UtGunnsFluidMultiSeparator::testDefaultConstruction()
 
     /// @test proper default construction of class member data
     CPPUNIT_ASSERT(0.0 == tArticle->mMaxConductance);
+    CPPUNIT_ASSERT(0   == tArticle->mNumSepTypes);
+    CPPUNIT_ASSERT(0   == tArticle->mNumTcTypes);
     CPPUNIT_ASSERT(0   == tArticle->mSepIndex);
+    CPPUNIT_ASSERT(0   == tArticle->mTcIndex);
+    CPPUNIT_ASSERT(0   == tArticle->mSepPort);
+    CPPUNIT_ASSERT(0   == tArticle->mTcPort);
     CPPUNIT_ASSERT(0   == tArticle->mSepFraction);
+    CPPUNIT_ASSERT(0   == tArticle->mTcFraction);
     CPPUNIT_ASSERT(0.0 == tArticle->mEffectiveConductance);
     CPPUNIT_ASSERT(0.0 == tArticle->mSystemConductance);
     CPPUNIT_ASSERT(0   == tArticle->mSepBufferThru);
     CPPUNIT_ASSERT(0   == tArticle->mSepBufferExit);
     CPPUNIT_ASSERT(0   == tArticle->mSepFluid);
+    CPPUNIT_ASSERT(0   == tArticle->mWorkTcMassFlowRates);
+    CPPUNIT_ASSERT(0   == tArticle->mWorkMoleFractions);
 
     /// @test init flag
     CPPUNIT_ASSERT(!tArticle->mInitFlag);
@@ -317,12 +333,26 @@ void UtGunnsFluidMultiSeparator::testNominalInitialization()
 
     /// - Verify member variables are properly set
     CPPUNIT_ASSERT(tMaxConductance    == article.mMaxConductance);
+    CPPUNIT_ASSERT(2                  == article.mNumSepTypes);
+    CPPUNIT_ASSERT(2                  == article.mNumTcTypes);
     CPPUNIT_ASSERT(                      article.mSepIndex);
     CPPUNIT_ASSERT(2                  == article.mSepIndex[0]); //GUNNS_H2O
     CPPUNIT_ASSERT(3                  == article.mSepIndex[1]); //GUNNS_H2
+    CPPUNIT_ASSERT(                      article.mTcIndex);
+    CPPUNIT_ASSERT(0                  == article.mTcIndex[0]);  //CO2
+    CPPUNIT_ASSERT(1                  == article.mTcIndex[1]);  //CH4
+    CPPUNIT_ASSERT(                      article.mSepPort);
+    CPPUNIT_ASSERT(2                  == article.mSepPort[0]);  //GUNNS_H2O
+    CPPUNIT_ASSERT(3                  == article.mSepPort[1]);  //GUNNS_H2
+    CPPUNIT_ASSERT(                      article.mTcPort);
+    CPPUNIT_ASSERT(2                  == article.mTcPort[0]);   //CO2
+    CPPUNIT_ASSERT(3                  == article.mTcPort[1]);   //CH4
     CPPUNIT_ASSERT(                      article.mSepFraction);
     CPPUNIT_ASSERT(tFluidFractions[0] == article.mSepFraction[0]);
     CPPUNIT_ASSERT(tFluidFractions[1] == article.mSepFraction[1]);
+    CPPUNIT_ASSERT(                      article.mTcFraction);
+    CPPUNIT_ASSERT(tTcFractions[0]    == article.mTcFraction[0]);
+    CPPUNIT_ASSERT(tTcFractions[1]    == article.mTcFraction[1]);
     CPPUNIT_ASSERT(0.0                == article.mEffectiveConductance);
     CPPUNIT_ASSERT(0.0                == article.mSystemConductance);
     CPPUNIT_ASSERT(                      article.mSepBufferThru);
@@ -335,6 +365,14 @@ void UtGunnsFluidMultiSeparator::testNominalInitialization()
     CPPUNIT_ASSERT(                      article.mSepFluid);
     CPPUNIT_ASSERT(1.0                == article.mSepFluid[0].getMassFraction(FluidProperties::GUNNS_H2O));
     CPPUNIT_ASSERT(1.0                == article.mSepFluid[1].getMassFraction(FluidProperties::GUNNS_H2));
+    CPPUNIT_ASSERT(                      article.mWorkTcMassFlowRates);
+    CPPUNIT_ASSERT(0.0                == article.mWorkTcMassFlowRates[0]);
+    CPPUNIT_ASSERT(0.0                == article.mWorkTcMassFlowRates[1]);
+    CPPUNIT_ASSERT(                      article.mWorkMoleFractions);
+    CPPUNIT_ASSERT(0.0                == article.mWorkMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0                == article.mWorkMoleFractions[1]);
+    CPPUNIT_ASSERT(0.0                == article.mWorkMoleFractions[2]);
+    CPPUNIT_ASSERT(0.0                == article.mWorkMoleFractions[3]);
 
     /// @test init flag
     CPPUNIT_ASSERT(article.mInitFlag);
@@ -354,17 +392,19 @@ void UtGunnsFluidMultiSeparator::testInitializationExceptions()
     std::vector<int> ports (array, array + sizeof(array) / sizeof(int));
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
     ports.push_back(tPort2);
+    ports.push_back(tPort3);
 
     /// @test for exception on max conductivity < 0.0.
     tConfigData->mMaxConductance = -0.1;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
     tConfigData->mMaxConductance = tMaxConductance;
 
-    /// @test for exception on empty separation types vector.
-    std::vector<FluidProperties::FluidType> emptyTypes;
+    /// @test for exception on empty separation and TC types vectors.
     tConfigData->mFluidTypes.clear();
+    tConfigData->mTcTypes.clear();
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
     tConfigData->mFluidTypes = tFluidTypes;
+    tConfigData->mTcTypes    = tTcTypes;
 
     /// @test for exception on size mismatch between types and port assignments.
     tConfigData->mFluidPorts.clear();
@@ -412,6 +452,86 @@ void UtGunnsFluidMultiSeparator::testInitializationExceptions()
     tConfigData->mFluidTypes.at(0) = FluidProperties::GUNNS_WATER;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
     tConfigData->mFluidTypes.at(0) = FluidProperties::GUNNS_H2O;
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests initialization errors associated with trace compounds.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsFluidMultiSeparator::testInitializationExceptionsTc()
+{
+    UT_RESULT;
+
+    const int array[] = {tPort0, tPort1, tPort2, tPort3};
+    std::vector<int> ports (array, array + sizeof(array) / sizeof(int));
+
+    /// @test for exception on size mismatch between TC types and port assignments.
+    tConfigData->mTcPorts.clear();
+    tConfigData->mTcPorts.push_back(2);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tConfigData->mTcPorts = tTcPorts;
+
+    /// @test for exception on size mismatch between TC types and fractions.
+    tInputData->mTcFractions.clear();
+    tInputData->mTcFractions.push_back(1.0);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tInputData->mTcFractions = tTcFractions;
+
+    /// @test for exception on duplicated TC types.
+    tConfigData->mTcTypes.clear();
+    tConfigData->mTcTypes.push_back(ChemicalCompound::CO2);
+    tConfigData->mTcTypes.push_back(ChemicalCompound::CO2);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tConfigData->mTcTypes = tTcTypes;
+
+    /// @test for exceptions on TC port assignments out of bounds.
+    tConfigData->mTcPorts.clear();
+    tConfigData->mTcPorts.push_back(1);
+    tConfigData->mTcPorts.push_back(4);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tConfigData->mTcPorts.at(0) = 2;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tConfigData->mTcPorts = tTcPorts;
+
+    /// @test for exception on a TC type not in the network.
+    tConfigData->mTcTypes.at(0) = ChemicalCompound::NH3;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tConfigData->mTcTypes.at(0) = tTcTypes.at(0);
+
+    /// @test for exception on a TC mass fraction < 0.
+    tInputData->mTcFractions.at(0) = -0.1;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+
+    /// @test for exception on a TC mass fraction > 1.
+    tInputData->mTcFractions.at(0) = 1.1;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+    tInputData->mTcFractions.at(0) = 0.5;
+
+    /// @test for exception on no TC's in the network.
+    tFluidConfig->mTraceCompounds = 0;
+    GunnsFluidNode nodes[5];
+    double massfractions[4] = {1.0, 0.0, 0.0, 0.0};
+    PolyFluidInputData fluidInput(294.261,                  //temperature
+                                  101.325,                  //pressure
+                                  0.0,                      //flowRate
+                                  0.0,                      //mass
+                                  massfractions);           //massFractions
+    nodes[0].initialize("UtTestNode0", tFluidConfig, &fluidInput);
+    nodes[1].initialize("UtTestNode1", tFluidConfig, &fluidInput);
+    nodes[2].initialize("UtTestNode2", tFluidConfig, &fluidInput);
+    nodes[3].initialize("UtTestNode3", tFluidConfig, &fluidInput);
+    nodes[4].initialize("UtTestNode4", tFluidConfig, 0);
+    tConfigData->mNodeList->mNodes = nodes;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports), TsInitializationException);
+
+    /// @test getTcFraction when there are no TC's in the network.  This isn't in the validate
+    ///       functions, but tested here for convenience.
+    tConfigData->mTcTypes.clear();
+    tConfigData->mTcPorts.clear();
+    tInputData->mTcFractions.clear();
+    CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports));
+    CPPUNIT_ASSERT_THROW(tArticle->getTcFraction(ChemicalCompound::CO2), TsOutOfBoundsException);
 
     UT_PASS;
 }
@@ -723,13 +843,20 @@ void UtGunnsFluidMultiSeparator::testTransportFlows()
     const double expectedPwr    = -expectedQ * expectedDp * 1000.0;
     const double xH2O           = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2O);
     const double xH2            = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2);
+    const double xCO2           = tNodes[0].getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO2);
+    const double xCH4           = tNodes[0].getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CH4);
     const double expectedSepH2O = expectedFlux * xH2O * tFluidFractions[0];
     const double expectedSepH2  = expectedFlux * xH2  * tFluidFractions[1];
+    const double expectedSepCO2 = expectedFlux * xCO2 * tTcFractions[0];
+    const double expectedSepCH4 = expectedFlux * xCH4 * tTcFractions[1];
     tArticle->mSepBufferExit[0] = expectedSepH2O;
     tArticle->mSepBufferExit[1] = expectedSepH2;
     const double expectedMdotH2O = expectedSepH2O * 18.0153; // MW of H2O
     const double expectedMdotH2  = expectedSepH2  * 2.01588; // MW of H2
+    const double expectedMdotCO2 = expectedSepCO2 * 44.0095; // MW of CO2
+    const double expectedMdotCH4 = expectedSepCH4 * 16.0425; // MW of CH4
     const double expectedMdotDown = expectedMdot - expectedMdotH2O - expectedMdotH2;
+    const double expectedFluxDown = expectedFlux - expectedSepH2O - expectedSepH2;
 
     /// - Compute expected mole fraction of bulk flow into downstream node.
     double expectedX[4] = {
@@ -746,11 +873,37 @@ void UtGunnsFluidMultiSeparator::testTransportFlows()
     expectedX[1] /= sumX;
     expectedX[2] /= sumX;
     expectedX[3] /= sumX;
+
+    /// - Compute expected mass & mole fraction of trace compounds into downstream node.
+    const double expectedMassCO2 = (expectedFlux * xCO2 - expectedSepCO2) * 44.0095;
+    const double expectedMassCH4 = (expectedFlux * xCH4 - expectedSepCH4) * 16.0425;
+    const double expectedMoleCO2 = expectedMassCO2 / 44.0095;
+    const double expectedMoleCH4 = expectedMassCH4 / 16.0425;
+    const double expectedXCO2    = expectedMoleCO2 / expectedFluxDown;
+    const double expectedXCH4    = expectedMoleCH4 / expectedFluxDown;
+
     tArticle->computeFlows(tTimeStep);
     tArticle->transportFlows(tTimeStep);
 
+    const double actualMassCO2 = tNodes[4].getInflow()->getTraceCompounds()->getMass(ChemicalCompound::CO2);
+    const double actualMassCH4 = tNodes[4].getInflow()->getTraceCompounds()->getMass(ChemicalCompound::CH4);
+    const double actualXCO2    = tNodes[4].getInflow()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO2);
+    const double actualXCH4    = tNodes[4].getInflow()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CH4);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFluxDown, tArticle->mInternalFluid->getMole(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassCO2,  actualMassCO2,                       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassCH4,  actualMassCH4,                       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXCO2,     actualXCO2,                          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXCH4,     actualXCH4,                          DBL_EPSILON);
+
+    FriendlyGunnsFluidMultiSeparatorNode* node1 = static_cast<FriendlyGunnsFluidMultiSeparatorNode*>(&tNodes[1]);
+    FriendlyGunnsFluidMultiSeparatorNode* node2 = static_cast<FriendlyGunnsFluidMultiSeparatorNode*>(&tNodes[2]);
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotH2O,  tNodes[1].getInflux(),                     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotH2,   tNodes[2].getInflux(),                     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotCO2,  node1->mTcInflow.mState[0],                DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              node1->mTcInflow.mState[1],                DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              node2->mTcInflow.mState[0],                DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotCH4,  node2->mTcInflow.mState[1],                DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[0],     tNodes[4].getInflow()->getMoleFraction(0), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[1],     tNodes[4].getInflow()->getMoleFraction(1), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedX[2],     tNodes[4].getInflow()->getMoleFraction(2), DBL_EPSILON);
@@ -771,9 +924,17 @@ void UtGunnsFluidMultiSeparator::testAccessMethods()
 {
     UT_RESULT;
 
-    /// - Initialize default test article with nominal initialization data
+    /// - Initialize default test article with nominal initialization data.  Change it to only have
+    ///   one trace compound so we can test for a trace compound that is in the network but not
+    ///   separated by this link.
     const int array[] = {tPort0, tPort1, tPort2, tPort3};
     std::vector<int> ports (array, array + sizeof(array) / sizeof(int));
+    tConfigData->mTcTypes.clear();
+    tConfigData->mTcTypes.push_back(ChemicalCompound::CO2);
+    tConfigData->mTcPorts.clear();
+    tConfigData->mTcPorts.push_back(2);
+    tInputData->mTcFractions.clear();
+    tInputData->mTcFractions.push_back(0.5);
     tArticle->initialize(*tConfigData, *tInputData, tLinks, &ports);
 
     /// @test setSeparationFraction with good fluid type, and that it is limited to (0-1).
@@ -793,6 +954,21 @@ void UtGunnsFluidMultiSeparator::testAccessMethods()
     /// @test getSeparationFraction with bad fluid type.
     CPPUNIT_ASSERT_THROW(tArticle->getSeparationFraction(FluidProperties::GUNNS_CO2), TsOutOfBoundsException);
     CPPUNIT_ASSERT_THROW(tArticle->getSeparationFraction(FluidProperties::GUNNS_N2),  TsOutOfBoundsException);
+
+    /// @test setTcFraction with good type, and that it is limited to (0-1).
+    tArticle->setTcFraction(ChemicalCompound::CO2, -0.1);
+    CPPUNIT_ASSERT(0.0 == tArticle->mTcFraction[0]);
+    tArticle->setTcFraction(ChemicalCompound::CO2, 1.1);
+    CPPUNIT_ASSERT(1.0 == tArticle->mTcFraction[0]);
+
+    /// @test setTcFraction with bad TC type (not in network).
+    CPPUNIT_ASSERT_THROW(tArticle->setTcFraction(ChemicalCompound::NH3, 0.5), TsOutOfBoundsException);
+
+    /// @test getTcFraction with good type.
+    CPPUNIT_ASSERT(1.0 == tArticle->getTcFraction(ChemicalCompound::CO2));
+
+    /// @test getTcFraction with bad TC type (not separated by this link).
+    CPPUNIT_ASSERT_THROW(tArticle->getTcFraction(ChemicalCompound::CH4), TsOutOfBoundsException);
 
     UT_PASS_LAST;
 }

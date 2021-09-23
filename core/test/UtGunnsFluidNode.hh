@@ -62,6 +62,7 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateMass);
         CPPUNIT_TEST(testCollectInflux);
         CPPUNIT_TEST(testCollectHeatFlux);
+        CPPUNIT_TEST(testCollectTc);
         CPPUNIT_TEST(testResetFlows);
         CPPUNIT_TEST(testFlowsToCapacitiveNode);
         CPPUNIT_TEST(testIntegrateFlowsNoInflow);
@@ -87,6 +88,8 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         ////////////////////////////////////////////////////////////////////////////////////////////
         PolyFluidConfigData* tFluidConfig;
         PolyFluidConfigData* tFluid2Config;
+        PolyFluidConfigData* tFluid3Config;
+        GunnsFluidTraceCompoundsConfigData* tTcConfig;
         double               tFractions[FluidProperties::NO_FLUID];
         PolyFluidInputData*  tFluidInput;
 
@@ -112,6 +115,7 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         void testSetVolume();
         void testUpdateMass();
         void testCollectInflux();
+        void testCollectTc();
         void testCollectHeatFlux();
         void testResetFlows();
         void testFlowsToCapacitiveNode();

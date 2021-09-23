@@ -53,6 +53,7 @@ GunnsFluidNode::GunnsFluidNode()
     mContent             (),
     mInflow              (),
     mOutflow             (),
+    mTcInflow            (),
     mVolume              (0.0),
     mPreviousVolume      (0.0),
     mThermalCapacitance  (0.0),
@@ -78,7 +79,7 @@ GunnsFluidNode::GunnsFluidNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidNode::~GunnsFluidNode()
 {
-    // nothing to do
+    TS_DELETE_ARRAY(mTcInflow.mState);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +173,17 @@ void GunnsFluidNode::initialize(const std::string&         name,
 
         mPreviousTemperature = initialFluidState->mTemperature;
         mPreviousPressure    = initialFluidState->mPressure;
+    }
+
+    /// - Allocate memory for the direct trace compound flows into the node.
+    const GunnsFluidTraceCompounds* traceCompounds = mContent.getTraceCompounds();
+    if (traceCompounds) {
+        const int numTcTypes = traceCompounds->getConfig()->mNTypes;
+        TS_DELETE_ARRAY(mTcInflow.mState);
+        TS_NEW_PRIM_ARRAY_EXT(mTcInflow.mState, numTcTypes, double, mName+".mTcInflow.mState");
+        for (int i=0; i<numTcTypes; ++i) {
+            mTcInflow.mState[i] = 0.0;
+        }
     }
 }
 
@@ -376,6 +388,12 @@ void GunnsFluidNode::resetFlows()
     mInflowHeatFlux   = 0.0;
     updatePreviousPressure();
     mOutflow.setState(&mContent);
+    const GunnsFluidTraceCompounds* traceCompounds = mContent.getTraceCompounds();
+    if (traceCompounds) {
+        for (int i=0; i<traceCompounds->getConfig()->mNTypes; ++i) {
+            mTcInflow.mState[i] = 0.0;
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -475,6 +493,34 @@ void GunnsFluidNode::collectInflux(const double fluxRate, const PolyFluid* fluid
     ///   handle the very small flow rates that we get to/from non-cap nodes.
     mInflowHeatFlux += fluxRate * fluid->getSpecificEnthalpy();
     mInfluxRate     += fluxRate;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] tcIndex (--)   Index of the trace compound in the network's trace compounds.
+/// @param[in] rate    (kg/s) Mass flow rate of the trace compound into the node.
+///
+/// @throws   TsOutOfBoundsException
+///
+/// @details  Sets the flow rate state of the given trace compound index to the given rate.  This is
+///           for trace compound flows into or out of the node that are not associated with the
+///           mInflow or mOutflow bulk fluid flows.  Throws exception if the given index is out of
+///           range of the network's trace compounds or if there are no trace compounds in this
+///           network.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidNode::collectTc(const int tcIndex, const double rate)
+{
+    const GunnsFluidTraceCompounds* traceCompounds = mContent.getTraceCompounds();
+    if (traceCompounds) {
+        if (tcIndex >= 0 and tcIndex < traceCompounds->getConfig()->mNTypes) {
+            mTcInflow.mState[tcIndex] += rate;
+        } else {
+            GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
+                    "trace compound index is out of range of the trace compounds in this network.");
+        }
+    } else {
+        GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
+                "there are no trace compounds in this network.");
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -598,6 +644,12 @@ void GunnsFluidNode::integrateFlows(const double dt)
             /// - If there is no incoming flow, the mass fractions will not change, therefore set
             ///   the mass without setting mass fractions.
             mContent.setMass(newMass);
+        }
+
+        /// - Add standalone trace compound flows, separate from the bulk fluid flows, into or out
+        ///   of the node contents.
+        if (traceCompounds and mContent.getMWeight() > DBL_EPSILON) {
+            traceCompounds->flowIn(mTcInflow.mState, dt);
         }
 
         /// - Calculate the new node specific enthalpy, and update the fluid's enthalpy,

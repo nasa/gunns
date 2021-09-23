@@ -35,6 +35,14 @@ class FriendlyGunnsFluidMultiSeparator : public GunnsFluidMultiSeparator
 inline FriendlyGunnsFluidMultiSeparator::FriendlyGunnsFluidMultiSeparator() : GunnsFluidMultiSeparator() {};
 inline FriendlyGunnsFluidMultiSeparator::~FriendlyGunnsFluidMultiSeparator() {}
 
+class FriendlyGunnsFluidMultiSeparatorNode : public GunnsFluidNode
+{
+    public:
+        FriendlyGunnsFluidMultiSeparatorNode();
+        virtual ~FriendlyGunnsFluidMultiSeparatorNode();
+        friend class UtGunnsFluidMultiSeparator;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns fluid multi-separator link unit tests.
 ///
@@ -54,6 +62,7 @@ class UtGunnsFluidMultiSeparator: public CppUnit::TestFixture
         CPPUNIT_TEST(testDefaultConstruction);
         CPPUNIT_TEST(testNominalInitialization);
         CPPUNIT_TEST(testInitializationExceptions);
+        CPPUNIT_TEST(testInitializationExceptionsTc);
         CPPUNIT_TEST(testRestart);
         CPPUNIT_TEST(testStep);
         CPPUNIT_TEST(testComputeFlows);
@@ -83,6 +92,7 @@ class UtGunnsFluidMultiSeparator: public CppUnit::TestFixture
         int                                     tPort3;             /**< (--) Nominal init data */
         double                                  tTimeStep;          /**< (s)  Nominal time step */
         DefinedFluidProperties*                 tFluidProperties;   /**< (--) Nominal config data */
+        GunnsFluidTraceCompoundsConfigData*     tTcConfig;          /**< (--) Nominal config data */
         PolyFluidConfigData*                    tFluidConfig;       /**< (--) Nominal config data */
         PolyFluidInputData*                     tFluidInput0;       /**< (--) Nominal input data */
         PolyFluidInputData*                     tFluidInput1;       /**< (--) Nominal input data */
@@ -101,6 +111,7 @@ class UtGunnsFluidMultiSeparator: public CppUnit::TestFixture
         void testDefaultConstruction();
         void testNominalInitialization();
         void testInitializationExceptions();
+        void testInitializationExceptionsTc();
         void testRestart();
         void testStep();
         void testComputeFlows();

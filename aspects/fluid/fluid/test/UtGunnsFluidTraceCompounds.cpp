@@ -1,15 +1,15 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((properties/ChemicalCompound.o)
      (aspects/fluid/fluid/GunnsFluidTraceCompounds.o))
-***************************************************************************************************/
+*/
+
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "strings/UtResult.hh"
-
 #include "UtGunnsFluidTraceCompounds.hh"
 
 /// @details  Test identification number.
@@ -573,7 +573,7 @@ void UtGunnsFluidTraceCompounds::testSetMoleFraction()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for flowIn method.
+/// @details  Tests for flowIn methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidTraceCompounds::testFlowIn()
 {
@@ -618,6 +618,25 @@ void UtGunnsFluidTraceCompounds::testFlowIn()
     tArticle->mMass[6] = DBL_EPSILON * DBL_EPSILON;
     tArticle->flowIn(flow2, flowMole);
 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMass[6],         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMoleFraction[6], DBL_EPSILON);
+
+    /// @test overloaded function that integrates mass flow rates, and negative resulting mass
+    ///       is zeroed.
+    const double rates[UtGunnsFluidTraceCompounds::NMULTI] =
+             {-1.0, 2.0e-1, -3.0e-2, 4.0e-3, -5.0e-4, 6.0e-5, -7.0};
+    const double dt = 0.1;
+    for (int i = 0; i < UtGunnsFluidTraceCompounds::NMULTI; i++) {
+        oldMasses[i] = tArticle->getMasses()[i];
+    }
+    tArticle->flowIn(rates, dt);
+    for (int i = 0; i < UtGunnsFluidTraceCompounds::NMULTI - 1; i++) {
+        const double MW   = tProperties->getCompound(tType[i])->mMWeight;
+        const double mass = oldMasses[i] + rates[i] * dt;
+        const double conc = mass / tMole / MW;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(mass, tArticle->mMass[i],         DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(conc, tArticle->mMoleFraction[i], DBL_EPSILON);
+    }
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMass[6],         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMoleFraction[6], DBL_EPSILON);
 

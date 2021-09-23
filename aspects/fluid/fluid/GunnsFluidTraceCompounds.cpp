@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Trace Compounds Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -663,6 +663,26 @@ void GunnsFluidTraceCompounds::flowIn(const GunnsFluidTraceCompounds& source,
 
     for (int i = 0; i < mConfig->mNTypes; ++i) {
         mMass[i] += totalMolesIn * sourceMoleFractions[i] * mConfig->mCompounds[i]->mMWeight;
+    }
+    updateMoleFractions();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] rates (kg/s) Array of trace compound mass flow rates added.
+/// @param[in] dt    (s)    Time step of integration.
+///
+/// @details   This overloaded version of flowIn input the trace compounds as an array of mass flow
+///            rates integrated over a timestep.  This allows negative flow rates in, which are
+///            positive flow rates out.  Updates the resulting mole fractions.
+///
+/// @notes     Resulting masses less than zero are quietly zeroed, and doesn't conserve mass.  The
+///            caller should ensure not to remove more mass than the parent fluid has in order to
+///            maintain conservation of mass.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidTraceCompounds::flowIn(const double* rates, const double dt)
+{
+    for (int i = 0; i < mConfig->mNTypes; ++i) {
+        mMass[i] = fmax(0.0, mMass[i] + rates[i] * dt);
     }
     updateMoleFractions();
 }

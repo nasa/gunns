@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_FLUID_NODE    GUNNS Fluid Node
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -106,6 +106,9 @@ class GunnsFluidNode : public GunnsBasicNode
         /// @brief Collect fluid mass flow into the node
         virtual void   collectInflux(const double fluxRate, const PolyFluid *fluid = 0);
 
+        /// @brief Collect trace compounds flows into the node, separate from bulk fluid flows.
+        void           collectTc(const int tcIndex, const double rate);
+
         /// @brief Collect heat flux into the node
         virtual void   collectHeatFlux(const double heatFlux);
 
@@ -154,6 +157,7 @@ class GunnsFluidNode : public GunnsBasicNode
         PolyFluid                  mContent;              /**<    (--)                           Fluid contained within this node */
         PolyFluid                  mInflow;               /**<    (--)       trick_chkpnt_io(**) Mixture of all incoming fluid flows */
         PolyFluid                  mOutflow;              /**<    (--)       trick_chkpnt_io(**) Mixture of all outgoing fluid flows */
+        GunnsFluidTraceCompoundsInputData mTcInflow;      /**<    (kg/s)     trick_chkpnt_io(**) Mass flow rate of incoming trace compounds */
         double                     mVolume;               /**<    (m3)       trick_chkpnt_io(**) Node volume */
         double                     mPreviousVolume;       /**<    (m3)       trick_chkpnt_io(**) Previous pass value of node volume */
         double                     mThermalCapacitance;   /**<    (kg*mol/K) trick_chkpnt_io(**) Thermal capacitance of the node */

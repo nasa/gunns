@@ -104,10 +104,6 @@ class GunnsFluidMultiSeparatorInputData : public GunnsFluidLinkInputData
 ///           the incoming flow.  Each separation compound is assigned a separate port in this link
 ///           to exit to; however these ports can be connected to the same or different network
 ///           nodes.  This doesn't model phase change, and doesn't add or remove heat to the fluids.
-///           TODO:
-///           - need to implement trace compounds.  Adding TC by itself to an exit node when there
-///             is no bulk flow will require a new interface in GunnsFluidNode.  It would be good if
-///             the fluid node had such an interface to receive TC's from any source.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidMultiSeparator : public GunnsFluidLink
 {
@@ -132,23 +128,42 @@ class GunnsFluidMultiSeparator : public GunnsFluidLink
         void setSeparationFraction(const FluidProperties::FluidType, const double fraction);
         /// @brief  Returns the separation mass fraction for the given fluid type.
         double getSeparationFraction(const FluidProperties::FluidType) const;
+        /// @brief  Sets the separation mass fraction for the given trace compound type.
+        void setTcFraction(const ChemicalCompound::Type, const double fraction);
+        /// @brief  Returns the separation mass fraction for the given trace compound type.
+        double getTcFraction(const ChemicalCompound::Type) const;
 
     protected:
         double     mMaxConductance;       /**<    (m2)           trick_chkpnt_io(**) Max conductance of the flow-thru path. */
-        int        mNumSepTypes;          /**< *o (1)            trick_chkpnt_io(**) Number of separation compounds. */
-        int*       mSepIndex;             /**<    (1)            trick_chkpnt_io(**) Index of each separation compound in the composite fluids array. */
-        int*       mSepPort;              /**<    (1)            trick_chkpnt_io(**) Exit port assignment of each separation compound. */
-        double*    mSepFraction;          /**<    (1)            trick_chkpnt_io(**) For each separated compound, the thru-flow fraction that is removed. */
+        int        mNumSepTypes;          /**< *o (1)            trick_chkpnt_io(**) Number of separation bulk fluid compounds. */
+        int        mNumTcTypes;           /**< *o (1)            trick_chkpnt_io(**) Number of separation trace compounds. */
+        int*       mSepIndex;             /**<    (1)            trick_chkpnt_io(**) Index of each separation bulk fluid compound in the network fluids array. */
+        int*       mTcIndex;              /**<    (1)            trick_chkpnt_io(**) Index of each separation trace compound in the network trace compounds array. */
+        int*       mSepPort;              /**<    (1)            trick_chkpnt_io(**) Exit port assignment of each separation bulk fluid compound. */
+        int*       mTcPort;               /**<    (1)            trick_chkpnt_io(**) Exit port assignment of each separation trace compound. */
+        double*    mSepFraction;          /**<    (1)            trick_chkpnt_io(**) For each separated bulk fluid compound, the thru-flow fraction that is removed. */
+        double*    mTcFraction;           /**<    (1)            trick_chkpnt_io(**) For each separated trace compound, the thru-flow fraction that is removed. */
         double     mEffectiveConductance; /**< *o (m2)           trick_chkpnt_io(**) Effective conductance of the flow-thru path. */
         double     mSystemConductance;    /**< *o (kg*mol/s/kPa) trick_chkpnt_io(**) Limited molar conductance of the flow-thru path. */
         double*    mSepBufferThru;        /**<    (kg*mol/s)     trick_chkpnt_io(**) Removal flow rate buffer for the flow-thru path, this pass. */
         double*    mSepBufferExit;        /**<    (kg*mol/s)     trick_chkpnt_io(**) Removal flow rate added to exit ports, next pass. */
         PolyFluid* mSepFluid;             /**<    (1)            trick_chkpnt_io(**) Fluid objects for each separated compound. */
-        /// @brief  Frees allocated memory.
-        void cleanup();
+        double*    mWorkTcMassFlowRates;  /**<    (kg/s)         trick_chkpnt_io(**) Working array for intermediate trace compounds mass flow rate values. */
+        double*    mWorkMoleFractions;    /**<    (1)            trick_chkpnt_io(**) Working array for intermediate mole fraction values. */
         /// @brief  Validates the initialization inputs of this Multi-Separator model.
         void validate(const GunnsFluidMultiSeparatorConfigData& configData,
                       const GunnsFluidMultiSeparatorInputData&  inputData) const;
+        /// @brief  Validates the initialization inputs of the separation fluid types.
+        void validateSep(const GunnsFluidMultiSeparatorConfigData& configData,
+                         const GunnsFluidMultiSeparatorInputData&  inputData) const;
+        /// @brief  Validates the initialization inputs of the trace compuond types.
+        void validateTc(const GunnsFluidMultiSeparatorConfigData& configData,
+                        const GunnsFluidMultiSeparatorInputData&  inputData) const;
+        /// @brief  Frees allocated memory.
+        void cleanupMemory();
+        /// @breif  Allocates and initializes dynamic memory.
+        void allocateMemory(const GunnsFluidMultiSeparatorConfigData& configData,
+                            const GunnsFluidMultiSeparatorInputData&  inputData);
         /// @brief  Initializes internal fluid objects.
         void initializeFluids();
         /// @brief  Linearizes the fluid conductance for the admittance matrix.
@@ -159,6 +174,8 @@ class GunnsFluidMultiSeparator : public GunnsFluidLink
         virtual void restartModel();
         /// @brief  Returns the index of the given type in our separated fluid types array.
         int findIndexOfType(const FluidProperties::FluidType type) const;
+        /// @brief  Returns the index of the given type in our separated trace compound types array.
+        int findIndexOfTc(const ChemicalCompound::Type type) const;
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
@@ -171,14 +188,13 @@ class GunnsFluidMultiSeparator : public GunnsFluidLink
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] type     (--) The fluid type to set the separation fraction for.
-/// @param[in] fraction (--) The new mass fraction (0-1) value to use for the port.
+/// @param[in] fraction (--) The new mass fraction (0-1) value to use for the fluid.
 ///
 /// @throws   TsOutOfBoundsException
 ///
-/// @details  Sets mSeparationFraction for the fluid in the given link port to the given fraction.
-///           Invalid port argument results in an exception.  The fraction is quietly limited to be
-///           in (0-1).  Throws exception if the given type is not in the network or not one of our
-///           separated fluid types.
+/// @details  Sets mSeparationFraction for the given fluid type to the given fraction.  The fraction
+///           is quietly limited to be in (0-1).  Throws exception if the given type is not in the
+///           network or not one of our separated fluid types.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsFluidMultiSeparator::setSeparationFraction(const FluidProperties::FluidType type, const double fraction)
 {
@@ -196,6 +212,34 @@ inline void GunnsFluidMultiSeparator::setSeparationFraction(const FluidPropertie
 inline double GunnsFluidMultiSeparator::getSeparationFraction(const FluidProperties::FluidType type) const
 {
     return mSepFraction[findIndexOfType(type)];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] type     (--) The trace compound type to set the separation fraction for.
+/// @param[in] fraction (--) The new mass fraction (0-1) value to use for the trace compound.
+///
+/// @throws   TsOutOfBoundsException
+///
+/// @details  Sets mSeparationFraction for the given trace compound type to the given fraction.  The
+///           fraction is quietly limited to be in (0-1).  Throws exception if the given type is not
+///           in the network or not one of our separated trace compound types.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidMultiSeparator::setTcFraction(const ChemicalCompound::Type type, const double fraction)
+{
+    mTcFraction[findIndexOfTc(type)] = MsMath::limitRange(0.0, fraction, 1.0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns double (--) The separation fraction (0-1) of the given trace compound type.
+///
+/// @throws   TsOutOfBoundsException
+///
+/// @details  Returns the separation fraction of the given trace compound type.  Throws exception if
+///           the given type is not in the network or not one of our separated trace compound types.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidMultiSeparator::getTcFraction(const ChemicalCompound::Type type) const
+{
+    return mTcFraction[findIndexOfTc(type)];
 }
 
 #endif

@@ -19,6 +19,8 @@ UtGunnsFluidNode::UtGunnsFluidNode()
     :
     tFluidConfig(),
     tFluid2Config(),
+    tFluid3Config(),
+    tTcConfig(),
     tFractions(),
     tFluidInput(),
     mFluidProperties(),
@@ -42,9 +44,11 @@ UtGunnsFluidNode::~UtGunnsFluidNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::tearDown()
 {
+    delete tFluidInput;
+    delete tFluid3Config;
     delete tFluid2Config;
     delete tFluidConfig;
-    delete tFluidInput;
+    delete tTcConfig;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,6 +56,13 @@ void UtGunnsFluidNode::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::setUp()
 {
+    const int numTcTypes = 2;
+    ChemicalCompound::Type tcTypesList[numTcTypes] = {
+            ChemicalCompound::NH3,
+            ChemicalCompound::CH4
+    };
+    tTcConfig = new GunnsFluidTraceCompoundsConfigData(tcTypesList, numTcTypes, "tTcConfig");
+
     static const int NumFluidTypes = 3;
     static FluidProperties::FluidType FluidTypesList[NumFluidTypes] = {
             FluidProperties::GUNNS_O2,
@@ -68,15 +79,17 @@ void UtGunnsFluidNode::setUp()
 
     tFluid2Config = new PolyFluidConfigData(&mFluidProperties, LiquidTypesList, NumLiquidTypes);
 
+    tFluid3Config = new PolyFluidConfigData(&mFluidProperties, FluidTypesList, NumFluidTypes, tTcConfig);
+
     tFractions[0] = 1.0;
     tFractions[1] = 0.0;
     tFractions[2] = 0.0;
 
     tFluidInput = new PolyFluidInputData(283.15,                 //temperature
-                                        689.475728,             //pressure
-                                        0.0,                    //flowRate
-                                        0.0,                    //mass
-                                        tFractions);            //massFraction
+                                         689.475728,             //pressure
+                                         0.0,                    //flowRate
+                                         0.0,                    //mass
+                                         tFractions);            //massFraction
     /// - Initial node setup.
     tNode .initialize("UtTestNode1", tFluidConfig);
     tNode2.initialize("UtTestNode2", tFluid2Config);
@@ -90,7 +103,8 @@ void UtGunnsFluidNode::testDefaultConstruction()
     std::cout << "\n -----------------------------------------------------------------------------";
     std::cout << "\n UtGunnsFluidNode ....... 01: testDefaultConstruction ...............";
 
-    CPPUNIT_ASSERT(tNode3.mFluidConfig == 0);
+    CPPUNIT_ASSERT(0 == tNode3.mFluidConfig);
+    CPPUNIT_ASSERT(0 == tNode3.mTcInflow.mState);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,     tNode3.mVolume,               DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,     tNode3.mPreviousVolume,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,     tNode3.mThermalCapacitance,   DBL_EPSILON);
@@ -144,14 +158,17 @@ void UtGunnsFluidNode::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(101.32501, tNode.mPreviousPressure,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(270.0,     tNode.mPreviousTemperature,      DBL_EPSILON);
 
-    // - Initialize node with a given polyfluid and check values
-    tNode3.initialize("UtTestNode1", tFluidConfig, tFluidInput);
+    // - Initialize node with trace compounds and a given polyfluid
+    tNode3.initialize("UtTestNode3", tFluid3Config, tFluidInput);
 
     // - Check the node's fluid properties
     CPPUNIT_ASSERT_EQUAL(tFluidInput->mTemperature, tNode3.mContent.getTemperature());
     CPPUNIT_ASSERT_EQUAL(tFluidInput->mPressure, tNode3.mContent.getPressure());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNode3.mPreviousPressure,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(283.15,     tNode3.mPreviousTemperature,      DBL_EPSILON);
+    CPPUNIT_ASSERT(tNode3.mTcInflow.mState);
+    CPPUNIT_ASSERT(0.0 == tNode3.mTcInflow.mState[0]);
+    CPPUNIT_ASSERT(0.0 == tNode3.mTcInflow.mState[1]);
 
     std::cout << "... Pass";
 }
@@ -613,11 +630,39 @@ void UtGunnsFluidNode::testCollectHeatFlux()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This method tests the collectTc method of GunnsFluidNode.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsFluidNode::testCollectTc()
+{
+    std::cout << "\n UtGunnsFluidNode ....... 13: testCollectTc .........................";
+
+    /// - Initialize node with trace compounds and a given polyfluid.
+    tNode3.initialize("UtTestNode3", tFluid3Config, tFluidInput);
+
+    /// - Test exception from collectTc with index argument out of bounds.
+    CPPUNIT_ASSERT_THROW(tNode3.collectTc(-1, 1.0), TsOutOfBoundsException);
+    CPPUNIT_ASSERT_THROW(tNode3.collectTc(2,  1.0), TsOutOfBoundsException);
+
+    /// - Test exception from collectTc with no trace compounds in the node config.
+    CPPUNIT_ASSERT_THROW(tNode.collectTc(0, 1.0), TsOutOfBoundsException);
+
+    /// - Test nominal call to collectTc.
+    CPPUNIT_ASSERT_NO_THROW(tNode3.collectTc(0, 1.0));
+    CPPUNIT_ASSERT(1.0 == tNode3.mTcInflow.mState[0]);
+    CPPUNIT_ASSERT(0.0 == tNode3.mTcInflow.mState[1]);
+    CPPUNIT_ASSERT_NO_THROW(tNode3.collectTc(1, -1.0));
+    CPPUNIT_ASSERT( 1.0 == tNode3.mTcInflow.mState[0]);
+    CPPUNIT_ASSERT(-1.0 == tNode3.mTcInflow.mState[1]);
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method tests the resetFlows method of GunnsFluidNode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testResetFlows()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 13: testResetFlows ........................";
+    std::cout << "\n UtGunnsFluidNode ....... 14: testResetFlows ........................";
 
     /// - Set up an incoming fluid.
     double fractions[FluidProperties::NO_FLUID] = {0.2, 0.79, 0.01};
@@ -663,6 +708,14 @@ void UtGunnsFluidNode::testResetFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2),
             tNode.getOutflow()->getMassFraction(FluidProperties::GUNNS_CO2), 0.0);
 
+    /// - Set up a node with trace compounds and verify the TC inflow state is reset.
+    tNode3.initialize("UtTestNode3", tFluid3Config, tFluidInput);
+    tNode3.collectTc(0,  1.0);
+    tNode3.collectTc(1, -1.0);
+    tNode3.resetFlows();
+    CPPUNIT_ASSERT(0.0 == tNode3.mTcInflow.mState[0]);
+    CPPUNIT_ASSERT(0.0 == tNode3.mTcInflow.mState[1]);
+
     std::cout << "... Pass";
 }
 
@@ -672,7 +725,7 @@ void UtGunnsFluidNode::testResetFlows()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testFlowsToCapacitiveNode()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 14: testFlowsToCapacitiveNode .............";
+    std::cout << "\n UtGunnsFluidNode ....... 15: testFlowsToCapacitiveNode .............";
 
     double initTemperature = 300.0;
     double initPressure    = 100.0;
@@ -805,7 +858,7 @@ void UtGunnsFluidNode::testFlowsToCapacitiveNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testIntegrateFlowsNoInflow()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 15: testIntegrateFlowsNoInflow ............";
+    std::cout << "\n UtGunnsFluidNode ....... 16: testIntegrateFlowsNoInflow ............";
 
     double initTemperature = 300.0;
     double initPressure    = 100.0;
@@ -895,12 +948,12 @@ void UtGunnsFluidNode::testIntegrateFlowsNoInflow()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method tests the integrateFlows method of GunnsFluidNode for the special case
-///           where there is only inflow and no ouflow.  This is an identical test setup as
+///           where there is only inflow and no outflow.  This is an identical test setup as
 ///           testFlowsToCapacitiveNode except we leave out the outgoing flow.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testIntegrateFlowsNoOutflow()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 16: testIntegrateFlowsNoOutflow ...........";
+    std::cout << "\n UtGunnsFluidNode ....... 17: testIntegrateFlowsNoOutflow ...........";
 
     double initTemperature = 300.0;
     double initPressure    = 100.0;
@@ -1002,7 +1055,7 @@ void UtGunnsFluidNode::testIntegrateFlowsNoOutflow()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testOutflowOverflow()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 17: testOutflowOverflow ...................";
+    std::cout << "\n UtGunnsFluidNode ....... 18: testOutflowOverflow ...................";
 
     const double initTemperature = 300.0;
     const double initPressure    = 100.0;
@@ -1119,7 +1172,7 @@ void UtGunnsFluidNode::testOutflowOverflow()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testInflowOverflow()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 18: testInflowOverflow ....................";
+    std::cout << "\n UtGunnsFluidNode ....... 19: testInflowOverflow ....................";
 
     const double initTemperature = 300.0;
     const double initPressure    = 100.0;
@@ -1183,7 +1236,7 @@ void UtGunnsFluidNode::testInflowOverflow()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testFlowsToNonCapacitiveNode()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 19: testFlowsToNonCapacitiveNode ..........";
+    std::cout << "\n UtGunnsFluidNode ....... 20: testFlowsToNonCapacitiveNode ..........";
 
     double initTemperature = 300.0;
     double initPressure    = 100.0;
@@ -1286,7 +1339,7 @@ void UtGunnsFluidNode::testFlowsToNonCapacitiveNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testAccessMethods()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 20: testAccessMethods .....................";
+    std::cout << "\n UtGunnsFluidNode ....... 21: testAccessMethods .....................";
 
     tNode.setVolume(42.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 42.0, tNode.getVolume(), 0.0);
@@ -1311,7 +1364,7 @@ void UtGunnsFluidNode::testAccessMethods()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testPressureCorrection()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 21: testPressureCorrection ................";
+    std::cout << "\n UtGunnsFluidNode ....... 22: testPressureCorrection ................";
 
     double initTemperature = 300.0;
     double initPressure    = 100.0;
@@ -1382,7 +1435,7 @@ void UtGunnsFluidNode::testPressureCorrection()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 22: testInitializationExceptions ..........";
+    std::cout << "\n UtGunnsFluidNode ....... 23: testInitializationExceptions ..........";
 
     /// - Attempt to initialize the Fluid without specifying a fluid config
     CPPUNIT_ASSERT_THROW(tNode3.initialize("Node3"), TsInitializationException);
@@ -1404,7 +1457,7 @@ void UtGunnsFluidNode::testInitializationExceptions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testValidate()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 23: testValidate ..........................";
+    std::cout << "\n UtGunnsFluidNode ....... 24: testValidate ..........................";
     // Initialize Name of Fluid
     tNode3.initialize("UtTestNode3",tFluidConfig);
     /// - First try to validate a node with null fluid config pointer and verify results.
@@ -1501,7 +1554,7 @@ void UtGunnsFluidNode::testValidate()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testResetContent()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 24: testResetContent ......................";
+    std::cout << "\n UtGunnsFluidNode ....... 25: testResetContent ......................";
 
     tNode.resetContentState();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNode.getContent()->getTemperature(), 0.0);
@@ -1515,7 +1568,7 @@ void UtGunnsFluidNode::testResetContent()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testRestart()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 25: testRestart ...........................";
+    std::cout << "\n UtGunnsFluidNode ....... 26: testRestart ...........................";
 
     /// - Load up the node with some non-zero values, then restart it and verify stuff got reset.
     tNode.initVolume(0.5);
@@ -1563,7 +1616,7 @@ void UtGunnsFluidNode::testRestart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidNode::testTraceCompounds()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 26: testTraceCompounds ....................";
+    std::cout << "\n UtGunnsFluidNode ....... 27: testTraceCompounds ....................";
 
     /// - Define nominal fluid config data with trace compounds.
     DefinedChemicalCompounds definedCompounds;
@@ -1615,9 +1668,13 @@ void UtGunnsFluidNode::testTraceCompounds()
     PolyFluid tFluidIn(*tFluidConfig, fluidInitIn);
 
     /// - Test in & out flows of trace compounds to a capacitive node.
+    const double extraTcInflowCO  =  1.0e-8;
+    const double extraTcInflowH2O = -1.0e-8;
     double dt         = 0.1;
     double inFlowRate = 0.0006;
+    article.collectTc(0, extraTcInflowCO);
     article.collectInflux(inFlowRate, &tFluidIn);
+    article.collectTc(1, extraTcInflowH2O);
 
     /// - Add outflows to the node, test is overflowing indication.
     double outFlowRate = 0.0003;
@@ -1630,16 +1687,18 @@ void UtGunnsFluidNode::testTraceCompounds()
                            * (article.getInflow()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO)
                             * inFlowRate / article.getInflow()->getMWeight()
                             - article.getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO)
-                            * outFlowRate / article.getContent()->getMWeight());
+                            * outFlowRate / article.getContent()->getMWeight())
+                           + extraTcInflowCO * dt;
     double expectedMassH2O = initMassH2O + dt * definedCompounds.getCompound(ChemicalCompound::H2O)->mMWeight
                            * (article.getInflow()->getTraceCompounds()->getMoleFraction(ChemicalCompound::H2O)
                             * inFlowRate / article.getInflow()->getMWeight()
                             - article.getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::H2O)
-                            * outFlowRate / article.getContent()->getMWeight());
+                            * outFlowRate / article.getContent()->getMWeight())
+                           + extraTcInflowH2O * dt;
 
     article.integrateFlows(dt);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassCO,  article.getContent()->getTraceCompounds()->getMass(ChemicalCompound::CO),  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassH2O, article.getContent()->getTraceCompounds()->getMass(ChemicalCompound::H2O), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassCO,  article.getContent()->getTraceCompounds()->getMass(ChemicalCompound::CO),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassH2O, article.getContent()->getTraceCompounds()->getMass(ChemicalCompound::H2O), DBL_EPSILON);
 
     /// - Test trace compounds persistence when no flows.
     article.resetFlows();

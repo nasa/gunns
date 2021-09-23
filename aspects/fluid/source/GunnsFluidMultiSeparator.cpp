@@ -168,14 +168,20 @@ GunnsFluidMultiSeparator::GunnsFluidMultiSeparator()
     GunnsFluidLink(0),
     mMaxConductance(0.0),
     mNumSepTypes(0),
+    mNumTcTypes(0),
     mSepIndex(0),
+    mTcIndex(0),
     mSepPort(0),
+    mTcPort(0),
     mSepFraction(0),
+    mTcFraction(0),
     mEffectiveConductance(0.0),
     mSystemConductance(0.0),
     mSepBufferThru(0),
     mSepBufferExit(0),
-    mSepFluid(0)
+    mSepFluid(0),
+    mWorkTcMassFlowRates(0),
+    mWorkMoleFractions(0)
 {
     // nothing to do
 }
@@ -185,19 +191,24 @@ GunnsFluidMultiSeparator::GunnsFluidMultiSeparator()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidMultiSeparator::~GunnsFluidMultiSeparator()
 {
-    cleanup();
+    cleanupMemory();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Deletes dynamic memory allocations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidMultiSeparator::cleanup()
+void GunnsFluidMultiSeparator::cleanupMemory()
 {
+    TS_DELETE_ARRAY(mWorkMoleFractions);
+    TS_DELETE_ARRAY(mWorkTcMassFlowRates);
     TS_DELETE_ARRAY(mSepFluid);
     TS_DELETE_ARRAY(mSepBufferExit);
     TS_DELETE_ARRAY(mSepBufferThru);
+    TS_DELETE_ARRAY(mTcFraction);
     TS_DELETE_ARRAY(mSepFraction);
+    TS_DELETE_ARRAY(mTcPort);
     TS_DELETE_ARRAY(mSepPort);
+    TS_DELETE_ARRAY(mTcIndex);
     TS_DELETE_ARRAY(mSepIndex);
 }
 
@@ -229,31 +240,21 @@ void GunnsFluidMultiSeparator::initialize(const GunnsFluidMultiSeparatorConfigDa
     }
     GunnsFluidLink::initialize(configData, inputData, networkLinks, ports);
 
+    /// - Validate the config & input data.  It's split into separate functions to keep the function
+    ///   lengths reasonable.
     validate(configData, inputData);
+    validateSep(configData, inputData);
+    validateTc(configData, inputData);
 
     /// - Assign attributes from config & input data.
     mMaxConductance       = configData.mMaxConductance;
     mNumSepTypes          = configData.mFluidTypes.size();
+    mNumTcTypes           = configData.mTcTypes.size();
     mEffectiveConductance = 0.0;
     mSystemConductance    = 0.0;
 
-    /// - Allocate & initialize memory.
-    cleanup();
-    TS_NEW_PRIM_ARRAY_EXT(mSepIndex,      mNumSepTypes, int,           mName+".mSepIndex");
-    TS_NEW_PRIM_ARRAY_EXT(mSepPort,       mNumSepTypes, int,           mName+".mSepPort");
-    TS_NEW_PRIM_ARRAY_EXT(mSepFraction,   mNumSepTypes, double,        mName+".mSepFraction");
-    TS_NEW_PRIM_ARRAY_EXT(mSepBufferThru, mNumSepTypes, double,        mName+".mSepBufferThru");
-    TS_NEW_PRIM_ARRAY_EXT(mSepBufferExit, mNumSepTypes, double,        mName+".mSepBufferExit");
-    TS_NEW_CLASS_ARRAY_EXT(mSepFluid,     mNumSepTypes, PolyFluid, (), mName+".mSepFluid");
-
-    for (int i=0; i<mNumSepTypes; ++i) {
-        mSepIndex[i]      = mNodes[0]->getContent()->find(configData.mFluidTypes.at(i));
-        mSepPort[i]       = configData.mFluidPorts.at(i);
-        mSepFraction[i]   = inputData.mFluidFractions.at(i);
-        mSepBufferThru[i] = 0.0;
-        mSepBufferExit[i] = 0.0;
-    }
-
+    cleanupMemory();
+    allocateMemory(configData, inputData);
     initializeFluids();
 
     /// - Set initialization status flag to indicate successful initialization.
@@ -266,7 +267,8 @@ void GunnsFluidMultiSeparator::initialize(const GunnsFluidMultiSeparatorConfigDa
 ///
 /// @throws   TsInitializationException
 ///
-/// @details  Validates the initialization of this GUNNS Fluid Multi-Separator link model.
+/// @details  Validates the initialization of this GUNNS Fluid Multi-Separator link model for
+///           paramters not associated with the separated fluids.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData& configData,
                                         const GunnsFluidMultiSeparatorInputData&  inputData) const
@@ -282,12 +284,26 @@ void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "max conductance < 0.");
     }
+}
 
-    /// - Throw an exception on empty separation types vector.
-    const int numTypes = configData.mFluidTypes.size();
-    if (numTypes < 1) {
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  configData   (--) Configuration data.
+/// @param[in]  inputData    (--) Input data.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Validates the initialization of this GUNNS Fluid Multi-Separator link model for
+///           paramters associated with the separated bulk fluids.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidMultiSeparator::validateSep(const GunnsFluidMultiSeparatorConfigData& configData,
+                                           const GunnsFluidMultiSeparatorInputData&  inputData) const
+{
+    /// - Throw an exception on empty separation and trace compound types vectors.
+    const int numTypes   = configData.mFluidTypes.size();
+    const int numTcTypes = configData.mTcTypes.size();
+    if (numTypes + numTcTypes < 1) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
-                    "number of separation types < 1.");
+                    "number of separation + trace compounds types < 1.");
     }
 
     /// - Throw an exception on size mismatch between separation types and port assignments.
@@ -299,7 +315,7 @@ void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData
     /// - Throw an exception on size mismatch between separation types and fractions.
     if (numTypes != static_cast<int>(inputData.mFluidFractions.size())) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
-                    "mismatch in separation types and fraction vector sizes.");
+                    "mismatch in separation types and fractions vector sizes.");
     }
 
     for (int i=0; i<numTypes; ++i) {
@@ -339,6 +355,133 @@ void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData
             GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "fluid phase mismatch between a separated type and its exit node.");
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  configData   (--) Configuration data.
+/// @param[in]  inputData    (--) Input data.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Validates the initialization of this GUNNS Fluid Multi-Separator link model for
+///           paramters associated with the separated trace compounds.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidMultiSeparator::validateTc(const GunnsFluidMultiSeparatorConfigData& configData,
+                                          const GunnsFluidMultiSeparatorInputData&  inputData) const
+{
+    /// - Throw an exception on size mismatch between trace compound types and port assignments.
+    const int numTcTypes = configData.mTcTypes.size();
+    if (numTcTypes != static_cast<int>(configData.mTcPorts.size())) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "mismatch in trace compound types and port assignments vector sizes.");
+    }
+
+    /// - Throw an exception on size mismatch between trace compound types and fractions.
+    if (numTcTypes != static_cast<int>(inputData.mTcFractions.size())) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
+                    "mismatch in trace compound types and fractions vector sizes.");
+    }
+
+    GunnsFluidTraceCompounds* tc = mNodes[0]->getContent()->getTraceCompounds();
+    if (tc) {
+        for (int i=0; i<numTcTypes; ++i) {
+            /// - Throw an exception for duplicated separation types.
+            for (int j=i+1; j<numTcTypes; ++j) {
+                if (configData.mTcTypes.at(i) == configData.mTcTypes.at(j)) {
+                    GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                            "duplicated trace compound types.");
+                }
+            }
+
+            /// - Throw an exception on trace compound port out of bounds.
+            if (not MsMath::isInRange(2, configData.mTcPorts.at(i), mNumPorts-1)) {
+                GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                        "a trace compound port assignment is out of range.");
+            }
+
+            /// - Throw an exception on trace compound type not in the network.
+            try {
+                tc->find(configData.mTcTypes.at(i));
+            } catch (const TsOutOfBoundsException& e){
+                GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                        "a trace compound type is not in the network.");
+            }
+
+            /// - Throw an exception if the trace compound separation mass fraction is not in (0-1).
+            if (!MsMath::isInRange(0.0, inputData.mTcFractions.at(i), 1.0)) {
+                GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                        "a trace compound separation mass fraction is not in (0 to 1).");
+            }
+        }
+    } else if (numTcTypes > 0) {
+        /// - Throw an exception if trace compounds specified but there are none in the network.
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                "trace compounds are specified but there are none in the network.");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  configData   (--) Configuration data.
+/// @param[in]  inputData    (--) Input data.
+///
+/// @details  Allocates dynamic arrays and initializes them with config & input data.
+///
+/// @note  This assumes that config data has already been validated and all fluid & trace compounds
+///        types are verified to exist in the network.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidMultiSeparator::allocateMemory(const GunnsFluidMultiSeparatorConfigData& configData,
+                                              const GunnsFluidMultiSeparatorInputData&  inputData)
+{
+    /// - Allocate & initialize memory for separation fluids.
+    if (mNumSepTypes > 0) {
+        TS_NEW_PRIM_ARRAY_EXT(mSepIndex,      mNumSepTypes, int,           mName+".mSepIndex");
+        TS_NEW_PRIM_ARRAY_EXT(mSepPort,       mNumSepTypes, int,           mName+".mSepPort");
+        TS_NEW_PRIM_ARRAY_EXT(mSepFraction,   mNumSepTypes, double,        mName+".mSepFraction");
+        TS_NEW_PRIM_ARRAY_EXT(mSepBufferThru, mNumSepTypes, double,        mName+".mSepBufferThru");
+        TS_NEW_PRIM_ARRAY_EXT(mSepBufferExit, mNumSepTypes, double,        mName+".mSepBufferExit");
+        TS_NEW_CLASS_ARRAY_EXT(mSepFluid,     mNumSepTypes, PolyFluid, (), mName+".mSepFluid");
+
+        for (int i=0; i<mNumSepTypes; ++i) {
+            mSepIndex[i]      = mNodes[0]->getContent()->find(configData.mFluidTypes.at(i));
+            mSepPort[i]       = configData.mFluidPorts.at(i);
+            mSepFraction[i]   = inputData.mFluidFractions.at(i);
+            mSepBufferThru[i] = 0.0;
+            mSepBufferExit[i] = 0.0;
+        }
+    }
+
+    GunnsFluidTraceCompounds* tc = mNodes[0]->getContent()->getTraceCompounds();
+    if (tc) {
+        const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
+
+        /// - Allocate & initialize memory for separation trace compounds.
+        if (mNumTcTypes > 0) {
+            TS_NEW_PRIM_ARRAY_EXT(mTcIndex,    mNumTcTypes, int,    mName+".mTcIndex");
+            TS_NEW_PRIM_ARRAY_EXT(mTcPort,     mNumTcTypes, int,    mName+".mTcPort");
+            TS_NEW_PRIM_ARRAY_EXT(mTcFraction, mNumTcTypes, double, mName+".mTcFraction");
+
+            for (int i=0; i<mNumTcTypes; ++i) {
+                mTcIndex[i]    = tc->find(configData.mTcTypes[i]);
+                mTcPort[i]     = configData.mTcPorts.at(i);
+                mTcFraction[i] = inputData.mTcFractions.at(i);
+            }
+        }
+
+        /// - Allocate & initialize memory for network trace compounds.
+        TS_NEW_PRIM_ARRAY_EXT(mWorkTcMassFlowRates, tcConfig->mNTypes, double, mName+".mWorkTcMassFlowRates");
+
+        for (int i=0; i<tcConfig->mNTypes; ++i) {
+            mWorkTcMassFlowRates[i] = 0.0;
+        }
+    }
+
+    /// - Allocate & initialize memory for network bulk fluid compounds.
+    const int nConstituents = mNodes[0]->getContent()->getNConstituents();
+    TS_NEW_PRIM_ARRAY_EXT(mWorkMoleFractions, nConstituents, double, mName+".mWorkMoleFractions");
+
+    for (int i=0; i<nConstituents; ++i) {
+        mWorkMoleFractions[i] = 0.0;
     }
 }
 
@@ -549,32 +692,54 @@ void GunnsFluidMultiSeparator::transportFlows(const double dt __attribute__((unu
 
     const double flux = fabs(mFlux);
     if (flux > DBL_EPSILON) {
+        mInternalFluid->setState(mNodes[upstreamPort]->getOutflow());
+        mNodes[upstreamPort]->collectOutflux(fabs(mFlowRate));
+
+        /// - Move trace compounds from the bulk fluid to their exit nodes.
+        GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
+        if (tc and mNumTcTypes > 0) {
+            const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
+            for (int i=0; i<tcConfig->mNTypes; i++) {
+                mWorkTcMassFlowRates[i] = flux * tc->getMoleFractions()[i] * tcConfig->mCompounds[i]->mMWeight;
+            }
+            for (int i=0; i<mNumTcTypes; ++i) {
+                const double tcSepRate = mTcFraction[i] * mWorkTcMassFlowRates[mTcIndex[i]];
+                mWorkTcMassFlowRates[mTcIndex[i]] -= tcSepRate;
+                static_cast<GunnsFluidNode*>(mNodes[mTcPort[i]])->collectTc(mTcIndex[i], tcSepRate);
+            }
+            tc->setMasses(mWorkTcMassFlowRates);
+        }
+
         /// - The bulk through flow has the separated fluids removed from it before being given to
         ///   the downstream node, using the separation flow rates from this pass, which will be
         ///   reflected in the link admittance matrix next pass.  This creates state error in the
         ///   downstream node this pass, but this error is corrected later.
-        mInternalFluid->setState(mNodes[upstreamPort]->getOutflow());
         int nConstituents = mNodes[0]->getContent()->getNConstituents();
-        double* moleFractions = new double[nConstituents];
         double exitFlux = flux;
-        for (int i=0; i<nConstituents; ++i) {
-            /// - At this point moleFractions is molar flow rate, not fractions yet.
-            moleFractions[i] = flux * mInternalFluid->getMoleFraction(i);
-        }
-        for (int i=0; i<mNumSepTypes; ++i) {
-            moleFractions[mSepIndex[i]] -= mSepBufferThru[i];
-            exitFlux                    -= mSepBufferThru[i];
-        }
-        if (exitFlux > DBL_EPSILON) {
-            /// - Now moleFractions is normalized back into fractions.
+        if (mNumSepTypes > 0) {
             for (int i=0; i<nConstituents; ++i) {
-                moleFractions[i] /= exitFlux;
+                /// - At this point moleFractions is molar flow rate, not fractions yet.
+                mWorkMoleFractions[i] = flux * mInternalFluid->getMoleFraction(i);
             }
-            mInternalFluid->setMoleAndMoleFractions(exitFlux, moleFractions);
-            mInternalFluid->setTemperature(temperature);
+            for (int i=0; i<mNumSepTypes; ++i) {
+                mWorkMoleFractions[mSepIndex[i]] -= mSepBufferThru[i];
+                exitFlux                         -= mSepBufferThru[i];
+            }
+            if (exitFlux > DBL_EPSILON) {
+                /// - Now moleFractions is normalized back into fractions.
+                for (int i=0; i<nConstituents; ++i) {
+                    mWorkMoleFractions[i] /= exitFlux;
+                }
+                mInternalFluid->setMoleAndMoleFractions(exitFlux, mWorkMoleFractions);
+                mInternalFluid->setTemperature(temperature);
+            }
         }
-        delete [] moleFractions;
-        mNodes[upstreamPort]->collectOutflux(fabs(mFlowRate));
+
+        /// - Update trace compound mole fractions relative to the moles remaining in the
+        ///   internal fluid, before given to the downstream node.
+        if (tc and mNumTcTypes > 0) {
+            tc->updateMoleFractions();
+        }
         mNodes[downstreamPort]->collectInflux(exitFlux * mInternalFluid->getMWeight(), mInternalFluid);
     }
 }
@@ -602,5 +767,37 @@ int GunnsFluidMultiSeparator::findIndexOfType(const FluidProperties::FluidType t
     } catch (TsOutOfBoundsException& e) {
         GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
                     "type is not in the network.");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  int (--) Index of the type in the separated trace compound types array.
+///
+/// @throws   TsOutOfBoundsException
+///
+/// @details  Returns the index of the given trace compound type in our separated types.  Note this
+///           is not the same as the index in the network's trace compound types.  Throws exception
+///           if the given type is not in the network or not one of our separated types.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+int GunnsFluidMultiSeparator::findIndexOfTc(const ChemicalCompound::Type type) const
+{
+    GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
+    if (tc) {
+        try {
+            const int index = tc->find(type);
+            for (int i=0; i<mNumTcTypes; ++i) {
+                if (index == mTcIndex[i]) {
+                    return i;
+                }
+            }
+            GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
+                    "type is not separated by this link.");
+        } catch (TsOutOfBoundsException& e) {
+            GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
+                    "type is not in the network.");
+        }
+    } else {
+        GUNNS_ERROR(TsOutOfBoundsException, "Invalid Argument Range",
+                "there are no trace compounds in the network.");
     }
 }

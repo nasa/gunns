@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_FLUID_TRACE_COMPOUNDS  GUNNS Fluid Trace Compounds Model
 @ingroup   TSM_GUNNS_FLUID_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -170,6 +170,8 @@ class GunnsFluidTraceCompounds
         /// @brief  Mixes trace compounds of bulk flow of another fluid into the parent fluid.
         void    flowIn(const GunnsFluidTraceCompounds& source,
                        const double                    totalMolesIn);
+        /// @brief  Flows trace compounds at given rates into the parent fluid.
+        void    flowIn(const double* rates, const double dt);
         /// @brief  Removes trace compounds due to bulk flow out of the parent fluid.
         void    flowOut(const double totalMolesOut);
         /// @brief  Zeroes all negative masses and mole fractions.

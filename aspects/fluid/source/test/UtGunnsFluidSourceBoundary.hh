@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_GUNNS_FLUID_SOURCE_BOUNDARY    Gunns Fluid Source Boundary Unit Test
 /// @ingroup  UT_TSM_GUNNS_FLUID_SOURCE
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Source Boundary
@@ -34,6 +34,14 @@ class FriendlyGunnsFluidSourceBoundary : public GunnsFluidSourceBoundary
 };
 inline FriendlyGunnsFluidSourceBoundary::FriendlyGunnsFluidSourceBoundary() : GunnsFluidSourceBoundary() {};
 inline FriendlyGunnsFluidSourceBoundary::~FriendlyGunnsFluidSourceBoundary() {}
+
+class FriendlyGunnsFluidSourceBoundaryNode : public GunnsFluidNode
+{
+    public:
+        FriendlyGunnsFluidSourceBoundaryNode() {;}
+        virtual ~FriendlyGunnsFluidSourceBoundaryNode() {;}
+        friend class UtGunnsFluidSourceBoundary;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Basis Source Boundary  unit tests.

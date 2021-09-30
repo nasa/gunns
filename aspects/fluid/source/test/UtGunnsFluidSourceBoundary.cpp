@@ -1,11 +1,6 @@
-/**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-(
-   (aspects/fluid/source/GunnsFluidSourceBoundary.o)
-)
 */
 
 #include "strings/UtResult.hh"
@@ -599,25 +594,18 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsTcOnly()
 
     tArticle->computeFlows(tTimeStep);
 
-    CPPUNIT_ASSERT(GunnsBasicLink::BOTH == tArticle->mPortDirections[0]);
+    CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
 
     tArticle->transportFlows(tTimeStep);
 
-    const double* mIn     = tNodes[0].getInflow()->getTraceCompounds()->getMasses();
-    const double* mOut    = tNodes[0].getOutflow()->getTraceCompounds()->getMasses();
-    const double* xOut    = tNodes[0].getOutflow()->getTraceCompounds()->getMoleFractions();
-    const double  nodeMW  = tNodes[0].getOutflow()->getMWeight();
-    const double  expectedFlow = (tTcRatesState[0] + tTcRatesState[1]);
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+    const double mdotH2O = node->mTcInflow.mState[0];
+    const double mdotCO2 = node->mTcInflow.mState[1];
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow, tArticle->mFlowRate, DBL_EPSILON);
-
-    const double  mdotH2O = mIn[0] - (xOut[0] * tNodes[0].getOutflux() / nodeMW)
-                                   * tCompoundProperties->getCompound(ChemicalCompound::H2O)->mMWeight;
-    const double  mdotCO2 = mIn[1] - (xOut[1] * tNodes[0].getOutflux() / nodeMW)
-                                   * tCompoundProperties->getCompound(ChemicalCompound::CO2)->mMWeight;
-
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[0], mdotH2O,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[1], mdotCO2,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,                              tArticle->mFlowRate, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                              tArticle->mFlux,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[0], mdotH2O,             DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[1], mdotCO2,             DBL_EPSILON);
 
     UT_PASS_LAST;
 }

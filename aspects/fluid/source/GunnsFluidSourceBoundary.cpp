@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Source Boundary Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -253,10 +253,10 @@ void GunnsFluidSourceBoundary::step(const double dt)
     ///   source fluid.  Molar flow rate is zeroed in TC-only mode since there will be no affect on
     ///   bulk fluid in the node.
     const double sourceMWeight = mInternalFluid->getMWeight();
-    if (!mTraceCompoundsOnly and sourceMWeight > DBL_EPSILON) {
-        mFlux = mFlowRate / sourceMWeight;
-    } else {
+    if (mTraceCompoundsOnly or sourceMWeight < DBL_EPSILON) {
         mFlux = 0.0;
+    } else {
+        mFlux = mFlowRate / sourceMWeight;
     }
 
     buildSource();
@@ -279,9 +279,7 @@ void GunnsFluidSourceBoundary::computeFlows(const double dt __attribute__((unuse
     }
 
     /// - Set port flow directions and schedule flow from source nodes.
-    if (mTraceCompoundsOnly and fabs(mFlowRate) > DBL_EPSILON) {
-        mPortDirections[0] = BOTH;
-    } else if (fabs(mFlux) > DBL_EPSILON) {
+    if (fabs(mFlux) > DBL_EPSILON) {
         mPortDirections[0] = SINK;
     } else {
         mPortDirections[0] = NONE;
@@ -316,31 +314,19 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
     if (tc) {
         const GunnsFluidTraceCompoundsConfigData& tcConfig = *tc->getConfig();
         if (mTraceCompoundsOnly and fabs(mFlowRate) > DBL_EPSILON) {
-            /// - In TC-only mode, since TC's can only be given to the node in a bulk fluid flow, we
-            ///   flow a small amount of regular fluid into the node and an equal amount out of the
-            ///   node so that the net fluid flow is zero.  We add our desired TC rates to the
-            ///   inflow, plus an extra amount to account for what will be removed in the node's
-            ///   extra outflow that we are causing.
-            double pSum = 0.0;
+            /// - In TC-only mode, TC's are given directly to/from the node's via its collectTc
+            ///   function.
             for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
-                pSum += fabs(mTraceCompoundRates[i]);
+                static_cast<GunnsFluidNode*>(mNodes[0])->collectTc(i, mFlowRate * mTraceCompoundRates[i]);
             }
-            const double nodeFlow = fabs(mFlowRate) * pSum;
-            mInternalFluid->setState(mNodes[0]->getOutflow());
-            mInternalFluid->setMass(nodeFlow);
-            const double nodeFlux = nodeFlow / mInternalFluid->getMWeight();
-            double* nodeX = mNodes[0]->getOutflow()->getTraceCompounds()->getMoleFractions();
-            for (int i = 0; i < tcConfig.mNTypes; ++i) {
-                tc->setMass(i, mFlowRate * mTraceCompoundRates[i] + nodeFlux * nodeX[i] *
-                               tcConfig.mCompounds[i]->mMWeight);
-            }
-            mFlowRate = nodeFlow;
         } else {
+            /// - When there are bulk fluid flows, TC's are added to the bulk fluid, and will be
+            ///   transported within the bulk fluid to the node in transportFluid() below.
             for (int i = 0; i < tcConfig.mNTypes; ++i) {
                 tc->setMass(i, mFlowRate * mTraceCompoundRates[i]);
             }
+            tc->updateMoleFractions();
         }
-        tc->updateMoleFractions();
     }
 
     /// - Transport the internal fluid to/from the attached node.
@@ -376,15 +362,8 @@ void GunnsFluidSourceBoundary::transportFluid(const bool forcedOutflow __attribu
     ///   link always forces outflow of a specific mixture, we have to use the collectInflux method
     ///   with a negative flow rate.
     ///
-    /// - In TC-only mode, we flow the same bulk fluid in as out at the same rate, so the net bulk
-    ///   fluid in the node sees no change from this link.  The only difference is in the trace
-    ///   compounds content of the flow going in.
-    if ((fabs(mFlowRate) > m100EpsilonLimit)) {
-        if (mTraceCompoundsOnly) {
-            mNodes[0]->collectInflux (mFlowRate, mInternalFluid);
-            mNodes[0]->collectOutflux(mFlowRate);
-        } else {
-            mNodes[0]->collectInflux (mFlowRate, mInternalFluid);
-        }
+    /// - In TC-only mode, TC flows to/from the node were transported in transportFlows..
+    if (not mTraceCompoundsOnly and (fabs(mFlowRate) > m100EpsilonLimit)) {
+        mNodes[0]->collectInflux (mFlowRate, mInternalFluid);
     }
 }

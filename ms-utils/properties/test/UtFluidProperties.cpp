@@ -243,6 +243,15 @@ void UtFluidProperties::testSpecificEnthalpyTemperatureConsistency()
             getTemperature(specificEnthalpy, pressure);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
     } {
+        FluidProperties::FluidType type = FluidProperties::GUNNS_HYDROGEN;
+        const double pressure           = 500.0;
+        const double expected           = 20.0;
+        const double specificEnthalpy   = mArticle->getProperties(type)->
+            getSpecificEnthalpy(expected, pressure);
+        const double returned           = mArticle->getProperties(type)->
+            getTemperature(specificEnthalpy, pressure);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
+    } {
         FluidProperties::FluidType type = FluidProperties::GUNNS_METHANE;
         const double pressure           = 600.0;
         const double expected           = 100.0;
@@ -984,8 +993,8 @@ void UtFluidProperties::testSaturationCurveConsistency()
                                   202.0,  20.0, 103.0, 203.0, 204.0,
                                     4.0, 205.0, 106.0, 107.0,  21.0,
                                   207.0, 308.0, 309.0, 400.0, 401.0,
-                                  402.0, 310.0,  60.0, 150.0, 311.0,
-                                  312.0, 313.0, 314.0, 315.0};
+                                  402.0, 310.0,  60.0,  20.0, 150.0,
+                                  311.0, 312.0, 313.0, 314.0, 315.0};
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);

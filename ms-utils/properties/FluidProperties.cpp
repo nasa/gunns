@@ -680,6 +680,21 @@ DefinedFluidProperties::DefinedFluidProperties()
 
 
     /************************************************************************
+                   Properties for liquid hydrogen
+    ************************************************************************/
+    mDensityHYDROGEN(8.523911e+1, 3.848172e-4, -2.505004e-1, -1.498004e-6, -2.275759e-2,
+                     1.385381e-6, 13.957, 33.145, 1.0e-64, 1.0e+05),
+    mViscosityHYDROGEN(-3.313185e-4, 5.649623e-5, -2.874943e-6, 4.492284e-8, 13.957, 33.145),
+    mSpecificHeatHYDROGEN(1075.252, 397.4336, 13.957, 33.145),
+    mThermalConductivityHYDROGEN(6.970838e-2, 1.438866e-3, 13.957, 33.145),
+    mPrandtlNumberHYDROGEN(-2.957755, 1.071455, -6.652422e-2, 1.197382e-3, 13.957, 33.145),
+    mAdiabaticIndexHYDROGEN(2.970049e-1, 6.793151e-2, 13.957, 33.145),
+    mPressureHYDROGEN(8.523911e+1, 3.848172e-4, -2.505004e-1, -1.498004e-6, -2.275759e-2,
+                      1.385381e-6, 13.957, 33.145, 1.0e-64, 1.0e+05),
+    mTemperatureHYDROGEN(1075.252, 397.4336, 9.0e+4, 5.0e+05),
+
+
+    /************************************************************************
                    Properties for liquid methane
     ************************************************************************/
     mDensityMETHANE(5.18077e+2, -1.218128e-3, -2.121587e-1, 1.718584e-5, -5.772998e-3,
@@ -1028,6 +1043,18 @@ DefinedFluidProperties::DefinedFluidProperties()
                       &mSaturationPressureO2,        &mSaturationTemperatureO2,
                       &mHeatOfVaporizationO2),
 
+    /************************************************************************
+                   Properties for hydrogen (Liquid)
+    ************************************************************************/
+    mPropertiesHYDROGEN(FluidProperties::GUNNS_HYDROGEN, FluidProperties::LIQUID,
+                        mMWeightH2,                    mCriticalTemperatureH2,
+                        &mDensityHYDROGEN,             &mViscosityHYDROGEN,
+                        &mSpecificHeatHYDROGEN,        &mThermalConductivityHYDROGEN,
+                        &mPrandtlNumberHYDROGEN,       &mAdiabaticIndexHYDROGEN,
+                        &mPressureHYDROGEN,            &mTemperatureHYDROGEN,
+                        &mSaturationPressureH2,        &mSaturationTemperatureH2,
+                        &mHeatOfVaporizationH2),
+
 /************************************************************************
                Properties for methane (Liquid)
 ************************************************************************/
@@ -1125,6 +1152,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     mProperties[FluidProperties::GUNNS_PG50]        = &mPropertiesPG50;
     mProperties[FluidProperties::GUNNS_AMMONIA]     = &mPropertiesAMMONIA;
     mProperties[FluidProperties::GUNNS_OXYGEN]      = &mPropertiesOXYGEN;
+    mProperties[FluidProperties::GUNNS_HYDROGEN]    = &mPropertiesHYDROGEN;
     mProperties[FluidProperties::GUNNS_METHANE]     = &mPropertiesMETHANE;
     mProperties[FluidProperties::GUNNS_NAK78]       = &mPropertiesNAK78;
     mProperties[FluidProperties::GUNNS_GALDEN170]   = &mPropertiesGALDEN170;

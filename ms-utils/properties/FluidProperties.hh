@@ -102,13 +102,14 @@ class FluidProperties {
             GUNNS_PG50        = 20,  ///<  propylene glycol 50% (liquid)
             GUNNS_AMMONIA     = 21,  ///<  ammonia (liquid)
             GUNNS_OXYGEN      = 22,  ///<  oxygen (cryogenic liquid)
-            GUNNS_METHANE     = 23,  ///<  methane (cryogenic liquid)
-            GUNNS_NAK78       = 24,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
-            GUNNS_GALDEN170   = 25,  ///<  Galden HT-170 (liquid)
-            GUNNS_WATER_PVT   = 26,  ///<  water (liquid with table lookup density)
-            GUNNS_NTO         = 27,  ///<  nitrogen tetroxide (liquid)
-            GUNNS_MMH         = 28,  ///<  monomethylhydrazine (liquid)
-            NO_FLUID          = 29   ///<  Invalid or number of fluids - Keep this last!
+            GUNNS_HYDROGEN    = 23,  ///<  hydrogen (cryogenic liquid)
+            GUNNS_METHANE     = 24,  ///<  methane (cryogenic liquid)
+            GUNNS_NAK78       = 25,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
+            GUNNS_GALDEN170   = 26,  ///<  Galden HT-170 (liquid)
+            GUNNS_WATER_PVT   = 27,  ///<  water (liquid with table lookup density)
+            GUNNS_NTO         = 28,  ///<  nitrogen tetroxide (liquid)
+            GUNNS_MMH         = 29,  ///<  monomethylhydrazine (liquid)
+            NO_FLUID          = 30   ///<  Invalid or number of fluids - Keep this last!
         };
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief    Enumeration of the phases of Fluids.
@@ -443,6 +444,14 @@ class DefinedFluidProperties {
         LinearFit         mAdiabaticIndexOXYGEN;           /**< (--) OXYGEN adiabatic index curve fit */
         QuadLinInvFit     mPressureOXYGEN;                 /**< (--) OXYGEN pressure curve fit */
         QuadraticRootFit  mTemperatureOXYGEN;              /**< (--) OXYGEN temperature curve fit */
+        QuadLinFit        mDensityHYDROGEN;                /**< (--) HYDROGEN density curve fit */
+        CubicFit          mViscosityHYDROGEN;              /**< (--) HYDROGEN dynamic viscosity curve fit */
+        LinearFit         mSpecificHeatHYDROGEN;           /**< (--) HYDROGEN specific heat curve fit */
+        LinearFit         mThermalConductivityHYDROGEN;    /**< (--) HYDROGEN thermal conductivity curve fit */
+        CubicFit          mPrandtlNumberHYDROGEN;          /**< (--) HYDROGEN prandtl number curve fit */
+        LinearFit         mAdiabaticIndexHYDROGEN;         /**< (--) HYDROGEN adiabatic index curve fit */
+        QuadLinInvFit     mPressureHYDROGEN;               /**< (--) HYDROGEN pressure curve fit */
+        QuadraticRootFit  mTemperatureHYDROGEN;            /**< (--) HYDROGEN temperature curve fit */
         QuadLinFit        mDensityMETHANE;                 /**< (--) METHANE density curve fit */
         CubicFit          mViscosityMETHANE;               /**< (--) METHANE dynamic viscosity curve fit */
         LinearFit         mSpecificHeatMETHANE;            /**< (--) METHANE specific heat curve fit */
@@ -510,6 +519,7 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesPG50;                 /**< (--) Propylene Glycol 50% fluid properties (liquid) */
         FluidProperties   mPropertiesAMMONIA;              /**< (--) AMMONIA fluid properties (liquid) */
         FluidProperties   mPropertiesOXYGEN;               /**< (--) OXYGEN fluid properties (liquid) */
+        FluidProperties   mPropertiesHYDROGEN;             /**< (--) HYDROGEN fluid properties (liquid) */
         FluidProperties   mPropertiesMETHANE;              /**< (--) METHANE fluid properties (liquid) */
         FluidProperties   mPropertiesNAK78;                /**< (--) NaK-78 fluid properties (liquid) */
         FluidProperties   mPropertiesGALDEN170;            /**< (--) Galden HT-170 fluid properties (liquid) */

@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((properties/FluidProperties.o))
-***************************************************************************************************/
+*/
 
 #include <iostream>
 
@@ -867,11 +864,65 @@ void UtFluidProperties::testO2Table()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test table look-ups for GUNNS_H2_REAL_GAS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtFluidProperties::testH2Table()
+{
+    std::cout << "\n Fluid Properties 11: H2 Density Table                                  ";
+
+    /// @test A few specific points for good table data.  Table corners:
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
+                                 mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 0.0),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(88.3871,
+                                 mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 80000.0),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
+                                 mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 0.0),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(16.8613,
+                                 mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 80000.0),
+                                 FLT_EPSILON);
+
+    /// @test Loop across the entire table and check for good inverse between pressure and density
+    ///       at all points.
+    const double maxP = 80000.0;
+    const double minP = 0.0;
+    const double maxT = 1000.0;
+    const double minT = 64.0;
+    double maxE  = 0.0;
+    double maxEP = 0.0;
+    double maxET = 0.0;
+    int    maxI  = 0;
+    int    maxJ  = 0;
+    for (int i=0; i<1000; ++i) {
+        for (int j=0; j<1000; ++j) {
+            const double pressure    = minP + (maxP - minP) * i / 1000.0;
+            const double temperature = minT + (maxT - minT) * j / 1000.0;
+            const double density = mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(temperature, pressure);
+            const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getPressure(temperature, density);
+            if (fabs(error) > maxE) {
+                maxEP = pressure;
+                maxET = temperature;
+                maxI  = i;
+                maxJ  = j;
+                maxE  = error;
+            }
+        }
+    }
+//    std::cout << "\n     max inverting error =" << maxE << " @ (" << maxI << "," << maxJ << ") P=" << maxEP << ", T=" << maxET;
+//    std::cout << "\n                                                                        ";
+    CPPUNIT_ASSERT(maxE < 1.0E-9);
+
+    std::cout << "... Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test table look-ups for GUNNS_WATER_PVT
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtFluidProperties::testWaterPvtTable()
 {
-    std::cout << "\n Fluid Properties 11: Water PVT Density Table                           ";
+    std::cout << "\n Fluid Properties 12: Water PVT Density Table                           ";
 
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(999.792208924,
@@ -925,16 +976,16 @@ void UtFluidProperties::testWaterPvtTable()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtFluidProperties::testSaturationCurveConsistency()
 {
-    std::cout << "\n Fluid Properties 12: Saturation Curve Consistency                      ";
+    std::cout << "\n Fluid Properties 13: Saturation Curve Consistency                      ";
 
     // Pick test Ts points for each fluid type in between triple & critical points.  Use all
     // unique values so we can find which fluid type fails.
     const double temperature[] = {100.0, 200.0, 300.0, 101.0, 102.0,
                                   202.0,  20.0, 103.0, 203.0, 204.0,
-                                    4.0, 205.0, 106.0, 107.0, 207.0,
-                                  308.0, 309.0, 400.0, 401.0, 402.0,
-                                  310.0,  60.0, 150.0, 311.0, 312.0,
-                                  313.0, 314.0, 315.0};
+                                    4.0, 205.0, 106.0, 107.0,  21.0,
+                                  207.0, 308.0, 309.0, 400.0, 401.0,
+                                  402.0, 310.0,  60.0, 150.0, 311.0,
+                                  312.0, 313.0, 314.0, 315.0};
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);

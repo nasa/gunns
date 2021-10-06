@@ -1,10 +1,10 @@
 #ifndef FluidProperties_EXISTS
 #define FluidProperties_EXISTS
-/**
+/*
 @defgroup  TSM_UTILITIES_PROPERTIES_FLUID  Fluid Properties
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -93,21 +93,22 @@ class FluidProperties {
             GUNNS_XE_REAL_GAS = 11,  ///<  xenon (monatomic gas) (real-gas compressibility)
             GUNNS_N2_REAL_GAS = 12,  ///<  nitrogen (real-gas compressibility)
             GUNNS_O2_REAL_GAS = 13,  ///<  oxygen (real-gas compressibility)
-            GUNNS_WATER       = 14,  ///<  water (liquid)
-            GUNNS_HFE7000     = 15,  ///<  HFE-7000 (liquid)
-            GUNNS_HFE7100     = 16,  ///<  HFE-7100 (liquid)
-            GUNNS_PG30        = 17,  ///<  propylene glycol 30% (liquid)
-            GUNNS_PG40        = 18,  ///<  propylene glycol 40% (liquid)
-            GUNNS_PG50        = 19,  ///<  propylene glycol 50% (liquid)
-            GUNNS_AMMONIA     = 20,  ///<  ammonia (liquid)
-            GUNNS_OXYGEN      = 21,  ///<  oxygen (cryogenic liquid)
-            GUNNS_METHANE     = 22,  ///<  methane (cryogenic liquid)
-            GUNNS_NAK78       = 23,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
-            GUNNS_GALDEN170   = 24,  ///<  Galden HT-170 (liquid)
-            GUNNS_WATER_PVT   = 25,  ///<  water (liquid with table lookup density)
-            GUNNS_NTO         = 26,  ///<  nitrogen tetroxide (liquid)
-            GUNNS_MMH         = 27,  ///<  monomethylhydrazine (liquid)
-            NO_FLUID          = 28   ///<  Invalid or number of fluids - Keep this last!
+            GUNNS_H2_REAL_GAS = 14,  ///<  hydrogen (real-gas compressibility)
+            GUNNS_WATER       = 15,  ///<  water (liquid)
+            GUNNS_HFE7000     = 16,  ///<  HFE-7000 (liquid)
+            GUNNS_HFE7100     = 17,  ///<  HFE-7100 (liquid)
+            GUNNS_PG30        = 18,  ///<  propylene glycol 30% (liquid)
+            GUNNS_PG40        = 19,  ///<  propylene glycol 40% (liquid)
+            GUNNS_PG50        = 20,  ///<  propylene glycol 50% (liquid)
+            GUNNS_AMMONIA     = 21,  ///<  ammonia (liquid)
+            GUNNS_OXYGEN      = 22,  ///<  oxygen (cryogenic liquid)
+            GUNNS_METHANE     = 23,  ///<  methane (cryogenic liquid)
+            GUNNS_NAK78       = 24,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
+            GUNNS_GALDEN170   = 25,  ///<  Galden HT-170 (liquid)
+            GUNNS_WATER_PVT   = 26,  ///<  water (liquid with table lookup density)
+            GUNNS_NTO         = 27,  ///<  nitrogen tetroxide (liquid)
+            GUNNS_MMH         = 28,  ///<  monomethylhydrazine (liquid)
+            NO_FLUID          = 29   ///<  Invalid or number of fluids - Keep this last!
         };
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief    Enumeration of the phases of Fluids.
@@ -355,6 +356,8 @@ class DefinedFluidProperties {
         TsBilinearInterpolatorReverse mPressureN2Real;     /**< (--) N2 real-gas pressure table */
         TsBilinearInterpolator mDensityO2Real;             /**< (--) O2 real-gas density table */
         TsBilinearInterpolatorReverse mPressureO2Real;     /**< (--) O2 real-gas pressure table */
+        TsBilinearInterpolator mDensityH2Real;             /**< (--) H2 real-gas density table */
+        TsBilinearInterpolatorReverse mPressureH2Real;     /**< (--) H2 real-gas pressure table */
         QuadraticFit      mSaturationPressureN2O4;         /**< (--) N2O4 saturation pressure curve fit */
         FluidTsatFit      mSaturationTemperatureN2O4;      /**< (--) N2O4 saturation temperature curve fit */
         LinearFit         mHeatOfVaporizationN2O4;         /**< (--) N2O4 heat of vaporization curve fit */
@@ -498,6 +501,7 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesXe;                   /**< (--) Xe fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesN2Real;               /**< (--) N2 real-gas fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesO2Real;               /**< (--) O2 real-gas fluid properties (real-gas compressibility) */
+        FluidProperties   mPropertiesH2Real;               /**< (--) H2 real-gas fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesWATER;                /**< (--) WATER fluid properties (liquid) */
         FluidProperties   mPropertiesHFE7000 ;             /**< (--) HFE-7000 fluid properties (liquid) */
         FluidProperties   mPropertiesHFE7100 ;             /**< (--) HFE-7100 fluid properties (liquid) */
@@ -522,6 +526,9 @@ class DefinedFluidProperties {
         static const double mO2TemperatureScale[12]; /**< (K)     Oxygen real-gas table temperature scale */
         static const double mO2PressureScale[14];    /**< (kPa)   Oxygen real-gas table pressure scale */
         static const double mO2DensityTable[168];    /**< (kg/m3) Oxygen real-gas density table */
+        static const double mH2TemperatureScale[13]; /**< (K)     Hydrogen real-gas table temperature scale */
+        static const double mH2PressureScale[13];    /**< (kPa)   Hydrogen real-gas table pressure scale */
+        static const double mH2DensityTable[169];    /**< (kg/m3) Hydrogen real-gas density table */
 
     // Trick ICG has had problems before with declaring static const attributes before non-static
     // attributes, so adding a 2nd public block down here...

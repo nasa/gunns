@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Input Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -239,7 +239,8 @@ void GunnsElectConverterInput::validate(const GunnsElectConverterInputConfigData
                                         const GunnsElectConverterInputInputData&  inputData __attribute__((unused))) const
 {
     /// - Issue an error on backwards trip limits.
-    if (configData.mInputUnderVoltageTripLimit > configData.mInputOverVoltageTripLimit) {
+    if ( (configData.mInputUnderVoltageTripLimit > configData.mInputOverVoltageTripLimit) and
+         (configData.mInputOverVoltageTripLimit != 0.0) ) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "input under-voltage trip limit > over-voltage limit.");
     }

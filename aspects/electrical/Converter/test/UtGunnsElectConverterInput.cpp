@@ -1,10 +1,6 @@
-/**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-LIBRARY DEPENDENCY:
-  ((aspects/electrical/Converter/GunnsElectConverterInput.o)
-   (software/exceptions/TsInitializationException.o))
 */
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
@@ -291,6 +287,13 @@ void UtGunnsElectConverterInput::testInitializationErrors()
     tConfigData->mInputUnderVoltageTripLimit = tInOverVoltageTrip + 0.001;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
     tConfigData->mInputUnderVoltageTripLimit = tInUnderVoltageTrip;
+
+    /// @test    Exception not thrown for under-volt trip limit > over-volt limit but over-volt
+    ///          limit = 0.
+    tConfigData->mInputOverVoltageTripLimit = 0.0;
+    GunnsElectConverterInput article;
+    CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
+    tConfigData->mInputOverVoltageTripLimit = tInOverVoltageTrip;
 
     /// @test    Exception thrown for node list mismatch with output link.
     GunnsBasicNode otherNodes[N_NODES];

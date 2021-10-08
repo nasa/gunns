@@ -5,7 +5,7 @@
 /// @defgroup UT_FLUID_CONDUCTOR    Gunns Fluid Conductor Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Conductor
@@ -61,56 +61,25 @@ class UtGunnsFluidConductor: public CppUnit::TestFixture
         CPPUNIT_TEST(testAccessMethods);
         CPPUNIT_TEST_SUITE_END();
 
-        /// --     Pointer to nominal configuration data
-        GunnsFluidConductorConfigData* mConfigData;
-
-        /// --     Pointer to nominal input data
-        GunnsFluidConductorInputData* mInputData;
-
-        /// --     Test Article
-        FriendlyGunnsFluidConductor*  mArticle;
-
-        /// --     Conductor Name
-        std::string                  mLinkName;
-
-        /// --     Link Max Conductivity
-        double                       mMaxConductivity;
-
-        /// --     Link Expansion Scale Factor
-        double                       mExpansionScaleFactor;
-
-        /// --     Network Nodes
-        GunnsFluidNode               mNodes[3];
-
-        /// --     Node List
-        GunnsNodeList                mNodeList;
-
-        /// --     Network Links
-        std::vector<GunnsBasicLink*> mLinks;
-
-        /// --     Nominal inlet port index
-        int                          mPort0;
-
-        /// --     Nominal outlet port index
-        int                          mPort1;
-
-        /// (s)    Nominal time step
-        double                       mTimeStep;
-
-        /// --     Nominal tolerance for comparison of expected and returned values
-        double                       mTolerance;
-
-        /// --     Predefined fluid properties
-        DefinedFluidProperties*      mFluidProperties;
-        /// --     Fluid 1 config data
-        PolyFluidConfigData*         mFluidConfig;
-        /// --     Fluid 1 input data
-        PolyFluidInputData*          mFluidInput1;
-        /// --     Fluid 2input data
-        PolyFluidInputData*          mFluidInput2;
-        /// --     Fluid Fractions
-        double*                      fractions;
-
+        GunnsFluidConductorConfigData* mConfigData;           /**< (--) Pointer to nominal configuration data. */
+        GunnsFluidConductorInputData*  mInputData;            /**< (--) Pointer to nominal input data. */
+        FriendlyGunnsFluidConductor*   mArticle;              /**< (--) Test Article. */
+        std::string                    mLinkName;             /**< (--) Conductor Name. */
+        double                         mMaxConductivity;      /**< (m2) Link Max Conductivity. */
+        double                         mExpansionScaleFactor; /**< (--) Link Expansion Scale Factor. */
+        double                         mPressureExponent;     /**< (--) Pressure exponent. */
+        GunnsFluidNode                 mNodes[3];             /**< (--) Network Nodes. */
+        GunnsNodeList                  mNodeList;             /**< (--) Node List. */
+        std::vector<GunnsBasicLink*>   mLinks;                /**< (--) Network Links. */
+        int                            mPort0;                /**< (--) Nominal inlet port index. */
+        int                            mPort1;                /**< (--) Nominal outlet port index. */
+        double                         mTimeStep;             /**< (s)  Nominal time step. */
+        double                         mTolerance;            /**< (--) Nominal tolerance for comparison of expected and returned values. */
+        DefinedFluidProperties*        mFluidProperties;      /**< (--) Predefined fluid properties. */
+        PolyFluidConfigData*           mFluidConfig;          /**< (--) Fluid 1 config data. */
+        PolyFluidInputData*            mFluidInput1;          /**< (--) Fluid 1 input data. */
+        PolyFluidInputData*            mFluidInput2;          /**< (--) Fluid 2input data. */
+        double*                        fractions;             /**< (--) Fluid Fractions. */
 
     public:
         UtGunnsFluidConductor();

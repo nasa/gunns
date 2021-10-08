@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_FLUID_UTILS    GUNNS Fluid Utilities
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -57,7 +57,8 @@ class GunnsFluidUtils
         static double computeAdmittance(const double     conductivity,
                                         const double     minLinearizationP,
                                         const PolyFluid* fluid1,
-                                        const PolyFluid* fluid2);
+                                        const PolyFluid* fluid2,
+                                        const double     exponent = 0.5);
 
         /// @brief    Calculates the fluid capacitance of a volume.
         static double computeCapacitance(const PolyFluid* fluid,
@@ -74,7 +75,8 @@ class GunnsFluidUtils
         static double predictConductivity(const double     mdot,
                                           const double     minLinearizationP,
                                           const PolyFluid* fluid0,
-                                          const PolyFluid* fluid1);
+                                          const PolyFluid* fluid1,
+                                          const double     exponent = 0.5);
 
         /// @brief    Predicts an isentropic expansion scale factor that will produce the desired
         ///           temperature drop at the current network state.

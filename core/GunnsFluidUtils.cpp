@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Utilities implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -28,7 +28,6 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
-
 #include "GunnsFluidUtils.hh"
 
 /// @details Reference: TBD
@@ -64,6 +63,7 @@ const double GunnsFluidUtils::LN10 = log(10.0);
 ///                                                 (order doesn't matter).
 /// @param[in] fluid1            (--)           Pointer to node content fluid at a link port
 ///                                                 (order doesn't matter).
+/// @param[in] exponent          (--)           Exponent on the (rho/dP) term, default = 1/2.
 ///
 /// @return                      (kgmol/kPa/s)  Linearized molar admittance.
 ///
@@ -76,36 +76,40 @@ const double GunnsFluidUtils::LN10 = log(10.0);
 double GunnsFluidUtils::computeAdmittance(const double     conductivity,
                                           const double     minLinearizationP,
                                           const PolyFluid* fluid0,
-                                          const PolyFluid* fluid1)
+                                          const PolyFluid* fluid1,
+                                          const double     exponent)
 {
     /// \verbatim
     /// Linearized fluid molar admittance, which relates the link molar flow rate to the pressure
-    /// drop across the link.
+    /// drop across the link.  The mass flow rate is:
+    ///                                                   X
+    ///                          mdot = G * (avg_rho * dP)
     ///
-    ///                          A = G * sqrt( avg_rho / dP ) / avg_MW,
+    /// G       = Conductivity                                 (m2)
+    /// avg_rho = average density across the link              (kg/m3)
+    /// dP      = delta-Pressure across the link               (Pa)
+    /// X       = exponent on the (rho/dP) term (normally 1/2) (--)
     ///
-    /// A       = Admittance                               (kgmol/kPa/s)
-    /// G       = Conductivity                             (m2)
-    /// avg_rho = average density across the link          (kg/m3)
-    /// dP      = delta-Pressure across the link           (kPa)
-    /// avg_MW  = average molecular weight across the link (kg/kgmol)
+    /// This is the momentum equation for steady one-dimensional fluid flow, ignoring body forces,
+    /// viscous shear forces, and momentum exchange with the outside.  Reference:
+    /// John D. Anderson, Jr., Modern Compressible Flow With Historical Perspective, 2nd Ed., 1990.
+    /// (Equation 3.5).  Note that only exponent X = 1/2 is valid, from a units perspective.  But we
+    /// allow other exponents because they can be useful.  In particular, a value of 1 is useful for
+    /// modeling laminar flow.  We limit to allowed range 0.5 <= X <= 1.
     ///
-    /// For reference, this is a linearization of the momentum equation for steady one-dimensional
-    /// fluid flow.  Reference: John D. Anderson, Jr., Modern Compressible Flow With Historical
-    /// Perspective, 2nd Ed., 1990. (Equation 3.5)
+    /// Then this is converted to molar flow rate and linearized by the delta-pressure:
     ///
-    /// To combine with node capacitance/dt in the Gunns system of equations, we want admittance in
-    /// units of kgmol/kPa/s, so we must multiply by sqrt(1000), as follows:
+    ///                          A = mdot / dP / avg_MW,
     ///
-    /// A = m2 * sqrt( kg/m3/kPa ) * kgmol/kg
-    ///   = m2 * sqrt( kg/m3 * m-s2/1000/kg ) * kgmol/kg
-    ///   = m2 * sqrt( kg-s2/m2/1000/kg ) * kgmol/kg
-    ///   =      sqrt( kg-s2-m4/m2/1000/kg ) * kgmol/kg
-    ///   =      sqrt( m2-s2/1000 ) * kgmol/kg
-    ///   = m-s-kgmol/kg/sqrt(1000)                        kPa = 1000 kg/m/s2
-    ///                                                    m-s/kg = 1000/kPa/s
-    ///   = 1000 kgmol/kPa/s/sqrt(1000)
-    ///   = sqrt(1000) kgmol/kPa/s
+    /// A       = Admittance                                   (kgmol/kPa/s)
+    /// dP      = delta-Pressure across the link               (kPa)
+    /// avg_MW  = average molecular weight across the link     (kg/kgmol)
+    ///
+    /// The dP term is limited to a minimum value (the minLinearizationP argument) for two reasons:
+    /// - It keeps A from jumping to zero when link delta-pressure is zero.  This improves onset
+    ///   of flow when delta-pressure changes away from zero.
+    /// - It reduces noise in A at low link delta-pressure.  This reduces noise in the network
+    ///   solution.
     /// \endverbatim
     const double avgDensity = 0.5 * (fluid0->getDensity() + fluid1->getDensity());
 
@@ -124,20 +128,26 @@ double GunnsFluidUtils::computeAdmittance(const double     conductivity,
         useMW = 0.5 * (MW0 + MW1);
     }
 
-    /// - For conditions when delta-pressure gets very low, we remove it from the calculation of
-    ///   admittance, to reduce noise in the solution.  To do this, we peg it at a minimum value.
-    const double dP = std::max(minLinearizationP,
-                               fabs(fluid0->getPressure() - fluid1->getPressure()));
+    /// - Limited delta-pressure.
+    const double dP_lin = std::max(minLinearizationP,
+                                   fabs(fluid0->getPressure() - fluid1->getPressure()));
+    const double dP_Pa  = UnitConversion::PA_PER_KPA * dP_lin;
 
-    /// - Divide by zero is protected by Gunns does not allow minimum linearization potential to be
-    ///   equal to or less than zero, so dP can never result in zero, and PolyFluid class does not
-    ///   allow molecular weight to be zero.
-    if (dP > DBL_EPSILON && useMW > DBL_EPSILON) {
-        return conductivity * sqrt(UnitConversion::PA_PER_KPA * avgDensity / dP) / useMW;
+    /// - Calculate admittance.
+    if (dP_lin > DBL_EPSILON && useMW > DBL_EPSILON) {
+        double mdot = conductivity; // mass flow rate (kg/s), will complete below
+        const double limitExp = MsMath::limitRange(0.5, exponent, 1.0);
+        if (0.5 == limitExp) {
+            mdot *= sqrt(avgDensity * dP_Pa);
+        } else if (1.0 == limitExp) {
+            mdot *= avgDensity * dP_Pa;
+        } else {
+            mdot *= powf(avgDensity * dP_Pa, limitExp);
+        }
+        /// - Convert mdot (kg/s) to mole rate (kgmol/s) and linearize to admittance (kgmol/s/kPa).
+        return mdot / dP_lin / useMW;
     }
-    else {
-        return 0.0;
-    }
+    return 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,11 +245,12 @@ double GunnsFluidUtils::computeIsentropicTemperature(const double     expansionS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  mdot               (kg/s)  Desired mass flow rate across the link.
-/// @param[in]  minLinearizationP  (--)    Minimum delta-potential (pressure) for linearization.
+/// @param[in]  minLinearizationP  (--)    Minimum link delta-pressure for linearization.
 /// @param[in]  fluid0             (--)    Pointer to node content fluid at a link port
 ///                                            (order doesn't matter).
 /// @param[in]  fluid1             (--)    Pointer to node content fluid at a link port
 ///                                            (order doesn't matter).
+/// @param[in]  exponent           (--)    Exponent on the (rho/dP) term, default = 1/2.
 ///
 /// @return                        (--)    Predicted effective conductivity.
 ///
@@ -255,46 +266,33 @@ double GunnsFluidUtils::computeIsentropicTemperature(const double     expansionS
 double GunnsFluidUtils::predictConductivity(const double     mdot,
                                             const double     minLinearizationP,
                                             const PolyFluid* fluid0,
-                                            const PolyFluid* fluid1)
+                                            const PolyFluid* fluid1,
+                                            const double     exponent)
 {
-    double source_MW;
-    double dP = fluid0->getPressure() - fluid1->getPressure();
-    if (dP >= 0.0) {
-        source_MW = fluid0->getMWeight();
-    } else {
-        source_MW = fluid1->getMWeight();
-    }
-
     /// - Only compute conductivity if the current link delta-pressure is > DBL_EPSILON.  Otherwise,
     ///   return zero.
     double conductivity = 0.0;
-    dP = fabs(dP);
+    double dP = fabs(fluid0->getPressure() - fluid1->getPressure());
     if (dP > DBL_EPSILON) {
-        double admittance = fabs(mdot) / (dP * source_MW);
-
         const double avgDensity = 0.5 * (fluid0->getDensity() +
                                          fluid1->getDensity());
-
-        /// - The network Ground node always has zero molecular weight, which we can't use when
-        ///   converting from mass to molar flow rate.  We use the average molecular weight of the 2
-        ///   nodes, except when one is the Ground node, in which case we use the other node's value.
-        const double MW0 = fluid0->getMWeight();
-        const double MW1 = fluid1->getMWeight();
-        double useMW = 0.0;
-        if (MW0 < DBL_EPSILON) {
-            useMW = MW1;
-        } else if (MW1 < DBL_EPSILON) {
-            useMW = MW0;
-        } else {
-            useMW = 0.5 * (MW0 + MW1);
-        }
 
         if (dP < minLinearizationP) {
             dP = minLinearizationP;
         }
 
-        conductivity = admittance * useMW *
-                       sqrt (UnitConversion::KPA_PER_PA * dP / avgDensity);
+        /// - Only continue if density is > DBL_EPSILON, else return zero conductivity.
+        if (avgDensity > DBL_EPSILON) {
+            conductivity = fabs(mdot);
+            const double limitExp = MsMath::limitRange(0.5, exponent, 1.0);
+            if (0.5 == limitExp) {
+                conductivity /= sqrt(UnitConversion::PA_PER_KPA * dP * avgDensity);
+            } else if (1.0 == limitExp) {
+                conductivity /= (UnitConversion::PA_PER_KPA * dP * avgDensity);
+            } else {
+                conductivity /= powf(UnitConversion::PA_PER_KPA * dP * avgDensity, limitExp);
+            }
+        }
     }
     return conductivity;
 }

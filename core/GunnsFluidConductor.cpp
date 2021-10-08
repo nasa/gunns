@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Conductor Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -34,6 +34,7 @@ PROGRAMMERS:
 /// @param[in] nodes                (--) Network nodes array
 /// @param[in] maxConductivity      (m2) Maximum possible effective conductivity of the link
 /// @param[in] expansionScaleFactor (--) Scale factor for isentropic cooling across the link (0-1)
+/// @param[in] pressureExponent     (--) Exponent on the flow equation pressure term
 ///
 /// @details  Default GUNNS Fluid Conductor Config Data Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,11 +42,13 @@ GunnsFluidConductorConfigData::GunnsFluidConductorConfigData(
         const std::string& name,
         GunnsNodeList*     nodes,
         const double       maxConductivity,
-        const double       expansionScaleFactor)
+        const double       expansionScaleFactor,
+        const double       pressureExponent)
     :
     GunnsFluidLinkConfigData(name, nodes),
     mMaxConductivity(maxConductivity),
-    mExpansionScaleFactor(expansionScaleFactor)
+    mExpansionScaleFactor(expansionScaleFactor),
+    mPressureExponent(pressureExponent)
 {
     // nothing to do
 }
@@ -60,7 +63,8 @@ GunnsFluidConductorConfigData::GunnsFluidConductorConfigData(
     :
     GunnsFluidLinkConfigData(that),
     mMaxConductivity(that.mMaxConductivity),
-    mExpansionScaleFactor(that.mExpansionScaleFactor)
+    mExpansionScaleFactor(that.mExpansionScaleFactor),
+    mPressureExponent(that.mPressureExponent)
 {
     // nothing to do
 }
@@ -117,6 +121,7 @@ GunnsFluidConductor::GunnsFluidConductor()
     mMaxConductivity(0.0),
     mSystemConductance(0.0),
     mExpansionScaleFactor(0.0),
+    mPressureExponent(0.0),
     mTuneMode(GunnsFluidUtils::OFF),
     mTuneMassFlow(0.0),
     mTuneVolFlow(0.0),
@@ -161,6 +166,7 @@ void GunnsFluidConductor::initialize(const GunnsFluidConductorConfigData& config
     mMaxConductivity       = configData.mMaxConductivity;
     mEffectiveConductivity = mMaxConductivity;
     mExpansionScaleFactor  = configData.mExpansionScaleFactor;
+    mPressureExponent      = configData.mPressureExponent;
     mSystemConductance     = 0.0;
     mTuneMode              = GunnsFluidUtils::OFF;
     mTuneMassFlow          = 0.0;
@@ -190,6 +196,12 @@ void GunnsFluidConductor::validate() const
     if (mExpansionScaleFactor < 0.0 || mExpansionScaleFactor > 1.0) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has expansion scale factor < 0 or > 1.");
+    }
+
+    /// - Issue an error on pressure exponent < 0.5 or > 1.
+    if (mPressureExponent < 0.5 || mPressureExponent > 1.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "Link has pressure exponent < 0.5 or > 1.");
     }
 }
 
@@ -279,7 +291,8 @@ double GunnsFluidConductor::linearizeConductance()
     return GunnsFluidUtils::computeAdmittance(mEffectiveConductivity,
                                               mMinLinearizationPotential,
                                               mNodes[0]->getOutflow(),
-                                              mNodes[1]->getOutflow());
+                                              mNodes[1]->getOutflow(),
+                                              mPressureExponent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -414,7 +427,8 @@ void GunnsFluidConductor::tuneFlow(const double flowRate) {
     mMaxConductivity = GunnsFluidUtils::predictConductivity(flowRate,
                                                             mMinLinearizationPotential,
                                                             mNodes[0]->getOutflow(),
-                                                            mNodes[1]->getOutflow());
+                                                            mNodes[1]->getOutflow(),
+                                                            mPressureExponent);
     mEffectiveConductivity = mMaxConductivity;
     mMalfBlockageFlag      = false;
     mTuneMode = GunnsFluidUtils::OFF;

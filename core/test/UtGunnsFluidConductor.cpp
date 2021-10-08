@@ -1,12 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (core/GunnsFluidConductor.o)
-    )
-***************************************************************************************************/
 #include "UtGunnsFluidConductor.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -22,6 +18,7 @@ UtGunnsFluidConductor::UtGunnsFluidConductor()
     mLinkName(),
     mMaxConductivity(),
     mExpansionScaleFactor(),
+    mPressureExponent(),
     mNodes(),
     mNodeList(),
     mLinks(),
@@ -72,6 +69,7 @@ void UtGunnsFluidConductor::setUp()
     mNodeList.mNodes      = mNodes;
     mMaxConductivity      = 0.5;
     mExpansionScaleFactor = 0.4;
+    mPressureExponent     = 0.5;
     mPort0                = 0;
     mPort1                = 1;
     mTimeStep             = 0.1;
@@ -109,7 +107,7 @@ void UtGunnsFluidConductor::setUp()
 
     /// - Define nominal configuration data
     mConfigData = new GunnsFluidConductorConfigData(
-            mLinkName, &mNodeList, mMaxConductivity, mExpansionScaleFactor);
+            mLinkName, &mNodeList, mMaxConductivity, mExpansionScaleFactor, mPressureExponent);
 
     /// - Define nominal input data
     mInputData = new GunnsFluidConductorInputData(true, 0.5);
@@ -130,6 +128,7 @@ void UtGunnsFluidConductor::testConfig()
     CPPUNIT_ASSERT(mNodes                == mConfigData->mNodeList->mNodes);
     CPPUNIT_ASSERT(mMaxConductivity      == mConfigData->mMaxConductivity);
     CPPUNIT_ASSERT(mExpansionScaleFactor == mConfigData->mExpansionScaleFactor);
+    CPPUNIT_ASSERT(mPressureExponent     == mConfigData->mPressureExponent);
 
     /// - Check default config construction
     GunnsFluidConductorConfigData defaultConfig;
@@ -137,6 +136,7 @@ void UtGunnsFluidConductor::testConfig()
     CPPUNIT_ASSERT(0    == defaultConfig.mNodeList);
     CPPUNIT_ASSERT(0.0  == defaultConfig.mMaxConductivity);
     CPPUNIT_ASSERT(0.0  == defaultConfig.mExpansionScaleFactor);
+    CPPUNIT_ASSERT(0.5  == defaultConfig.mPressureExponent);
 
     /// - Check copy config construction
     GunnsFluidConductorConfigData copyConfig(*mConfigData);
@@ -144,6 +144,7 @@ void UtGunnsFluidConductor::testConfig()
     CPPUNIT_ASSERT(mNodes                == copyConfig.mNodeList->mNodes);
     CPPUNIT_ASSERT(mMaxConductivity      == copyConfig.mMaxConductivity);
     CPPUNIT_ASSERT(mExpansionScaleFactor == copyConfig.mExpansionScaleFactor);
+    CPPUNIT_ASSERT(mPressureExponent     == copyConfig.mPressureExponent);
 
     std::cout << "... Pass";
 }
@@ -184,6 +185,7 @@ void UtGunnsFluidConductor::testDefaultConstruction()
     CPPUNIT_ASSERT(0.0                  == mArticle->mMaxConductivity);
     CPPUNIT_ASSERT(0.0                  == mArticle->mSystemConductance);
     CPPUNIT_ASSERT(0.0                  == mArticle->mExpansionScaleFactor);
+    CPPUNIT_ASSERT(0.0                  == mArticle->mPressureExponent);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT(0.0                  == mArticle->mTuneMassFlow);
     CPPUNIT_ASSERT(0.0                  == mArticle->mTuneVolFlow);
@@ -214,6 +216,7 @@ void UtGunnsFluidConductor::testNominalInitialization()
     CPPUNIT_ASSERT(mMaxConductivity      == article.mMaxConductivity);
     CPPUNIT_ASSERT(mMaxConductivity      == article.mEffectiveConductivity);
     CPPUNIT_ASSERT(mExpansionScaleFactor == article.mExpansionScaleFactor);
+    CPPUNIT_ASSERT(mPressureExponent     == article.mPressureExponent);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF  == article.mTuneMode);
     CPPUNIT_ASSERT(0.0                   == article.mTuneMassFlow);
     CPPUNIT_ASSERT(0.0                   == article.mTuneVolFlow);
@@ -251,6 +254,18 @@ void UtGunnsFluidConductor::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = 1.1;
     CPPUNIT_ASSERT_THROW(mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
+    mConfigData->mExpansionScaleFactor = 0.0;
+
+    /// @test for exception on pressure exponent < 0.5
+    mConfigData->mPressureExponent = 0.4;
+    CPPUNIT_ASSERT_THROW(mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
+                         TsInitializationException);
+
+    /// @test for exception on pressure exponent > 1
+    mConfigData->mPressureExponent = 1.1;
+    CPPUNIT_ASSERT_THROW(mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
+                         TsInitializationException);
+    mConfigData->mPressureExponent = 0.5;
 
     std::cout << "... Pass";
 }

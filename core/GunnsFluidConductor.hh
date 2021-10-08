@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_FLUID_CONDUCTOR    GUNNS Fluid Conductor Link
 @ingroup   TSM_GUNNS_CORE_LINK_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -46,12 +46,13 @@ class GunnsFluidConductorConfigData : public GunnsFluidLinkConfigData
     public:
         double mMaxConductivity;       /**< (m2) trick_chkpnt_io(**) Link Max Conductivity */
         double mExpansionScaleFactor;  /**< (--) trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1) */
-
+        double mPressureExponent;      /**< (--) trick_chkpnt_io(**) Exponent on the flow equation pressure term. */
         /// @brief Default constructs this Fluid Conductor configuration data.
         GunnsFluidConductorConfigData(const std::string& name                 = "",
                                       GunnsNodeList*     nodes                = 0,
                                       const double       maxConductivity      = 0.0,
-                                      const double       expansionScaleFactor = 0.0);
+                                      const double       expansionScaleFactor = 0.0,
+                                      const double       pressureExponent     = 0.5);
 
         /// @brief Copy constructs this GUNNS Fluid Conductor configuration data.
         GunnsFluidConductorConfigData(const GunnsFluidConductorConfigData& that);
@@ -132,6 +133,7 @@ class GunnsFluidConductor : public GunnsFluidLink
         double                      mMaxConductivity;       /**< (m2)           trick_chkpnt_io(**) Link Maximum Conductivity */
         double                      mSystemConductance;     /**< (kg*mol/kPa/s) trick_chkpnt_io(**) Limited molar conductance */
         double                      mExpansionScaleFactor;  /**< (--)           trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1) */
+        double                      mPressureExponent;      /**< (--)           trick_chkpnt_io(**) Exponent on the flow equation pressure term. */
         GunnsFluidUtils::TuningMode mTuneMode;              /**< (--)           trick_chkpnt_io(**) Auto-tunes the link to desired flow type */
         double                      mTuneMassFlow;          /**< (kg/s)         trick_chkpnt_io(**) The desired mass flow for link tuning */
         double                      mTuneVolFlow;           /**< (m3/s)         trick_chkpnt_io(**) The desired volumetric flow for link tuning */

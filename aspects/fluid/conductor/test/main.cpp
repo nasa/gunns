@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup  UT_GUNNS_FLUID_CONDUCTOR   Conductor Unit tests
 /// @ingroup   UT_GUNNS_FLUID
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @details   Unit test classes for GUNNS fluid conductor link models.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,7 @@
 #include "UtGunnsFluidLiquidWaterSensor.hh"
 #include "UtGunnsFluidEqConductor.hh"
 #include "UtGunnsFluidPhaseChangeConductor.hh"
+#include "UtGunnsFluidTypeChangeConductor.hh"
 #include "UtGunnsFluidSimpleRocket.hh"
 #include "UtGunnsFluidSimpleQd.hh"
 #include "UtGunnsGasTurbine.hh"
@@ -63,6 +64,7 @@ int main(int, char**)
     runner.addTest(UtGunnsFluid3WayCheckValve::suite());
     runner.addTest(UtGunnsFluidEqConductor::suite());
     runner.addTest(UtGunnsFluidPhaseChangeConductor::suite());
+    runner.addTest(UtGunnsFluidTypeChangeConductor::suite());
     runner.addTest(UtGunnsFluidSimpleRocket::suite());
     runner.addTest(UtGunnsDriveShaftSpotter::suite());
     runner.addTest(UtGunnsGasTurbine::suite());

@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_INPUT_LINK    GUNNS Electrical Converter Input Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -134,6 +134,7 @@ class GunnsElectConverterInput : public GunnsBasicLink
         bool                       mLeadsInterface;        /**< *o (1) trick_chkpnt_io(**) This precedes the mOutputLink in the network. */
         bool                       mOverloadedState;       /**<    (1) trick_chkpnt_io(**) Network can't supply the power load. */
         bool                       mLastOverloadedState;   /**<    (1) trick_chkpnt_io(**) Last pass value of mOverloadedState. */
+        bool                       mSolutionReset;         /**<    (1) trick_chkpnt_io(**) Output link has given us invalid power due to its solution reset. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterInputConfigData& configData,
                       const GunnsElectConverterInputInputData&  inputData) const;

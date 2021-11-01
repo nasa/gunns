@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -129,6 +129,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputOverVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
+        /// @brief  Returns the solution reset flag.
+        bool getSolutionReset() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;         /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -344,7 +346,7 @@ inline void GunnsElectConverterOutput::resetTrips()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  GunnsTripLogic*  (--)  Pointer to the output over-voltage trip logic.
 ///
-/// @details  Returns the address of the mOutputOverVoltageTrip attribute;
+/// @details  Returns the address of the mOutputOverVoltageTrip attribute.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
 {
@@ -354,11 +356,21 @@ inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  GunnsTripLogic*  (--)  Pointer to the output over-current trip logic.
 ///
-/// @details  Returns the address of the mOutputOverCurrentTrip attribute;
+/// @details  Returns the address of the mOutputOverCurrentTrip attribute.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverCurrentTrip()
 {
     return &mOutputOverCurrentTrip;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  Whether or not this link is resetting the solution.
+///
+/// @details  Returns the value of the mSolutionReset flag.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::getSolutionReset() const
+{
+    return mSolutionReset;
 }
 
 #endif

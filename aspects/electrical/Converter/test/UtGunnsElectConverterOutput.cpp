@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -658,6 +658,11 @@ void UtGunnsElectConverterOutput::testAccessors()
     /// @test    Get the input power.
     tArticle->mInputPower = 42.0;
     CPPUNIT_ASSERT(42.0 == tArticle->getInputPower());
+
+    /// @test    Get the solution reset flag.
+    CPPUNIT_ASSERT(false == tArticle->getSolutionReset());
+    tArticle->mSolutionReset = true;
+    CPPUNIT_ASSERT(true  == tArticle->getSolutionReset());
 
     UT_PASS;
 }

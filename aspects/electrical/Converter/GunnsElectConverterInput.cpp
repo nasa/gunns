@@ -138,7 +138,8 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     mInputOverVoltageTrip(),
     mLeadsInterface(false),
     mOverloadedState(false),
-    mLastOverloadedState(false)
+    mLastOverloadedState(false),
+    mSolutionReset(false)
 {
     // nothing to do
 }
@@ -201,6 +202,7 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mLeadsInterface      = false;
     mOverloadedState     = false;
     mLastOverloadedState = false;
+    mSolutionReset       = false;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -307,10 +309,16 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         computeInputVoltage();
 
         /// - If we precede the pointed-to output link, drive the interface with it.  Otherwise we
-        ///   expect the interface to be driven by the output link or by other means.
+        ///   expect the interface to be driven by the output link or by other means.  We get the
+        ///   output link's solution reset flag - if set then the input power we got from it is
+        ///   invalid, and we will reject this minorStep's solution.
+        mSolutionReset = false;
         if (mLeadsInterface) {
             mInputPower = mOutputLink->computeInputPower();
             mOutputLink->setInputVoltage(mInputVoltage);
+            if (mOutputLink->getSolutionReset()) {
+                mSolutionReset = true;
+            }
         }
 
         /// - Scale the input load by the blockage malfunction, however note that intermediate
@@ -417,6 +425,12 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
             }
         }
         mLastOverloadedState = mOverloadedState;
+
+        /// - Reject the solution if the solution reset flag is set.  This comes from the output
+        ///   link when we lead the interface and it has returned an invalid input power.
+        if (mSolutionReset) {
+            result = REJECT;
+        }
     }
     return result;
 }

@@ -214,6 +214,7 @@ void UtGunnsElectConverterInput::testConstruction()
     CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     CPPUNIT_ASSERT(false == tArticle->mLastOverloadedState);
+    CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
     CPPUNIT_ASSERT(""    == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -478,6 +479,22 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+
+        /// @test    minorStep resets the mSolutionReset flag.
+        tArticle->mSolutionReset = true;
+        tArticle->minorStep(0.0, 0);
+        CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
+
+        /// @test    minorStep when output link has reset the solution.
+        tOutputLink.mSolutionReset = true;
+        tArticle->minorStep(0.0, 0);
+        CPPUNIT_ASSERT(true == tArticle->mSolutionReset);
+
+        /// @test    minorStep resets mSolutionReset when we dont lead interface
+        tArticle->mSolutionReset = true;
+        tArticle->mLeadsInterface = false;
+        tArticle->minorStep(0.0, 0);
+        CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
     } {
         /// @test    step and minorStep when connected to the Ground node.
         tArticle->mUserPortSelect      = 0;
@@ -649,6 +666,11 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
     CPPUNIT_ASSERT(tArticle->mOverloadedState);
+
+    /// @test    Rejects due to output link has reset the solution.
+    tArticle->mPotentialVector[0] = 131.0;
+    tArticle->mSolutionReset = true;
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
 
     UT_PASS;
 }

@@ -129,8 +129,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputOverVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
-        /// @brief  Returns the solution reset flag.
-        bool getSolutionReset() const;
+        /// @brief  Returns whether this link has rejected the solution.
+        bool getSolutionReject() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;         /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -151,6 +151,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool                                     mLeadsInterface;        /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
         bool                                     mReverseBiasState;      /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
         bool                                     mSolutionReset;         /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
+        bool                                     mSolutionReject;        /**<    (1)     trick_chkpnt_io(**) Network solution was rejected by this link. */
+        bool                                     mBiasFlippedForward;    /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped forward during this major step. */
         double                                   mSourceVoltage;         /**M    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterOutputConfigData& configData,
@@ -364,13 +366,15 @@ inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverCurrentTrip()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  Whether or not this link is resetting the solution.
+/// @returns  bool  (--)  Whether or not this link has rejected the solution.
 ///
-/// @details  Returns the value of the mSolutionReset flag.
+/// @details  Returns the value of the mSolutionReject flag.  This is needed by the input side link
+///           if it leads the interface, to know when this link's power is invalid due to it
+///           rejecting the solution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::getSolutionReset() const
+inline bool GunnsElectConverterOutput::getSolutionReject() const
 {
-    return mSolutionReset;
+    return mSolutionReject;
 }
 
 #endif

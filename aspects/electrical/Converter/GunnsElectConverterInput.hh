@@ -134,7 +134,7 @@ class GunnsElectConverterInput : public GunnsBasicLink
         bool                       mLeadsInterface;        /**< *o (1) trick_chkpnt_io(**) This precedes the mOutputLink in the network. */
         bool                       mOverloadedState;       /**<    (1) trick_chkpnt_io(**) Network can't supply the power load. */
         bool                       mLastOverloadedState;   /**<    (1) trick_chkpnt_io(**) Last pass value of mOverloadedState. */
-        bool                       mSolutionReset;         /**<    (1) trick_chkpnt_io(**) Output link has given us invalid power due to its solution reset. */
+        bool                       mInputPowerInvalid;     /**<    (1) trick_chkpnt_io(**) The power value from the output link is invalid. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterInputConfigData& configData,
                       const GunnsElectConverterInputInputData&  inputData) const;

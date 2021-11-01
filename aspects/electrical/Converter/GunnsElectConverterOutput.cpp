@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Output Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -165,6 +165,8 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mLeadsInterface(false),
     mReverseBiasState(false),
     mSolutionReset(false),
+    mSolutionReject(false),
+    mBiasFlippedForward(false),
     mSourceVoltage(0.0)
 {
     // nothing to do
@@ -337,6 +339,7 @@ void GunnsElectConverterOutput::step(const double dt)
         mResetTrips = false;
         resetTrips();
     }
+    mBiasFlippedForward = false;
 
     minorStep(0.0, 1);
 }
@@ -494,7 +497,9 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 /// @returns  bool (--) True if the bias changed direction during this update.
 ///
 /// @details  Updates the forward/reverse bias state of this converter and returns true if it
-///           changed.
+///           changed.  Bias is only allowed to flip from reverse to forward at most once per major
+///           network step, to avoid repeating oscillation between bias states that could prevent
+///           network converging.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 bool GunnsElectConverterOutput::updateBias()
 {
@@ -502,7 +507,7 @@ bool GunnsElectConverterOutput::updateBias()
     if (CURRENT == mRegulatorType or POWER == mRegulatorType or
             mSourceVoltage >= mPotentialVector[0]) {
         mReverseBiasState = false;
-    } else {
+    } else if (not mBiasFlippedForward) {
         mReverseBiasState = true;
     }
     return (lastBias != mReverseBiasState);

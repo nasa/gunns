@@ -139,7 +139,7 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     mLeadsInterface(false),
     mOverloadedState(false),
     mLastOverloadedState(false),
-    mSolutionReset(false)
+    mInputPowerInvalid(false)
 {
     // nothing to do
 }
@@ -202,7 +202,7 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mLeadsInterface      = false;
     mOverloadedState     = false;
     mLastOverloadedState = false;
-    mSolutionReset       = false;
+    mInputPowerInvalid   = false;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -310,14 +310,14 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
 
         /// - If we precede the pointed-to output link, drive the interface with it.  Otherwise we
         ///   expect the interface to be driven by the output link or by other means.  We get the
-        ///   output link's solution reset flag - if set then the input power we got from it is
+        ///   output link's solution reject flag - if set then the input power we got from it is
         ///   invalid, and we will reject this minorStep's solution.
-        mSolutionReset = false;
+        mInputPowerInvalid = false;
         if (mLeadsInterface) {
             mInputPower = mOutputLink->computeInputPower();
             mOutputLink->setInputVoltage(mInputVoltage);
-            if (mOutputLink->getSolutionReset()) {
-                mSolutionReset = true;
+            if (mOutputLink->getSolutionReject()) {
+                mInputPowerInvalid = true;
             }
         }
 
@@ -426,9 +426,10 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         }
         mLastOverloadedState = mOverloadedState;
 
-        /// - Reject the solution if the solution reset flag is set.  This comes from the output
-        ///   link when we lead the interface and it has returned an invalid input power.
-        if (mSolutionReset) {
+        /// - Reject the solution if the power value from the output link is invalid.  This happens
+        ///   when we lead the interface, and the output link rejected the network solution on the
+        ///   previous minor step, and hasn't computed a valid power for this minor step yet.
+        if (mInputPowerInvalid) {
             result = REJECT;
         }
     }

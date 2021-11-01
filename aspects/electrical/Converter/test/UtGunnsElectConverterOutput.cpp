@@ -251,7 +251,11 @@ void UtGunnsElectConverterOutput::testConstruction()
     CPPUNIT_ASSERT(0.0                                == tArticle->mTotalPowerLoss);
     CPPUNIT_ASSERT(false                              == tArticle->mOutputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false                              == tArticle->mOutputOverCurrentTrip.isTripped());
+    CPPUNIT_ASSERT(false                              == tArticle->mLeadsInterface);
     CPPUNIT_ASSERT(false                              == tArticle->mReverseBiasState);
+    CPPUNIT_ASSERT(false                              == tArticle->mSolutionReset);
+    CPPUNIT_ASSERT(false                              == tArticle->mSolutionReject);
+    CPPUNIT_ASSERT(false                              == tArticle->mBiasFlippedForward);
     CPPUNIT_ASSERT(""                                 == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -659,10 +663,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     tArticle->mInputPower = 42.0;
     CPPUNIT_ASSERT(42.0 == tArticle->getInputPower());
 
-    /// @test    Get the solution reset flag.
-    CPPUNIT_ASSERT(false == tArticle->getSolutionReset());
-    tArticle->mSolutionReset = true;
-    CPPUNIT_ASSERT(true  == tArticle->getSolutionReset());
+    /// @test    Get the solution reject flag.
+    CPPUNIT_ASSERT(false == tArticle->getSolutionReject());
+    tArticle->mSolutionReject = true;
+    CPPUNIT_ASSERT(true  == tArticle->getSolutionReject());
 
     UT_PASS;
 }

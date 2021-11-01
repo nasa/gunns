@@ -214,7 +214,7 @@ void UtGunnsElectConverterInput::testConstruction()
     CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     CPPUNIT_ASSERT(false == tArticle->mLastOverloadedState);
-    CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
     CPPUNIT_ASSERT(""    == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -480,21 +480,21 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
-        /// @test    minorStep resets the mSolutionReset flag.
-        tArticle->mSolutionReset = true;
+        /// @test    minorStep resets the mInputPowerInvalid flag.
+        tArticle->mInputPowerInvalid = true;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
+        CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
 
-        /// @test    minorStep when output link has reset the solution.
-        tOutputLink.mSolutionReset = true;
+        /// @test    minorStep when output link has rejected the solution.
+        tOutputLink.mSolutionReject = true;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(true == tArticle->mSolutionReset);
+        CPPUNIT_ASSERT(true == tArticle->mInputPowerInvalid);
 
-        /// @test    minorStep resets mSolutionReset when we dont lead interface
-        tArticle->mSolutionReset = true;
+        /// @test    minorStep resets mInputPowerInvalid when we don't lead interface
+        tArticle->mInputPowerInvalid = true;
         tArticle->mLeadsInterface = false;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(false == tArticle->mSolutionReset);
+        CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
     } {
         /// @test    step and minorStep when connected to the Ground node.
         tArticle->mUserPortSelect      = 0;
@@ -667,9 +667,9 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
     CPPUNIT_ASSERT(tArticle->mOverloadedState);
 
-    /// @test    Rejects due to output link has reset the solution.
+    /// @test    Rejects due to invalid power from the output link.
     tArticle->mPotentialVector[0] = 131.0;
-    tArticle->mSolutionReset = true;
+    tArticle->mInputPowerInvalid = true;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
 
     UT_PASS;

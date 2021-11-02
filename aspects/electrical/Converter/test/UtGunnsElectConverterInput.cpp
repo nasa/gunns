@@ -208,13 +208,15 @@ void UtGunnsElectConverterInput::testConstruction()
     CPPUNIT_ASSERT(0     == tArticle->mOutputLink);
     CPPUNIT_ASSERT(false == tArticle->mEnabled);
     CPPUNIT_ASSERT(0.0   == tArticle->mInputPower);
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT(false == tArticle->mResetTrips);
     CPPUNIT_ASSERT(0.0   == tArticle->mInputVoltage);
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     CPPUNIT_ASSERT(false == tArticle->mInputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mLeadsInterface);
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     CPPUNIT_ASSERT(false == tArticle->mLastOverloadedState);
-    CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
     CPPUNIT_ASSERT(""    == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -480,21 +482,23 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
-        /// @test    minorStep resets the mInputPowerInvalid flag.
-        tArticle->mInputPowerInvalid = true;
+        /// @test    minorStep resets the valid power & voltage flags.
+        tArticle->mInputVoltageValid = false;
+        tArticle->mInputPowerValid   = false;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
+        CPPUNIT_ASSERT(true == tArticle->mInputVoltageValid);
+        CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
-        /// @test    minorStep when output link has rejected the solution.
-        tOutputLink.mSolutionReject = true;
+        /// @test    minorStep when output link has invalid power.
+        tOutputLink.mInputPowerValid = false;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(true == tArticle->mInputPowerInvalid);
+        CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
-        /// @test    minorStep resets mInputPowerInvalid when we don't lead interface
-        tArticle->mInputPowerInvalid = true;
+        /// @test    minorStep resets mInputPowerValid when we don't lead interface
+        tArticle->mInputPowerValid = false;
         tArticle->mLeadsInterface = false;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(false == tArticle->mInputPowerInvalid);
+        CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
     } {
         /// @test    step and minorStep when connected to the Ground node.
         tArticle->mUserPortSelect      = 0;
@@ -523,38 +527,45 @@ void UtGunnsElectConverterInput::testComputeInputVoltage()
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
 
     /// @test    Normal input voltage.
-    double nodeV = 120.0;
+    double nodeV   = 120.0;
+    double actualV = 0.0;
     tArticle->mPotentialVector[0] = nodeV;
-    CPPUNIT_ASSERT(nodeV == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(nodeV == actualV);
 
     /// @test    Negative node voltage.
     nodeV = -1.0;
     tArticle->mPotentialVector[0] = nodeV;
-    CPPUNIT_ASSERT(0.0  == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(0.0   == actualV);
 
     /// @test    Fully blocked.
     nodeV = 120.0;
     tArticle->mPotentialVector[0] = nodeV;
     tArticle->mMalfBlockageValue  = 1.0;
     tArticle->mOverloadedState    = false;
-    CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(0.0   == actualV);
     tArticle->mMalfBlockageFlag = false;
 
     /// @test    Disabled.
     tArticle->mEnabled = false;
-    CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(0.0   == actualV);
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     tArticle->mEnabled = true;
 
     /// @test    Over-volt tripped.
     GunnsBasicLink::SolutionResult result;
     CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(0.0   == actualV);
     tArticle->mInputOverVoltageTrip.resetTrip();
 
     /// @test    Under-volt tripped.
     CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
-    CPPUNIT_ASSERT(0.0   == tArticle->computeInputVoltage());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
+    CPPUNIT_ASSERT(0.0   == actualV);
     tArticle->mInputUnderVoltageTrip.resetTrip();
 
     UT_PASS;
@@ -613,29 +624,34 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     tArticle->mUserPortSetControl = GunnsBasicLink::DEFAULT;
     tArticle->step(0.0);
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(0, 1));
+    CPPUNIT_ASSERT(true == tArticle->mInputVoltageValid);
 
     /// @test    Confirms when sensor outputs value that doens't cause trip.
     tSensorVin.mSensor.mMalfFailToFlag  = true;
     tSensorVin.mSensor.mMalfFailToValue = 120.0;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(120.0, tSensorVin.mSensor.getSensedOutput(), DBL_EPSILON);
+    CPPUNIT_ASSERT(true == tArticle->mInputVoltageValid);
 
     /// @test    Delays in trip-able condition but trip priority not yet met.
     tSensorVin.mSensor.mMalfFailToFlag  = false;
     CPPUNIT_ASSERT(GunnsBasicLink::DELAY == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT(!tArticle->mInputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tSensorVin.mSensor.getSensedOutput(), DBL_EPSILON);
-    CPPUNIT_ASSERT(!tArticle->mOverloadedState);
+    CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
+    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
     /// @test    Rejects due to undervolt trip from sensor.
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mInputUnderVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     tArticle->mInputUnderVoltageTrip.resetTrip();
 
     /// @test    Rejects due to overvolt trip from sensor.
     tArticle->mPotentialVector[0] = 131.0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mInputOverVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     tArticle->mInputOverVoltageTrip.resetTrip();
 
     /// @test    Rejects due to undervolt trip with no sensor.
@@ -643,12 +659,14 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     tArticle->mInputVoltageSensor = 0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mInputUnderVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     tArticle->mInputUnderVoltageTrip.resetTrip();
 
     /// @test    Rejects due to overvolt trip with no sensor.
     tArticle->mPotentialVector[0] = 131.0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mInputOverVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     tArticle->mInputOverVoltageTrip.resetTrip();
 
     /// @test    Doesn't reject or enter overloaded state if the network converged on a negative
@@ -658,19 +676,22 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     tArticle->mInputUnderVoltageTrip.mMalfInhibitTrip = true;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
-    CPPUNIT_ASSERT(!tArticle->mOverloadedState);
+    CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
+    CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
     /// @test    Rejects due to entering overload state because the network converged on a negative
     ///          voltage but the undervolt trip failed and we have input power.
     tArticle->mInputPower         =  1.0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mInputVoltage, DBL_EPSILON);
-    CPPUNIT_ASSERT(tArticle->mOverloadedState);
+    CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
+    CPPUNIT_ASSERT(true  == tArticle->mOverloadedState);
 
     /// @test    Rejects due to invalid power from the output link.
-    tArticle->mPotentialVector[0] = 131.0;
-    tArticle->mInputPowerInvalid = true;
+    tArticle->mPotentialVector[0] = 120.0;
+    tArticle->mInputPowerValid    = false;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
+    CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
 
     UT_PASS;
 }

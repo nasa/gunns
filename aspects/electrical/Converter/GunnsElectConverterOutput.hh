@@ -109,8 +109,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
                                                          const int absoluteStep);
         /// @brief Resets the link back to the previous minor step iteration.
         virtual bool resetLastMinorStep(const int convergedStep, const int absoluteStep);
-        /// @brief  Computes and returns the input channel load.
-        double computeInputPower();
+        /// @brief  Computes and returns the input channel power and validity.
+        bool computeInputPower(double& inputPower);
         /// @brief  Returns if the link is non-linear.
         virtual bool isNonLinear();
         /// @brief  Resets any trips.
@@ -129,8 +129,6 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputOverVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
-        /// @brief  Returns whether this link has rejected the solution.
-        bool getSolutionReject() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;         /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -140,10 +138,12 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         SensorAnalog*                            mOutputCurrentSensor;   /**<    (1)     trick_chkpnt_io(**) Pointer to the output current sensor. */
         GunnsElectConverterInput*                mInputLink;             /**< *o (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
         bool                                     mEnabled;               /**<    (1)                         Operation is enabled. */
-        double                                   mInputVoltage;          /**<    (V)                         Input voltage received from the input side. */
+        double                                   mInputVoltage;          /**<    (V)                         Input channel voltage received from the input side. */
+        bool                                     mInputVoltageValid;     /**<    (1)     trick_chkpnt_io(**) The input channel voltage value is valid. */
         double                                   mSetpoint;              /**<    (1)                         Commanded regulation setpoint. */
         bool                                     mResetTrips;            /**<    (1)     trick_chkpnt_io(**) Input command to reset trips. */
-        double                                   mInputPower;            /**<    (W)                         Power load sent to the input side. */
+        double                                   mInputPower;            /**<    (W)                         Input channel power load sent to the input side. */
+        bool                                     mInputPowerValid;       /**<    (1)     trick_chkpnt_io(**) The input channel power load value is valid. */
         double                                   mOutputChannelLoss;     /**<    (W)     trick_chkpnt_io(**) Power loss through the output channel resistance. */
         double                                   mTotalPowerLoss;        /**<    (W)                         Total power loss through converter efficiency and output channel resistance. */
         GunnsTripGreaterThan                     mOutputOverVoltageTrip; /**<    (1)                         Output over-voltage trip function. */
@@ -151,9 +151,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool                                     mLeadsInterface;        /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
         bool                                     mReverseBiasState;      /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
         bool                                     mSolutionReset;         /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
-        bool                                     mSolutionReject;        /**<    (1)     trick_chkpnt_io(**) Network solution was rejected by this link. */
-        bool                                     mBiasFlippedForward;    /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped forward during this major step. */
-        double                                   mSourceVoltage;         /**M    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
+        bool                                     mBiasFlippedReverse;    /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped reverse during this major step. */
+        double                                   mSourceVoltage;         /**<    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterOutputConfigData& configData,
                       const GunnsElectConverterOutputInputData&  inputData) const;
@@ -363,18 +362,6 @@ inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
 inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverCurrentTrip()
 {
     return &mOutputOverCurrentTrip;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  Whether or not this link has rejected the solution.
-///
-/// @details  Returns the value of the mSolutionReject flag.  This is needed by the input side link
-///           if it leads the interface, to know when this link's power is invalid due to it
-///           rejecting the solution.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::getSolutionReject() const
-{
-    return mSolutionReject;
 }
 
 #endif

@@ -244,9 +244,11 @@ void UtGunnsElectConverterOutput::testConstruction()
     CPPUNIT_ASSERT(0                                  == tArticle->mInputLink);
     CPPUNIT_ASSERT(false                              == tArticle->mEnabled);
     CPPUNIT_ASSERT(0.0                                == tArticle->mInputVoltage);
+    CPPUNIT_ASSERT(false                              == tArticle->mInputVoltageValid);
     CPPUNIT_ASSERT(0.0                                == tArticle->mSetpoint);
     CPPUNIT_ASSERT(false                              == tArticle->mResetTrips);
     CPPUNIT_ASSERT(0.0                                == tArticle->mInputPower);
+    CPPUNIT_ASSERT(false                              == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutputChannelLoss);
     CPPUNIT_ASSERT(0.0                                == tArticle->mTotalPowerLoss);
     CPPUNIT_ASSERT(false                              == tArticle->mOutputOverVoltageTrip.isTripped());
@@ -254,8 +256,8 @@ void UtGunnsElectConverterOutput::testConstruction()
     CPPUNIT_ASSERT(false                              == tArticle->mLeadsInterface);
     CPPUNIT_ASSERT(false                              == tArticle->mReverseBiasState);
     CPPUNIT_ASSERT(false                              == tArticle->mSolutionReset);
-    CPPUNIT_ASSERT(false                              == tArticle->mSolutionReject);
-    CPPUNIT_ASSERT(false                              == tArticle->mBiasFlippedForward);
+    CPPUNIT_ASSERT(false                              == tArticle->mBiasFlippedReverse);
+    CPPUNIT_ASSERT(0.0                                == tArticle->mSourceVoltage);
     CPPUNIT_ASSERT(""                                 == tArticle->mName);
 
     /// @test    New/delete for code coverage.
@@ -609,12 +611,14 @@ void UtGunnsElectConverterOutput::testComputeInputPower()
     double expectedOutLoss   = expectedFlux * expectedFlux / tOutputConductance;
     double expectedPowerIn   = (expectedPower + expectedOutLoss) / tConverterEfficiency;
     double expectedTotalLoss = expectedPowerIn - expectedPower;
+    double actualPower       = 0.0;
     tArticle->mSourceVector[0]     = source;
     tArticle->mAdmittanceMatrix[0] = conductance;
     tArticle->mPotentialVector[0]  = nodeV;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPowerIn,   tArticle->computeInputPower(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPowerIn,   tArticle->mInputPower,         DBL_EPSILON);
+    CPPUNIT_ASSERT(true  == tArticle->computeInputPower(actualPower));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPowerIn,   actualPower,                   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tInputPower,       tArticle->mInputPower,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,      tArticle->mFlux,               DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,     tArticle->mPower,              DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutLoss,   tArticle->mOutputChannelLoss,  DBL_EPSILON);
@@ -624,7 +628,8 @@ void UtGunnsElectConverterOutput::testComputeInputPower()
     tArticle->mUserPortSelect     = 0;
     tArticle->mUserPortSetControl = GunnsBasicLink::GROUND;
     tArticle->step(0.0);
-    CPPUNIT_ASSERT(0.0 == tArticle->computeInputPower());
+    CPPUNIT_ASSERT(true  == tArticle->computeInputPower(actualPower));
+    CPPUNIT_ASSERT(0.0 == actualPower);
     CPPUNIT_ASSERT(0.0 == tArticle->mInputPower);
     CPPUNIT_ASSERT(0.0 == tArticle->mPower);
     CPPUNIT_ASSERT(0.0 == tArticle->mOutputChannelLoss);
@@ -663,11 +668,6 @@ void UtGunnsElectConverterOutput::testAccessors()
     tArticle->mInputPower = 42.0;
     CPPUNIT_ASSERT(42.0 == tArticle->getInputPower());
 
-    /// @test    Get the solution reject flag.
-    CPPUNIT_ASSERT(false == tArticle->getSolutionReject());
-    tArticle->mSolutionReject = true;
-    CPPUNIT_ASSERT(true  == tArticle->getSolutionReject());
-
     UT_PASS;
 }
 
@@ -697,8 +697,10 @@ void UtGunnsElectConverterOutput::testConfirmSolutionAcceptable()
     tArticle->mInputPower         = 1.0;
     CPPUNIT_ASSERT(false == tArticle->mReverseBiasState);
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 1));
-    CPPUNIT_ASSERT(0.0  == tArticle->mInputPower);
-    CPPUNIT_ASSERT(true == tArticle->mReverseBiasState);
+    CPPUNIT_ASSERT(0.0   == tArticle->mInputPower);
+    CPPUNIT_ASSERT(true  == tArticle->mReverseBiasState);
+    CPPUNIT_ASSERT(true  == tArticle->mBiasFlippedReverse);
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
     /// @test    Zeroes input power and rejects when bias changes from reverse to forward.
     tArticle->mPotentialVector[0] = tInputVoltage;
@@ -706,40 +708,55 @@ void UtGunnsElectConverterOutput::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 1));
     CPPUNIT_ASSERT(0.0   == tArticle->mInputPower);
     CPPUNIT_ASSERT(false == tArticle->mReverseBiasState);
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
     /// @test    Confirms when network isn't converged.
+    tArticle->mInputPowerValid = true;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(0, 1));
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     /// @test    Confirms when sensors output values that don't cause trips.
     tSensorVout.mSensor.mMalfFailToFlag  = true;
     tSensorVout.mSensor.mMalfFailToValue = 120.0;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(120.0, tSensorVout.mSensor.getSensedOutput(), DBL_EPSILON);
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     /// @test    Confirms when link is disabled.
     tSensorVout.mSensor.mMalfFailToFlag  = false;
     tArticle->mEnabled = false;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
     tArticle->mEnabled = true;
 
-    /// - Flip to reverse bias and set up output overvolt trip condition.
+    /// - Can't flip to reverse bias a second time during major step.
     tArticle->mPotentialVector[0] = 200.0;
+    CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(0, 1));
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
+
+    /// - Flip to reverse bias and set up output overvolt trip condition.
+    tArticle->mBiasFlippedReverse = false;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 1));
+    CPPUNIT_ASSERT(true  == tArticle->mBiasFlippedReverse);
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
     /// @test    Delays in trip-able condition but trip priority not yet met.
     CPPUNIT_ASSERT(GunnsBasicLink::DELAY  == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT(!tArticle->mOutputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tSensorVout.mSensor.getSensedOutput(), DBL_EPSILON);
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     /// @test    Rejects due to overvolt trip from sensor.
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mOutputOverVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     tArticle->mOutputOverVoltageTrip.resetTrip();
 
     /// @test    Rejects due to overvolt trip with no sensor.
     tArticle->mOutputVoltageSensor = 0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mOutputOverVoltageTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     tArticle->mOutputOverVoltageTrip.resetTrip();
 
     /// - Flip to forward bias and set up overcurrent trip condition.
@@ -747,17 +764,26 @@ void UtGunnsElectConverterOutput::testConfirmSolutionAcceptable()
     tArticle->mSourceVector[0]     = 200.0;
     tArticle->mAdmittanceMatrix[0] = 0.0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(0, 1));
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
     /// @test    Rejects due to overcurrent trip from sensor.
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mOutputOverCurrentTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     tArticle->mOutputOverCurrentTrip.resetTrip();
 
     /// @test    Rejects due to overcurrent trip with no sensor.
     tArticle->mOutputCurrentSensor = 0;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(tArticle->mOutputOverCurrentTrip.isTripped());
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     tArticle->mOutputOverCurrentTrip.resetTrip();
+
+    /// @test    Rejects due to invalid voltage from the input link.
+    tArticle->mSourceVector[0]   = 0.0;
+    tArticle->mInputVoltageValid = false;
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
+    CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     //TODO updateBias code coverage
     tArticle->updateBias();

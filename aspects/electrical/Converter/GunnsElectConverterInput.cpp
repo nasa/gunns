@@ -132,14 +132,15 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     mOutputLink(0),
     mEnabled(false),
     mInputPower(0.0),
+    mInputPowerValid(false),
     mResetTrips(false),
     mInputVoltage(0.0),
+    mInputVoltageValid(false),
     mInputUnderVoltageTrip(),
     mInputOverVoltageTrip(),
     mLeadsInterface(false),
     mOverloadedState(false),
-    mLastOverloadedState(false),
-    mInputPowerInvalid(false)
+    mLastOverloadedState(false)
 {
     // nothing to do
 }
@@ -202,7 +203,8 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mLeadsInterface      = false;
     mOverloadedState     = false;
     mLastOverloadedState = false;
-    mInputPowerInvalid   = false;
+    mInputVoltageValid   = true;
+    mInputPowerValid     = true;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -257,7 +259,9 @@ void GunnsElectConverterInput::restartModel()
     GunnsBasicLink::restartModel();
 
     /// - Reset non-checkpointed and non-config data.
+    mInputPowerValid     = true;
     mResetTrips          = false;
+    mInputVoltageValid   = true;
     mOverloadedState     = false;
     mLastOverloadedState = false;
 }
@@ -306,19 +310,18 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         mPower               = 0.0;
 
     } else {
-        computeInputVoltage();
+        mInputVoltageValid = true;
+        computeInputVoltage(mInputVoltage);
 
         /// - If we precede the pointed-to output link, drive the interface with it.  Otherwise we
         ///   expect the interface to be driven by the output link or by other means.  We get the
         ///   output link's solution reject flag - if set then the input power we got from it is
         ///   invalid, and we will reject this minorStep's solution.
-        mInputPowerInvalid = false;
         if (mLeadsInterface) {
-            mInputPower = mOutputLink->computeInputPower();
+            mInputPowerValid = mOutputLink->computeInputPower(mInputPower);
             mOutputLink->setInputVoltage(mInputVoltage);
-            if (mOutputLink->getSolutionReject()) {
-                mInputPowerInvalid = true;
-            }
+        } else {
+            mInputPowerValid = true;
         }
 
         /// - Scale the input load by the blockage malfunction, however note that intermediate
@@ -362,7 +365,7 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
 void GunnsElectConverterInput::computeFlows(const double dt __attribute__((unused)))
 {
     if (mNodeMap[0] != getGroundNodeIndex()) {
-        computeInputVoltage();
+        computeInputVoltage(mInputVoltage);
         mPotentialDrop = mPotentialVector[0];
         mFlux          = mPotentialVector[0] * mAdmittanceMatrix[0] - mSourceVector[0];
         mPower         = -mFlux * mPotentialVector[0];
@@ -415,7 +418,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         ///   then reject and go to the overloaded state.
         if (CONFIRM == result and not
                 (mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped() or mOverloadedState)) {
-            computeInputVoltage();
+            computeInputVoltage(mInputVoltage);
             if (mInputPower > 0.0 and mPotentialVector[0] <= 0.0) {
                 mOverloadedState = true;
                 result           = REJECT;
@@ -425,11 +428,12 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
             }
         }
         mLastOverloadedState = mOverloadedState;
+        mInputVoltageValid = (REJECT != result);
 
         /// - Reject the solution if the power value from the output link is invalid.  This happens
-        ///   when we lead the interface, and the output link rejected the network solution on the
-        ///   previous minor step, and hasn't computed a valid power for this minor step yet.
-        if (mInputPowerInvalid) {
+        ///   when we lead the interface, the output link rejected the network solution on the
+        ///   previous minor step and hasn't computed a valid power for this minor step yet.
+        if (not mInputPowerValid) {
             result = REJECT;
         }
     }
@@ -437,19 +441,21 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double  (V)  Input channel voltage.
+/// @param[out]  inputVoltage  (V)  Input channel voltage.
+///
+/// @returns  bool  (--)  Whether the returned input voltage value is valid.
 ///
 /// @details  Sets the input channel voltage as the input node voltage if the converter isn't
 ///           disabled, blocked or tripped on the input side, otherwise the input channel voltage is
 ///           zero.  If the node voltage is negative, the input voltage is set to zero.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsElectConverterInput::computeInputVoltage()
+bool GunnsElectConverterInput::computeInputVoltage(double& inputVoltage)
 {
     if (not mEnabled or mInputOverVoltageTrip.isTripped() or mInputUnderVoltageTrip.isTripped()
             or (mMalfBlockageFlag and (mMalfBlockageValue >= 1.0)) ) {
-        mInputVoltage = 0.0;
+        inputVoltage = 0.0;
     } else {
-        mInputVoltage = fmax(0.0, mPotentialVector[0]);
+        inputVoltage = fmax(0.0, mPotentialVector[0]);
     }
-    return mInputVoltage;
+    return mInputVoltageValid;
 }

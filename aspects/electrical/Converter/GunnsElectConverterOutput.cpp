@@ -155,9 +155,11 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mInputLink(0),
     mEnabled(false),
     mInputVoltage(0.0),
+    mInputVoltageValid(false),
     mSetpoint(0.0),
     mResetTrips(false),
     mInputPower(0.0),
+    mInputPowerValid(false),
     mOutputChannelLoss(0.0),
     mTotalPowerLoss(0.0),
     mOutputOverVoltageTrip(),
@@ -165,8 +167,7 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mLeadsInterface(false),
     mReverseBiasState(false),
     mSolutionReset(false),
-    mSolutionReject(false),
-    mBiasFlippedForward(false),
+    mBiasFlippedReverse(false),
     mSourceVoltage(0.0)
 {
     // nothing to do
@@ -239,6 +240,8 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
     mOutputChannelLoss = 0.0;
     mTotalPowerLoss    = 0.0;
     mLeadsInterface    = false;
+    mInputVoltageValid = true;
+    mInputPowerValid   = true;
     mReverseBiasState  = (VOLTAGE == mRegulatorType) and (mSetpoint < mNodes[0]->getPotential());
 
     /// - Set init flag on successful validation.
@@ -317,9 +320,12 @@ void GunnsElectConverterOutput::restartModel()
     GunnsBasicLink::restartModel();
 
     /// - Reset non-checkpointed and non-config data.
+    mInputVoltageValid = true;
     mResetTrips        = false;
+    mInputPowerValid   = true;
     mOutputChannelLoss = 0.0;
     mReverseBiasState  = false;
+    mSolutionReset     = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +345,7 @@ void GunnsElectConverterOutput::step(const double dt)
         mResetTrips = false;
         resetTrips();
     }
-    mBiasFlippedForward = false;
+    mBiasFlippedReverse = false;
 
     minorStep(0.0, 1);
 }
@@ -356,19 +362,22 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
     if (mNodeMap[0] == getGroundNodeIndex()) {
         /// - Skip processing when on the Ground node.
         mInputVoltage        = 0.0;
+        mInputPower          = 0.0;
         mAdmittanceMatrix[0] = 0.0;
         mSourceVector[0]     = 0.0;
 
     } else {
-        computeInputPower();
-        /// - Reset the last step solution invalid flag so that we only skip once.
+        mInputPowerValid = true;
+        computeInputPower(mInputPower);
         mSolutionReset = false;
 
         /// - If we precede the pointed-to input link, drive the interface with it.  Otherwise we
         ///   expect the interface to be driven by the input link or by other means.
         if (mLeadsInterface) {
-            mInputVoltage = mInputLink->computeInputVoltage();
+            mInputVoltageValid = mInputLink->computeInputVoltage(mInputVoltage);
             mInputLink->setInputPower(mInputPower);
+        } else {
+            mInputVoltageValid = true;
         }
 
         /// - Set link conductance and source effects based on the load type.
@@ -464,7 +473,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 
         /// - After the network as converged, compute currents, powers and check for trips.
         if ((convergedStep > 0) and (REJECT != result)) {
-            computeInputPower();
+            computeInputPower(mInputPower);
 
             /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
             ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
@@ -489,7 +498,16 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
                 mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
             }
         }
+        mInputPowerValid = (REJECT != result);
+
+        /// - Reject the solution if the voltage value from the output link is invalid.  This
+        ///   happens when we lead the interface, the input link rejected the network solution on
+        ///   the previous minor step and hasn't computed a valid voltage for this minor step yet.
+        if (not mInputVoltageValid) {
+            result = REJECT;
+        }
     }
+
     return result;
 }
 
@@ -497,7 +515,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 /// @returns  bool (--) True if the bias changed direction during this update.
 ///
 /// @details  Updates the forward/reverse bias state of this converter and returns true if it
-///           changed.  Bias is only allowed to flip from reverse to forward at most once per major
+///           changed.  Bias is only allowed to flip from forward to reverse at most once per major
 ///           network step, to avoid repeating oscillation between bias states that could prevent
 ///           network converging.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -507,25 +525,28 @@ bool GunnsElectConverterOutput::updateBias()
     if (CURRENT == mRegulatorType or POWER == mRegulatorType or
             mSourceVoltage >= mPotentialVector[0]) {
         mReverseBiasState = false;
-    } else if (not mBiasFlippedForward) {
-        mReverseBiasState = true;
+    } else if (not mBiasFlippedReverse) {
+        mReverseBiasState   = true;
+        mBiasFlippedReverse = true;
     }
     return (lastBias != mReverseBiasState);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double  (--)  Input channel load based on load value type.
+/// @param[out]  inputPower  (W)  Input channel power load based on load value type.
+///
+/// @returns  bool  (--)  Whether the returned input power value is valid.
 ///
 /// @details  Updates output current, output power, power losses, input power and input load value
 ///           based on the load value type.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsElectConverterOutput::computeInputPower()
+bool GunnsElectConverterOutput::computeInputPower(double& inputPower)
 {
     /// - Zero outputs if the last minor step solution was invalid or we are on the Ground node.
     if (mSolutionReset or (mNodeMap[0] == getGroundNodeIndex())) {
         mPower             = 0.0;
         mOutputChannelLoss = 0.0;
-        mInputPower        = 0.0;
+        inputPower         = 0.0;
         mTotalPowerLoss    = 0.0;
 
     } else {
@@ -538,11 +559,11 @@ double GunnsElectConverterOutput::computeInputPower()
         mOutputChannelLoss = mFlux * mFlux / fmax(DBL_EPSILON, mOutputConductance);
 
         /// - Input power due to efficiency of the voltage conversion.
-        mInputPower = (mPower + mOutputChannelLoss) / MsMath::limitRange(DBL_EPSILON, mConverterEfficiency, 1.0);
+        inputPower = (mPower + mOutputChannelLoss) / MsMath::limitRange(DBL_EPSILON, mConverterEfficiency, 1.0);
 
         /// - Total power lost due to conversion and output channel resistance; this can also be
         ///   used as the waste heat generated by the converter.
-        mTotalPowerLoss = mInputPower - mPower;
+        mTotalPowerLoss = inputPower - mPower;
     }
-    return mInputPower;
+    return mInputPowerValid;
 }

@@ -1,12 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-(
-   (core/GunnsFluidDistributedIf.o)
-)
-***************************************************************************************************/
 #include "UtGunnsFluidDistributedIf.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -403,7 +399,7 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT(1     == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(0     == tArticle->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(false == tArticle->mInData.hasData());
+    CPPUNIT_ASSERT(false == tArticle->mInData.hasValidData());
     double inFractions[2]   = {0.7, 0.3};
     double inTcFractions[4] = {1.0e-7, 2.0e-7, 3.0e-7, 4.0e-7};
     double inTcFractionSum  = inTcFractions[0] + inTcFractions[1] + inTcFractions[2] + inTcFractions[3];
@@ -437,7 +433,7 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT(2     == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(1     == tArticle->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(true  == tArticle->mInData.hasData());
+    CPPUNIT_ASSERT(true  == tArticle->mInData.hasValidData());
 
     /// @test inputFluid() from the previous call to processInputs().
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.7,    tNodes[0].getContent()->getMoleFraction(0),    DBL_EPSILON);
@@ -589,6 +585,17 @@ void UtGunnsFluidDistributedIf::testProcessOutputs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7 / (1.0 + inTcFractionSum), tArticle->mOutData.mTcMoleFractions[3], DBL_EPSILON);
 
+    /// @test output in demand mode when the node inflow has negative mixture fractions.
+    tNodes[0].resetFlows();
+    inFluid.setMass(0,  0.5);
+    inFluid.setMass(1, -0.5);
+    inFluid.updateMass();
+    tNodes[0].collectInflux(0.001, &inFluid);
+    tArticle->processOutputs();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getContent()->getSpecificEnthalpy(), tArticle->mOutData.mEnergy, DBL_EPSILON);
+    CPPUNIT_ASSERT(0.5 == tArticle->mTempMassFractions[0]);
+    CPPUNIT_ASSERT(0.5 == tArticle->mTempMassFractions[1]);
+
     /// @test output in demand mode when the node has no inflow.
     tArticle->mFlux = 0.0;
     tNodes[0].resetFlows();
@@ -739,6 +746,21 @@ void UtGunnsFluidDistributedIf::testStep()
     csOverCd  = 1.0; // default moding capacitance ratio lower limit
     gainLimit = 1.0; // upper limit on gain limit
     expectedGain = gainLimit;
+    conductance  = expectedGain * 0.9 / timestep;
+    expectedG    = conductance;
+    tArticle->step(timestep);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGain, tArticle->mDemandFluxGain,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,    tArticle->mEffectiveConductivity, DBL_EPSILON);
+
+    /// @test limits on latency exponent.
+    tArticle->mLoopLatency = 0;
+    tArticle->step(timestep);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGain, tArticle->mDemandFluxGain,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,    tArticle->mEffectiveConductivity, DBL_EPSILON);
+
+    tArticle->mLoopLatency = 200;
+    gainLimit    = 1.5 * powf(0.75, 100);
+    expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     conductance  = expectedGain * 0.9 / timestep;
     expectedG    = conductance;
     tArticle->step(timestep);
@@ -1022,10 +1044,31 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[0]);
     CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[1]);
 
-    /// @test hasData method.
-    CPPUNIT_ASSERT(false == data.hasData());
-    data.mFrameCount = 1;
-    CPPUNIT_ASSERT(true == data.hasData());
+    /// @test hasValidData method.
+    data.mFrameCount  = 1;
+    data.mEnergy      = 1.0;
+    data.mSource      = -1.0;
+    data.mDemandMode  = true;
+    CPPUNIT_ASSERT(true == data.hasValidData());
+    data.mMoleFractions[2] = -1.0;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mMoleFractions[2] = 0.0;
+    data.mTcMoleFractions[1] = -1.0;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mTcMoleFractions[1] = 0.0;
+    data.mFrameCount  = 0;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mFrameCount  = 1;
+    data.mCapacitance = -1.0;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mCapacitance = 0.0;
+    data.mEnergy      = 0.0;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mEnergy      = 1.0;
+    data.mDemandMode  = false;
+    CPPUNIT_ASSERT(false == data.hasValidData());
+    data.mSource      = 0.0;
+    CPPUNIT_ASSERT(true == data.hasValidData());
 
     /// @test Assignment operator before initialization.
     data.mFrameCount         = 3;
@@ -1070,8 +1113,8 @@ void UtGunnsFluidDistributedIf::testData()
     /// @test Data objects are public in GunnsFluidDistributedIf.
     GunnsFluidDistributedIf article;
     article.initialize(*tConfigData, *tInputData, tLinks, tPort0);
-    CPPUNIT_ASSERT(false == article.mInData.hasData());
-    CPPUNIT_ASSERT(false == article.mOutData.hasData());
+    CPPUNIT_ASSERT(false == article.mInData.hasValidData());
+    CPPUNIT_ASSERT(false == article.mOutData.hasValidData());
 
     std::cout << "... Pass";
 }

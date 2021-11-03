@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_FLUID_DISTRIBUTED_IF    GUNNS Fluid Distributed Interface Link
 @ingroup   TSM_GUNNS_CORE_LINK_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -57,8 +57,8 @@ class GunnsFluidDistributedIfData
         virtual ~GunnsFluidDistributedIfData();
         /// @brief  Allocates dynamic arrays for mass and mole fractions.
         void initialize(const std::string& name, const unsigned int nFluids, const unsigned int nTc);
-        /// @brief  Returns whether this object has received data.
-        bool hasData();
+        /// @brief  Returns whether this object has received valid data.
+        bool hasValidData();
         /// @brief Assignment operator for this Fluid Distributed Interface interface data.
         GunnsFluidDistributedIfData& operator =(const GunnsFluidDistributedIfData& that);
 
@@ -273,6 +273,8 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         void flipToSupplyMode();
         /// @brief Computes and outputs capacitance.
         void outputCapacitance();
+        /// @brief Checks if any of the given fluid's mixture fractions are negative.
+        bool checkNegativeFluidFractions(const PolyFluid* fluid) const;
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link
@@ -287,16 +289,6 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
 };
 
 /// @}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  (--)  True if mFrameCount greater than zero.
-///
-/// @details  Checks the mFrameCount for a value greater than zero.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsFluidDistributedIfData::hasData()
-{
-    return mFrameCount > 0;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Computes the molar flux rate through the link.  Units:

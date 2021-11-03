@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Distributed Interface Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -98,6 +98,30 @@ void GunnsFluidDistributedIfData::initialize(const std::string& name,
             mTcMoleFractions[i] = 0.0;
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  (--)  True if all data validation checks passed.
+///
+/// @details  Checks for all of the following conditions to be met:  Frame count > 0, energy > 0,
+///           capacitance >= 0, pressure >= 0 (only in Supply mode), and all mixture fractions >= 0.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GunnsFluidDistributedIfData::hasValidData()
+{
+    if (mFrameCount < 1 or mEnergy <= 0.0 or mCapacitance < 0.0 or (mSource < 0.0 and not mDemandMode)) {
+        return false;
+    }
+    for (unsigned int i=0; i<mNumFluid; ++i) {
+        if (mMoleFractions[i] < 0.0) {
+            return false;
+        }
+    }
+    for (unsigned int i=0; i<mNumTc; ++i) {
+        if (mTcMoleFractions[i] < 0.0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /// @details  This value is chosen to get reliable network capacitance calculations from the solver
@@ -423,13 +447,14 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
     ///   mole fractions to 1, and this doesn't include the trace compounds.  But the interface
     ///   data includes the TC's in the sum to 1.  Adjustment to the TC's is handled below.
     double inBulkFractionSum = 0.0;
+
     const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         inBulkFractionSum += mInData.mMoleFractions[i];
     }
     if (inBulkFractionSum < DBL_EPSILON) {
         GUNNS_ERROR(TsOutOfBoundsException, "Invalid Interface Data",
-                "incoming bulk mole fractions sum to zero.");
+                    "incoming bulk mole fractions sum to zero.");
     }
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         mTempMoleFractions[i] = mInData.mMoleFractions[i] / inBulkFractionSum;
@@ -478,7 +503,7 @@ void GunnsFluidDistributedIf::processInputsSupply()
     mDemandFlux = 0.0;
     if (not mOutData.mDemandMode) {
         mSourcePressure = 0.0;
-        if (mInData.hasData() and mInData.mDemandMode) {
+        if (mInData.hasValidData() and mInData.mDemandMode) {
             /// - Convert (mol/s) to (kmol/s), and external mole rate to internal GUNNS rate.  The
             ///   internal GUNNS rate does not include the mole rate of the trace compounds.  The
             ///   inputFluid function returns the fraction of the bulk fluid compunds in the total,
@@ -495,7 +520,7 @@ void GunnsFluidDistributedIf::processInputsSupply()
 void GunnsFluidDistributedIf::processInputsDemand()
 {
     if (mOutData.mDemandMode) {
-        if (mInData.hasData() and not mInData.mDemandMode) {
+        if (mInData.hasValidData() and not mInData.mDemandMode) {
             /// - Convert (Pa) to (kPa).
             mSourcePressure = mInData.mSource * UnitConversion::KILO_PER_UNIT;
             inputFluid(mSourcePressure, mNodes[0]->getContent());
@@ -519,7 +544,7 @@ void GunnsFluidDistributedIf::flipModesOnInput()
         flipToDemandMode();
     } else if (mForceSupplyMode and mOutData.mDemandMode) {
         flipToSupplyMode();
-    } else if (mInData.hasData()) {
+    } else if (mInData.hasValidData()) {
         /// - If in demand mode and the incoming data is also demand, then the other side has
         ///   initialized the demand/supply swap, so we flip to supply.
         if (mOutData.mDemandMode and mInData.mDemandMode and not mInDataLastDemandMode) {
@@ -686,12 +711,19 @@ void GunnsFluidDistributedIf::processOutputsDemand()
     /// - If there is no inflow to the node then its inflow fluid has a reset state so we can't use
     ///   it.  Instead, use the node's contents.  Convert (kmol/s) to (mol/s).  Adjust mole flow
     ///   rate (mFlux only includes bulk compounds) to also include the trace compounds for total
-    ///   flow rate to/from the interface.  The outputFluid function returns this scale factor.
-    if (mNodes[0]->getInflow()->getTemperature() > 0.0) {
-        mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(mNodes[0]->getInflow());
+    ///   flow rate to/from the interface.  The outputFluid function returns this scale factor.  We
+    ///   also fall back to the node's contents if the node inflow fluid has any negative fluid
+    ///   mixture fractions.
+    PolyFluid* useFluid = mNodes[0]->getInflow();
+    if (useFluid->getTemperature() > 0.0) {
+        if (checkNegativeFluidFractions(useFluid)) {
+            GUNNS_WARNING("demand node inflow has negative mixture fractions.");
+            useFluid = mNodes[0]->getContent();
+        }
     } else {
-        mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(mNodes[0]->getContent());
+        useFluid = mNodes[0]->getContent();
     }
+    mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(useFluid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -744,8 +776,9 @@ void GunnsFluidDistributedIf::step(const double dt)
         if (mOutData.mCapacitance > FLT_EPSILON and mInData.mCapacitance > FLT_EPSILON) {
             /// - In Demand mode, update demand flux gain as a function of Cs/Cd.  For Cs/Cd < 1,
             ///   lower gain based on latency.  For > 1, approach gain of 1.
-            const double csOverCd = MsMath::limitRange(1.0, mInData.mCapacitance / mOutData.mCapacitance, mModingCapacitanceRatio);
-            const double gainLimit = std::min(1.0, mDemandFilterConstA * powf(mDemandFilterConstB, mLoopLatency));
+            const double csOverCd  = MsMath::limitRange(1.0, mInData.mCapacitance / mOutData.mCapacitance, mModingCapacitanceRatio);
+            const int    exponent  = MsMath::limitRange(1, mLoopLatency, 100);
+            const double gainLimit = std::min(1.0, mDemandFilterConstA * powf(mDemandFilterConstB, exponent));
             mDemandFluxGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
             const double conductance = mDemandFluxGain * mInData.mCapacitance / dt;
             /// - The default for this option = false follows the interface design standard, but our
@@ -869,4 +902,34 @@ bool GunnsFluidDistributedIf::checkSpecificPortRules(const int port, const int n
         result = false;
     }
     return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] fluid (--) Pointer to the fluid object to check.
+///
+/// @returns  bool (--)  True if any fractions are negative.
+///
+/// @details  Checks all the bulk and trace compound mixture fractions in the given fluid for any
+///           negative values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GunnsFluidDistributedIf::checkNegativeFluidFractions(const PolyFluid* fluid) const
+{
+    const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
+    for (int i = 0; i < fluidConfig->mNTypes; ++i) {
+        if (fluid->getMoleFraction(i) < 0.0) {
+            return true;
+        }
+    }
+
+    const GunnsFluidTraceCompounds* tc = fluid->getTraceCompounds();
+    if (tc) {
+        const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
+        for (int i = 0; i < tcConfig->mNTypes; ++i) {
+            if (tc->getMoleFractions()[i] < 0.0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((aspects/fluid/conductor/GunnsFluidHatch.o))
-***************************************************************************************************/
+*/
 
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -72,7 +69,6 @@ UtGunnsFluidHatch::~UtGunnsFluidHatch()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed before each unit test as part of the CPPUNIT framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void UtGunnsFluidHatch::setUp()
 {
     /// - Define the nominal port fluids.
@@ -98,7 +94,8 @@ void UtGunnsFluidHatch::setUp()
     mNodes[1].initialize("UtNode2", mFluidConfig);
     mNodes[0].getContent()->initialize(*mFluidConfig, *mFluidInput0);
     mNodes[1].getContent()->initialize(*mFluidConfig, *mFluidInput1);
-
+    mNodes[0].initVolume(1.0);
+    mNodes[1].initVolume(1.0);
     mNodes[0].resetFlows();
     mNodes[1].resetFlows();
 
@@ -889,6 +886,43 @@ void UtGunnsFluidHatch::testUpdateFluidBoth()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[0]->mInflowHeatFlux,  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[1]->mInflowHeatFlux,  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[2]->mInflowHeatFlux,  0.0);
+
+    /// @test     Effects are zeroed if port 0 node has zero volume.
+    mArticle->setPort(1, 1, "unit test", false);
+    CPPUNIT_ASSERT_EQUAL(GunnsBasicLink::READY, mArticle->mUserPortSetControl);
+
+    mNodes[0].setVolume(0.0);
+    mArticle->mFlowRate           = mFlowRate;
+    mArticle->mDiffusiveFlowRate  = 1.0;
+    mArticle->mConductiveHeatFlux = 1.0;
+    mNodes[0].resetFlows();
+    mNodes[1].resetFlows();
+    mNodes[2].resetFlows();
+    mArticle->updateFluid(mTimeStep, mFlowRate);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mDiffusiveFlowRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mConductiveHeatFlux, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[0]->mInflowHeatFlux,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[1]->mInflowHeatFlux,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[2]->mInflowHeatFlux,  0.0);
+    mNodes[0].setVolume(1.0);
+
+    /// @test     Effects are zeroed if port 1 node has zero volume.
+    mNodes[1].setVolume(0.0);
+    mArticle->mFlowRate           = mFlowRate;
+    mArticle->mDiffusiveFlowRate  = 1.0;
+    mArticle->mConductiveHeatFlux = 1.0;
+    mNodes[0].resetFlows();
+    mNodes[1].resetFlows();
+    mNodes[2].resetFlows();
+    mArticle->updateFluid(mTimeStep, mFlowRate);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mDiffusiveFlowRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mConductiveHeatFlux, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[0]->mInflowHeatFlux,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[1]->mInflowHeatFlux,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, nodePtrs[2]->mInflowHeatFlux,  0.0);
+    mNodes[1].setVolume(1.0);
 
     /// @test    Check updateFluid's called functions Outflow Parameters
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);

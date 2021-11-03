@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -22,7 +22,7 @@ LIBRARY DEPENDENCY:
 
 PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-11))
-**************************************************************************************************/
+*/
 
 #include <cfloat>
 #include <math.h>
@@ -254,11 +254,14 @@ void GunnsFluidHatch::restartModel()
 void GunnsFluidHatch::updateFluid(const double dt, const double flowrate __attribute__((unused)))
 {
     /// - Skip if time step is too small or either of the nodes is the network Ground node, since
-    ///   molecular diffusion & heat conduction doesn't make sense with a pure vacuum.
+    ///   molecular diffusion & heat conduction doesn't make sense with a pure vacuum.  Also skip
+    ///   when either volume is zero, since there would be zero mass to diffuse.
     mDiffusiveFlowRate  = 0.0;
     mConductiveHeatFlux = 0.0;
     if ( (dt > DBL_EPSILON) and (mNodeMap[0] != getGroundNodeIndex())
-                            and (mNodeMap[1] != getGroundNodeIndex())) {
+                            and (mNodeMap[1] != getGroundNodeIndex())
+                            and (mNodes[0]->getVolume() > 0.0)
+                            and (mNodes[1]->getVolume() > 0.0) ) {
 
         /// - Diffusion calculation is only valid when delta pressure and delta temperature are close to 0.0.
         const double deltaTemperature = fabs(mNodes[0]->getOutflow()->getTemperature() - mNodes[1]->getOutflow()->getTemperature());

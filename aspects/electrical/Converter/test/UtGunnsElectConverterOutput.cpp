@@ -245,11 +245,13 @@ void UtGunnsElectConverterOutput::testConstruction()
     CPPUNIT_ASSERT(false                              == tArticle->mEnabled);
     CPPUNIT_ASSERT(0.0                                == tArticle->mInputVoltage);
     CPPUNIT_ASSERT(false                              == tArticle->mInputVoltageValid);
+    CPPUNIT_ASSERT(false                              == tArticle->mOutputPowerAvailable);
     CPPUNIT_ASSERT(0.0                                == tArticle->mSetpoint);
     CPPUNIT_ASSERT(false                              == tArticle->mResetTrips);
     CPPUNIT_ASSERT(0.0                                == tArticle->mInputPower);
     CPPUNIT_ASSERT(false                              == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutputChannelLoss);
+    CPPUNIT_ASSERT(0.0                                == tArticle->mLoadResistance);
     CPPUNIT_ASSERT(0.0                                == tArticle->mTotalPowerLoss);
     CPPUNIT_ASSERT(false                              == tArticle->mOutputOverVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false                              == tArticle->mOutputOverCurrentTrip.isTripped());
@@ -308,6 +310,7 @@ void UtGunnsElectConverterOutput::testNominalInitialization()
     CPPUNIT_ASSERT(true  == tArticle->mOutputOverCurrentTrip.checkForTrip(result, tOutOverCurrentTrip + 0.01, tTripPriority));
 
     /// @test    Nominal state data.
+    CPPUNIT_ASSERT(true  == tArticle->mOutputPowerAvailable);
     CPPUNIT_ASSERT(false == tArticle->mResetTrips);
     CPPUNIT_ASSERT(0.0   == tArticle->mOutputChannelLoss);
     CPPUNIT_ASSERT(0.0   == tArticle->mTotalPowerLoss);
@@ -497,47 +500,65 @@ void UtGunnsElectConverterOutput::testMinorStep()
     {
         /// @test    Step and minorStep (TRANSFORMER mode) with input voltage from the input link.
         double nodeV     = 120.0;
+        double expectedI = 0.0;
+        double expectedR = 1.0;
         double expectedG = tOutputConductance * (1.0 - tMalfBlockageValue);
         double expectedW = expectedG * nodeV * tSetpoint;
         tInputLink.mPotentialVector[0] = nodeV;
         tArticle->step(0.0);
 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(true == tArticle->mOutputPowerAvailable);
 
         /// @test    Step and minorStep (VOLTAGE mode) with input voltage from the input link, and
         ///          repeated admittance.
+        tArticle->mPotentialVector[0] = nodeV - 1.0;
         double setpoint = 100.0;
+        expectedI       = expectedW - tArticle->mPotentialVector[0] * expectedG;
+        expectedR       = tArticle->mPotentialVector[0] / expectedI;
         expectedW       = expectedG * setpoint;
         tArticle->mRegulatorType = GunnsElectConverterOutput::VOLTAGE;
         tArticle->mSetpoint      = setpoint;
         tArticle->step(0.0);
 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
 
         /// @test    Step and minorStep (CURRENT mode) with input voltage from the input link.
+        expectedI = fmax(0.0, expectedW - tArticle->mPotentialVector[0] * expectedG);
+        expectedR = 1.0;
+        expectedG = FLT_EPSILON;
         setpoint  = 2.0;
-        expectedG = 0.0;
         expectedW = setpoint * (1.0 - tMalfBlockageValue);
         tArticle->mRegulatorType = GunnsElectConverterOutput::CURRENT;
         tArticle->mSetpoint      = setpoint;
         tArticle->step(0.0);
 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
         /// @test    Step and minorStep (POWER mode) with input voltage from the input link.
-        setpoint  = 20.0;
-        expectedW = (1.0 - tMalfBlockageValue) * setpoint / nodeV;
+        setpoint = 20.0;
         tArticle->mRegulatorType      = GunnsElectConverterOutput::POWER;
         tArticle->mSetpoint           = setpoint;
         tArticle->mPotentialVector[0] = nodeV;
+        expectedI = expectedW - tArticle->mPotentialVector[0] * expectedG;
+        expectedR = tArticle->mPotentialVector[0] / expectedI;
+        expectedW = (1.0 - tMalfBlockageValue) * sqrt(setpoint / expectedR);
         tArticle->step(0.0);
 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
@@ -553,7 +574,7 @@ void UtGunnsElectConverterOutput::testMinorStep()
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
         /// @test    Zeroes input power when solution reset flag is set.
         tArticle->resetLastMinorStep(0, 0);
@@ -572,7 +593,8 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tInputLink.mPotentialVector[0] = 0.0;
         tArticle->mEnabled             = true;
         tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(0.0 == tArticle->mAdmittanceMatrix[0]);
+        CPPUNIT_ASSERT(0.0  == tArticle->mAdmittanceMatrix[0]);
+        CPPUNIT_ASSERT(true == tArticle->mOutputPowerAvailable);
         
     } {
         /// @test    step and minorStep when connected to the Ground node.

@@ -15,7 +15,6 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsElectConverterOutput.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name                       (--)    Link name.
@@ -156,11 +155,13 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mEnabled(false),
     mInputVoltage(0.0),
     mInputVoltageValid(false),
+    mOutputPowerAvailable(false),
     mSetpoint(0.0),
     mResetTrips(false),
     mInputPower(0.0),
     mInputPowerValid(false),
     mOutputChannelLoss(0.0),
+    mLoadResistance(0.0),
     mTotalPowerLoss(0.0),
     mOutputOverVoltageTrip(),
     mOutputOverCurrentTrip(),
@@ -236,13 +237,14 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
     mSetpoint     = inputData.mSetpoint;
 
     /// - Initialize remaining state.
-    mResetTrips        = false;
-    mOutputChannelLoss = 0.0;
-    mTotalPowerLoss    = 0.0;
-    mLeadsInterface    = false;
-    mInputVoltageValid = true;
-    mInputPowerValid   = true;
-    mReverseBiasState  = (VOLTAGE == mRegulatorType) and (mSetpoint < mNodes[0]->getPotential());
+    mOutputPowerAvailable = (mInputVoltage > 0.0);
+    mResetTrips           = false;
+    mOutputChannelLoss    = 0.0;
+    mTotalPowerLoss       = 0.0;
+    mLeadsInterface       = false;
+    mInputVoltageValid    = true;
+    mInputPowerValid      = true;
+    mReverseBiasState     = (VOLTAGE == mRegulatorType) and (mSetpoint < mNodes[0]->getPotential());
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -380,35 +382,47 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
             mInputVoltageValid = true;
         }
 
+        /// - Update the power available flag on the first minor step of each major step.  This is
+        ///   used for all subsequent minor steps in this major step.  If we lead the interface,
+        ///   then we're getting the input voltage from the input channel from the end of the last
+        ///   major step.  If we don't lead the interface, then the input channel has already set
+        ///   our input voltage before getting here in minor step 1.  Either way, we use this to
+        ///   to determine whether this output channel is powered for this entire major step.
+        if (1 == minorStep) {
+            mOutputPowerAvailable = (mInputVoltage > 0.0);
+        }
+
         /// - Set link conductance and source effects based on the load type.
+        /// - Blockage malfunction reduces conductance in voltage source modes, and current in
+        ///   current source modes.
+        /// - The current and power source modes include a small conductance to Ground to help
+        ///   the network converge when the downstream circuit is open-circuited.  This conductance
+        ///   is not blocked by the blockage malfunction.
+        estimateLoad();
         double conductance   = 0.0;
         double sourceCurrent = 0.0;
-        if (mEnabled and (mInputVoltage > 0.0)
+        if (mEnabled and mOutputPowerAvailable
                 and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped())) {
             switch (mRegulatorType) {
                 case (CURRENT) :
-                    sourceCurrent = mSetpoint;
+                    sourceCurrent = applyBlockage(mSetpoint);
+                    conductance   = FLT_EPSILON;
                     break;
                 case (POWER) :
-                    sourceCurrent = mSetpoint / fmax(DBL_EPSILON, mPotentialVector[0]);
+                    if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
+                        sourceCurrent = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+                    }
+                    conductance = FLT_EPSILON;
                     break;
                 case (TRANSFORMER) :
-                    conductance    = mOutputConductance;
+                    conductance    = applyBlockage(mOutputConductance);
                     mSourceVoltage = mInputVoltage * mSetpoint;
                     break;
                 default :    // VOLTAGE
-                    conductance    = mOutputConductance;
+                    conductance    = applyBlockage(mOutputConductance);
                     mSourceVoltage = mSetpoint;
                     break;
             }
-        }
-
-        /// - Blockage malfunction reduces conductance in voltage source modes, and current in
-        ///   current source modes.
-        if (mMalfBlockageFlag) {
-            const double scalar = 1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0);
-            conductance   *= scalar;
-            sourceCurrent *= scalar;
         }
 
         /// - When in the reverse bias state, zero conductance to prevent negative current.
@@ -507,7 +521,6 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
             result = REJECT;
         }
     }
-
     return result;
 }
 

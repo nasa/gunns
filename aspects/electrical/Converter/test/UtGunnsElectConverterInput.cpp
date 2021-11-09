@@ -260,6 +260,7 @@ void UtGunnsElectConverterInput::testNominalInitialization()
     CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
     CPPUNIT_ASSERT(tName == tArticle->mName);
     CPPUNIT_ASSERT(true  == tArticle->mInitFlag);
+    CPPUNIT_ASSERT(tInputVoltage == tNodes[0].getPotential());
 
     /// @test    Register output link.
     CPPUNIT_ASSERT_NO_THROW(tOutputLink.initialize(*tOutputConfigData, *tOutputInputData, tLinks, 1));

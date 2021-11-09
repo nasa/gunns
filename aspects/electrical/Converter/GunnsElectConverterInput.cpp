@@ -205,6 +205,7 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mLastOverloadedState = false;
     mInputVoltageValid   = true;
     mInputPowerValid     = true;
+    mNodes[0]->setPotential(mInputVoltage);
 
     /// - Set init flag on successful validation.
     mInitFlag = true;

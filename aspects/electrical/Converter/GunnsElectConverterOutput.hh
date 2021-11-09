@@ -35,6 +35,7 @@ PROGRAMMERS:
 #include "core/GunnsSensorAnalogWrapper.hh"
 #include "aspects/electrical/TripLogic/GunnsTripLogic.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
+#include "math/MsMath.hh"
 
 // Forward-declaration of types.
 class GunnsElectConverterOutputConfigData;
@@ -140,11 +141,13 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool                                     mEnabled;               /**<    (1)                         Operation is enabled. */
         double                                   mInputVoltage;          /**<    (V)                         Input channel voltage received from the input side. */
         bool                                     mInputVoltageValid;     /**<    (1)     trick_chkpnt_io(**) The input channel voltage value is valid. */
+        bool                                     mOutputPowerAvailable;  /**<    (1)     trick_chkpnt_io(**) Power is available to the output channel during this major step. */
         double                                   mSetpoint;              /**<    (1)                         Commanded regulation setpoint. */
         bool                                     mResetTrips;            /**<    (1)     trick_chkpnt_io(**) Input command to reset trips. */
         double                                   mInputPower;            /**<    (W)                         Input channel power load sent to the input side. */
         bool                                     mInputPowerValid;       /**<    (1)     trick_chkpnt_io(**) The input channel power load value is valid. */
         double                                   mOutputChannelLoss;     /**<    (W)     trick_chkpnt_io(**) Power loss through the output channel resistance. */
+        double                                   mLoadResistance;        /**<    (ohm)                       Estimate of total downstream load resistance. */
         double                                   mTotalPowerLoss;        /**<    (W)                         Total power loss through converter efficiency and output channel resistance. */
         GunnsTripGreaterThan                     mOutputOverVoltageTrip; /**<    (1)                         Output over-voltage trip function. */
         GunnsTripGreaterThan                     mOutputOverCurrentTrip; /**<    (1)                         Output over-current trip function. */
@@ -162,6 +165,10 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         void computeFlux();
         /// @brief  Updates the forward/reverse bias state of the converter.
         bool updateBias();
+        /// @brief  Updates the estimate of downstream load resistance.
+        void estimateLoad();
+        /// @brief  Applies the blockage malfunction to the given scalar.
+        double applyBlockage(const double scalar) const;
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link
@@ -362,6 +369,34 @@ inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
 inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverCurrentTrip()
 {
     return &mOutputOverCurrentTrip;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Computes the estimated total downstream load resistance as the downstream voltage over
+///           the output current, when both are > 0.  If either is <= 0, then the estimate is reset
+///           to the starting guess of 1.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::estimateLoad()
+{
+    computeFlux();
+    if (mFlux > DBL_EPSILON && mPotentialVector[0] > DBL_EPSILON) {
+        mLoadResistance = mPotentialVector[0] / mFlux;
+    } else {
+        mLoadResistance = 1.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in, out] scalar (--) The term to be scaled by the blockage malfunction.
+///
+/// @details  Applies the blockage malfunction to the given scalar.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::applyBlockage(const double scalar) const
+{
+    if (mMalfBlockageFlag) {
+        return scalar * (1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0));
+    }
+    return scalar;
 }
 
 #endif

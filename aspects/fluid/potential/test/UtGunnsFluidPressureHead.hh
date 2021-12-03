@@ -16,7 +16,6 @@
 #include <cppunit/TestFixture.h>
 
 #include "aspects/fluid/potential/GunnsFluidPressureHead.hh"
-//TODO#include "core/GunnsFluidNode.hh"
 #include "core/GunnsFluidPotential.hh"
 #include "aspects/fluid/capacitor/GunnsFluidAccum.hh"
 
@@ -33,6 +32,14 @@ class FriendlyGunnsFluidPressureHead : public GunnsFluidPressureHead
         FriendlyGunnsFluidPressureHead(GunnsFluidLink& link)
             : GunnsFluidPressureHead(link) {;}
         virtual ~FriendlyGunnsFluidPressureHead() {;}
+        friend class UtGunnsFluidPressureHead;
+};
+
+class FriendlyGunnsFluidPressureHeadAccum : public GunnsFluidAccum
+{
+    public:
+        FriendlyGunnsFluidPressureHeadAccum() {;}
+        virtual ~FriendlyGunnsFluidPressureHeadAccum() {;}
         friend class UtGunnsFluidPressureHead;
 };
 

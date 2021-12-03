@@ -1,21 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (core/Gunns.o)
-        (core/GunnsFluidCapacitor.o)
-        (core/GunnsFluidConductor.o)
-        (core/GunnsBasicConductor.o)
-        (aspects/electrical/ConstantPowerLoad/EpsConstantPowerLoad.o)
-        (core/GunnsBasicPotential.o)
-        (core/GunnsBasicCapacitor.o)
-        (core/GunnsBasicSource.o)
-        (core/GunnsFluidNode.o)
-        (core/GunnsBasicLink.o)
-    )
-***************************************************************************************************/
 #include <iostream>
 #include <cmath>
 #include <cfloat>

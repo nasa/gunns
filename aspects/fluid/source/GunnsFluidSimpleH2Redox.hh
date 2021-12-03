@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_SIMPLE_H2_REDOX  Simple H2 Redox Reaction Model
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details

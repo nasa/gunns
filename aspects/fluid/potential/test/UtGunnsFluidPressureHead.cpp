@@ -425,6 +425,7 @@ void UtGunnsFluidPressureHead::testPreSolverAccum()
 {
     UT_RESULT;
 
+    FriendlyGunnsFluidPressureHeadAccum* accum = static_cast<FriendlyGunnsFluidPressureHeadAccum*>(&tAccumLink);
     tArticle.mLink = &tAccumLink;
     tArticle.initialize(tConfig, tInput);
 
@@ -433,8 +434,8 @@ void UtGunnsFluidPressureHead::testPreSolverAccum()
                            * 0.5 / 1000.0;
     tArticle.mRotationDcm = 0;
     tArticle.stepPreSolver(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,             1.0e-14);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tPotentialLink.getSourcePressure(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,    1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, accum->mAccelPressureHead, 1.0e-14);
 
     /// @test with rotation (perpendicular).
     tRotationDcm[0] = 0.0;
@@ -448,16 +449,16 @@ void UtGunnsFluidPressureHead::testPreSolverAccum()
     tRotationDcm[8] = 0.0;
     tArticle.mRotationDcm = tRotationDcm;
     tArticle.stepPreSolver(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle.mPressureHead,             1.0e-14);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tPotentialLink.getSourcePressure(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle.mPressureHead,    1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, accum->mAccelPressureHead, 1.0e-14);
 
     /// @test with rotation (aligned).
     tAcceleration[0] = 9.81;
     tAcceleration[1] = 0.0;
     tAcceleration[2] = 0.0;
     tArticle.stepPreSolver(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,             1.0e-14);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tPotentialLink.getSourcePressure(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,    1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, accum->mAccelPressureHead, 1.0e-14);
 
     /// @test with transposed rotation.
     tAcceleration[0] = 0.0;
@@ -465,18 +466,16 @@ void UtGunnsFluidPressureHead::testPreSolverAccum()
     tAcceleration[2] = 0.0;
     tArticle.mTransposeRotation = true;
     tArticle.stepPreSolver(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,             1.0e-14);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tPotentialLink.getSourcePressure(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle.mPressureHead,    1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, accum->mAccelPressureHead, 1.0e-14);
 
     /// @test with reversed acceleration.
     double accel[3] = {0.0, 0.0, -9.81};
     double col[3]   = {0.0, 0.0,  1.0};
     tArticle.mReverseAcceleration = true;
     tArticle.stepPreSolver(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, tArticle.mPressureHead,             1.0e-14);
-//    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, tPotentialLink.getSourcePressure(), 1.0e-14);
-
-    //TODO check dP makes it to accum link
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, tArticle.mPressureHead,    1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, accum->mAccelPressureHead, 1.0e-14);
 
     UT_PASS;
 }

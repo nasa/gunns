@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2021 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -10,13 +10,13 @@
 
  PROGRAMMERS:
  ((Tim Caldwell) (GHG) (Initial) (2012-03))
+*/
 
-***************************************************************************************************/
 #include "GunnsFluidAccum.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
-    const int GunnsFluidAccum::LIQUID_PORT = 1;
+const int GunnsFluidAccum::LIQUID_PORT = 1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @verbatim

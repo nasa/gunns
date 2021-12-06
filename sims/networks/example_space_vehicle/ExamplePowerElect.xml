@@ -641,43 +641,43 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.fwdShellHeater, &amp;netInput.fwdShellHeater" c00.underVoltageLimit="0.01" c01.resistanceNormal="2.048" c02.resistanceStandby="1000.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-62" label="fwdShellHeater">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.fwdShellHeater, &amp;netInput.fwdShellHeater" c00.underVoltageLimit="0.01" c01.resistanceNormal="2.048" c02.resistanceStandby="1000.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-62" label="fwdShellHeater">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="320" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.aftShellHeater, &amp;netInput.aftShellHeater" c00.underVoltageLimit="0.01" c01.resistanceNormal="2.048" c02.resistanceStandby="1000.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-63" label="aftShellHeater">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.aftShellHeater, &amp;netInput.aftShellHeater" c00.underVoltageLimit="0.01" c01.resistanceNormal="2.048" c02.resistanceStandby="1000.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-63" label="aftShellHeater">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="390" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.cabinFan, &amp;netInput.cabinFan" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-64" label="cabinFan">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.cabinFan, &amp;netInput.cabinFan" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-64" label="cabinFan">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="450" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.pump, &amp;netInput.pump" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-65" label="pump">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.pump, &amp;netInput.pump" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-65" label="pump">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="520" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.tcv, &amp;netInput.tcv" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-66" label="tcv">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.tcv, &amp;netInput.tcv" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-66" label="tcv">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="590" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.radBypassVlv, &amp;netInput.radBypassVlv" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-67" label="radBypassVlv">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.radBypassVlv, &amp;netInput.radBypassVlv" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-67" label="radBypassVlv">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="650" />
       </mxCell>
     </object>
-    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.gasSelectValve, &amp;netInput.gasSelectValve" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" i00.initialMode="1" i01.initialVoltage="32.0" id="3FUAH8PDLAIBKNIN8BMR-68" label="gasSelectValve">
+    <object About="Spotter" Class="aspects/electrical/UserLoad/GunnsElectResistiveUserLoad" ConstructorArgs="&amp;netConfig.gasSelectValve, &amp;netInput.gasSelectValve" c00.underVoltageLimit="22.0" c01.resistanceNormal="0.0" c02.resistanceStandby="0.0" c03.fuseCurrentLimit="0.0" c04.dutyCycleFraction="0.0" c05.dutyCyclePeriod="0.0" i00.initialMode="1" i01.initialVoltage="32.0" i02.dutyCycleTimer="0.0" id="3FUAH8PDLAIBKNIN8BMR-68" label="gasSelectValve">
       <gunns type="Spotter" />
       <mxCell parent="3FUAH8PDLAIBKNIN8BMR-2" style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="950" y="720" />

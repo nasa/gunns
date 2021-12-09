@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import socket
@@ -27,6 +27,9 @@ class TestBasicNetwork(Test):
        """ Class constructor that overrides its parent class constructor"""
        # Invokes the class constructor of the parent class #
        super(TestBasicNetwork, self).__init__(testName, testStartMessage, testFinishMessage)
+       # Add sim variables to be Trick data logged for the data log tests
+       self.testLogVariables = ['testSimObject.elect.netSolver.mConvergenceFailCount',
+                                'testSimObject.elect.netSolver.mAvgDecompositionCount',]
 
     def setup(self):
        """ Test setup function. Called before activating the test event.
@@ -72,6 +75,15 @@ class TestBasicNetwork(Test):
        self.testNear(testSimObject.elect.Resistor1.getFlux(), flux, tolFlux, " Resistor1 final flux ::")
        self.testNear(testSimObject.elect.Resistor2.getFlux(), flux, tolFlux, " Resistor2 final flux ::")
 
+    # Check log data function
+    def checkLogData(self):
+        self.testLogEqual('testSimObject.elect.netSolver.mConvergenceFailCount', 0, 3.0, " Data log convergence fail count ::")
+        self.testLogLT('testSimObject.elect.netSolver.mAvgDecompositionCount', 0.5, 3.0, " Data log average decomposition count ::")
+    
+    def tearDownChecks(self):
+        """Overrides base class, calls log data check functions"""
+        self.checkLogData()
+        
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
     # Getter for node 

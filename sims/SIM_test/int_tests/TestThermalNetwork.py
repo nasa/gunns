@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import socket
@@ -27,6 +27,8 @@ class TestThermalNetwork(Test):
        """ Class constructor that overrides its parent class constructor"""
        # Invokes the class constructor of the parent class #
        super(TestThermalNetwork, self).__init__(testName, testStartMessage, testFinishMessage)
+       # Add sim variables to be Trick data logged for the data log tests
+       self.testLogVariables = ['testSimObject.thermal.netSolver.mAvgDecompositionCount',]
 
     def setup(self):
        """ Test setup function. Called before activating the test event.
@@ -55,6 +57,14 @@ class TestThermalNetwork(Test):
        self.testNear(testSimObject.thermal.conductor.getFlux(), fluxConductor, tolFlux, " conductor final flux ::")
        self.testNear(testSimObject.thermal.externalDemand.getFlux(), fluxDemand, tolFlux, " demand final flux ::")
 
+    # Check log data function
+    def checkLogData(self):
+        self.testLogNear('testSimObject.thermal.netSolver.mAvgDecompositionCount', 1.0, 0.1, 3.0, " Data log average decomposition count ::")
+    
+    def tearDownChecks(self):
+        """Overrides base class, calls log data check functions"""
+        self.checkLogData()
+        
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
     # Getter for node 

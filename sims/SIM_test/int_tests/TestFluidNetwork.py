@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import socket
@@ -26,8 +26,12 @@ class TestFluidNetwork(Test):
     """
     def __init__(self, testName, testStartMessage, testFinishMessage):
        """ Class constructor that overrides its parent class constructor"""
-       # Invokes the class constructor of the parent class #
+       # Invokes the class constructor of the parent class
        super(TestFluidNetwork, self).__init__(testName, testStartMessage, testFinishMessage)
+       # Add sim variables to be Trick data logged for the data log tests
+       self.testLogVariables = ['testSimObject.fluid.netSolver.mAvgDecompositionCount',
+                                'testSimObject.fluid.netNodes[0].mContent.mPressure',
+                                'testSimObject.fluid.netNodes[1].mContent.mPressure',]
 
     def setup(self):
        """ Test setup function. Called before activating the test event.
@@ -85,6 +89,18 @@ class TestFluidNetwork(Test):
        self.testNear(testSimObject.fluid.conductor1.getFlowRate(), finalConductor1Mdot, tolMdot, " conductor1 final flow rate ::")
        self.testNear(testSimObject.fluid.leak.getFlowRate(),       finalLeakMdot,       tolMdot, " leak       final flow rate ::")
 
+    # Check log data function
+    def checkLogData(self):
+        self.testLogNear('testSimObject.fluid.netSolver.mAvgDecompositionCount', 1.0, 0.1, 3.0, " Data log average decomposition count ::")
+        self.testLogNear('testSimObject.fluid.netNodes[0].mContent.mPressure', initP[nodeNames["Node 0"]], tolP, 0.0, " Data log Node 0 initial pressure ::")
+        self.testLogNear('testSimObject.fluid.netNodes[1].mContent.mPressure', initP[nodeNames["Node 1"]], tolP, 0.0, " Data log Node 1 initial pressure ::")
+        self.testLogNear('testSimObject.fluid.netNodes[0].mContent.mPressure', finalP[nodeNames["Node 0"]], tolP, 2.9, " Data log Node 0 final pressure ::")
+        self.testLogNear('testSimObject.fluid.netNodes[1].mContent.mPressure', finalP[nodeNames["Node 1"]], tolP, 2.9, " Data log Node 1 final pressure ::")
+    
+    def tearDownChecks(self):
+        """Overrides base class, calls log data check functions"""
+        self.checkLogData()
+        
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
     # Getter for node 
@@ -105,4 +121,3 @@ class TestFluidNetwork(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,nodeName,fluidType):
         return self.nodeFluid(nodeName).getMassFraction(fluidTypes[fluidType])
-

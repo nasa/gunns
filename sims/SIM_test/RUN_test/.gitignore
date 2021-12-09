@@ -1,0 +1,3 @@
+# Ignore data log files
+*.csv
+*.header

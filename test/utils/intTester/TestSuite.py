@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2021 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 import os
@@ -15,16 +15,40 @@ class TestSuite:
        testTearDownTime The amount of time added to the last scheduled test event time before
                         shutting down the entire sim.
     """
-
+    
     def __init__(self, tearDownTime):
-       """TestSuite class constructor"""
-       self.testList = []
-       self.testTearDownTime = tearDownTime
+        """TestSuite class constructor"""
+        self.testList          = []
+        self.testTearDownTime  = tearDownTime
+        self.suiteLogVariables = []
 
     def registerTest(self, testToRegister):
         """Function to add a test to the testList attribute"""
         self.testList.append(testToRegister)
 
+    def initLog(self, logName, timestep):
+        """Sets up the Trick data logging of the set of variables needed to be logged by all the tests."""
+        # Append each test's list to our master list, sort and remove duplicates.
+        for test in self.testList:
+            for var in test.getLogVariables():
+                self.suiteLogVariables.append(var)
+        self.suiteLogVariables = sorted(set(self.suiteLogVariables))
+        
+        # Set up the recording group and add it to Trick's data recording.
+        dr_group = trick.DRAscii(logName)
+        dr_group.thisown = 0
+        dr_group.set_cycle(timestep)
+        dr_group.set_freq(trick.DR_Always)
+        dr_group.enable()
+        for var in self.suiteLogVariables:
+            dr_group.add_variable(var)
+        trick.add_data_record_group(dr_group, trick.DR_Buffer)
+        
+        # Give the output log file path/name to the tests.
+        logFileName = trick.command_line_args_get_output_dir() + '/log_' + logName + '.csv'
+        for test in self.testList:
+            test.setLogFileName(logFileName)
+        
     def runAllTests(self):
         """Function to loop through the test list and call each test's setup function,
            activate the test event, check its pass/fail status and update the failed and

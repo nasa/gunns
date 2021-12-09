@@ -1,4 +1,5 @@
 # Trick-generated files and folders found in sim directories
 trick
 trick.zip
+.trick
 makefile

@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2021 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import os
@@ -175,6 +175,8 @@ simTestSuiteRunner.registerTest(fluidNetworkTest)
 simTestSuiteRunner.registerTest(basicNetworkTest)
 simTestSuiteRunner.registerTest(thermalNetworkTest)
 simTestSuiteRunner.registerTest(hsLogTest)
+# Initialize the Trick data logging with the data logging rate.
+simTestSuiteRunner.initLog("simTestSuiteRunner", 0.1)
 
 # To run all registered tests within the test suite, add a read job to call runAllTests().
 trick.add_read(0.0, """simTestSuiteRunner.runAllTests()""" )

@@ -12,6 +12,7 @@ on:
   push:
     paths-ignore:
     - 'README.md'
+    - 'draw/**'
     - '.github/workflows/**'
     - '!.github/workflows/lib_deps.yml'
 

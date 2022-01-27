@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2022 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -465,6 +465,33 @@ def normalizeString(s):
         return unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
     return ''
 
+# Returns whether the GUNNS object is a basic or fluid type.  This works for links and spotters.
+# Return None if it isn't a GUNNS object.
+def isFluidObject(obj):
+    subtype = obj.find('./gunns').attrib['subtype']
+    if subtype is None:
+        return None
+    obj_class = subtype.split("/")[-1]
+    if obj_class.startswith('GunnsFluid') or obj_class.startswith('GunnsGas') or obj_class.startswith('GunnsLiquid'):
+        return True
+    return False
+
+# Returns the number of Basic GUNNS objects in the given object list.
+def countBasicObjects(objs):
+    result = 0
+    for obj in objs:
+        if not isFluidObject(obj):
+            result = result + 1
+    return result
+
+# Returns the number of Fluid GUNNS objects in the given object list.
+def countFluidObjects(objs):
+    result = 0
+    for obj in objs:
+        if isFluidObject(obj):
+            result = result + 1
+    return result
+
 #####################
 # BEGIN MAIN SCRIPT #
 #####################
@@ -720,6 +747,8 @@ if basic_network and fluid_network:
     sys.exit(console.abort('there are both basic and fluid nodes.'))
 if len(links) < 1:
     sys.exit(console.abort('there are no links.'))
+if (countBasicObjects(links) > 0) and (countFluidObjects(links) > 0):
+    sys.exit(console.abort('there are both basic and fluid links.'))
 if len(netConfig) < 1:
     sys.exit(console.abort('there is no network config.'))
 if '' == networkName:

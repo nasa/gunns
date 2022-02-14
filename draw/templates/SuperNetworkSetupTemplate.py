@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2022 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -18,6 +18,10 @@ class SuperNetworkSetupTemplate:
 
   def render(self):
     r = (
+      '####################################################################################################\n'
+      + self.data['revline'] + '\n'
+      '####################################################################################################\n'
+      '\n'
       'import trick\n'
       '\n'
       '# Add the given sub-networks to the given super-network.  The super-network is not finalized, and\n'

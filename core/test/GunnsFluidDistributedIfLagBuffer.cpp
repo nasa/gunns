@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -42,8 +42,8 @@ void GunnsFluidDistributedIfLagBuffer::initialize()
     for (unsigned int i=0; i<10; ++i) {
         //TODO this creates a lot of duplicate named dynamic array warnings from Trick
         //TODO numfluids and num tc's are hard-coded
-        mBuffer1[i].initialize("GunnsFluidDistributedIfLagBuffer", 6, 0);
-        mBuffer2[i].initialize("GunnsFluidDistributedIfLagBuffer", 6, 0);
+        mBuffer1[i].initialize("GunnsFluidDistributedIfLagBuffer", 6, 0, false, 0, 0);
+        mBuffer2[i].initialize("GunnsFluidDistributedIfLagBuffer", 6, 0, false, 0, 0);
     }
     if (mDelayFrames > 9) mDelayFrames = 9;
     mHeadIndex = mDelayFrames;

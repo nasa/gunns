@@ -5,7 +5,7 @@
 /// @defgroup UT_FLUID_DISTRIBUTED_IF    Gunns Fluid Distributed Interface Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Distributed Interface
@@ -36,6 +36,24 @@ class FriendlyGunnsFluidDistributedIf : public GunnsFluidDistributedIf
 inline FriendlyGunnsFluidDistributedIf::FriendlyGunnsFluidDistributedIf()
     : GunnsFluidDistributedIf() {};
 inline FriendlyGunnsFluidDistributedIf::~FriendlyGunnsFluidDistributedIf() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from GunnsFluidDistributedIfData and befriend UtGunnsFluidDistributedIf.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributedIfData
+{
+    public:
+        FriendlyGunnsFluidDistributedIfData();
+        virtual ~FriendlyGunnsFluidDistributedIfData();
+        friend class UtGunnsFluidDistributedIf;
+};
+inline FriendlyGunnsFluidDistributedIfData::FriendlyGunnsFluidDistributedIfData()
+    : GunnsFluidDistributedIfData() {};
+inline FriendlyGunnsFluidDistributedIfData::~FriendlyGunnsFluidDistributedIfData() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Fluid Distributed Interface unit tests.

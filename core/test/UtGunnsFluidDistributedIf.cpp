@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -136,6 +136,9 @@ void UtGunnsFluidDistributedIf::testConfig()
     CPPUNIT_ASSERT(1.25            == tConfigData->mModingCapacitanceRatio);
     CPPUNIT_ASSERT(1.5             == tConfigData->mDemandFilterConstA);
     CPPUNIT_ASSERT(0.75            == tConfigData->mDemandFilterConstB);
+    CPPUNIT_ASSERT(false           == tConfigData->mFluidSizesOverride);
+    CPPUNIT_ASSERT(0               == tConfigData->mNumFluidOverride);
+    CPPUNIT_ASSERT(0               == tConfigData->mNumTcOverride);
 
     /// - Check default config construction
     GunnsFluidDistributedIfConfigData defaultConfig;
@@ -149,6 +152,15 @@ void UtGunnsFluidDistributedIf::testConfig()
     CPPUNIT_ASSERT(1.25            == defaultConfig.mModingCapacitanceRatio);
     CPPUNIT_ASSERT(1.5             == defaultConfig.mDemandFilterConstA);
     CPPUNIT_ASSERT(0.75            == defaultConfig.mDemandFilterConstB);
+    CPPUNIT_ASSERT(false           == defaultConfig.mFluidSizesOverride);
+    CPPUNIT_ASSERT(0               == defaultConfig.mNumFluidOverride);
+    CPPUNIT_ASSERT(0               == defaultConfig.mNumTcOverride);
+
+    /// @test overrideInterfaceMixtureSizes function
+    defaultConfig.overrideInterfaceMixtureSizes(5, 4);
+    CPPUNIT_ASSERT(true            == defaultConfig.mFluidSizesOverride);
+    CPPUNIT_ASSERT(5               == defaultConfig.mNumFluidOverride);
+    CPPUNIT_ASSERT(4               == defaultConfig.mNumTcOverride);
 
     std::cout << "... Pass";
 }
@@ -333,7 +345,7 @@ void UtGunnsFluidDistributedIf::testNominalInitialization()
 
     /// @test init of GunnsFluidDistributedIfData with zero number of fluids.
     GunnsFluidDistributedIfData data;
-    data.initialize("data", 0, 4);
+    data.initialize("data", 0, 4, false, 0, 0);
     CPPUNIT_ASSERT(0 == data.mMoleFractions);
     CPPUNIT_ASSERT(data.mTcMoleFractions);
     CPPUNIT_ASSERT(0.0 == data.mTcMoleFractions[3]);
@@ -1018,7 +1030,7 @@ void UtGunnsFluidDistributedIf::testData()
     std::cout << "\n UtGunnsFluidDistributedIf 13: testData .............................";
 
     /// @test Default constructor.
-    GunnsFluidDistributedIfData data;
+    FriendlyGunnsFluidDistributedIfData data;
     CPPUNIT_ASSERT(0     == data.mFrameCount);
     CPPUNIT_ASSERT(0     == data.mFrameLoopback);
     CPPUNIT_ASSERT(false == data.mDemandMode);
@@ -1027,9 +1039,15 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.0   == data.mEnergy);
     CPPUNIT_ASSERT(0     == data.mMoleFractions);
     CPPUNIT_ASSERT(0     == data.mTcMoleFractions);
+    CPPUNIT_ASSERT(0     == data.mNumFluid);
+    CPPUNIT_ASSERT(0     == data.mNumTc);
+    CPPUNIT_ASSERT(0     == data.mNumFluidIf);
+    CPPUNIT_ASSERT(0     == data.mNumTcIf);
+    CPPUNIT_ASSERT(0     == data.mNumFluidCommon);
+    CPPUNIT_ASSERT(0     == data.mNumTcCommon);
 
     /// @test initialize method.
-    CPPUNIT_ASSERT_NO_THROW(data.initialize("data", 3, 2));
+    CPPUNIT_ASSERT_NO_THROW(data.initialize("data", 3, 2, false, 0, 0));
     CPPUNIT_ASSERT(0     == data.mFrameCount);
     CPPUNIT_ASSERT(0     == data.mFrameLoopback);
     CPPUNIT_ASSERT(false == data.mDemandMode);
@@ -1043,6 +1061,12 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0     != data.mTcMoleFractions);
     CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[0]);
     CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[1]);
+    CPPUNIT_ASSERT(3     == data.mNumFluid);
+    CPPUNIT_ASSERT(2     == data.mNumTc);
+    CPPUNIT_ASSERT(3     == data.mNumFluidIf);
+    CPPUNIT_ASSERT(2     == data.mNumTcIf);
+    CPPUNIT_ASSERT(3     == data.mNumFluidCommon);
+    CPPUNIT_ASSERT(2     == data.mNumTcCommon);
 
     /// @test hasValidData method.
     data.mFrameCount  = 1;
@@ -1083,7 +1107,7 @@ void UtGunnsFluidDistributedIf::testData()
     data.mTcMoleFractions[0] = 0.009;
     data.mTcMoleFractions[1] = 0.001;
 
-    GunnsFluidDistributedIfData data2;
+    FriendlyGunnsFluidDistributedIfData data2;
     data2 = data;
     CPPUNIT_ASSERT(3    == data2.mFrameCount);
     CPPUNIT_ASSERT(2    == data2.mFrameLoopback);
@@ -1093,10 +1117,16 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(3.0  == data2.mEnergy);
     CPPUNIT_ASSERT(0    == data2.mMoleFractions);
     CPPUNIT_ASSERT(0    == data2.mTcMoleFractions);
+    CPPUNIT_ASSERT(0    == data2.mNumFluid);
+    CPPUNIT_ASSERT(0    == data2.mNumTc);
+    CPPUNIT_ASSERT(0    == data2.mNumFluidIf);
+    CPPUNIT_ASSERT(0    == data2.mNumTcIf);
+    CPPUNIT_ASSERT(0    == data2.mNumFluidCommon);
+    CPPUNIT_ASSERT(0    == data2.mNumTcCommon);
 
     /// @test Assignment operator after initialization.
-    GunnsFluidDistributedIfData data3;
-    CPPUNIT_ASSERT_NO_THROW(data3.initialize("data", 3, 2));
+    FriendlyGunnsFluidDistributedIfData data3;
+    CPPUNIT_ASSERT_NO_THROW(data3.initialize("data3", 3, 2, false, 0, 0));
     data3 = data;
     CPPUNIT_ASSERT(3     == data3.mFrameCount);
     CPPUNIT_ASSERT(2     == data3.mFrameLoopback);
@@ -1109,6 +1139,112 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.09  == data3.mMoleFractions[2]);
     CPPUNIT_ASSERT(0.009 == data3.mTcMoleFractions[0]);
     CPPUNIT_ASSERT(0.001 == data3.mTcMoleFractions[1]);
+    CPPUNIT_ASSERT(3     == data3.mNumFluid);
+    CPPUNIT_ASSERT(2     == data3.mNumTc);
+    CPPUNIT_ASSERT(3     == data3.mNumFluidIf);
+    CPPUNIT_ASSERT(2     == data3.mNumTcIf);
+    CPPUNIT_ASSERT(3     == data3.mNumFluidCommon);
+    CPPUNIT_ASSERT(2     == data3.mNumTcCommon);
+
+    /// @test initialization with mixture array size overrides.
+    FriendlyGunnsFluidDistributedIfData data4, data5;
+    CPPUNIT_ASSERT_NO_THROW(data4.initialize("data4", 3, 2, true, 2, 1));
+    CPPUNIT_ASSERT_NO_THROW(data5.initialize("data5", 2, 1, true, 3, 2));
+
+    CPPUNIT_ASSERT(0     != data4.mMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data4.mMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0   == data4.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0     != data4.mTcMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data4.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(3     == data4.mNumFluid);
+    CPPUNIT_ASSERT(2     == data4.mNumTc);
+    CPPUNIT_ASSERT(2     == data4.mNumFluidIf);
+    CPPUNIT_ASSERT(1     == data4.mNumTcIf);
+    CPPUNIT_ASSERT(2     == data4.mNumFluidCommon);
+    CPPUNIT_ASSERT(1     == data4.mNumTcCommon);
+
+    CPPUNIT_ASSERT(0     != data5.mMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[2]);
+    CPPUNIT_ASSERT(0     != data5.mTcMoleFractions);
+    CPPUNIT_ASSERT(0.0   == data5.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0   == data5.mTcMoleFractions[1]);
+    CPPUNIT_ASSERT(2     == data5.mNumFluid);
+    CPPUNIT_ASSERT(1     == data5.mNumTc);
+    CPPUNIT_ASSERT(3     == data5.mNumFluidIf);
+    CPPUNIT_ASSERT(2     == data5.mNumTcIf);
+    CPPUNIT_ASSERT(2     == data5.mNumFluidCommon);
+    CPPUNIT_ASSERT(1     == data5.mNumTcCommon);
+
+    /// @test setMoleFractions function, interface size = model size.
+    double fractions3[3] = {0.2, 0.3, 0.5};
+    data.setMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data.mMoleFractions[0]);
+    CPPUNIT_ASSERT(fractions3[1] == data.mMoleFractions[1]);
+    CPPUNIT_ASSERT(fractions3[2] == data.mMoleFractions[2]);
+
+    /// @test setMoleFractions function, interface size < model size.
+    data4.setMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data4.mMoleFractions[0]);
+    CPPUNIT_ASSERT(fractions3[1] == data4.mMoleFractions[1]);
+
+    /// @test setMoleFractions function, interface size > model size.
+    data5.setMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data5.mMoleFractions[0]);
+    CPPUNIT_ASSERT(fractions3[1] == data5.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0.0           == data5.mMoleFractions[2]);
+
+    /// @test setTcMoleFractions function, interface size = model size.
+    data.setTcMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(fractions3[1] == data.mTcMoleFractions[1]);
+
+    /// @test setTcMoleFractions function, interface size < model size.
+    data4.setTcMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data4.mTcMoleFractions[0]);
+
+    /// @test setTcMoleFractions function, interface size > model size.
+    data5.setTcMoleFractions(fractions3);
+    CPPUNIT_ASSERT(fractions3[0] == data5.mTcMoleFractions[0]);
+    CPPUNIT_ASSERT(0.0           == data5.mTcMoleFractions[1]);
+
+    /// @test getMoleFractions function, interface size = model size.
+    double fractions4[3] = {0.0, 0.0, 0.0};
+    data.getMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data.mMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(data.mMoleFractions[1] == fractions4[1]);
+    CPPUNIT_ASSERT(data.mMoleFractions[2] == fractions4[2]);
+
+    /// @test getMoleFractions function, interface size < model size.
+    data4.getMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data4.mMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(data4.mMoleFractions[1] == fractions4[1]);
+    CPPUNIT_ASSERT(0.0                     == fractions4[2]);
+
+    /// @test getMoleFractions function, interface size > model size.
+    data5.getMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data5.mMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(data5.mMoleFractions[1] == fractions4[1]);
+    CPPUNIT_ASSERT(0.0                     == fractions4[2]);
+
+    /// @test getTcMoleFractions function, interface size = model size.
+    data.getTcMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data.mTcMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(data.mTcMoleFractions[1] == fractions4[1]);
+    CPPUNIT_ASSERT(0.0                      == fractions4[2]);
+
+    /// @test getTcMoleFractions function, interface size < model size.
+    data4.getTcMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data4.mTcMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(0.0                       == fractions4[1]);
+    CPPUNIT_ASSERT(0.0                       == fractions4[2]);
+
+    /// @test getTcMoleFractions function, interface size > model size.
+    data5.getTcMoleFractions(fractions4);
+    CPPUNIT_ASSERT(data5.mTcMoleFractions[0] == fractions4[0]);
+    CPPUNIT_ASSERT(0.0                       == fractions4[1]);
+    CPPUNIT_ASSERT(0.0                       == fractions4[2]);
 
     /// @test Data objects are public in GunnsFluidDistributedIf.
     GunnsFluidDistributedIf article;

@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_FLUID_DISTRIBUTED_IF    GUNNS Fluid Distributed Interface Link
 @ingroup   TSM_GUNNS_CORE_LINK_FLUID
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -43,28 +43,47 @@ PROGRAMMERS:
 class GunnsFluidDistributedIfData
 {
     public:
-        unsigned int mFrameCount;      /**< (--)     Frame count driven by this side. */
-        unsigned int mFrameLoopback;   /**< (--)     Frame count driven by other side, echoed back. */
-        bool         mDemandMode;      /**< (--)     Demand mode flag. */
-        double       mCapacitance;     /**< (mol/Pa) Network capacitance. */
-        double       mSource;          /**< (--)     Fluid pressure (Pa) or molar flow (mol/s). */
-        double       mEnergy;          /**< (--)     Fluid temperature (K) or specific enthalpy (J/kg). */
-        double*      mMoleFractions;   /**< (--)     Fluid mole fractions. */
-        double*      mTcMoleFractions; /**< (--)     Trace compounds mole fractions. */
+        unsigned int mFrameCount;      /**< (--)                     Frame count driven by this side. */
+        unsigned int mFrameLoopback;   /**< (--)                     Frame count driven by other side, echoed back. */
+        bool         mDemandMode;      /**< (--)                     Demand mode flag. */
+        double       mCapacitance;     /**< (mol/Pa)                 Network capacitance. */
+        double       mSource;          /**< (--)                     Fluid pressure (Pa) or molar flow (mol/s). */
+        double       mEnergy;          /**< (--)                     Fluid temperature (K) or specific enthalpy (J/kg). */
+        double*      mMoleFractions;   /**< (--) trick_chkpnt_io(**) Fluid mole fractions. */
+        double*      mTcMoleFractions; /**< (--) trick_chkpnt_io(**) Trace compounds mole fractions. */
         /// @brief  Default constructs this Fluid Distributed Interface interface data.
         GunnsFluidDistributedIfData();
         /// @brief  Default destructs this Fluid Distributed Interface interface data.
         virtual ~GunnsFluidDistributedIfData();
         /// @brief  Allocates dynamic arrays for mass and mole fractions.
-        void initialize(const std::string& name, const unsigned int nFluids, const unsigned int nTc);
+        void initialize(const std::string& name,
+                        const unsigned int nFluids,
+                        const unsigned int nTc,
+                        const bool         fluidSizesOverride,
+                        const unsigned int nIfFluids,
+                        const unsigned int nIfTc);
         /// @brief  Returns whether this object has received valid data.
         bool hasValidData();
+        /// @brief  Sets the interface bulk fluid mole fractions to the given values.
+        void setMoleFractions(const double* fractions);
+        /// @brief  Sets the interface trace compound mole fractions to the given values.
+        void setTcMoleFractions(const double* fractions);
+        /// @brief  Sets the given array to the interface bulk fluid mole fraction values.
+        void getMoleFractions(double* fractions);
+        /// @brief  Sets the given array to the interface trace compound mole fraction values.
+        void getTcMoleFractions(double* fractions);
         /// @brief Assignment operator for this Fluid Distributed Interface interface data.
         GunnsFluidDistributedIfData& operator =(const GunnsFluidDistributedIfData& that);
 
+    protected:
+        unsigned int mNumFluid;       /**< *o (--) trick_chkpnt_io(**) Number of primary fluid compounds in model. */
+        unsigned int mNumTc;          /**< *o (--) trick_chkpnt_io(**) Number of trace compounds in model. */
+        unsigned int mNumFluidIf;     /**< *o (--) trick_chkpnt_io(**) Number of primary fluid compounds in interface. */
+        unsigned int mNumTcIf;        /**< *o (--) trick_chkpnt_io(**) Number of trace compounds in interface. */
+        unsigned int mNumFluidCommon; /**< *o (--) trick_chkpnt_io(**) Number of primary fluid compounds in common between model and interface. */
+        unsigned int mNumTcCommon;    /**< *o (--) trick_chkpnt_io(**) Number of trace compounds in common between model and interface. */
+
     private:
-        unsigned int mNumFluid; /**< *o (--) trick_chkpnt_io(**) Number of primary fluid compounds. */
-        unsigned int mNumTc;    /**< *o (--) trick_chkpnt_io(**) Number of trace compounds. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsFluidDistributedIfData(const GunnsFluidDistributedIfData&);
 };
@@ -88,6 +107,9 @@ class GunnsFluidDistributedIfConfigData : public GunnsFluidLinkConfigData
         double               mModingCapacitanceRatio; /**< (--) trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
         double               mDemandFilterConstA;     /**< (--) trick_chkpnt_io(**) Demand filter gain constant A. */
         double               mDemandFilterConstB;     /**< (--) trick_chkpnt_io(**) Demand filter gain constant B. */
+        bool                 mFluidSizesOverride;     /**< (--) trick_chkpnt_io(**) Override of fluid mixture sizes is active. */
+        unsigned int         mNumFluidOverride;       /**< (--) trick_chkpnt_io(**) Number of primary fluid compounds override value. */
+        unsigned int         mNumTcOverride;          /**< (--) trick_chkpnt_io(**) Number of trace compounds override value. */
         /// @brief Default constructs this Fluid Distributed Interface configuration data.
         GunnsFluidDistributedIfConfigData(
                 const std::string&   name           = "",
@@ -98,6 +120,8 @@ class GunnsFluidDistributedIfConfigData : public GunnsFluidLinkConfigData
                 GunnsFluidCapacitor* capacitorLink  = 0);
         /// @brief Default destructs this Fluid Distributed Interface configuration data.
         virtual ~GunnsFluidDistributedIfConfigData();
+        /// @brief Override the interface fluid mixture sizes to the given values.
+        void overrideInterfaceMixtureSizes(const unsigned int nFluids, const unsigned int nTc);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

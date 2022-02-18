@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Distributed Interface Link implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -32,7 +32,11 @@ GunnsFluidDistributedIfData::GunnsFluidDistributedIfData()
     mMoleFractions(0),
     mTcMoleFractions(0),
     mNumFluid(0),
-    mNumTc(0)
+    mNumTc(0),
+    mNumFluidIf(0),
+    mNumTcIf(0),
+    mNumFluidCommon(0),
+    mNumTcCommon(0)
 {
     // nothing to do
 }
@@ -49,8 +53,9 @@ GunnsFluidDistributedIfData::~GunnsFluidDistributedIfData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  that  (--)  Object to be copied.
 ///
-/// @details  Assigns values of this object's attributes to the given object's values.  mNumFluid
-///           and mNumTc are not changed.
+/// @details  Assigns values of this object's attributes to the given object's values.  The
+///           mNumFluid and similar terms are not changed, and we assume that the two objects were
+///           initialized identically; the array sizes and mNum* terms are the same.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedIfData& GunnsFluidDistributedIfData::operator =(const GunnsFluidDistributedIfData& that)
 {
@@ -72,29 +77,46 @@ GunnsFluidDistributedIfData& GunnsFluidDistributedIfData::operator =(const Gunns
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name    (--) Name of the instance for dynamic memory names for Trick MM.
-/// @param[in] nFluids (--) Number of fluid constituents.
-/// @param[in] nTc     (--) Number of trace compounds.
+/// @param[in] name               (--) Name of the instance for dynamic memory names for Trick MM.
+/// @param[in] nFluids            (--) Number of fluid constituents.
+/// @param[in] nTc                (--) Number of trace compounds.
+/// @param[in] fluidSizesOverride (--) Override the interface fluid mixture sizes.
+/// @param[in] nIfFluids          (--) Number of primary fluid compounds override value.
+/// @param[in] nIfTc              (--) Number of trace compounds override value.
 ///
-/// @details  Allocates dynamic arrays for mass and mole fractions.
+/// @details  Allocates dynamic arrays for mass and mole fractions.  By default, the mixture array
+///           sizes will match the sizes in the GUNNS fluid network.  However, if the fluid sizes
+///           override flag is set then the mixture array sizes are set to the given override sizes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIfData::initialize(const std::string& name,
                                              const unsigned int nFluids,
-                                             const unsigned int nTc)
+                                             const unsigned int nTc,
+                                             const bool         fluidSizesOverride,
+                                             const unsigned int nIfFluids,
+                                             const unsigned int nIfTc)
 {
     mNumFluid = nFluids;
     mNumTc    = nTc;
-    if (mNumFluid > 0) {
+    if (fluidSizesOverride) {
+        mNumFluidIf = nIfFluids;
+        mNumTcIf    = nIfTc;
+    } else {
+        mNumFluidIf = mNumFluid;
+        mNumTcIf    = mNumTc;
+    }
+    mNumFluidCommon = std::min(mNumFluid, mNumFluidIf);
+    mNumTcCommon    = std::min(mNumTc,    mNumTcIf);
+    if (mNumFluidIf > 0) {
         TS_DELETE_ARRAY(mMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, mNumFluid, double, name + ".mMoleFractions");
-        for (unsigned int i=0; i<mNumFluid; ++i) {
+        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, mNumFluidIf, double, name + ".mMoleFractions");
+        for (unsigned int i=0; i<mNumFluidIf; ++i) {
             mMoleFractions[i] = 0.0;
         }
     }
-    if (mNumTc > 0) {
+    if (mNumTcIf > 0) {
         TS_DELETE_ARRAY(mTcMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, mNumTc, double, name + ".mTcMoleFractions");
-        for (unsigned int i=0; i<mNumTc; ++i) {
+        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, mNumTcIf, double, name + ".mTcMoleFractions");
+        for (unsigned int i=0; i<mNumTcIf; ++i) {
             mTcMoleFractions[i] = 0.0;
         }
     }
@@ -122,6 +144,74 @@ bool GunnsFluidDistributedIfData::hasValidData()
         }
     }
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] fractions (--) Array of bulk fluid mole fraction values to copy to the interface.
+///
+/// @details  Sets this interface's bulk fluid mole fractions to the given values.  If the
+///           interface array is larger than the given array, then the remaining values in the
+///           interface array are filled with zeroes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfData::setMoleFractions(const double* fractions)
+{
+    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
+        mMoleFractions[i] = fractions[i];
+    }
+    for (unsigned int i=mNumFluidCommon; i<mNumFluidIf; ++i) {
+        mMoleFractions[i] = 0.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] fractions (--) Array of trace compound mole fractions to copy to the interface.
+///
+/// @details  Sets this interface's trace compound mole fractions to the given values.  If the
+///           interface array is larger than the given array, then the remaining values in the
+///           interface array are filled with zeroes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfData::setTcMoleFractions(const double* fractions)
+{
+    for (unsigned int i=0; i<mNumTcCommon; ++i) {
+        mTcMoleFractions[i] = fractions[i];
+    }
+    for (unsigned int i=mNumTcCommon; i<mNumTcIf; ++i) {
+        mTcMoleFractions[i] = 0.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] fractions (--) Array of bulk fluid mole fractions to copy from the interface.
+///
+/// @details  Sets the given builk fluid mole fractions to this interface's values.  If the given
+///           array is larger than the interface array, then the remaining values in the given array
+///           are filled with zeroes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfData::getMoleFractions(double* fractions)
+{
+    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
+        fractions[i] = mMoleFractions[i];
+    }
+    for (unsigned int i=mNumFluidCommon; i<mNumFluid; ++i) {
+        fractions[i] = 0.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] fractions (--) Array of trace compound mole fractions to copy from the interface.
+///
+/// @details  Sets the given builk trace compound fractions to this interface's values.  If the
+///           given array is larger than the interface array, then the remaining values in the given
+///           array are filled with zeroes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfData::getTcMoleFractions(double* fractions)
+{
+    for (unsigned int i=0; i<mNumTcCommon; ++i) {
+        fractions[i] = mTcMoleFractions[i];
+    }
+    for (unsigned int i=mNumTcCommon; i<mNumTc; ++i) {
+        fractions[i] = 0.0;
+    }
 }
 
 /// @details  This value is chosen to get reliable network capacitance calculations from the solver
@@ -153,7 +243,10 @@ GunnsFluidDistributedIfConfigData::GunnsFluidDistributedIfConfigData(
     mCapacitorLink(capacitorLink),
     mModingCapacitanceRatio(1.25),
     mDemandFilterConstA(1.5),
-    mDemandFilterConstB(0.75)
+    mDemandFilterConstB(0.75),
+    mFluidSizesOverride(false),
+    mNumFluidOverride(0),
+    mNumTcOverride(0)
 {
     // nothing to do
 }
@@ -164,6 +257,22 @@ GunnsFluidDistributedIfConfigData::GunnsFluidDistributedIfConfigData(
 GunnsFluidDistributedIfConfigData::~GunnsFluidDistributedIfConfigData()
 {
     // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] nFluids  (--)  Number of primary fluid compounds override value.
+/// @param[in] nTc      (--)  Number of trace compounds override value.
+///
+/// @details  Sets the fluid mixture sizes override flag true, and sets the primary and trace fluid
+///           compound mixture sizes to the given values.  This is used to force the interface
+///           fluid mixture arrays to different sizes then the sizes in the GUNNS fluid network.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfConfigData::overrideInterfaceMixtureSizes(const unsigned int nFluids,
+                                                                      const unsigned int nTc)
+{
+    mFluidSizesOverride = true;
+    mNumFluidOverride   = nFluids;
+    mNumTcOverride      = nTc;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,8 +421,8 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     }
 
     /// - Initialize the interface data objects so they can allocate memory.
-    mInData .initialize(mName + ".mInData",  nTypes, nTc);
-    mOutData.initialize(mName + ".mOutData", nTypes, nTc);
+    mInData .initialize(mName + ".mInData",  nTypes, nTc, configData.mFluidSizesOverride, configData.mNumFluidOverride, configData.mNumTcOverride);
+    mOutData.initialize(mName + ".mOutData", nTypes, nTc, configData.mFluidSizesOverride, configData.mNumFluidOverride, configData.mNumTcOverride);
 
     /// - Initialize remaining state variables.
     mSupplyVolume          = 0.0;
@@ -447,17 +556,17 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
     ///   mole fractions to 1, and this doesn't include the trace compounds.  But the interface
     ///   data includes the TC's in the sum to 1.  Adjustment to the TC's is handled below.
     double inBulkFractionSum = 0.0;
-
+    mInData.getMoleFractions(mTempMoleFractions);
     const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
-        inBulkFractionSum += mInData.mMoleFractions[i];
+        inBulkFractionSum += mTempMoleFractions[i];
     }
     if (inBulkFractionSum < DBL_EPSILON) {
         GUNNS_ERROR(TsOutOfBoundsException, "Invalid Interface Data",
                     "incoming bulk mole fractions sum to zero.");
     }
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
-        mTempMoleFractions[i] = mInData.mMoleFractions[i] / inBulkFractionSum;
+        mTempMoleFractions[i] /= inBulkFractionSum;
     }
 
     /// - Convert incoming mole fractions to mass fractions.
@@ -481,8 +590,9 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
             ///   fluid.
             const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
             if (tcConfig) {
+                mInData.getTcMoleFractions(mTempTcMoleFractions);
                 for (int i = 0; i < tcConfig->mNTypes; ++i) {
-                    mTempTcMoleFractions[i] = mInData.mTcMoleFractions[i] / inBulkFractionSum;
+                    mTempTcMoleFractions[i] /= inBulkFractionSum;
                 }
                 tc->setMoleFractions(mTempTcMoleFractions);
             }
@@ -650,7 +760,7 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         mTempMassFractions[i] = fluid->getMassFraction(i);
     }
-    GunnsFluidUtils::convertMassFractionToMoleFraction(mOutData.mMoleFractions,
+    GunnsFluidUtils::convertMassFractionToMoleFraction(mTempMoleFractions,
                                                        mTempMassFractions,
                                                        fluidConfig);
 
@@ -664,25 +774,26 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
             nTc = tcConfig->mNTypes;
         }
         for (unsigned int i = 0; i < nTc; ++i) {
-            mOutData.mTcMoleFractions[i] = tc->getMoleFractions()[i];
-            moleFractionSum += mOutData.mTcMoleFractions[i];
+            moleFractionSum += tc->getMoleFractions()[i];
         }
     }
 
     /// - Add bulk fluid mole fractions to the sum for normalizing.
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
-        moleFractionSum += mOutData.mMoleFractions[i];
+        moleFractionSum += mTempMoleFractions[i];
     }
 
     /// - Normalize the bulk and trace compounds mole fractions so they all sum to 1.  Unlike
     ///   GUNNS fluids, where only the bulk fractions sum to 1 and TC's are tracked elsewhere,
     ///   this interface requires to the total sum of bulk + TC's to 1.
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
-        mOutData.mMoleFractions[i] /= moleFractionSum;
+        mTempMoleFractions[i] /= moleFractionSum;
     }
     for (unsigned int i = 0; i < nTc; ++i) {
-        mOutData.mTcMoleFractions[i] /= moleFractionSum;
+        mTempTcMoleFractions[i] = tc->getMoleFractions()[i] / moleFractionSum;
     }
+    mOutData.setMoleFractions(mTempMoleFractions);
+    mOutData.setTcMoleFractions(mTempTcMoleFractions);
     return moleFractionSum;
 }
 

@@ -34,6 +34,14 @@ PROGRAMMERS:
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include <vector>
 
+// TODO issue #43: this is a workaround for a Trick ICG problem in RHEL8.  ICG determines the wrong
+// address offsets for some variables in the GunnsFluidDistributedIfData class.  This workaround
+// causes Trick to use the backup 'compat15' tool to correctly determine the variable offsets.
+// Remove this if & when ICG can be fixed.
+// Note this causes Trick to issue warnings about the use of TRICK_ICG in sim builds.
+#ifdef TRICK_ICG
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Fluid Distributed Interface Data
 ///
@@ -42,6 +50,7 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidDistributedIfData
 {
+    TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIfData);
     public:
         unsigned int mFrameCount;      /**< (--)                     Frame count driven by this side. */
         unsigned int mFrameLoopback;   /**< (--)                     Frame count driven by other side, echoed back. */

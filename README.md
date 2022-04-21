@@ -14,9 +14,11 @@ GUNNS is designed to be extensible and flexible.  It is written with object-orie
   
 GUNNS can also be extended to model other domains besides the above flow systems, as it can solve systems of the general form [A]{x} = {b} where [A] is a symmetric positive semi-definite matrix.  This is demonstrated in an included simple 6-DOF rigid body dynamics equations of motion model.
 
-### Simulation Environment Not Included
+### Simulation Environment and Glue Code Not Included
 
 GUNNS does not provide a complete simulation environment, as it is intended to be run in external environments.  GUNNS is optimized for the [NASA Trick](https://github.com/nasa/trick) simulation environment, but can be run in other environments with some additional work.
+
+GUNNS is optimized for the 'thread safe sim bus', which is 'glue code' that integrates separate GUNNS networks together in a Trick sim.  However, this sim bus software not included in GUNNS and isn't released.  To get the most out of GUNNS, you either need to use the sim bus (as an internal NASA user) or replicate its functions on your own.  See information about what the [sim bus does in the Wiki.](https://github.com/nasa/gunns/wiki/Sim_Bus_Users_Guide_for_GUNNS)
 
 # The Gunnsmiths
 

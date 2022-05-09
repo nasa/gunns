@@ -43,18 +43,59 @@ numberedNodeSubtypes = ['Fluid', 'Basic', 'Reference']
 # maybe a better name would be LinkConnectionData or such...
 class LinkDataModel:
     def __init__(self, elem, name):
-        self.element    = elem
-        self.superPorts = []
-        self.ports      = []
+        self.element    = elem # this link's XML element
+        self.superPorts = []   # this link's overriding super-port XML elements
+        self.ports      = []   # this link's default port XML elements
         self.name       = name.split('.')[1]
         self.subNetName = name.split('.')[0]
-        self.portMap    = []
+        self.portMap    = []   # string defining the port map array assignments, i.e. '[42, 12]'
         return
     
 #TODO
 # Error checks:
-# -
+# - update updateSubnet function for subnet interface containers
 
+# Class describing a sub-network interface container.
+class SubNetIf:
+    def __init__(self, elem):
+        self.element     = elem # XML element of this subnet interface box
+        self.connections = []   # list of tuples of (link, port, interface_node_index)
+        self.parseConnections()
+        return
+    
+    # Loop over <gunnsSubnetIfConnections> in elem and parse them into our connections list.
+    def parseConnections(self):
+        allConnections = self.element.findall('./gunnsSubnetIfConnection')
+        for aConnection in allConnections:
+            newConnection = [aConnection.attrib['Link'], aConnection.attrib['Map'], aConnection.attrib['Port'], aConnection.attrib['Key']]
+            self.connections.append(newConnection)
+        
+# Class for describing a sub-network and its contained sub-network interface containers.
+class SubNet:
+    def __init__(self, elem, objects_and_cells):
+        self.element    = elem
+        self.interfaces = []    # list of SubNetIf objects
+        self.nodeCount  = -1
+        self.buildInterfaces(objects_and_cells)
+        return
+        
+    # Find all subnetwork interface box elements in the super-drawing that are children of this sub-network,
+    # create SubNetIf objects for them and add them to our list of SubNetIf objects.
+    def buildInterfaces(self, objects_and_cells):
+        for obj in objects:
+            gunns = obj.find('./gunns')
+            if gunns is not None:
+                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype']:
+                    if isDescendant(obj, self.element, objects_and_cells):
+                        nodeCountElem = obj.find('./gunnsSubnetIfNodeCount')
+                        if nodeCountElem is None:
+                            sys.exit(console.abort('in sub-network: ' + obj.attrib['label'] + ', one or more sub-network interface boxes is missing the sub-network node count - you must export the sub-network drawing before adding it to this super-network drawing.'))
+                        if 0 == len(self.interfaces):
+                            self.nodeCount = int(nodeCountElem.text)
+                        elif self.nodeCount != int(nodeCountElem.text):
+                            sys.exit(console.abort('in sub-network: ' + obj.attrib['label'] + ', one or more sub-network interface boxes disagree on the sub-network node count - you must export the sub-network drawing before adding it to this super-network drawing.'))
+                        self.interfaces.append(SubNetIf(obj))
+    
 #TODO refactor with netexport.py...
 # Returns the config data from the given <object> attributes as a comma-delimited string
 # Values enclosed with curly braces are replaced with zero, as vectors are handled later.
@@ -158,7 +199,6 @@ def getPortTargetName(port, links, nodes, gnds):
         result = getNodeName(getPortNode(port, nodes, gnds))
     return result
 
-# TODO 
 # Return the link element that has this sub-network.link name, or None.
 def getLinkByName(name, links):
     for link in links:
@@ -294,7 +334,85 @@ def getElemGunnsSubtype(elem):
         if 'subtype' in gunns.attrib:
             return gunns.attrib['subtype']
     return None
+
+# Returns a list of all numbered and ground nodes shapes within the given container.
+# This also aborts if any such node is missing its 'key' attribute.
+def getKeyedNodes(container, allNodes, allObjects):
+    childNodes = []
+    for node in allNodes:
+        geom = node.find('./mxCell/mxGeometry')
+        if isDescendant(node, container, allObjects):
+            if 'Key' not in node.attrib or not node.attrib['Key'].strip():
+                sys.exit(console.abort('in sub-network interface: ' + container.attrib['label'] + ', a node is missing its \'key\' attribute.'))
+            childNodes.append(node)
+    return childNodes
+
+# Checks for compatibility between the sub-network interfaces connected by the given connector, and
+# returns a list of super-port connections represented by the interface.
+def generateSubNetIfSuperPorts(connection, subNets, allNodes, allObjects, links):
+    # Check compatibility between sub-network interface connections.  The connector object must connect two
+    # sub-network interface boxes.  The connected boxes must have compatible nodes:
+    # - the same number of node objects
+    # - all nodes must have interface key attributes and all keys must make a matching set
+    # - each keyed node set between the boxes must have no more than one numbered (normal or reference) node
+    sourceId = getPortSourceId(connection)
+    targetId = getPortTargetId(connection)
+    if '' == sourceId or '' == targetId:
+        sys.exit(console.abort('a sub-network interface connector is missing one or both connections.'))
+    if sourceId == targetId:
+        sys.exit(console.abort('a sub-network interface connector is connected to the same interface at both ends.'))
+
+    sourceIf = None
+    targetIf = None
+    for subNet in subNets:
+        for interface in subNet.interfaces:
+            if interface.element.attrib['id'] == sourceId:
+                sourceIf = interface.element
+            elif interface.element.attrib['id'] == targetId:
+                targetIf = interface.element
+                
+    if sourceIf is None or targetIf is None:
+        sys.exit(console.abort('a sub-network interface connector is missing one or both connections to an interface container.'))
     
+    # Sort the interface nodes by their Key attributes.
+    sourceNodes = getKeyedNodes(sourceIf, allNodes, allObjects)
+    targetNodes = getKeyedNodes(targetIf, allNodes, allObjects)
+    sourceSort = sorted(sourceNodes, key=lambda e: e.attrib['Key'])
+    targetSort = sorted(targetNodes, key=lambda e: e.attrib['Key'])
+    if len(sourceSort) != len(targetSort):
+        sys.exit(console.abort('connected sub-network interfaces: ' + sourceIf.attrib['label'] +  ' and ' + targetIf.attrib['label'] + ' have mismatching number of interface nodes.'))
+        
+    for index in range(0, len(sourceSort)):
+        if sourceSort[index].attrib['Key'] != targetSort[index].attrib['Key']:
+            sys.exit(console.abort('connected sub-network interfaces: ' + sourceIf.attrib['label'] +  ' and ' + targetIf.attrib['label'] + ' have mismatching interface node Keys.'))
+        if sourceSort[index].find('./gunns').attrib['subtype'] != 'Ground' and targetSort[index].find('./gunns').attrib['subtype'] != 'Ground':
+            sys.exit(console.abort('connected sub-network interfaces: ' + sourceIf.attrib['label'] +  ' and ' + targetIf.attrib['label'] + ' have more than one numbered node for Key: ' + sourceSort[index].attrib['Key'] + '.'))
+    
+    # Create a list of super-ports represented by the connected interfaces.
+    # List of tuples: (subnet.link name, default node map, port #, other sub-network's node #, other sub-network's element)
+    superPorts = []
+    sourceNetwork = getParentSubNetwork(sourceIf)
+    targetNetwork = getParentSubNetwork(targetIf)
+    sourceConnections = sourceIf.findall('./gunnsSubnetIfConnection')
+    targetConnections = targetIf.findall('./gunnsSubnetIfConnection')
+    for connection in sourceConnections:
+        # Find the node # in the target network interface with the same key as our link connection's key.
+        # If it doesn't have a number (Ground), then skip this connection and there is no super-port.
+        for node in targetNodes:
+            if node.attrib['Key'] == connection.attrib['Key']:
+                if 'Ground' != node.find('./gunns').attrib['subtype']:
+                    linkName = sourceNetwork.attrib['label'] + '.' + connection.attrib['Link']
+                    superPorts.append((linkName, connection.attrib['Map'], connection.attrib['Port'], int(node.attrib['label']), targetNetwork))
+        
+    for connection in targetConnections:
+        for node in sourceNodes:
+            if node.attrib['Key'] == connection.attrib['Key']:
+                if 'Ground' != node.find('./gunns').attrib['subtype']:
+                    linkName = targetNetwork.attrib['label'] + '.' + connection.attrib['Link']
+                    superPorts.append((linkName, connection.attrib['Map'], connection.attrib['Port'], int(node.attrib['label']), sourceNetwork))
+    
+    return superPorts
+
 # Replaces the given sub-network and all of its children with a new instance from the source drawing.
 # Note, rootroot is the drawing's mxGraphModel.root element, not the actual root element.
 def updateSubNet(subNet, subPathFile, rootroot):
@@ -593,8 +711,16 @@ contentsUpdated = False
 # They have an element named root which isn't the actual root.  This is confusing.
 rootroot = root.find('./root')
 objects = root.findall('./root/object')
+# This skips <mxCell id="0"/> since it has no parent attribute
+mxcells = root.findall('./root/mxCell')[1:]
+objects_and_cells = []
+for an_object in objects:
+    objects_and_cells.append(an_object)
+for cell in mxcells:
+    objects_and_cells.append(cell)
 ports = []
-superPorts = []
+superPorts = []          # XML elements for super-port connectors
+superInterfacePorts = [] # Data for super-ports derived from subNetIfConnections
 links = []
 numberedNodes = []
 gndNodes = []
@@ -602,8 +728,10 @@ allNodes = []
 superConfig = None
 linkNamesWithSuperPorts = []
 linkDataModels = []
+subNets = []
+subNetIfConnections = [] # XML elements for connections between sub-network interface containers
 
-# Make a list of all sub-networks.
+# Make a list of all sub-networks and subnetwork interfaces.
 for obj in objects:
     gunns = obj.find('gunns')
     if gunns is not None:
@@ -664,12 +792,25 @@ for obj in objects:
         elif 'Ground' == gunnsSubtype:
             gndNodes.append(obj)
     elif 'Network' == gunnsType:
-        # Sub-networks have already been found above.
         if 'Super' == gunnsSubtype:
             superConfig = obj
+        elif 'Sub' == gunnsSubtype:
+            subNets.append(SubNet(obj, objects_and_cells))
+    elif 'Subnet Interface Connection' == gunnsType:
+        subNetIfConnections.append(obj)
 
+# Check for missing super-network config.
 if superConfig is None:
     sys.exit(console.abort('there is no super-network config object.'))
+
+# Check for combination of super-ports and subnet interface connections: currently we don't
+# support both at the same time.
+if (len(superPorts) > 0 and len(subNetIfConnections) > 0):
+    sys.exit(console.abort('a mix of super-ports and sub-net interface connections is not allowed - use one or the other.'))
+        
+# Get super-ports derived from sub-network interface container connections.
+for subNetIfConnection in subNetIfConnections:
+    superInterfacePorts += generateSubNetIfSuperPorts(subNetIfConnection, subNets, allNodes, objects_and_cells, links)
     
 # Re-number nodes and sub-network super node offsets to account for new or deleted sub-networks
 # that the user has manually added or removed in draw.io.  Note this won't fix gaps in node numbers
@@ -685,26 +826,36 @@ for subNet in netConfigs:
     if superNodeOffset != oldOffset:
         print('    Changed super nodes offset for sub-network "' + subNet.attrib['label'] + '".')
     subNet.attrib['SuperNodesOffset'] = str(superNodeOffset)
-    subNodes = []
-    lowestNodeNumber = 999999999
-    for node in numberedNodes:
-        # Collect all numbered nodes in this sub-network.  This includes References nodes as well
-        # as normal (Basic, Fluid, etc.) nodes, but not Ground nodes.  Find the lowest node number
-        # in this set.
-        if node.find('mxCell').attrib['parent'] == subNet.attrib['id']:
-            subNodes.append(node)
-            nodeNumber = int(node.attrib['label'])
-            if nodeNumber < lowestNodeNumber:
-                lowestNodeNumber = nodeNumber
+    
+    theSubNetObject = None
+    for subNetObj in subNets:
+        if subNet == subNetObj.element:
+            theSubNetObject = subNetObj
+            break
         
-    for node in subNodes:
-        # Re-number the numbered nodes as their sub-network's super node offset, plus their relative
-        # number in their sub-network.
-        oldNodeNumber = int(node.attrib['label'])
-        node.attrib['label'] = str(superNodeOffset + oldNodeNumber - lowestNodeNumber)
-        if (node.find('./gunns').attrib['subtype'] in normalNodeSubtypes):
-            # Increment the total super-network normal node count, not counting Reference nodes.
-            superNodesCount += 1
+    if theSubNetObject is not None and theSubNetObject.nodeCount > 0:
+        superNodesCount += theSubNetObject.nodeCount
+    else:
+        subNodes = []
+        lowestNodeNumber = 999999999
+        for node in numberedNodes:
+            # Collect all numbered nodes in this sub-network.  This includes References nodes as well
+            # as normal (Basic, Fluid, etc.) nodes, but not Ground nodes.  Find the lowest node number
+            # in this set.
+            if node.find('mxCell').attrib['parent'] == subNet.attrib['id']:
+                subNodes.append(node)
+                nodeNumber = int(node.attrib['label'])
+                if nodeNumber < lowestNodeNumber:
+                    lowestNodeNumber = nodeNumber
+        
+        for node in subNodes:
+            # Re-number the numbered nodes as their sub-network's super node offset, plus their relative
+            # number in their sub-network.
+            oldNodeNumber = int(node.attrib['label'])
+            node.attrib['label'] = str(superNodeOffset + oldNodeNumber - lowestNodeNumber)
+            if (node.find('./gunns').attrib['subtype'] in normalNodeSubtypes):
+                # Increment the total super-network normal node count, not counting Reference nodes.
+                superNodesCount += 1
     
 # TODO refactor with netexport.py
 # TODO there can be multiple links with the same name because they're in different sub-network isntances.
@@ -727,78 +878,92 @@ for port in superPorts:
         sys.exit(console.abort('a super-port ' + port_attr['label'] + ' on ' + nodeName + ' isn\'t connected to a link.'))
     if '' == nodeName:
         sys.exit(console.abort('a super-port ' + port_attr['label'] + ' on link ' + linkName + ' isn\'t connected to a node.'))
-    # Add the link to the list of those that have super-ports
+    # Add the link to the list of those that have super-ports.
     if linkName not in linkNamesWithSuperPorts:
         linkNamesWithSuperPorts.append(linkName)
         linkDataModels.append(LinkDataModel(link, linkName))
+
+# For super-ports defined by the sub-network interface connections, add their links
+# to the list of links that have super-ports.
+for port in superInterfacePorts:
+    if port[0] not in linkNamesWithSuperPorts:
+        linkNamesWithSuperPorts.append(port[0])
+        linkDataModels.append(LinkDataModel(None, port[0]))
     
-for linkData in linkDataModels:
-    linkName = linkData.element.attrib['label']
-    linkId   = linkData.element.attrib['id']
-    allPorts = []   
-    for superPort in superPorts:
-        if getPortLink(superPort, links) == linkData.element:
-            linkData.superPorts.append(superPort)
-            allPorts.append(superPort)
+if len(subNetIfConnections) == 0:
+    # Add port and super-port elements to the link data model, and remove normal port elements
+    # from the drawing that are overridden by super-ports.
+    for linkData in linkDataModels:
+        linkName = linkData.element.attrib['label']
+        linkId   = linkData.element.attrib['id']
+        allPorts = []   
+        for superPort in superPorts:
+            if getPortLink(superPort, links) == linkData.element:
+                linkData.superPorts.append(superPort)
+                allPorts.append(superPort)
 
-    for port in ports:
-        # If a normal port is overriden by a super-port on this link, then don't add it to the link's
-        # data model, and also delete it from the drawing tree.
-        portLink = getPortLink(port, links)
-        if portLink is not None and portLink.attrib['id'] == linkId:
-            overridden = False
-            for superPort in linkData.superPorts:
-                if superPort.attrib['label'] == port.attrib['label']:
-                    overridden = True
-            if overridden:
-                rootroot.remove(port)
-            else:
-                # Before adding the normal port to the link, make sure it is connected to a node.
-                port_attr = port.attrib
-                if not port_attr['label'].isdigit():
-                    sys.exit(console.abort('a port on link ' + linkName + ' has invalid port # label: \'' + port_attr['label'] + '\'.'))
-                nodeName = getNodeName(getPortNode(port, numberedNodes, gndNodes))
-                if '' == nodeName:
-                    sys.exit(console.abort('a port ' + port_attr['label'] + ' on link ' + linkName + ' isn\'t connected to a node.'))
-                linkData.ports.append(port)
-                allPorts.append(port)
+        for port in ports:
+            # If a normal port is overriden by a super-port on this link, then don't add it to the link's
+            # data model, and also delete it from the drawing tree.
+            portLink = getPortLink(port, links)
+            if portLink is not None and portLink.attrib['id'] == linkId:
+                overridden = False
+                for superPort in linkData.superPorts:
+                    if superPort.attrib['label'] == port.attrib['label']:
+                        overridden = True
+                if overridden:
+                    rootroot.remove(port)
+                else:
+                    # Before adding the normal port to the link, make sure it is connected to a node.
+                    port_attr = port.attrib
+                    if not port_attr['label'].isdigit():
+                        sys.exit(console.abort('a port on link ' + linkName + ' has invalid port # label: \'' + port_attr['label'] + '\'.'))
+                    nodeName = getNodeName(getPortNode(port, numberedNodes, gndNodes))
+                    if '' == nodeName:
+                        sys.exit(console.abort('a port ' + port_attr['label'] + ' on link ' + linkName + ' isn\'t connected to a node.'))
+                    linkData.ports.append(port)
+                    allPorts.append(port)
 
-    # Check that all the link's required ports are present.
-    #TODO refactor with netexport.py...
-    req_ports = linkData.element.find('gunns').attrib['reqPorts'].split(',')
-    num_ports = int(linkData.element.find('gunns').attrib['numPorts'])
-    for req_port in req_ports:
-        port_found = False
-        if not (-1 < int(req_port) < max(1, num_ports)):
-            sys.exit(console.abort(linkName + ' link\'s shape master has invalid required port # ' + req_port + '.'))
-        for port in allPorts:
-            if req_port == port.attrib['label']:
-                port_found = True
-        if not port_found:
-            sys.exit(console.abort(linkName + ' link is missing required Port ' + req_port + '.'))
+        # Check that all the link's required ports are present.
+        #TODO refactor with netexport.py...
+        req_ports = linkData.element.find('gunns').attrib['reqPorts'].split(',')
+        num_ports = int(linkData.element.find('gunns').attrib['numPorts'])
+        for req_port in req_ports:
+            port_found = False
+            if not (-1 < int(req_port) < max(1, num_ports)):
+                sys.exit(console.abort(linkName + ' link\'s shape master has invalid required port # ' + req_port + '.'))
+            for port in allPorts:
+                if req_port == port.attrib['label']:
+                    port_found = True
+            if not port_found:
+                sys.exit(console.abort(linkName + ' link is missing required Port ' + req_port + '.'))
 
 # Rebuild the list of objects remaining in the tree, after some ports have been deleted.
 theObjects = rootroot.findall('object')
 
-# Find nodes that are left with no port connections on them.
+# Delete Ground nodes that are left with no port connections on them, and are not in a sub-network interface container.
+# Those in sub-network interface containers have had a Key attribute added, so we check for that.
 for node in allNodes:
-    node_id = node.attrib['id']
-    noConnections = True
-    for port in theObjects:
-        port_gunns = port.find('gunns')
-        if port_gunns is not None:
-            if 'Port' == port_gunns.attrib['type']:
-                port_cell_attr = port.find('mxCell').attrib
-                if (('target' in port_cell_attr and node_id == port_cell_attr['target']) or ('source' in port_cell_attr and node_id == port_cell_attr['source'])):
-                    noConnections = False
-                    break
-    if noConnections:
-        if node.find('gunns').attrib['subtype'] in normalNodeSubtypes:
-            # Warn the user about unconnected network nodes.
-            print('    ' + console.warn('super-node ' + node.attrib['label'] + ' has no port connections.'))
-        else:
-            # Delete unconnected ground and reference nodes from the drawing.
-            rootroot.remove(node)
+    if 'Key' not in node.attrib:
+        node_id = node.attrib['id']
+        noConnections = True
+        for port in theObjects:
+            port_gunns = port.find('gunns')
+            if port_gunns is not None:
+                if 'Port' == port_gunns.attrib['type']:
+                    port_cell_attr = port.find('mxCell').attrib
+                    if (('target' in port_cell_attr and node_id == port_cell_attr['target']) or ('source' in port_cell_attr and node_id == port_cell_attr['source'])):
+                        noConnections = False
+                        break
+        if noConnections:
+            if node.find('gunns').attrib['subtype'] in numberedNodeSubtypes:
+                # Warn the user about unconnected network nodes.
+                # TODO this gives a nuisance warning for reference nodes that have super-port connections but no normal connections.
+                #      Does noConnections include super-ports, and should it?
+                print('    ' + console.warn('super-node ' + node.attrib['label'] + ' has no port connections.'))
+            else:
+                # Delete unconnected ground and reference nodes from the drawing.
+                rootroot.remove(node)
 
 # Update the input drawing with the readable formatted tree.
 # Splitting the file into many lines like this makes merging easier.
@@ -820,38 +985,64 @@ for subNet in netConfigs:
 for subNet in netConfigs:
     subNets.append([subNet.attrib['label'], subNet.attrib['SuperNodesOffset'], os.path.splitext(os.path.split(subNet.attrib['sourceDrawing'])[1])[0], ' '*(subNetLength - len(subNet.attrib['label']))])
 
-for link in linkDataModels:
-    # Sort the link ports by port number.
-    sortedPorts = []
-    for i in range(0, len(link.ports) + len(link.superPorts)):
-        sortedPorts.append(None)
-    for port in link.ports:
-        portNum = int(port.attrib['label'])
-        if portNum >= len(sortedPorts):
-            sys.exit(console.abort('link ' + getLinkName(link) + ' has a gap in its port numbers.'))
-        sortedPorts[portNum] = port
-    for port in link.superPorts:
-        portNum = int(port.attrib['label'])
-        if portNum >= len(sortedPorts):
-            sys.exit(console.abort('link ' + getLinkName(link) + ' has a gap in its port numbers.'))
-        sortedPorts[portNum] = port
+if len(subNetIfConnections) > 0:
+    for link in linkDataModels:
+        portMapList = None
+        for ifPort in superInterfacePorts:
+            # Find all superInterfacePorts that apply to this link
+            # List of tuples: (subnet.link name, default node map, port #, other sub-network's node #, other sub-network's element)
+            localSubnetName = ifPort[0].split('.')[0]
+            linkName        = ifPort[0].split('.')[1]
+            if linkName == link.name and localSubnetName == link.subNetName:
+                if portMapList is None:
+                    # First set the port map to the default, but only do this on the first superport
+                    portMapList = ifPort[1].split(',')
+                    for index in range(0, len(portMapList)):
+                        if int(portMapList[index]) < 0:
+                            # Now go through and replace negative numbers (Ground) with the super-network ground.
+                            portMapList[index] = 'super_ground'
+                        else:
+                            # Add the local subnet's offset
+                            portMapList[index] = portMapList[index].strip() + '+offset_' + localSubnetName
+                # Override the port map index that the sub-network interface connection applies to.
+                portMapList[int(ifPort[2])] = str(ifPort[3]) + '+offset_' + ifPort[4].attrib['label']
+        # Format the link.portMap, into a string
+        link.portMap = '[' + ', '.join(portMapList) + ']'
+        link.ports = portMapList # template uses the length of this list to size the Trick array allocation.
+        
+else:
+    for link in linkDataModels:
+        # Sort the link ports by port number.
+        sortedPorts = []
+        for i in range(0, len(link.ports) + len(link.superPorts)):
+            sortedPorts.append(None)
+        for port in link.ports:
+            portNum = int(port.attrib['label'])
+            if portNum >= len(sortedPorts):
+                sys.exit(console.abort('link ' + getLinkName(link) + ' has a gap in its port numbers.'))
+            sortedPorts[portNum] = port
+        for port in link.superPorts:
+            portNum = int(port.attrib['label'])
+            if portNum >= len(sortedPorts):
+                sys.exit(console.abort('link ' + getLinkName(link) + ' has a gap in its port numbers.'))
+            sortedPorts[portNum] = port
 
-    # For each sorted port, find its original node's sub-network.
-    link.portMap = '['
-    for port in sortedPorts:
-        node     = getPortNode(port, numberedNodes, gndNodes)
-        nodeName = getNodeName(node)
-        if 'Ground' == nodeName:
-            portMap = 'super_ground'
-        else:
-            # Find the sub-network that this node belongs to.
-            subNet = getParentSubNetwork(node)
-            subNetName = subNet.attrib['label']
-            subNodeNum = int(nodeName[5:]) - int(subNet.attrib['SuperNodesOffset'])
-            # TODO abort if num < 0
-            portMap = str(subNodeNum) + '+offset_' + subNetName
-        link.portMap += (portMap + ', ')
-    link.portMap = link.portMap[:-2] + ']'
+        # For each sorted port, find its original node's sub-network.
+        link.portMap = '['
+        for port in sortedPorts:
+            node     = getPortNode(port, numberedNodes, gndNodes)
+            nodeName = getNodeName(node)
+            if 'Ground' == nodeName:
+                portMap = 'super_ground'
+            else:
+                # Find the sub-network that this node belongs to.
+                subNet = getParentSubNetwork(node)
+                subNetName = subNet.attrib['label']
+                subNodeNum = int(nodeName[5:]) - int(subNet.attrib['SuperNodesOffset'])
+                # TODO abort if num < 0
+                portMap = str(subNodeNum) + '+offset_' + subNetName
+            link.portMap += (portMap + ', ')
+        link.portMap = link.portMap[:-2] + ']'
 
 data_model = dict([('functionName', baseFileName),
                    ('revline',      revline),

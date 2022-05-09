@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2022 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -283,8 +283,8 @@ def addElemToSuper(elem):
         gunns.attrib['drawingId'] = elem.attrib['id']
 
     # Copy remaining id attributes throughout the element.
-    if gunns is not None and gunns.attrib['type'] == 'Network':
-        # Network container element's parent is always 2, the super-network container.
+    if gunns is not None and gunns.attrib['type'] == 'Network' and gunns.attrib['subtype'] == 'Sub':
+        # Sub-network container element's parent is always 2, the super-network container.
         copiedElem.find('mxCell').attrib['parent'] = '2'
     else:
         # TODO lot of repetition here, refactor...
@@ -370,8 +370,9 @@ for drawing in drawings:
     for instance in range(0, drawing.count):
         instance_root = copy.deepcopy(rootroot)
 
-        sub_nodes_count = 0 # this will be incremented by 1 for each normal node we find in the
-                            # sub-network instance.  When the instance is complete, we add this
+        sub_nodes_count = 0 # this will be set later by either lookng up the value from the sub-
+                            # network interface containers, if present, otherwise by counting the
+                            # normal nodes we find.  When the instance is complete, we add this
                             # to super_nodes_offset.
 
         objects = instance_root.findall('./object')
@@ -394,9 +395,28 @@ for drawing in drawings:
                     elif 'Sub' == gunns.attrib['subtype']:
                         netConfig = an_object
                         break
+                        
         if netConfig is None:
             sys.exit(console.abort('a network config wasn\'t found.'))
 
+        # Error check any sub-network interface containers.
+        subnetIfsPresent = False
+        for an_object in objects:
+            gunns = an_object.find('./gunns')
+            if gunns is not None:
+                if 'Network' == gunns.attrib['type']:
+                    if 'Subnet Interface' == gunns.attrib['subtype']:
+                        subnetIfsPresent = True
+                        # Check for missing information in the subnet interface.
+                        subnetIfNodeCountElem = an_object.find('./gunnsSubnetIfNodeCount')
+                        if subnetIfNodeCountElem is None:
+                            sys.exit(console.abort('a sub-network interface container in network type: ' + netConfig.attrib['label'] + ' is missing the network node count.  Make sure to export the sub-network drawing first.'))
+                        else:
+                            sub_nodes_count = int(subnetIfNodeCountElem.text)
+                        # TODO: this will be a nuisance if there are no connections (all reference nodes) by design. Skip this message if so. 
+                        if 0 == len(an_object.findall('./gunnsSubnetIfConnection')):
+                            print('    ' + console.warn('sub-network inteface container: ' + an_object.attrib['label'] + ' in network type: ' + netConfig.attrib['label'] + ' has no link connections.  Make sure to export the sub-network drawing first.'))
+        
         # Make changes to the config before appending:
         # - Add sim variable, super nodes offset, and project-relative source drawing attributes to the visible shape data
         netConfig.attrib['SimVariable']      = 'None'
@@ -431,19 +451,30 @@ for drawing in drawings:
         for an_object in objects_and_cells:
             if isDescendant(an_object, netConfig, objects_and_cells):
                 gunns = an_object.find('gunns')
-                if gunns is not None:
-                    if 'Node' == gunns.attrib['type']:
-                        # Regular nodes increment the instance node count.
-                        if gunns.attrib['subtype'] in regular_node_types:
-                            sub_nodes_count += 1
-                        # For nodes with a number (regular or reference nodes), add the
-                        # super nodes offset to their number.
-                        if gunns.attrib['subtype'] in numbered_node_types:
-                            an_object.attrib['label'] = str(super_nodes_offset + int(an_object.attrib['label']))
-                    elif 'Link' == gunns.attrib['type']:
-                        # Destroy link info to prevent this network copy from being used as source for netexport.
-                        gunns.attrib['subtype'] = ''
-                addElemToSuper(an_object)
+                if subnetIfsPresent:
+                    # When sub-network interface containers are present, they and their children
+                    # are the only thing we import.
+                    if gunns is not None:
+                        if 'Network' == gunns.attrib['type']:
+                            if 'Subnet Interface' == gunns.attrib['subtype']:
+                                addElemToSuper(an_object)
+                                for child_object in objects_and_cells:
+                                    if isDescendant(child_object, an_object, objects_and_cells):
+                                        addElemToSuper(child_object)
+                else:
+                    if gunns is not None:
+                        if 'Node' == gunns.attrib['type']:
+                            # Regular nodes increment the instance node count.
+                            if gunns.attrib['subtype'] in regular_node_types:
+                                sub_nodes_count += 1
+                            # For nodes with a number (regular or reference nodes), add the
+                            # super nodes offset to their number.
+                            if gunns.attrib['subtype'] in numbered_node_types:
+                                an_object.attrib['label'] = str(super_nodes_offset + int(an_object.attrib['label']))
+                        elif 'Link' == gunns.attrib['type']:
+                            # Destroy link info to prevent this network copy from being used as source for netexport.
+                            gunns.attrib['subtype'] = ''
+                    addElemToSuper(an_object)
 
         # Increment the super-network node offset by this instance's final node count.
         super_nodes_offset += sub_nodes_count

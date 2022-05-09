@@ -199,8 +199,15 @@ def getLinkConstructorBody(link, dataType):
                            '    }\n')
     return result
 
-# Formats the link port map for its initialize call.
+# Formats the link port map as a comma-separated string.
 def getPortMap(port_map):
+    result = str(port_map[0])
+    for index in range(1, len(port_map)):
+        result = result + ', ' + str(port_map[index])
+    return result
+    
+# Formats the link port map for its initialize call.
+def getPortMapInitialize(port_map):
     result = ''
     for port in port_map:
         if int(port) < 0:
@@ -215,7 +222,7 @@ def getLinkInitialize(link, port_map):
     result = ''
     name     = getLinkName(link)
     numPorts = int(link.find('./gunns').attrib['numPorts'])
-    formatted_port_map = getPortMap(port_map)
+    formatted_port_map = getPortMapInitialize(port_map)
     if numPorts > 0:
         result = ('    ' + name + '.initialize(netConfig.' + name + ', netInput.' + name + ', netLinks' + formatted_port_map + ');\n')
     else:
@@ -303,6 +310,23 @@ def getPortNodeName(port, nodes, gnds):
             return 'node ' + node.attrib['label']
     return result
 
+# Similar to getPortNodeName but returns the node element
+def getPortNode(port, nodes, gnds):
+    source = ''
+    target = ''
+    cell_attr = port.find('./mxCell').attrib
+    if 'source' in cell_attr:
+        source = cell_attr['source']
+    if 'target' in cell_attr:
+        target = cell_attr['target']
+    for gnd in gnds:
+        if source == gnd.attrib['id'] or target == gnd.attrib['id']:
+            return gnd
+    for node in nodes:
+        if source == node.attrib['id'] or target == node.attrib['id']:
+            return node
+    return None
+    
 # Returns the name string of the link that is connected to this port.
 # If there is no link connected, then returns the connected node and
 # number.  If there is no node connected then returns ''
@@ -492,6 +516,24 @@ def countFluidObjects(objs):
             result = result + 1
     return result
 
+# Returns a list of all numbered and ground nodes shapes within the given container.  It also
+# checks that they have an interface 'key' attribute and adds one if missing, and returns a flag
+# indicating that a key was added.
+def keyContainedNodes(container, numberedNodes, gndNodes, allObjects):
+    childNodes = []
+    updated    = False
+    allNodes   = numberedNodes + gndNodes
+    index      = 0
+    for node in allNodes:
+        geom = node.find('./mxCell/mxGeometry')
+        if isDescendant(node, container, allObjects):
+            index += 1
+            if 'Key' not in node.attrib or not node.attrib['Key'].strip():
+                node.attrib['Key'] = str(index)
+                updated = True
+            childNodes.append(node)
+    return childNodes, updated
+
 #####################
 # BEGIN MAIN SCRIPT #
 #####################
@@ -625,6 +667,7 @@ doxLicenses = []
 doxData = []
 doxReferences = []
 doxAssumptions = []
+subNetIfs = []
 
 # First find the network config object
 for an_object in objects:
@@ -729,7 +772,8 @@ for an_object in objects:
             checkName(an_object)
             socketLists.append(an_object)
         elif 'Network' == gunns_attribs['type']:
-            pass # collected above
+            if 'Subnet Interface' == gunns_attribs['subtype']:
+                subNetIfs.append(an_object)
         elif 'Dox' == gunns_attribs['type']:
             pass # collected above
         else:
@@ -876,17 +920,6 @@ for port in ports:
     if '' == nodeName:
         sys.exit(console.abort('a port ' + port_attr['label'] + ' on ' + linkName + ' isn\'t connected to a node.'))
 
-# Update the input file with the readable formatted tree.
-# Splitting the file into many lines like this makes merging easier.
-xmlUtils.formatXml(root)
-tree.write(outputPathFile, xml_declaration=False)
-print('  ...saved updates to ' + inputFile + '.')
-
-# Skip generating the network class code in the maintenance option.
-if 'false' != options.maintenance:
-    quit()
-
-print('  Building data model...')
 # Build jumper plugs
 #   loop over links
 #     if they have a plugs attrib in <gunns> then parse it for the plug port #'s
@@ -987,7 +1020,98 @@ for link in links:
                  port_map[port_number] = node.attrib['label']
     port_maps.append(port_map)
 
+# Update the sub-network interface containers with link connections to Ground nodes and nuber of sub-network nodes.
+# In the super-network, the only ports that will be moved are those that connect to Ground nods in the sub-network interface.
+updatedSubNetIfsNodeCount = False
+for subNetIf in subNetIfs:
+    subNetUpdated = False
+    ifKeysUpdated = False
+    ifNodes, ifKeysUpdated = keyContainedNodes(subNetIf, numberedNodes, gndNodes, objects_and_cells)
+    # List all ports in the network connecting to interface Ground nodes.
+    ifPorts = []
+    for port in ports:
+        # Return value of None shouldn't be possible because we've aborted above if any ports aren't connected to a node.
+        node = getPortNode(port, numberedNodes, gndNodes)
+        for ifNode in ifNodes:
+            if node == ifNode and node in gndNodes:
+                linkName = getPortLinkName(port, links)[len('link '):]  # strip 'link ' off the front of the returned name
+                # Find the index of the link in the links and port_map lists.
+                linkIndex = None
+                for index in range(0, len(links)):
+                    if linkName == getLinkName(links[index]):
+                        linkIndex = index
+                        break
+                # Build the link's default port map string and the interface port attributes.
+                ifPorts.append((linkName, getPortMap(port_maps[index]), port.attrib['label'], ifNode.attrib['Key']))
+                break
+
+    # Add any new drawing connection missing from the sub-network's interface box, and flag update.
+    oldConnections = subNetIf.findall('./gunnsSubnetIfConnection')
+    for ifPort in ifPorts:
+        isFound = False
+        for oldConnection in oldConnections:
+            if ifPort[0] == oldConnection.attrib['Link'] and \
+               ifPort[1] == oldConnection.attrib['Map'] and \
+               ifPort[2] == oldConnection.attrib['Port'] and \
+               ifPort[3] == oldConnection.attrib['Key']:
+                isFound = True
+                break
+        if not isFound:
+            newElement = ET.SubElement(subNetIf, 'gunnsSubnetIfConnection')
+            newElement.attrib['Link'] = ifPort[0]
+            newElement.attrib['Map']  = ifPort[1]
+            newElement.attrib['Port'] = ifPort[2]
+            newElement.attrib['Key']  = ifPort[3]
+            subNetUpdated = True
+            
+    # Prune old connections from the sub-network interface box xml that aren't in the drawing anymore, and flag update.
+    for oldConnections in oldConnections:
+        isFound = False
+        for ifPort in ifPorts:
+            if ifPort[0] == oldConnections.attrib['Link'] and \
+               ifPort[1] == oldConnections.attrib['Map'] and \
+               ifPort[2] == oldConnections.attrib['Port'] and \
+               ifPort[3] == oldConnections.attrib['Key']:
+                isFound = True
+                continue
+        if not isFound:
+            subNetIf.remove(oldConnections)
+            subNetUpdated = True
+
+    if subNetUpdated:
+        print('    ' + console.note('updated connections to sub-network interface: ' + subNetIf.attrib['label'] + '.'))
+        contentsUpdated = True
+    
+    if ifKeysUpdated:
+        print('    ' + console.note('updated interface node keys in sub-network interface: ' + subNetIf.attrib['label'] + '.'))
+        contentsUpdated = True
+        
+    # Update the node count element or add one if it is missing.
+    oldNodeCount = subNetIf.find('./gunnsSubnetIfNodeCount')
+    if oldNodeCount is None:
+        newNodeCount = ET.SubElement(subNetIf, 'gunnsSubnetIfNodeCount')
+        newNodeCount.text = str(nodeCount)
+        updatedSubNetIfsNodeCount = True
+    elif nodeCount != int(oldNodeCount.text):
+        oldNodeCount.text = str(nodeCount)
+        updatedSubNetIfsNodeCount = True
+        
+if updatedSubNetIfsNodeCount:
+    print('    ' + console.note('updated network node count in the sub-network interfaces.'))
+    contentsUpdated = True
+
+# Update the input file with the readable formatted tree.
+# Splitting the file into many lines like this makes merging easier.
+xmlUtils.formatXml(root)
+tree.write(outputPathFile, xml_declaration=False)
+print('  ...saved updates to ' + inputFile + '.')
+
+# Skip generating the network class code in the maintenance option.
+if 'false' != options.maintenance:
+    quit()
+
 # Assemble the data model to pass to the template engine:
+print('  Building data model...')
 revline = '  ((Auto-generated by the GunnsDraw netexport script version ' + GUNNSDRAW_VERSION + ') (' + str(datetime.now()) + '))'
 
 # This is a list of data for each link: class, name, initialize block, configData, inputData

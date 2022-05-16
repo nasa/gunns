@@ -8,7 +8,7 @@
 @defgroup GUNNS_ELECTRICAL_BATTERY_LINK    GUNNS Electrical Battery Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -151,6 +151,8 @@ class GunnsElectBattery: public GunnsBasicPotential
         virtual double getSoc() const;
         /// @brief   Returns the heat output.
         double         getHeat() const;
+        /// @brief   Returns the effective voltage of the given cell number.
+        double         getCellEffectiveVoltage(const unsigned int cell) const;
         /// @brief   Sets and resets the cell thermal runaway malfunction.
         void           setMalfThermalRunaway(const bool flag = false, const double duration = 0.0,
                                              const double interval = 0.0);
@@ -226,6 +228,20 @@ inline double GunnsElectBattery::getSoc() const
 inline double GunnsElectBattery::getHeat() const
 {
     return mHeat;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] cell (--) The cell number to return the voltage for.
+///
+/// @details Returns the effective cell voltage for the given cell number.  If the given cell
+///          number if out of bound of the number of cells in this battery, we return zero.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBattery::getCellEffectiveVoltage(const unsigned int cell) const
+{
+    if (cell < mNumCells) {
+        return mCells[cell].getEffectiveVoltage(mSocVocTable);
+    }
+    return 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -556,6 +556,13 @@ void UtGunnsElectBattery::testAccessors()
 
     tArticle->mSoc = 0.5;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tArticle->getSoc(),     DBL_EPSILON);
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
+
+    /// @test  getCellEffectiveVoltage.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc, tArticle->getCellEffectiveVoltage(0),     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,  tArticle->getCellEffectiveVoltage(10),    DBL_EPSILON);
 
     UT_PASS_FINAL;
 }

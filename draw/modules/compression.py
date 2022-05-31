@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2022 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -22,7 +22,7 @@ try:
     # Returns a string containing XML which should be parseable by etree.
     def decompress(a):
         # a = the compressed goop string
-        b = base64.decodestring(bytes(a, 'utf-8')) # equiv. to JS atob function.
+        b = base64.decodebytes(bytes(a, 'utf-8'))  # equiv. to JS atob function.
         c = str(zlib.decompress(b, -15), 'utf-8')  # equiv. to JS pako.inflateRaw
         d = URLLIB.unquote(c)                      # equiv. to JS decodeURIComponents
         return d

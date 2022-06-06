@@ -310,4 +310,4 @@ class BasicNetworkHeaderTemplate:
       # TODO end namespace
         '#endif\n')
 
-    return r
+    return r.encode('ascii', 'ignore').decode('ascii')

@@ -279,4 +279,4 @@ class BasicNetworkBodyTemplate:
       r = r+('    ' + spotter[1] + '.stepPostSolver(timeStep);\n')
     r = r+('}\n')
 # TODO end namespace #}
-    return r
+    return r.encode('ascii', 'ignore').decode('ascii')

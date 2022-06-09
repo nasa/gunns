@@ -12,6 +12,7 @@ on:
   push:
     paths-ignore:
     - 'README.md'
+    - 'bin/utils/simbus_icd_input_gen/**'
     - '.github/workflows/**'
     - '!.github/workflows/sim_test.yml'
 

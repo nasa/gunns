@@ -8,6 +8,7 @@ on:
     paths-ignore:
     - 'README.md'
     - 'draw/**'
+    - 'bin/utils/simbus_icd_input_gen/**'
     - '.github/workflows/**'
     - '!.github/workflows/unit_test.yml'
 

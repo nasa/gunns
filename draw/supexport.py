@@ -51,16 +51,14 @@ class LinkDataModel:
         self.portMap    = []   # string defining the port map array assignments, i.e. '[42, 12]'
         return
     
-#TODO
-# Error checks:
-# - update updateSubnet function for subnet interface containers
-
 # Class describing a sub-network interface container.
 class SubNetIf:
-    def __init__(self, elem):
+    def __init__(self, elem, objects_and_cells):
         self.element     = elem # XML element of this subnet interface box
         self.connections = []   # list of tuples of (link, port, interface_node_index)
+        self.children    = []   # list of elements that have this subnet interface box as their direct parent
         self.parseConnections()
+        self.findChildren(objects_and_cells)
         return
     
     # Loop over <gunnsSubnetIfConnections> in elem and parse them into our connections list.
@@ -69,7 +67,15 @@ class SubNetIf:
         for aConnection in allConnections:
             newConnection = [aConnection.attrib['Link'], aConnection.attrib['Map'], aConnection.attrib['Port'], aConnection.attrib['Key']]
             self.connections.append(newConnection)
-        
+
+    # Loop over all the given objects and store those that are direct children of this sub-network interface container.
+    def findChildren(self, objects_and_cells):
+        for obj in objects_and_cells:
+            mxCell = obj.find('./mxCell')
+            if mxCell is not None:
+                if mxCell.attrib['parent'] == self.element.attrib['id']:
+                    self.children.append(obj)
+            
 # Class for describing a sub-network and its contained sub-network interface containers.
 class SubNet:
     def __init__(self, elem, objects_and_cells):
@@ -82,7 +88,7 @@ class SubNet:
     # Find all subnetwork interface box elements in the super-drawing that are children of this sub-network,
     # create SubNetIf objects for them and add them to our list of SubNetIf objects.
     def buildInterfaces(self, objects_and_cells):
-        for obj in objects:
+        for obj in objects_and_cells:
             gunns = obj.find('./gunns')
             if gunns is not None:
                 if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype']:
@@ -94,7 +100,7 @@ class SubNet:
                             self.nodeCount = int(nodeCountElem.text)
                         elif self.nodeCount != int(nodeCountElem.text):
                             sys.exit(console.abort('in sub-network: ' + obj.attrib['label'] + ', one or more sub-network interface boxes disagree on the sub-network node count - you must export the sub-network drawing before adding it to this super-network drawing.'))
-                        self.interfaces.append(SubNetIf(obj))
+                        self.interfaces.append(SubNetIf(obj, objects_and_cells))
     
 #TODO refactor with netexport.py...
 # Returns the config data from the given <object> attributes as a comma-delimited string
@@ -284,7 +290,7 @@ def addElemToSuper(super, elem, position):
         gunns.attrib['drawingId'] = elem.attrib['id']
             
     # Copy remaining id attributes throughout the element.
-    if gunns is not None and gunns.attrib['type'] == 'Network':
+    if gunns is not None and gunns.attrib['type'] == 'Network' and gunns.attrib['subtype'] != 'Subnet Interface':
         # Network container element's parent is always 2, the super-network container.
         copiedElem.find('mxCell').attrib['parent'] = '2'
     else:
@@ -370,7 +376,6 @@ def generateSubNetIfSuperPorts(connection, subNets, allNodes, allObjects, links)
                 sourceIf = interface.element
             elif interface.element.attrib['id'] == targetId:
                 targetIf = interface.element
-                
     if sourceIf is None or targetIf is None:
         sys.exit(console.abort('a sub-network interface connector is missing one or both connections to an interface container.'))
     
@@ -434,12 +439,19 @@ def updateSubNet(subNet, subPathFile, rootroot):
     for cell in allCells:
         allObjectsAndCells.append(cell)
         
-    # Collect all super-ports in the super-network drawing.
+    # Collect all super-ports, subnet interfaces and subnet interface connections in the super-network drawing.
     allSuperPorts = []
+    subnetInterfaces = []
+    subnetInterfacesPresent = False
     for obj in allObjects:
         if 'Super Port' == getElemGunnsType(obj):
             allSuperPorts.append(obj)
-    
+        elif 'Subnet Interface' == getElemGunnsType(obj):
+            subnetInterfaces.append(obj)
+            subnetInterfacesPresent = True
+        elif 'Subnet Interface Connection' == getElemGunnsType(obj):
+            allSuperPorts.append(obj)
+            
     # Find all child objects of the sub-network, and all super-ports connected to them.
     subObjects = []
     subCells = []
@@ -522,12 +534,14 @@ def updateSubNet(subNet, subPathFile, rootroot):
 
     # Find the sub-network container object.
     subConfig = None
+    newSubNet = None
     for object in subObjects:
         if 'Network' == getElemGunnsType(object):
             if 'Super' == getElemGunnsSubtype(object):
                 sys.exit(console.abort('nested super-networks aren\'t supported yet.'))
             elif 'Sub' == getElemGunnsSubtype(object):
                 subConfig = object
+                newSubNet = SubNet(object, subObjectsAndCells)
                 break
     if subConfig is None:
         sys.exit(console.abort('a network config wasn\'t found in sub-network\'s source drawing.'))
@@ -549,24 +563,34 @@ def updateSubNet(subNet, subPathFile, rootroot):
             removeAttrs.append(attr)
     for removeAttr in removeAttrs:
         subConfig.attrib.pop(removeAttr)
+        
     # Add the sub-network to the super-drawing tree at the old sub-network location.  The location
     # is preserved to keep all sub-networks in the original order.
-    addElemToSuper(rootroot, subConfig, saveIndex)
+    newSubNet.element = addElemToSuper(rootroot, subConfig, saveIndex)
+    newObjectsAndCells = []
+
+    # Add subnet interfaces and their children to the end of the super-drawing tree.
+    if len(newSubNet.interfaces) > 0:
+        for interface in newSubNet.interfaces:
+            newSubnetInterface = addElemToSuper(rootroot, interface.element, -1)
+            newObjectsAndCells.append(newSubnetInterface)
+            for child in interface.children:
+                newObjectsAndCells.append(addElemToSuper(rootroot, child, -1))
 
     # Add all child objects and mxCells of the sub-network container to the end of the super tree.
-    newObjectsAndCells = []
-    for object in subObjectsAndCells:
-        if isDescendant(object, subConfig, subObjectsAndCells):
-            if 'Node' == getElemGunnsType(object):
-                if getElemGunnsSubtype(object) in numberedNodeSubtypes:
-                    object.attrib['label'] = str(int(saveOffset) + int(object.attrib['label']))
-            elif 'Link' == getElemGunnsType(object):
-                # Destroy link info to prevent this network copy from being used as source for netexport.
-                object.find('gunns').attrib['subtype'] = ''
-            newObjectsAndCells.append(addElemToSuper(rootroot, object, -1))
+    else:
+        for object in subObjectsAndCells:
+            if isDescendant(object, subConfig, subObjectsAndCells):
+                if 'Node' == getElemGunnsType(object):
+                    if getElemGunnsSubtype(object) in numberedNodeSubtypes:
+                        object.attrib['label'] = str(int(saveOffset) + int(object.attrib['label']))
+                elif 'Link' == getElemGunnsType(object):
+                    # Destroy link info to prevent this network copy from being used as source for netexport.
+                    object.find('gunns').attrib['subtype'] = ''
+                newObjectsAndCells.append(addElemToSuper(rootroot, object, -1))
 
     # Reconnect super-ports to the node or link.  First a match of both label and drawingId is sought.
-    # Otherwise a match of the label is sought, otherwise a match of the drawingId is ought.
+    # Otherwise a match of the label is sought, otherwise a match of the drawingId is sought.
     # This allows the user to change either name or the ID (as a new shape) in the source drawing and
     # we'll make the connection.  If still no match is found, then delete the super-port and warn the
     # user that it's gone.
@@ -731,7 +755,7 @@ linkDataModels = []
 subNets = []
 subNetIfConnections = [] # XML elements for connections between sub-network interface containers
 
-# Make a list of all sub-networks and subnetwork interfaces.
+# Make a list of all sub-networks and check for duplicate names.
 for obj in objects:
     gunns = obj.find('gunns')
     if gunns is not None:
@@ -770,6 +794,16 @@ if options.project_path:
     for obj in objects:
         if 'Network' == getElemGunnsType(obj) and 'Sub' == getElemGunnsSubtype(obj):
             netConfigs.append(obj)
+    
+# Rebuild all objects and cells to refresh with the new copies.
+# TODO refactor with above, DRY
+objects = root.findall('./root/object')
+mxcells = root.findall('./root/mxCell')[1:]
+objects_and_cells = []
+for an_object in objects:
+    objects_and_cells.append(an_object)
+for cell in mxcells:
+    objects_and_cells.append(cell)
 
 # Make a list of various GUNNS object types
 for obj in objects:

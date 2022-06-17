@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_ELECT_IPS    Internal Power Supply Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Internal Power Supply link.
@@ -115,7 +115,7 @@ class UtGunnsElectIps : public CppUnit::TestFixture
         double                       tUnderVoltageLimit;                  /**< (V)     Nominal config data. */
         double                       tBackUpVoltageThreshold;             /**< (V)     Nominal config data. */
         double                       tPotentialOnTolerance;               /**< (V)     Nominal config data. */
-        double                       theatGeneratedOn;                    /**< (W)     Nominal config data. */
+        double                       tThermalFraction;                    /**< (--)    Nominal config data. */
         double                       tBackupVoltageMin;                   /**< (V)     Nominal config data. */
         double                       tBackupVoltageMax;                   /**< (V)     Nominal config data. */
         double                       tConductanceTolerance;               /**< (--)    Nominal config data. */

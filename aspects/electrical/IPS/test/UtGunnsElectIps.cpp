@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -34,7 +34,7 @@ UtGunnsElectIps::UtGunnsElectIps()
     tUnderVoltageLimit(0.0),
     tBackUpVoltageThreshold(0.0),
     tPotentialOnTolerance(0.0),
-    theatGeneratedOn(0.0),
+    tThermalFraction(0.0),
     tBackupVoltageMin(0.0),
     tBackupVoltageMax(0.0),
     tConductanceTolerance(0.0),
@@ -75,7 +75,7 @@ void UtGunnsElectIps::setUp()
     tUnderVoltageLimit                  = 4.0;
     tBackUpVoltageThreshold             = 5.0;
     tPotentialOnTolerance               = 6.0;
-    theatGeneratedOn                    = 7.0;
+    tThermalFraction                    = 1.0;
     tBackupVoltageMin                   = 8.0;
     tBackupVoltageMax                   = 9.0;
     tConductanceTolerance               = 10.0;
@@ -92,7 +92,7 @@ void UtGunnsElectIps::setUp()
                                                                       tUnderVoltageLimit,
                                                                       tBackUpVoltageThreshold,
                                                                       tPotentialOnTolerance,
-                                                                      theatGeneratedOn,
+                                                                      tThermalFraction,
                                                                       tBackupVoltageMin,
                                                                       tBackupVoltageMax,
                                                                       tConductanceTolerance,
@@ -148,7 +148,7 @@ void UtGunnsElectIps::testConfig()
     CPPUNIT_ASSERT_EQUAL(tUnderVoltageLimit,                  tConfigData->mUnderVoltageLimit);
     CPPUNIT_ASSERT_EQUAL(tBackUpVoltageThreshold,             tConfigData->mBackUpVoltageThreshold);
     CPPUNIT_ASSERT_EQUAL(tPotentialOnTolerance,               tConfigData->mPotentialOnTolerance);
-    CPPUNIT_ASSERT_EQUAL(theatGeneratedOn,                    tConfigData->mheatGeneratedOn);
+    CPPUNIT_ASSERT_EQUAL(tThermalFraction,                    tConfigData->mThermalFraction);
     CPPUNIT_ASSERT_EQUAL(tBackupVoltageMin,                   tConfigData->mBackupVoltageMin);
     CPPUNIT_ASSERT_EQUAL(tBackupVoltageMax,                   tConfigData->mBackupVoltageMax);
     CPPUNIT_ASSERT_EQUAL(tConductanceTolerance,               tConfigData->mConductanceTolerance);
@@ -166,7 +166,7 @@ void UtGunnsElectIps::testConfig()
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mUnderVoltageLimit);
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mBackUpVoltageThreshold);
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mPotentialOnTolerance);
-    CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mheatGeneratedOn);
+    CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mThermalFraction);
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mBackupVoltageMin);
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mBackupVoltageMax);
     CPPUNIT_ASSERT_EQUAL(0.0, defaultConfig.mConductanceTolerance);
@@ -184,7 +184,7 @@ void UtGunnsElectIps::testConfig()
     CPPUNIT_ASSERT_EQUAL(tUnderVoltageLimit,                  copyConfig.mUnderVoltageLimit);
     CPPUNIT_ASSERT_EQUAL(tBackUpVoltageThreshold,             copyConfig.mBackUpVoltageThreshold);
     CPPUNIT_ASSERT_EQUAL(tPotentialOnTolerance,               copyConfig.mPotentialOnTolerance);
-    CPPUNIT_ASSERT_EQUAL(theatGeneratedOn,                    copyConfig.mheatGeneratedOn);
+    CPPUNIT_ASSERT_EQUAL(tThermalFraction,                    copyConfig.mThermalFraction);
     CPPUNIT_ASSERT_EQUAL(tBackupVoltageMin,                   copyConfig.mBackupVoltageMin);
     CPPUNIT_ASSERT_EQUAL(tBackupVoltageMax,                   copyConfig.mBackupVoltageMax);
     CPPUNIT_ASSERT_EQUAL(tConductanceTolerance,               copyConfig.mConductanceTolerance);
@@ -228,15 +228,14 @@ void UtGunnsElectIps::testConstruction()
     UT_RESULT;
 
     /// @test    Default construction.
-    CPPUNIT_ASSERT(0     == tArticle->mFailPowerInputMalfunction);
-    CPPUNIT_ASSERT(false == tArticle->mFailAllPowerInputsMalfucntion);
-    CPPUNIT_ASSERT(false == tArticle->mMalfBiasPowerConsumedOn);
-    CPPUNIT_ASSERT(0.0   == tArticle->mMalfBiasPowerConsumedOnValue);
-    CPPUNIT_ASSERT(0.0   == tArticle->mheatGeneratedOn);
-    CPPUNIT_ASSERT(0.0   == tArticle->mheatGenerated);
+    CPPUNIT_ASSERT(0     == tArticle->mMalfPowerInput);
+    CPPUNIT_ASSERT(false == tArticle->mMalfAllPowerInputs);
+    CPPUNIT_ASSERT(false == tArticle->mMalfBiasPowerConsumedFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mMalfBiasPowerConsumedValue);
+    CPPUNIT_ASSERT(0.0   == tArticle->mHeatGeneratedOn);
+    CPPUNIT_ASSERT(0.0   == tArticle->mHeatGenerated);
     CPPUNIT_ASSERT(0     == tArticle->mConductance);
     CPPUNIT_ASSERT(0     == tArticle->mActiveConductance);
-    CPPUNIT_ASSERT(0.0   == tArticle->mCurrent);
     CPPUNIT_ASSERT(0.0   == tArticle->mPotentialOnTolerance);
     CPPUNIT_ASSERT(0     == tArticle->mOutputPower);
     CPPUNIT_ASSERT(false == tArticle->mPowerValid);
@@ -249,7 +248,7 @@ void UtGunnsElectIps::testConstruction()
     CPPUNIT_ASSERT(0.0   == tArticle->mAuxOnePowerConsumedOn);
     CPPUNIT_ASSERT(0.0   == tArticle->mAuxTwoPowerConsumedOn);
     CPPUNIT_ASSERT(0     == tArticle->mNumberOfPowerSources);
-    CPPUNIT_ASSERT(GunnsElectIps::Invalid_Source == tArticle->mBackUpPowerSource);
+    CPPUNIT_ASSERT(GunnsElectIps::INVALID_SOURCE == tArticle->mBackUpPowerSource);
     CPPUNIT_ASSERT(0.0   == tArticle->mBackUpVoltageThreshold);
     CPPUNIT_ASSERT(0.0   == tArticle->mTotalPowerLoad);
     CPPUNIT_ASSERT(0.0   == tArticle->mBackupVoltageMin);
@@ -294,7 +293,7 @@ void UtGunnsElectIps::testInitialize()
     CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mInputVoltage[0]);
     CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mInputVoltage[1]);
 
-    CPPUNIT_ASSERT_EQUAL(theatGeneratedOn, tArticle->mheatGeneratedOn);
+    CPPUNIT_ASSERT_EQUAL(tThermalFraction, tArticle->mThermalFraction);
     CPPUNIT_ASSERT_EQUAL(tDefaultPowerConsumedOn, tArticle->mDefaultPowerConsumedOn);
     CPPUNIT_ASSERT_EQUAL(tDefaultPowerConsumedOn, tArticle->mPowerConsumedOn);
     CPPUNIT_ASSERT_EQUAL(tUnderVoltageLimit, tArticle->mUnderVoltageLimit);
@@ -483,22 +482,22 @@ void UtGunnsElectIps::testSetterGetter()
 
     /// @test    setMalfPowerInput method.
     article.setMalfPowerInput(0, true);
-    CPPUNIT_ASSERT(true  == article.mFailPowerInputMalfunction[0]);
+    CPPUNIT_ASSERT(true  == article.mMalfPowerInput[0]);
     article.setMalfPowerInput(-1, false);
-    CPPUNIT_ASSERT(true  == article.mFailPowerInputMalfunction[0]);
+    CPPUNIT_ASSERT(true  == article.mMalfPowerInput[0]);
     article.setMalfPowerInput(3, true);
-    CPPUNIT_ASSERT(false == article.mFailPowerInputMalfunction[1]);
+    CPPUNIT_ASSERT(false == article.mMalfPowerInput[1]);
     article.setMalfPowerInput(0);
-    CPPUNIT_ASSERT(false == article.mFailPowerInputMalfunction[0]);
+    CPPUNIT_ASSERT(false == article.mMalfPowerInput[0]);
 
     /// @test    setMalfAllPowerInputs method.
     article.setMalfAllPowerInputs(true);
-    CPPUNIT_ASSERT(true  == article.mFailAllPowerInputsMalfucntion);
+    CPPUNIT_ASSERT(true  == article.mMalfAllPowerInputs);
     article.setMalfAllPowerInputs();
-    CPPUNIT_ASSERT(false == article.mFailAllPowerInputsMalfucntion);
+    CPPUNIT_ASSERT(false == article.mMalfAllPowerInputs);
 
     /// @test    getPsHeatGenerated method.
-    article.mheatGenerated = 10.0;
+    article.mHeatGenerated = 10.0;
     CPPUNIT_ASSERT_EQUAL(10.0, article.getPsHeatGenerated());
 
     /// @test    getOutputPower method.
@@ -603,19 +602,20 @@ void UtGunnsElectIps:: testComputeFlows()
     double expectedInputPower = 2.0 + 3.0 + 4.0;
     double expectedCurrent = expectedInputPower / 100.0;
     double expectedHeat    = 2.0 * 0.1;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCurrent, article.mCurrent,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    article.mheatGenerated, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCurrent,    article.mFlux,          DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInputPower, article.mPower,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,       article.mHeatGenerated, DBL_EPSILON);
 
     /// @test    Power consumed bias malfunction.
     double powerBias                      = 5.0;
-    article.mMalfBiasPowerConsumedOn      = true;
-    article.mMalfBiasPowerConsumedOnValue = powerBias;
+    article.mMalfBiasPowerConsumedFlag      = true;
+    article.mMalfBiasPowerConsumedValue = powerBias;
     expectedInputPower += powerBias;
     article.step(0.1);
     article.confirmSolutionAcceptable(1, 1);
     article.computeFlows(0.1);
     expectedHeat = (2.0 + powerBias) * 0.1;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    article.mheatGenerated, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    article.mHeatGenerated, DBL_EPSILON);
 
     /// @test    Control power in use.
     CPPUNIT_ASSERT(false == article.mControlInputPowerInUse);
@@ -629,7 +629,7 @@ void UtGunnsElectIps:: testComputeFlows()
     article.step(0.1);
     article.confirmSolutionAcceptable(1, 1);
     article.computeFlows(0.1);
-    CPPUNIT_ASSERT_EQUAL(0.0, article.mheatGenerated);
+    CPPUNIT_ASSERT_EQUAL(0.0, article.mHeatGenerated);
 
     UT_PASS;
 }
@@ -753,7 +753,7 @@ void UtGunnsElectIps::testGetVoltageSourceToUseWithBackup()
     article.mPotentialVector[2] = 100.0;
     CPPUNIT_ASSERT_EQUAL(0, article.getVoltageSourceToUseWithBackup());
 
-    article.mFailPowerInputMalfunction[0] = true;
+    article.mMalfPowerInput[0] = true;
     article.mPotentialVector[0] = 170.0;
     article.mPotentialVector[1] = 143.0;
     article.mPotentialVector[2] = 159.0;

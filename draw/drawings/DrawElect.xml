@@ -1,8 +1,8 @@
-<mxGraphModel arrows="0" connect="1" dx="1106" dy="830" fold="1" grid="1" gridSize="10" guides="0" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
+<mxGraphModel arrows="0" connect="1" dx="1106" dy="822" fold="1" grid="1" gridSize="10" guides="0" math="0" page="1" pageHeight="1100" pageScale="1" pageWidth="850" shadow="0" tooltips="1">
   <root>
     <mxCell id="0" />
     <mxCell id="yyIIFE6Wr_zv9eaOOcSJ-1" parent="0" value="Notices" />
-    <object About="Notice of Copyright" id="5xh1K6Ib7SINsnavs5rp-1" label="Copyright 2021 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
+    <object About="Notice of Copyright" id="5xh1K6Ib7SINsnavs5rp-1" label="Copyright 2022 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">
       <gunns subtype="copyright" type="Dox" />
       <mxCell parent="yyIIFE6Wr_zv9eaOOcSJ-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" vertex="1">
         <mxGeometry as="geometry" height="30" width="470" x="20" y="20" />
@@ -392,7 +392,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Internal Power Supply" Ports="0+ =supplies" c00.backUpPowerImplemented="false" c01.powerConsumedOn="25.0" c02.auxillaryOnePowerOn="0.0" c03.auxillaryTwoPowerOn="0.0" c04.underVoltageLimit="56.0" c05.backUpVoltageThreshold="0.0" c06.potentialOnTolerance="0.5" c07.heatGeneratedOn="0.0" c08.backupVoltageMin="21.0" c09.backupVoltageMax="135.0" c10.conductanceTolerance="1.0e-15" c11.convergedFrameToCheckVoltage="1" c12.numberOfVoltageSwitchesInASolution="1" c13.commandOnUsed="false" c14.unselectedInputConductance="1.0e-4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="wTAYamTjfO6LtjOPV6Xt-2" label="testIps">
+    <object About="Internal Power Supply" Ports="0+ =supplies" c00.backUpPowerImplemented="false" c01.powerConsumedOn="25.0" c02.auxillaryOnePowerOn="0.0" c03.auxillaryTwoPowerOn="0.0" c04.underVoltageLimit="56.0" c05.backUpVoltageThreshold="0.0" c06.potentialOnTolerance="0.5" c07.thermalFraction="1.0" c08.backupVoltageMin="21.0" c09.backupVoltageMax="135.0" c10.conductanceTolerance="1.0e-15" c11.convergedFrameToCheckVoltage="1" c12.numberOfVoltageSwitchesInASolution="1" c13.commandOnUsed="false" c14.unselectedInputConductance="1.0e-4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="wTAYamTjfO6LtjOPV6Xt-2" label="testIps">
       <gunns numPorts="0" reqPorts="0" subtype="aspects/electrical/IPS/GunnsElectIps" type="Link" />
       <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(nZNRa4MwEMc/TV6HNRv0dWTd6IsMZOw51VhD9SJJWrt9+sVcNgzVogNB7nd6//8ld4QyU/NOkDThphOFJfSFpOmFa8kPjcOpy9QItwmGwFuB5O0jy3JH9u85pozV6iR6Wdrwj4RaaGkx24/r0B1Jnh0cHsoKBeDUpQITZUZ5V5tLsJGBDAt3TqMVVmikwec1RA9PGH+Ns69rZPJ/yGzWy3wukYl7CaKrZHYLZDYLZChzZO7iKDvw4nTU6gzlpDk9DNvNbPVxON30nJcZRcoqpcUdK5VsGpzcuZOsFFgjv4c18S/vg96bJCuuFhcCP/5bkdDSY9zTb8gbeQREhYDhcjy+jHgryzJs5sQZ3LTqKe64Bz8=);fontSize=12;strokeColor=#000000;fontColor=#000000;" vertex="1">
         <mxGeometry as="geometry" height="40" width="40" x="470" y="190" />

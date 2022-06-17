@@ -1,42 +1,35 @@
 #ifndef GunnsElectIps_EXISTS
 #define GunnsElectIps_EXISTS
-/*!******************************** TRICK HEADER ***************************
+
+/**
+@file     GunnsElectIps.hh
+@brief    GUNNS Electrical Internal Power Supply declarations
+
 @defgroup  TSM_GUNNS_ELECTRICAL_IPS_LINK Internal Power Supply
 @ingroup   TSM_GUNNS_ELECTRICAL_IPS
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-@brief Internal Power Supply
+
 @details
-PURPOSE: Internal power supply model. This can have multiple power sources
- and currently two auxiliary loads. The multiple power sources are attached
- directly to the GUNNS network. The loads are modeled as constant power loads.
- The power loads can be given a tolerance for easier convergence.
-  If no backup power source is selected. It will switch to the power source
- with the greatest voltage. The current voltage is compared against another
- source voltage minus the switching voltage tolerance. This can work for an
- undetermined number of loads.
-  if a back up power source is selected it will use the ISS logic to switch
- between power sources.
+PURPOSE:
+- (Provides the classes for the GUNNS Internal Power Supply link.)
 
-  This is a copy of IpsElect, modified to do its variable port assignment and initialization
-  similarly to the new GunnsDraw standard.
+REFERENCE:
+- ((ISS DCSU system brief.))
 
+ASSUMPTIONS AND LIMITATIONS:
+- (TBD)
 
-REFERENCE: See DCSU systems brief for ISS logic.
+LIBRARY DEPENDENCY:
+- ((GunnsElectIps.o))
 
-ASSUMPTIONS AND LIMITATIONS: No more than three power source inputs and
- the backup power source is always the last power source added.
-
- LIBRARY DEPENDENCY:
-   (
-    (GunnsElectIps.o)
-    )
 PROGRAMMERS:
-    (
-     ((Jason Harvey) (CACI) (February 2019) (Initial))
-    )
+- ((Jason Harvey) (CACI) (February 2019) (Initial))
+
 @{
- ***************************************************************************/
+*/
+
 #include <string>
 #include <vector>
 #include <math.h>
@@ -49,20 +42,20 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectIpsConfigData : public GunnsBasicLinkConfigData {
     public:
-        bool   mBackUpPowerImplemented;             /**< (--)    trick_chkpnt_io(**) Backup power used */
+        bool   mBackUpPowerImplemented;             /**< (1)     trick_chkpnt_io(**) Backup power used */
         double mDefaultPowerConsumedOn;             /**< (W)     trick_chkpnt_io(**) Power Supply Load */
         double mAuxOnePowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxillary Load for power supply */
         double mAuxTwoPowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxillary Load for power supply */
         double mUnderVoltageLimit;                  /**< (V)     trick_chkpnt_io(**) IPS Minimum Primary voltage needed to operate */
         double mBackUpVoltageThreshold;             /**< (V)     trick_chkpnt_io(**) voltage threshold to use backup source */
         double mPotentialOnTolerance;               /**< (V)     trick_chkpnt_io(**) Power Sources Tolerance */
-        double mheatGeneratedOn;                    /**< (W)     trick_chkpnt_io(**) Power Source On Heat generated */
+        double mThermalFraction;                    /**< (1)     trick_chkpnt_io(**) Fraction of power load output as waste heat. */
         double mBackupVoltageMin;                   /**< (V)     trick_chkpnt_io(**) Backup voltage minimum */
         double mBackupVoltageMax;                   /**< (V)     trick_chkpnt_io(**) Backup voltage maximum */
-        double mConductanceTolerance;               /**< (--)    trick_chkpnt_io(**) Amount tolerance can change without notifing gunns */
-        int    mConvergedFrameToCheckVoltage;       /**< (--)    trick_chkpnt_io(**) minor frame after convergance to check voltage switch */
-        int    mNumberOfVoltageSwitchesInASolution; /**< (--)    trick_chkpnt_io(**) number of times a switch allowd to change in solutionAcceptable*/
-        bool   mCommandOnUsed;                      /**< (--)    trick_chkpnt_io(**) Command on used for turning on/off IPS */
+        double mConductanceTolerance;               /**< (1)     trick_chkpnt_io(**) Amount tolerance can change without notifing gunns */
+        int    mConvergedFrameToCheckVoltage;       /**< (1)     trick_chkpnt_io(**) minor frame after convergance to check voltage switch */
+        int    mNumberOfVoltageSwitchesInASolution; /**< (1)     trick_chkpnt_io(**) number of times a switch allowd to change in solutionAcceptable*/
+        bool   mCommandOnUsed;                      /**< (1)     trick_chkpnt_io(**) Command on used for turning on/off IPS */
         double mUnselectedInputConductance;         /**< (1/ohm) trick_chkpnt_io(**) Conductance on un-selected input channels. */
         /// @brief Default constructs this IPS configuration data.
         GunnsElectIpsConfigData(const std::string& name                               = "",
@@ -74,7 +67,7 @@ class GunnsElectIpsConfigData : public GunnsBasicLinkConfigData {
                                 const double       underVoltageLimit                  = 0.0,
                                 const double       backUpVoltageThreshold             = 0.0,
                                 const double       potentialOnTolerance               = 0.0,
-                                const double       heatGeneratedOn                    = 0.0,
+                                const double       thermalFraction                    = 0.0,
                                 const double       backupVoltageMin                   = 0.0,
                                 const double       backupVoltageMax                   = 0.0,
                                 const double       conductanceTolerance               = 0.0,
@@ -114,8 +107,20 @@ class GunnsElectIpsInputData : public GunnsBasicLinkInputData
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    IPS Elect
-/// @details  Internal Power Supply Electrical aspect
+/// @brief    GUNNS Internal Power Supply Link
+///
+/// @details  Internal Power Supply Electrical aspect. This can have multiple power sources and two
+///           auxiliary loads.  The multiple power sources are attached directly to the GUNNS
+///           network.  The loads are modeled as constant power loads.  The power loads can be given
+///           a tolerance for easier convergence.  If no backup power source is selected. It will
+///           switch to the power source with the greatest voltage. The current voltage is compared
+///           against another source voltage minus the switching voltage tolerance.  This can work
+///           for any number of input feeds.  If a back up power source is selected it will use the
+///           ISS logic to switch between power sources.
+///
+///           This is a copy of the original IpsElect, modified to do its variable port assignment
+///           and initialization similarly to the new GunnsDraw standard, and cleaned to match GUNNS
+///           code standards an style.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectIps : public GunnsBasicLink
 {
@@ -124,19 +129,16 @@ class GunnsElectIps : public GunnsBasicLink
         /// @name    Malfunction terms.
         /// @{
         /// @details Malfunction targets are public to allow access from the Trick events processor.
-        bool *mFailPowerInputMalfunction;          /**<  (--) trick_chkpnt_io(**) Malfunction a power supply input */
-        bool mFailAllPowerInputsMalfucntion;       /**<  (--) fail all power inputs */
-        bool mMalfBiasPowerConsumedOn;             /**<  (--) Malf Power Supply Load Flag */
-        double mMalfBiasPowerConsumedOnValue;      /**<  (W)  MalfPower Supply Load */
+        bool*  mMalfPowerInput;             /**< (1) trick_chkpnt_io(**) Fail off individual power supply input. */
+        bool   mMalfAllPowerInputs;         /**< (1)                     Fail off all power supply inputs. */
+        bool   mMalfBiasPowerConsumedFlag;  /**< (1)                     Power load bias activation flag. */
+        double mMalfBiasPowerConsumedValue; /**< (W)                     Power load bias value. */
         /// @}
 
-        /// @enum LocalConstants Local Constants
-        /// @{
+        /// @brief Enumeration of some model constants.
         enum LocalConstants {
-            Invalid_Source = -1,                 ///< Invalid Voltage source selection
-            Minimum_Number_Of_Power_Sources = 1  ///< Minimum number of  power inputs
+            INVALID_SOURCE = -1             ///< Invalid voltage source selection.
         };
-        /// @}
 
         /// @brief Constructor for IPS class
         explicit GunnsElectIps();
@@ -184,42 +186,41 @@ class GunnsElectIps : public GunnsBasicLink
         double getOutputPower() const;
 
   protected:
-        double mheatGeneratedOn;                    /**< (W)     trick_chkpnt_io(**) Power Source On Heat generated */
-        double mheatGenerated;                      /**< (W)                         Power Source Heat generated */
-        double *mConductance;                       /**< (--)    trick_chkpnt_io(**) Power Supply Conductance */
-        double *mActiveConductance;                 /**< (--)    trick_chkpnt_io(**) Power Supply Active Conductance */
-        double mCurrent;                            /**< (amp)                       Power Supply Current  */
-        double mPotentialOnTolerance;               /**< (V)     trick_chkpnt_io(**) Power Sources Tolerance */
-        double *mOutputPower;                       /**< (W)     trick_chkpnt_io(**) Output Power */
-        bool   mPowerValid;                         /**< (--)                        Power Supply Output Good for use */
-        double *mPowerSupplyVoltage;                /**< (V)     trick_chkpnt_io(**) Power supply input voltage */
-        int    mActivePowerSource;                  /**< (--)                        Power supply input source used */
-        int    mLastActivePowerSource;              /**< (--)                        Power supply input source used last time*/
-        double mDefaultPowerConsumedOn;             /**< (W)     trick_chkpnt_io(**) Default Power Supply Load */
-        double mPowerConsumedOn;                    /**< (W)     trick_chkpnt_io(**) Power Supply Load */
-        double mUnderVoltageLimit;                  /**< (V)     trick_chkpnt_io(**) Minimum voltage needed to operate */
-        double mAuxOnePowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxiliary Load for power supply */
-        double mAuxTwoPowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxiliary Load for power supply */
-        int    mNumberOfPowerSources;               /**< (--)    trick_chkpnt_io(**) Number of Power feeds for this load */
-        int    mBackUpPowerSource;                  /**< (--)                        Number of Back Up Power for this load */
-        bool   mBackUpPowerImplemented;             /**< (--)    trick_chkpnt_io(**) Back up power logic Implemented */
-        double mBackUpVoltageThreshold;             /**< (V)     trick_chkpnt_io(**) voltage threshold to use backup source */
-        double mTotalPowerLoad;                     /**< (W)                         Total Power needed for IPS */
-        double mBackupVoltageMin;                   /**< (V)     trick_chkpnt_io(**) Backup voltage minimum */
-        double mBackupVoltageMax;                   /**< (V)     trick_chkpnt_io(**) Backup voltage maximum */
-        bool   mBackupVoltageInRange;               /**< (--)                        Back up voltage in range */
-        double mLoadAddedFromInstructor;            /**< (W)                         Power added to load from instructor */
-        double mConductanceTolerance;               /**< (--)    trick_chkpnt_io(**) Amount tolerance can change without notifying gunns */
-        int    mNumberOfVoltageSwitchesInASolution; /**< (--)    trick_chkpnt_io(**) number of times a switch allowed to change in solutionAcceptable*/
-        int    mVoltageSwitches;                    /**< (--)                        number of times a voltage switch occurred*/
-        bool   mControlInputPowerInUse;             /**< (--)                        Control power input being used */
-        bool   mCommandOnUsed;                      /**< (--)    trick_chkpnt_io(**) Command on used for turning on/off IPS */
-        bool   mCommandOn;                          /**< (--)                        Command on state for IPS */
-        bool   mVerbose;                            /**< (--)                        flag to make the power supply chatter */
-        double mThermalFraction;                    /**< (--)                        factor to control how much of the PS power used goes out as heat */
-        double *mInputCurrent;                      /**< (--)    trick_chkpnt_io(**) IPS input current feed x, needed for MDT */
-        double *mInputVoltage;                      /**< (--)    trick_chkpnt_io(**) IPS input voltage feed x, needed for MDT */
-        double mUnselectedInputConductance;         /**< (1/ohm) trick_chkpnt_io(**) Conductance on un-selected input channels. */
+        bool    mBackUpPowerImplemented;             /**< (1)     trick_chkpnt_io(**) Back up power logic Implemented */
+        double  mDefaultPowerConsumedOn;             /**< (W)     trick_chkpnt_io(**) Default Power Supply Load */
+        double  mAuxOnePowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxiliary Load for power supply */
+        double  mAuxTwoPowerConsumedOn;              /**< (W)     trick_chkpnt_io(**) Auxiliary Load for power supply */
+        double  mUnderVoltageLimit;                  /**< (V)     trick_chkpnt_io(**) Minimum voltage needed to operate */
+        double  mBackUpVoltageThreshold;             /**< (V)     trick_chkpnt_io(**) voltage threshold to use backup source */
+        double  mPotentialOnTolerance;               /**< (V)     trick_chkpnt_io(**) Power Sources Tolerance */
+        double  mThermalFraction;                    /**< (1)     trick_chkpnt_io(**) Fraction of power load output as waste heat */
+        double  mBackupVoltageMin;                   /**< (V)     trick_chkpnt_io(**) Backup voltage minimum */
+        double  mBackupVoltageMax;                   /**< (V)     trick_chkpnt_io(**) Backup voltage maximum */
+        double  mConductanceTolerance;               /**< (1/ohm) trick_chkpnt_io(**) Amount tolerance can change without notifying gunns */
+        int     mNumberOfVoltageSwitchesInASolution; /**< (1)     trick_chkpnt_io(**) Number of times an input switch is allowed in solutionAcceptable */
+        bool    mCommandOnUsed;                      /**< (1)     trick_chkpnt_io(**) Command on used for turning on/off IPS */
+        double  mUnselectedInputConductance;         /**< (1/ohm) trick_chkpnt_io(**) Conductance on un-selected input channels. */
+        double  mHeatGeneratedOn;                    /**< (W)     trick_chkpnt_io(**) Power Source On Heat generated */
+        double  mHeatGenerated;                      /**< (W)                         Power Source Heat generated */
+        double* mConductance;                        /**< (1)     trick_chkpnt_io(**) Power Supply Conductance */
+        double* mActiveConductance;                  /**< (1)     trick_chkpnt_io(**) Power Supply Active Conductance */
+        double* mOutputPower;                        /**< (W)     trick_chkpnt_io(**) Output Power from each input channel */
+        bool    mPowerValid;                         /**< (1)                         Power Supply Output Good for use */
+        double* mPowerSupplyVoltage;                 /**< (V)     trick_chkpnt_io(**) Power supply input voltage */
+        int     mActivePowerSource;                  /**< (1)                         Power supply input source used */
+        int     mLastActivePowerSource;              /**< (1)                         Power supply input source used last time*/
+        double  mPowerConsumedOn;                    /**< (W)     trick_chkpnt_io(**) Power Supply Load */
+        int     mNumberOfPowerSources;               /**< (1)     trick_chkpnt_io(**) Number of Power feeds for this load */
+        int     mBackUpPowerSource;                  /**< (1)                         Number of Back Up Power for this load */
+        double  mTotalPowerLoad;                     /**< (W)                         Total Power needed for IPS */
+        bool    mBackupVoltageInRange;               /**< (1)                         Back up voltage in range */
+        double  mLoadAddedFromInstructor;            /**< (W)                         Power added to load from instructor */
+        int     mVoltageSwitches;                    /**< (1)                         Number of times an input switch has occurred this major step */
+        bool    mControlInputPowerInUse;             /**< (1)                         Control power input being used */
+        bool    mCommandOn;                          /**< (1)                         Command on state for IPS */
+        bool    mVerbose;                            /**< (1)                         Increase H&S warning outputs */
+        double* mInputCurrent;                       /**< (1)     trick_chkpnt_io(**) IPS input current feed x, needed for MDT */
+        double* mInputVoltage;                       /**< (1)     trick_chkpnt_io(**) IPS input voltage feed x, needed for MDT */
         /// @brief Checks to see if the conductance has changed outside of tolerance value.
         virtual bool isConductanceChanged(const double conductanceOne,
                                           const double conductanceTwo) const;
@@ -366,7 +367,7 @@ inline bool GunnsElectIps::isPowerSupplyOn() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsElectIps::getPsHeatGenerated() const
 {
-    return mheatGenerated;
+    return mHeatGenerated;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,9 +387,9 @@ inline double GunnsElectIps::getOutputPower() const
 inline void GunnsElectIps::calculateHeatTransfer()
 {
     if (mPowerValid) {
-        mheatGenerated = mheatGeneratedOn;
+        mHeatGenerated = mHeatGeneratedOn;
     } else {
-        mheatGenerated = 0.0;
+        mHeatGenerated = 0.0;
     }
 }
 

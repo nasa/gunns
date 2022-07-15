@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_PROPERTIES_FLUID     Fluid Properties Unit Tests
 /// @ingroup  UT_TSM_PROPERTIES
 ///
-/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Fluid Properties model classes.
@@ -53,7 +53,6 @@ class UtFluidProperties: public CppUnit::TestFixture
         void setUp();
         /// @brief    Executes after each test.
         void tearDown();
-        void testInitialization();
         void testConstruction();
         void testAccessors();
         void testDensityPressureConsistency();
@@ -61,6 +60,7 @@ class UtFluidProperties: public CppUnit::TestFixture
         void testForPositive();
         void testLowP();
         void testInvalidRangeBounds();
+        void testHeTable();
         void testXeTable();
         void testN2Table();
         void testO2Table();
@@ -76,6 +76,7 @@ class UtFluidProperties: public CppUnit::TestFixture
         CPPUNIT_TEST(testForPositive);
         CPPUNIT_TEST(testLowP);
         CPPUNIT_TEST(testInvalidRangeBounds);
+        CPPUNIT_TEST(testHeTable);
         CPPUNIT_TEST(testXeTable);
         CPPUNIT_TEST(testN2Table);
         CPPUNIT_TEST(testO2Table);

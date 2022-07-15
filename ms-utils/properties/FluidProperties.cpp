@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -198,6 +198,30 @@ const double DefinedFluidProperties::mCriticalTemperaturePG50       = 636.123;
 const double DefinedFluidProperties::mCriticalTemperatureNAK78      = 647.096;
 /// @details  Lacking data, we just guess the same as water.
 const double DefinedFluidProperties::mCriticalTemperatureGALDEN170  = 647.096;
+
+/// @details  Reference: NIST Chemistry Webbook.  The distribution of data points is concentrated
+///           more closely around the Helium critical point (T = 5.2 K, P = 228 kPa), near which
+///           the data curvature is greatest.  The data points spread out more widely towards the
+///           edges, where the fluid density is more linear.  Note the values in the ranges of
+///           T 2.2 - 5.2 and P > 177735 represent liquid phase, and some were interpolated due to
+///           NIST not providing values.
+const double DefinedFluidProperties::mHeTemperatureScale[] =
+            {2.1768,  3.68605, 4.7909,  5.1953,  24.3102, 80.9203, 172.850, 296.567, 447.316, 619.305, 805.923, 1000.0};
+const double DefinedFluidProperties::mHePressureScale[] =
+            {0.0,     70.5548, 134.203, 184.715, 217.145, 228.32,  2264.99, 8236.21, 17735.0, 30114.2, 44530.0, 60000.0};
+const double DefinedFluidProperties::mHeDensityTable[] =
+            {0.0, 1.473278e+02, 1.485356e+02, 1.494532e+02, 1.500251e+02, 1.502192e+02, 1.734820e+02, 2.059806e+02, 2.345207e+02, 2.594388e+02, 2.819551e+02, 3.034472e+02,  // T = 2.1768  K
+             0.0, 1.339652e+02, 1.362311e+02, 1.378326e+02, 1.387897e+02, 1.391083e+02, 1.686366e+02, 2.027058e+02, 2.313511e+02, 2.559799e+02, 2.787945e+02, 3.002188e+02,  // T = 3.68605 K
+             0.0, 8.198329e+00, 1.942553e+01, 1.127987e+02, 1.166740e+02, 1.177481e+02, 1.630140e+02, 1.998267e+02, 2.290307e+02, 2.534479e+02, 2.764807e+02, 2.978555e+02,  // T = 4.7909  K
+             0.0, 7.339563e+00, 1.621677e+01, 2.707308e+01, 4.092678e+01, 6.678098e+01, 1.605468e+02, 1.986495e+02, 2.281814e+02, 2.525211e+02, 2.756338e+02, 2.969905e+02,  // T = 5.1953  K
+             0.0, 1.396860e+00, 2.656320e+00, 3.655263e+00, 4.296293e+00, 4.517121e+00, 4.303683e+01, 1.175899e+02, 1.719181e+02, 2.087142e+02, 2.356039e+02, 2.561026e+02,  // T = 24.3102 K
+             0.0, 4.192509e-01, 7.966278e-01, 1.095557e+00, 1.287216e+00, 1.353212e+00, 1.298420e+01, 4.291370e+01, 8.037543e+01, 1.168707e+02, 1.486875e+02, 1.751268e+02,  // T = 80.9203 K
+             0.0, 1.963837e-01, 3.733417e-01, 5.136419e-01, 6.036548e-01, 6.346608e-01, 6.189361e+00, 2.144961e+01, 4.301894e+01, 6.717237e+01, 9.105099e+01, 1.128770e+02,  // T = 172.850 K
+             0.0, 1.144893e-01, 2.177047e-01, 2.995728e-01, 3.521133e-01, 3.702144e-01, 3.637156e+00, 1.286504e+01, 2.656908e+01, 4.287828e+01, 6.002316e+01, 7.660122e+01,  // T = 296.567 K
+             0.0, 7.591508e-02, 1.443711e-01, 1.986800e-01, 2.335390e-01, 2.455494e-01, 2.421074e+00, 8.650448e+00, 1.813155e+01, 2.977416e+01, 4.243294e+01, 5.507688e+01,  // T = 447.316 K
+             0.0, 5.483619e-02, 1.042908e-01, 1.435294e-01, 1.687173e-01, 1.773960e-01, 1.752481e+00, 6.296107e+00, 1.330610e+01, 2.206841e+01, 3.178564e+01, 4.168597e+01,  // T = 619.305 K
+             0.0, 4.214009e-02, 8.014745e-02, 1.103054e-01, 1.296652e-01, 1.363359e-01, 1.348376e+00, 4.860012e+00, 1.032188e+01, 1.722306e+01, 2.497067e+01, 3.296439e+01,  // T = 805.923 K
+             0.0, 3.396250e-02, 6.459569e-02, 8.890337e-02, 1.045080e-01, 1.098850e-01, 1.087539e+00, 3.927829e+00, 8.368146e+00, 1.401736e+01, 2.041007e+01, 2.706089e+01}; // T = 1000    K
 
 /// @details  Reference: NIST Chemistry Webbook.  The distribution of data points is concentrated
 ///           more closely around the Xenon critical point (T = 289.733, P = 5841.97), near which
@@ -494,6 +518,13 @@ DefinedFluidProperties::DefinedFluidProperties()
     mSaturationPressureHe(4.055375, -1.930662, 0.2191484, 1.0, mCriticalTemperatureHe/2.1768),
     mSaturationTemperatureHe(4.055375, -1.930662, 0.2191484, 4.964031e0, 2.207300e2),
     mHeatOfVaporizationHe(19.800, -0.927, 0.421274, 2.1768/mCriticalTemperatureHe, 1.0),
+
+
+    /************************************************************************
+                   Properties for helium (real-gas compressibility)
+    ************************************************************************/
+    mDensityHeReal(mHeTemperatureScale, mHePressureScale, mHeDensityTable, 12, 12, 2.1768, 1000.0, 0.0, 60000.0),
+    mPressureHeReal(mHeTemperatureScale, mHePressureScale, mHeDensityTable, 12, 12, 2.1768, 1000.0, 0.0, 60000.0),
 
 
     /************************************************************************
@@ -902,6 +933,16 @@ DefinedFluidProperties::DefinedFluidProperties()
                   &mSaturationTemperatureHe,  &mHeatOfVaporizationHe),
 
     /************************************************************************
+                   Properties for helium (Real-Gas compressibility)
+    ************************************************************************/
+    mPropertiesHeReal(FluidProperties::GUNNS_HE_REAL_GAS, FluidProperties::GAS,
+                  mMWeightHe,                 mCriticalTemperatureHe,
+                  &mDensityHeReal,            &mViscosityHe,       &mSpecificHeatHe,
+                  &mThermalConductivityHe,    &mPrandtlNumberHe,   &mAdiabaticIndexHe,
+                  &mPressureHeReal,           &mTemperatureHe,     &mSaturationPressureHe,
+                  &mSaturationTemperatureHe,  &mHeatOfVaporizationHe),
+
+    /************************************************************************
                    Properties for xenon, (Real-Gas compressibility)
     ************************************************************************/
     mPropertiesXe(FluidProperties::GUNNS_XE_REAL_GAS, FluidProperties::GAS,
@@ -1140,6 +1181,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     mProperties[FluidProperties::GUNNS_HCL]         = &mPropertiesHCL;
     mProperties[FluidProperties::GUNNS_HCN]         = &mPropertiesHCN;
     mProperties[FluidProperties::GUNNS_HE]          = &mPropertiesHe;
+    mProperties[FluidProperties::GUNNS_HE_REAL_GAS] = &mPropertiesHeReal;
     mProperties[FluidProperties::GUNNS_XE_REAL_GAS] = &mPropertiesXe;
     mProperties[FluidProperties::GUNNS_N2_REAL_GAS] = &mPropertiesN2Real;
     mProperties[FluidProperties::GUNNS_O2_REAL_GAS] = &mPropertiesO2Real;

@@ -4,7 +4,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_FLUID  Fluid Properties
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -90,26 +90,27 @@ class FluidProperties {
             GUNNS_HCL         =  8,  ///<  hydrogen chloride (ideal gas)
             GUNNS_HCN         =  9,  ///<  hydrogen cyanide (ideal gas)
             GUNNS_HE          = 10,  ///<  helium (ideal gas)
-            GUNNS_XE_REAL_GAS = 11,  ///<  xenon (monatomic gas) (real-gas compressibility)
-            GUNNS_N2_REAL_GAS = 12,  ///<  nitrogen (real-gas compressibility)
-            GUNNS_O2_REAL_GAS = 13,  ///<  oxygen (real-gas compressibility)
-            GUNNS_H2_REAL_GAS = 14,  ///<  hydrogen (real-gas compressibility)
-            GUNNS_WATER       = 15,  ///<  water (liquid)
-            GUNNS_HFE7000     = 16,  ///<  HFE-7000 (liquid)
-            GUNNS_HFE7100     = 17,  ///<  HFE-7100 (liquid)
-            GUNNS_PG30        = 18,  ///<  propylene glycol 30% (liquid)
-            GUNNS_PG40        = 19,  ///<  propylene glycol 40% (liquid)
-            GUNNS_PG50        = 20,  ///<  propylene glycol 50% (liquid)
-            GUNNS_AMMONIA     = 21,  ///<  ammonia (liquid)
-            GUNNS_OXYGEN      = 22,  ///<  oxygen (cryogenic liquid)
-            GUNNS_HYDROGEN    = 23,  ///<  hydrogen (cryogenic liquid)
-            GUNNS_METHANE     = 24,  ///<  methane (cryogenic liquid)
-            GUNNS_NAK78       = 25,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
-            GUNNS_GALDEN170   = 26,  ///<  Galden HT-170 (liquid)
-            GUNNS_WATER_PVT   = 27,  ///<  water (liquid with table lookup density)
-            GUNNS_NTO         = 28,  ///<  nitrogen tetroxide (liquid)
-            GUNNS_MMH         = 29,  ///<  monomethylhydrazine (liquid)
-            NO_FLUID          = 30   ///<  Invalid or number of fluids - Keep this last!
+            GUNNS_HE_REAL_GAS = 11,  ///<  helium (real-gas compressibility)
+            GUNNS_XE_REAL_GAS = 12,  ///<  xenon (monatomic gas) (real-gas compressibility)
+            GUNNS_N2_REAL_GAS = 13,  ///<  nitrogen (real-gas compressibility)
+            GUNNS_O2_REAL_GAS = 14,  ///<  oxygen (real-gas compressibility)
+            GUNNS_H2_REAL_GAS = 15,  ///<  hydrogen (real-gas compressibility)
+            GUNNS_WATER       = 16,  ///<  water (liquid)
+            GUNNS_HFE7000     = 17,  ///<  HFE-7000 (liquid)
+            GUNNS_HFE7100     = 18,  ///<  HFE-7100 (liquid)
+            GUNNS_PG30        = 19,  ///<  propylene glycol 30% (liquid)
+            GUNNS_PG40        = 20,  ///<  propylene glycol 40% (liquid)
+            GUNNS_PG50        = 21,  ///<  propylene glycol 50% (liquid)
+            GUNNS_AMMONIA     = 22,  ///<  ammonia (liquid)
+            GUNNS_OXYGEN      = 23,  ///<  oxygen (cryogenic liquid)
+            GUNNS_HYDROGEN    = 24,  ///<  hydrogen (cryogenic liquid)
+            GUNNS_METHANE     = 25,  ///<  methane (cryogenic liquid)
+            GUNNS_NAK78       = 26,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
+            GUNNS_GALDEN170   = 27,  ///<  Galden HT-170 (liquid)
+            GUNNS_WATER_PVT   = 28,  ///<  water (liquid with table lookup density)
+            GUNNS_NTO         = 29,  ///<  nitrogen tetroxide (liquid)
+            GUNNS_MMH         = 30,  ///<  monomethylhydrazine (liquid)
+            NO_FLUID          = 31   ///<  Invalid or number of fluids - Keep this last!
         };
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief    Enumeration of the phases of Fluids.
@@ -342,6 +343,8 @@ class DefinedFluidProperties {
         QuadraticFit      mSaturationPressureHe;           /**< (--) He saturation pressure curve fit */
         FluidTsatFit      mSaturationTemperatureHe;        /**< (--) He saturation temperature curve fit */
         FluidHvapFit      mHeatOfVaporizationHe;           /**< (--) He heat of vaporization curve fit */
+        TsBilinearInterpolator mDensityHeReal;             /**< (--) He real-gas density table */
+        TsBilinearInterpolatorReverse mPressureHeReal;     /**< (--) He real-gas pressure table */
         TsBilinearInterpolator mDensityXe;                 /**< (--) Xe density table */
         LinearFit         mViscosityXe;                    /**< (--) Xe dynamic viscosity curve fit */
         LinearFit         mSpecificHeatXe;                 /**< (--) Xe specific heat curve fit */
@@ -507,6 +510,7 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesHCL;                  /**< (--) HCL fluid properties (ideal gas) */
         FluidProperties   mPropertiesHCN;                  /**< (--) HCN fluid properties (ideal gas) */
         FluidProperties   mPropertiesHe;                   /**< (--) He fluid properties (ideal gas) */
+        FluidProperties   mPropertiesHeReal;               /**< (--) He real-gas fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesXe;                   /**< (--) Xe fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesN2Real;               /**< (--) N2 real-gas fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesO2Real;               /**< (--) O2 real-gas fluid properties (real-gas compressibility) */
@@ -527,6 +531,9 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesNTO;                  /**< (--) NTO fluid properties (liquid) */
         FluidProperties   mPropertiesMMH;                  /**< (--) MMH fluid properties (liquid) */
         FluidProperties*  mProperties[FluidProperties::NO_FLUID]; /**< (--) Array of pointers to the defined Fluid Properties */
+        static const double mHeTemperatureScale[12]; /**< (K)     Helium real-gas density table temperature scale */
+        static const double mHePressureScale[12];    /**< (kPa)   Helium real-gas density table pressure scale */
+        static const double mHeDensityTable[144];    /**< (kg/m3) Helium real-gas density table */
         static const double mXeTemperatureScale[12]; /**< (K)     Xenon real-gas density table temperature scale */
         static const double mXePressureScale[12];    /**< (kPa)   Xenon real-gas density table pressure scale */
         static const double mXeDensityTable[144];    /**< (kg/m3) Xenon real-gas density table */

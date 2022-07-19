@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup  UT_TSM_PROPERTIES  Properties Unit tests
 /// @ingroup   UT_TSM
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @details   Unit test classes for the properties models.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,6 +15,7 @@
 #include "UtSolidProperties.hh"
 #include "UtFluidCurveFit.hh"
 #include "UtCombust.hh"
+#include "UtSorbantProperties.hh"
 #include <cppunit/XmlOutputter.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
@@ -42,6 +43,7 @@ int main(int, char**)
     runner.addTest( UtChemicalCompound::suite() );
     runner.addTest( UtChemicalReaction::suite() );
     runner.addTest( UtCombust::suite() );
+    runner.addTest( UtSorbantProperties::suite() );
 
     runner.run(testresult);
     // Output results in compiler format

@@ -6,10 +6,11 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-- ()
+- ((software/exceptions/TsInitializationException.o))
 */
 
 #include "SorbantProperties.hh"
+#include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] compound          (--)            The chemical compound properties of this sorbate.
@@ -20,10 +21,18 @@ LIBRARY DEPENDENCY:
 /// @param[in] tothE             (K)             Toth isotherm parameter E.
 /// @param[in] tothT0            (--)            Toth isotherm parameter t0.
 /// @param[in] tothC0            (K)             Toth isotherm parameter c0.
-/// @param[in] dh                (kJ/mol)        Heat of adsorption of this sorbate in the sorbant.
+/// @param[in] dh                (kJ/mol)        Heat of adsorption of this sorbate in the sorbant, see note on sign convention below.
 /// @param[in] km                (1/s)           Adsorption time constant.
 ///
-/// @details  Constructs this Sorbate Properties with arguments.
+/// @throws   TsInitializationException
+///
+/// @details  Constructs this Sorbate Properties with arguments and validates properties values.
+///           Validation checks throw exception on failures.
+///
+/// @note     Sign convention for dh: adsorption is usually exotheric (adsorbing sorbates produces
+///           waste heat) and desorption usually endothermic.  For this argument, a negative sign
+///           represents exothermic, and positive is endothermic.  This matches the convention for
+///           delta-enthalpy typically given for heats of reaction in literature.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 SorbateProperties::SorbateProperties(const ChemicalCompound*                         compound,
                                      const std::vector<SorbateInteractingCompounds>* blockingCompounds,
@@ -47,11 +56,6 @@ SorbateProperties::SorbateProperties(const ChemicalCompound*                    
     mBlockingCompounds(),
     mOffgasCompounds()
 {
-    //TODO validate values?
-    // - km >= 0,
-    // - dh maybe <= 0 ?
-    // - blocking compunds != mCompound
-
     mBlockingCompounds.clear();
     if (blockingCompounds) {
         mBlockingCompounds = *blockingCompounds;
@@ -59,6 +63,27 @@ SorbateProperties::SorbateProperties(const ChemicalCompound*                    
     mOffgasCompounds.clear();
     if (offgasCompounds) {
         mOffgasCompounds = *offgasCompounds;
+    }
+
+    /// - Validate constructud values.
+    if (km < DBL_EPSILON) {
+        throw TsInitializationException();
+    }
+    for (unsigned int i=0; i<mBlockingCompounds.size(); ++i) {
+        if (mBlockingCompounds[i].mCompound == compound->mType) {
+            throw TsInitializationException();
+        }
+        if (not MsMath::isInRange(0.0, mBlockingCompounds[i].mInteraction, 1.0)) {
+            throw TsInitializationException();
+        }
+    }
+    for (unsigned int i=0; i<mOffgasCompounds.size(); ++i) {
+        if (mOffgasCompounds[i].mCompound == compound->mType) {
+            throw TsInitializationException();
+        }
+        if (mOffgasCompounds[i].mInteraction < 0.0) {
+            throw TsInitializationException();
+        }
     }
 }
 
@@ -133,26 +158,16 @@ double SorbateProperties::computeLoadingEquil(const double pp, const double temp
     return result;
 }
 
-//TODO inline?
-double SorbateProperties::computeLoadingRate(const double loadingEquil, const double loading) const
-{
-    return mKm * (loadingEquil - loading);
-}
-
-//TODO inline?
-//TODO note sign convention exo/endo
-double SorbateProperties::computeHeatFlux(const double adsorptionRate) const
-{
-    return -adsorptionRate * mDh * UnitConversion::UNIT_PER_MEGA;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] type     (--)     Defined type of this sorbant.
 /// @param[in] density  (kg/m3)  Density of this sorbant material.
 /// @param[in] porosity (--)     Fraction of the packed sorbant enclosure volume that is voids.
 /// @param[in] cp       (J/kg/K) Specific heat of this sorbant material.
 ///
-/// @details  Constructs this Sorbant Properties with arguments.
+/// @throws   TsInitializationException
+///
+/// @details  Constructs this Sorbant Properties with arguments and validates properties values.
+///           Validation checks throw exception on failures.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 SorbantProperties::SorbantProperties(const SorbantProperties::Type type,
                                      const double                  density,
@@ -166,7 +181,16 @@ SorbantProperties::SorbantProperties(const SorbantProperties::Type type,
     mSorbates(),
     mDefinedCompounds()
 {
-    // nothing to do
+    /// - Validate constructud values.
+    if (density < DBL_EPSILON) {
+        throw TsInitializationException();
+    }
+    if (not MsMath::isInRange(0.0, porosity, 1.0)) {
+        throw TsInitializationException();
+    }
+    if (cp < DBL_EPSILON) {
+        throw TsInitializationException();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,34 +264,34 @@ void SorbantProperties::addSorbate(const ChemicalCompound::Type                 
     mSorbates.push_back(newSorbate);
 }
 
-//TODO inline?
-double SorbantProperties::computeVolume(const double enclosureVolume) const
-{
-    return enclosureVolume * (1.0 - mPorosity);
-}
-
-//TODO inline?
-// also, caller's volume is usually constant so why are we calling this every pass? wastes CPU...
-double SorbantProperties::computeThermalCapacity(double volume) const
-{
-    return mCp * mDensity * volume;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Defined Sorbant Properties.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 DefinedSorbantProperties::DefinedSorbantProperties()
     :
-    mSilicaGelB125(SorbantProperties::SILICA_GEL_B125, 1240.0, 870.0),
-    mSilicaGel40  (SorbantProperties::SILICA_GEL_40,   1240.0, 870.0),
-    mZeo5aRk38    (SorbantProperties::ZEO_5A_RK38,     1370.0, 650.0),
-    mZeo5a522     (SorbantProperties::ZEO_5A_522,      1190.0, 750.0),
-    mZeo13x544    (SorbantProperties::ZEO_13X_544,     1260.0, 800.0),
-    mSa9t         (SorbantProperties::SA9T,               0.0,   0.0), //TODO data still needed
-    mGlassBeads   (SorbantProperties::GLASS_BEADS,        0.0,   0.0), //TODO data still needed
+    mSilicaGelB125    (SorbantProperties::SILICA_GEL_B125,     1240.0, 0.348, 870.0),
+    mSilicaGel40      (SorbantProperties::SILICA_GEL_40,       1240.0, 0.415, 870.0),
+    mZeo5aRk38        (SorbantProperties::ZEO_5A_RK38,         1370.0, 0.445, 650.0),
+    mZeo5a522         (SorbantProperties::ZEO_5A_522,          1190.0, 0.331, 750.0),
+    mZeo13x544        (SorbantProperties::ZEO_13X_544,         1260.0, 0.457, 800.0),
+    //TODO see gunns_misc/sorbant_research
+    // it looks like this:
+    // Eldridge, C., and Papale, W., “SA9T Sorbent CO2 and H2O Vapor Isotherm Testing”, 2007, Cooperative
+    //    Agreement NNJ04HF73A. Hamilton Sundstrand
+    // has what we need, but i can't find it.
+    // GunnsFluidAdsorberRca models SA9T so maybe we can back out the isotherms from it
+    mSa9t             (SorbantProperties::SA9T,                   1.0, 0.0,     1.0), //TODO data still needed
+    /// - Porosity values for different sphere packing is from
+    ///     https://en.wikipedia.org/wiki/Sphere_packing.
+    mGlassBeadsLattice(SorbantProperties::GLASS_BEADS_LATTICE, 2500.0, 0.26,  840.0),
+    mGlassBeadsRandom (SorbantProperties::GLASS_BEADS_RANDOM,  2500.0, 0.365, 840.0),
     mSorbants()
 {
-    /// - Set up blocking compounds lists.
+    /// - Set up blocking compounds lists.  Note that different sorbants might have different lists,
+    ///   with different interactions.
+    /// - We don't define the loading interaction values.  Rather, we simply identify the
+    ///   interacting compounds.
+    /// - Offgassing interaction value are TBD.  TODO SA9T offgasses ammonia, for example
     SorbateInteractingCompounds h2oBlockingCo2;
     h2oBlockingCo2.mCompound    = ChemicalCompound::H2O;
     h2oBlockingCo2.mInteraction = 1.0;
@@ -285,18 +309,19 @@ DefinedSorbantProperties::DefinedSorbantProperties()
     mZeo5a522     .addSorbate(ChemicalCompound::CO2, &blockingCompounds, 0, 9.875e-7, 6.761e-8,  5.625e+3,  2.700e-1, -2.002e+1, -38.0, 0.003);
     mZeo13x544    .addSorbate(ChemicalCompound::H2O, 0,                  0, 3.634e-6, 2.408e-7,  6.852e+3,  3.974e-1, -4.199e+0, -55.0, 0.007);
     mZeo13x544    .addSorbate(ChemicalCompound::CO2, &blockingCompounds, 0, 6.509e-3, 4.884e-4,  2.991e+3,  7.487e-2,  3.810e+1, -40.0, 0.00325);
-    mSa9t         .addSorbate(ChemicalCompound::H2O, 0,                  0, 0.0,      0.0,       0.0,       0.0,       0.0,       0.0,  0.0);
-    mSa9t         .addSorbate(ChemicalCompound::CO2, 0,                  0, 0.0,      0.0,       0.0,       0.0,       0.0,       0.0,  0.0);
-    /// - mGlassBeads has no sorbates.
+//    mSa9t         .addSorbate(ChemicalCompound::H2O, 0,                  0, 0.0,      0.0,       0.0,       0.0,       0.0,       0.0,  1.0);
+//    mSa9t         .addSorbate(ChemicalCompound::CO2, 0,                  0, 0.0,      0.0,       0.0,       0.0,       0.0,       0.0,  1.0);
+    /// - Glass beads are inert and have no sorbates.
 
     /// - Load the sorbants array with the pointers to the sorbants.
-    mSorbants[SorbantProperties::SILICA_GEL_B125] = &mSilicaGelB125;
-    mSorbants[SorbantProperties::SILICA_GEL_40]   = &mSilicaGel40;
-    mSorbants[SorbantProperties::ZEO_5A_RK38]     = &mZeo5aRk38;
-    mSorbants[SorbantProperties::ZEO_5A_522]      = &mZeo5a522;
-    mSorbants[SorbantProperties::ZEO_13X_544]     = &mZeo13x544;
-    mSorbants[SorbantProperties::SA9T]            = &mSa9t;
-    mSorbants[SorbantProperties::GLASS_BEADS]     = &mGlassBeads;
+    mSorbants[SorbantProperties::SILICA_GEL_B125]     = &mSilicaGelB125;
+    mSorbants[SorbantProperties::SILICA_GEL_40]       = &mSilicaGel40;
+    mSorbants[SorbantProperties::ZEO_5A_RK38]         = &mZeo5aRk38;
+    mSorbants[SorbantProperties::ZEO_5A_522]          = &mZeo5a522;
+    mSorbants[SorbantProperties::ZEO_13X_544]         = &mZeo13x544;
+    mSorbants[SorbantProperties::SA9T]                = &mSa9t;
+    mSorbants[SorbantProperties::GLASS_BEADS_LATTICE] = &mGlassBeadsLattice;
+    mSorbants[SorbantProperties::GLASS_BEADS_RANDOM]  = &mGlassBeadsRandom;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

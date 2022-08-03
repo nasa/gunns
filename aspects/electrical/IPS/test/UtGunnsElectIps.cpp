@@ -313,6 +313,7 @@ void UtGunnsElectIps::testInitialize()
                                  tArticle->mTotalPowerLoad, DBL_EPSILON);
     CPPUNIT_ASSERT_EQUAL(1, tArticle->mBackUpPowerSource);
     CPPUNIT_ASSERT(tName == tArticle->mName);
+    CPPUNIT_ASSERT(true  == tArticle->mPowerValid);
     CPPUNIT_ASSERT(true  == tArticle->mInitFlag);
 
     /// @test mBackupPowerImplemented = false.

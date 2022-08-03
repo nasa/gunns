@@ -243,8 +243,7 @@ void GunnsElectIps::initialize(GunnsElectIpsConfigData       &configData,
     int ports[mNumPorts];
 
     /// - Set members of ports array.
-    for(int i = 0; i < mNumPorts; ++i)
-    {
+    for (int i = 0; i < mNumPorts; ++i) {
         ports[i] = portsVector->at(i);
     }
 
@@ -287,6 +286,13 @@ void GunnsElectIps::initialize(GunnsElectIpsConfigData       &configData,
         }
     }
     validate();
+
+    /// - Initialize mPowerValid based on initial node voltages.
+    for (int i = 0; i < mNumPorts; ++i) {
+        if (mNodes[i]->getPotential() >= mUnderVoltageLimit) {
+            mPowerValid = true;
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

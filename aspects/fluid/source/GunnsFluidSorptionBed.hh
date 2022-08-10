@@ -385,9 +385,9 @@ inline unsigned int GunnsFluidSorptionBedSegment::getNSorbates() const
 /// @details  Adds a new GunnsFluidSorptionBedSegmentInputData to mLoading, with the given
 ///           values.
 ////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSorptionBedInputData::addSegmentSorbateLoading(const unsigned int           segment,
-                                                              const ChemicalCompound::Type sorbate,
-                                                              const double                 loading)
+inline void GunnsFluidSorptionBedInputData::addSegmentSorbateLoading(const unsigned int           segment,
+                                                                     const ChemicalCompound::Type sorbate,
+                                                                     const double                 loading)
 {
     mLoading.push_back(GunnsFluidSorptionBedSegmentInputData(segment, sorbate, loading));
 }

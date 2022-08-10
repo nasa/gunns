@@ -244,7 +244,7 @@ GunnsFluidSorptionBedSegmentConfigData::~GunnsFluidSorptionBedSegmentConfigData(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] that (--) Reference to the object to be copied.
 ///
-/// @details  Copy constructurs this Sorption Bed Segment Configuration Data from the given object.
+/// @details  Copy constructs this Sorption Bed Segment Configuration Data from the given object.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(const GunnsFluidSorptionBedSegmentConfigData& that)
     :
@@ -262,6 +262,57 @@ GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(c
 /// @details  This doesn't assign anything since all class member are const.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSorptionBedSegmentConfigData& GunnsFluidSorptionBedSegmentConfigData::operator =(const GunnsFluidSorptionBedSegmentConfigData& that)
+{
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] segment (--)        The segment number to load.
+/// @param[in] sorbate (--)        The sorbate compound type to load.
+/// @param[in] loading (kg*mol/m3) The initial loading amount.
+///
+/// @details  Constructs this Sorption Bed Segment Input Data with arguments.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidSorptionBedSegmentInputData::GunnsFluidSorptionBedSegmentInputData(
+        const unsigned int           segment,
+        const ChemicalCompound::Type sorbate,
+        const double                 loading)
+    :
+    mSegment(segment),
+    mSorbate(sorbate),
+    mLoading(loading)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Destructs this Sorption Bed Segment Input Data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidSorptionBedSegmentInputData::~GunnsFluidSorptionBedSegmentInputData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) Reference to the object to be copied.
+///
+/// @details  Copy constructs this Sorption Bed Segment Input Data from the given object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidSorptionBedSegmentInputData::GunnsFluidSorptionBedSegmentInputData(const GunnsFluidSorptionBedSegmentInputData& that)
+    :
+    mSegment(that.mSegment),
+    mSorbate(that.mSorbate),
+    mLoading(that.mLoading)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) Reference to the object to be copied.
+///
+/// @details  This doesn't assign anything since all class member are const.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidSorptionBedSegmentInputData& GunnsFluidSorptionBedSegmentInputData::operator =(const GunnsFluidSorptionBedSegmentInputData& that)
 {
     return *this;
 }

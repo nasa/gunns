@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -400,7 +400,7 @@ void UtGunnsFluidTraceCompounds::testGetType()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for find method.
+/// @details  Tests for find methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidTraceCompounds::testFind()
 {
@@ -413,6 +413,14 @@ void UtGunnsFluidTraceCompounds::testFind()
         CPPUNIT_ASSERT(i == tArticle->find(tType[i]));
     }
     CPPUNIT_ASSERT(6 == tArticle->find(ChemicalCompound::NO_COMPOUND, "CO"));
+
+    /// @test the findCompound method returns the correct index for the given chemical compound type
+    for (int i = 0; i < UtGunnsFluidTraceCompounds::NMULTI - 1; i++) {
+        CPPUNIT_ASSERT(i == tArticle->findCompound(tType[i]));
+    }
+
+    /// @test the findCompound method returns -1 for the a missing chemical compound type
+    CPPUNIT_ASSERT(-1 == tArticle->findCompound(ChemicalCompound::NH3));
 
     UT_PASS;
 }

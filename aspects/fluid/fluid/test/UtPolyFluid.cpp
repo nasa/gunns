@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((aspects/fluid/fluid/PolyFluid.o))
-***************************************************************************************************/
+*/
 
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -1076,6 +1073,39 @@ void UtPolyFluid::testCompositeStateAccessors()
         /// @test for getType given invalid index
         CPPUNIT_ASSERT_EQUAL(FluidProperties::NO_FLUID, mArticle3->getType(-1));
         CPPUNIT_ASSERT_EQUAL(FluidProperties::NO_FLUID, mArticle3->getType(10));
+
+        /// @test for findCompound without trace compounds
+        DefinedChemicalCompounds definedCompounds;
+        int fluidIndex = 0;
+        int tcIndex    = 0;
+        mArticle3->findCompound(fluidIndex, tcIndex, definedCompounds.getCompound(ChemicalCompound::O2));
+        CPPUNIT_ASSERT_EQUAL( 1, fluidIndex);
+        CPPUNIT_ASSERT_EQUAL(-1, tcIndex);
+    } {
+        /// - Define nominal trace compounds config data.
+        DefinedChemicalCompounds definedCompounds;
+        ChemicalCompound::Type types[2] = {ChemicalCompound::CO, ChemicalCompound::H2O};
+        GunnsFluidTraceCompoundsConfigData tcConfig(types, 2, "tcConfig");
+        PolyFluidConfigData configData(mProperties, mType1, UtPolyFluid::NMULTI, &tcConfig);
+
+        /// - Define nominal trace compounds input data.
+        double moleFractions[2] = {1.0e-1, 2.0e-2};
+        GunnsFluidTraceCompoundsInputData tcInput(moleFractions);
+        PolyFluidInputData inputData(mTemperature,  mPressure, mFlowRate, mMass,
+                                     mMassFraction1, &tcInput);
+
+        /// - Default construct and initialize (with nominal data) a test article, with trace
+        ///   compounds.
+        FriendlyPolyFluid article;
+        article.initializeName("article");
+        article.initialize(configData, inputData);
+
+        /// @test for findCompound with trace compounds
+        int fluidIndex = 0;
+        int tcIndex    = 0;
+        article.findCompound(fluidIndex, tcIndex, definedCompounds.getCompound(ChemicalCompound::H2O));
+        CPPUNIT_ASSERT_EQUAL(4, fluidIndex);
+        CPPUNIT_ASSERT_EQUAL(1, tcIndex);
     }
 
     UT_PASS;

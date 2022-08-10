@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -24,7 +24,7 @@ ASSUMPTIONS AND LIMITATIONS:
  PROGRAMMERS:
  ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-04))
 
-***************************************************************************************************/
+*/
 
 #include <cmath>
 #include <cfloat>
@@ -1289,6 +1289,36 @@ int PolyFluid::find(const FluidProperties::FluidType& type) const
     msg << "An invalid fluid type (" << type << ") was specified.";
     TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", msg.str(),
                     TsOutOfBoundsException, "Input Argument Out of Range", mName);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] fluidIndex (--) Reference returned index of the compound in the bulk fluid constituents.
+/// @param[out] tcIndex    (--) Reference returned index of the compound in the trace compounds.
+/// @param[in]  compound   (--) Pointer to the properties of the chemical compound to find.
+///
+/// @details  Returns the fluid and trace compound indexes of the given chemical compound in this
+///           PolyFluid.  This treats the given compound type as optional and indicates in the
+///           returned values if compound is not found.
+///
+/// @note  The respective indexes for fluid constituents and trace compounds are returned a value of
+///        -1 if the compound isn't found in them.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void PolyFluid::findCompound(int&                    fluidIndex,
+                             int&                    tcIndex,
+                             const ChemicalCompound* compound) const
+{
+    fluidIndex = -1;
+    for (int i = 0; i < mNConstituents; ++i) {
+        if (mConstituents[i].mType == compound->mFluidType) {
+            fluidIndex = i;
+            break;
+        }
+    }
+
+    tcIndex = -1;
+    if (mTraceCompounds) {
+        tcIndex = mTraceCompounds->findCompound(compound->mType);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

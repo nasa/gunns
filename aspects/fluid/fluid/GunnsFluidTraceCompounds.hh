@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_FLUID_TRACE_COMPOUNDS  GUNNS Fluid Trace Compounds Model
 @ingroup   TSM_GUNNS_FLUID_FLUID
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -133,6 +133,8 @@ class GunnsFluidTraceCompounds
         ChemicalCompound::Type getType(const int i) const;
         /// @brief  Returns the index of the compound at the specified index.
         int     find(const ChemicalCompound::Type& type, const std::string name = "NO_NAME") const;
+        /// @brief  Returns the index of the given chemical compound.
+        int     findCompound(const ChemicalCompound::Type compound) const;
         /// @brief  Returns this Fluid Trace Compounds array of compound mass values.
         double* getMasses() const;
         /// @brief  Returns the current mass of the given compound type.

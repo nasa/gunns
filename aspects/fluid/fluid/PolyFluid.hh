@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_FLUID_FLUID_POLY_FLUID PolyFluid Model
 @ingroup   TSM_GUNNS_FLUID_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -64,7 +64,7 @@ class PolyFluidConfigData
         PolyFluidConfigData(const PolyFluidConfigData& that);
         /// @brief Default destructs this PolyFluid configuration data.
         virtual ~PolyFluidConfigData();
-    protected:
+
     private:
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details Default constructor unavailable since declared private and not implemented.
@@ -199,6 +199,10 @@ class PolyFluid
         FluidProperties::FluidType getType(const int i) const;
         /// @brief  Returns the index of the constituent fluid of the specified type
         int find(const FluidProperties::FluidType& type) const;
+        /// @brief  Returns the constituent and trace compound indexes of the specific chemical compound.
+        void findCompound(int&                    fluidIndex,
+                          int&                    tcIndex,
+                          const ChemicalCompound* compound) const;
         /// @brief Returns the phase of this PolyFluid.
         FluidProperties::FluidPhase getPhase() const;
         /// @brief Returns the molecular weight of this PolyFluid.

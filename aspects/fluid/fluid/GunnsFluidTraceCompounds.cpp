@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Trace Compounds Model implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -456,6 +456,24 @@ int GunnsFluidTraceCompounds::find(const ChemicalCompound::Type& type,
     msg << "An invalid compound type (" << type << ") was specified.";
     TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_GUNNS, msg.str(),
                     TsOutOfBoundsException, "Input Argument Out of Range", mName);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  compound  (--)  Type of the chemical compound to find.
+///
+/// @return   Index into the compounds array corresponding to the given compound type.
+///
+/// @details  Returns the array index in the compounds array corresponding to the given compound
+///           type, or -1 if the given compound isn't found.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+int GunnsFluidTraceCompounds::findCompound(const ChemicalCompound::Type compound) const
+{
+    for (int i = 0; i < mConfig->mNTypes; ++i) {
+        if (mConfig->mCompounds[i]->mType == compound) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

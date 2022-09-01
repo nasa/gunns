@@ -29,6 +29,7 @@
 #include "UtGunnsLiquidDisplacementPump.hh"
 #include "UtGunnsFluidSimpleH2Redox.hh"
 #include "UtGunnsFluidSourceBoundary.hh"
+#include "UtGunnsFluidSorptionBed.hh"
 #include "UtGunnsFluidSelectiveMembrane.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +63,7 @@ int main(int, char**) {
     runner.addTest(UtGunnsGasDisplacementPump::suite());
     runner.addTest(UtGunnsLiquidDisplacementPump::suite());
     runner.addTest(UtGunnsFluidSourceBoundary::suite());
+    runner.addTest(UtGunnsFluidSorptionBed::suite());
     runner.addTest(UtGunnsFluidSelectiveMembrane::suite());
 
     runner.run();

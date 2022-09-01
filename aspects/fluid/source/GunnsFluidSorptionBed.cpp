@@ -663,8 +663,7 @@ void GunnsFluidSorptionBedConfigData::addSegment(const SorbantProperties::Type d
     std::ostringstream name;
     name << mName << ".mSegments_" << mSegments.size();
     const SorbantProperties* properties = mDefinedSorbants->getSorbant(definedType);
-    GunnsFluidSorptionBedSegmentConfigData newSegment(name.str(), properties, volume, htc);
-    mSegments.push_back(newSegment);
+    mSegments.push_back(GunnsFluidSorptionBedSegmentConfigData(name.str(), properties, volume, htc));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -695,8 +694,7 @@ void GunnsFluidSorptionBedConfigData::addSegment(const SorbantProperties* custom
     }
     std::ostringstream name;
     name << mName << ".mSegments_" << mSegments.size();
-    GunnsFluidSorptionBedSegmentConfigData newSegment(name.str(), foundProperties, volume, htc);
-    mSegments.push_back(newSegment);
+    mSegments.push_back(GunnsFluidSorptionBedSegmentConfigData(name.str(), foundProperties, volume, htc));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

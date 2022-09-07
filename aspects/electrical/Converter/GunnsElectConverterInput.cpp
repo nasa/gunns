@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Input Link implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -321,6 +321,8 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         if (mLeadsInterface) {
             mInputPowerValid = mOutputLink->computeInputPower(mInputPower);
             mOutputLink->setInputVoltage(mInputVoltage);
+        } else if (mOutputLink) {
+            mInputPowerValid = mOutputLink->getInputPowerValid();
         } else {
             mInputPowerValid = true;
         }
@@ -339,7 +341,8 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
             if (mPotentialVector[0] < 0.0) {
                 /// - If node potential is negative, then hold the current source constant to allow
                 ///   the network to converge.  If the network ends up converging at negative
-                ///   voltage, then we'll either undervolt trip off, or enter the overloaded state.
+                ///   voltage, then we'll either undervolt trip off, enter the overloaded state, or
+                ///   reset this potential in resetLastMinorStep().
                 current = -mSourceVector[0];
             } else if (mInputVoltage > DBL_EPSILON) {
                 /// - For positive input voltage, set link current source effect to create the input
@@ -398,7 +401,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
 
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVin = mPotentialVector[0];
+        float sensedVin = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
         ///   integrated.  This is because we don't have the time-step in this function, and we must
@@ -434,11 +437,36 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         /// - Reject the solution if the power value from the output link is invalid.  This happens
         ///   when we lead the interface, the output link rejected the network solution on the
         ///   previous minor step and hasn't computed a valid power for this minor step yet.
+        if (mOutputLink) {
+            mInputPowerValid = mOutputLink->getInputPowerValid();
+        }
         if (not mInputPowerValid) {
             result = REJECT;
         }
     }
     return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] convergedStep (--) The minor step number since network convergence.
+/// @param[in] absoluteStep  (--) Unused.
+///
+/// @returns  bool (--) Always returns true.
+///
+/// @details  In the minorStep function, it will hold a constant current pulling negative input
+///           potential to help the network converge, so that we (or some other link) can then
+///           reject the solution.  However, we need a way to snap us out of that mode once the
+///           solution has been rejected.  So, here we reset the potential vector to zero if we are
+///           in such a condition.  This function is only called by the solver when the previous
+///           minor step solution was rejected.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GunnsElectConverterInput::resetLastMinorStep(const int convergedStep,
+                                                  const int absoluteStep __attribute__((unused)))
+{
+    if (convergedStep > 0 and mPotentialVector[0] < 0.0) {
+        mPotentialVector[0] = 0.0;
+    }
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

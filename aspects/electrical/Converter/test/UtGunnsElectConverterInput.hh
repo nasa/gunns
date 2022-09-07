@@ -5,7 +5,7 @@
 /// @defgroup UT_ELECTRICAL_CONVERTER_INPUT_LINK    Electrical Converter Input Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Converter Input Link
@@ -83,6 +83,8 @@ class UtGunnsElectConverterInput: public CppUnit::TestFixture
         void testAccessors();
         /// @brief  Tests the confirmSolutionAcceptable method.
         void testConfirmSolutionAcceptable();
+        /// @brief  Tests the resetLastMinorStep method.
+        void testResetLastMinorStep();
         /// @brief  Tests the computeFlows method.
         void testComputeFlows();
 
@@ -100,6 +102,7 @@ class UtGunnsElectConverterInput: public CppUnit::TestFixture
         CPPUNIT_TEST(testComputeInputVoltage);
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST(testConfirmSolutionAcceptable);
+        CPPUNIT_TEST(testResetLastMinorStep);
         CPPUNIT_TEST(testComputeFlows);
         CPPUNIT_TEST_SUITE_END();
         /// @brief  Enumeration for the number of nodes.

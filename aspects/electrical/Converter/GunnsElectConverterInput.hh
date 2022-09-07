@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_INPUT_LINK    GUNNS Electrical Converter Input Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -102,6 +102,8 @@ class GunnsElectConverterInput : public GunnsBasicLink
         /// @brief  Returns the link's assessment of the network solution.
         virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                          const int absoluteStep);
+        /// @brief  Resets the link back to the previous minor step iteration.
+        virtual bool resetLastMinorStep(const int convergedStep, const int absoluteStep);
         /// @brief  Computes and returns the input channel voltage and validity.
         bool computeInputVoltage(double& inputVoltage);
         /// @brief  Returns if the link is non-linear.

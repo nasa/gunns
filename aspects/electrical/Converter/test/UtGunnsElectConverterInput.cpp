@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -495,9 +495,15 @@ void UtGunnsElectConverterInput::testMinorStep()
         tArticle->minorStep(0.0, 0);
         CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
 
-        /// @test    minorStep resets mInputPowerValid when we don't lead interface
-        tArticle->mInputPowerValid = false;
+        /// @test    minorStep gets mInputPowerValid from output link when we don't lead interface.
+        tArticle->mInputPowerValid = true;
+        tArticle->mLeadsInterface  = false;
+        tArticle->minorStep(0.0, 0);
+        CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
+
+        /// @test    minorStep resets mInputPowerValid when there is no output link.
         tArticle->mLeadsInterface = false;
+        tArticle->mOutputLink     = 0;
         tArticle->minorStep(0.0, 0);
         CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
     } {
@@ -688,11 +694,47 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     CPPUNIT_ASSERT(true  == tArticle->mOverloadedState);
 
-    /// @test    Rejects due to invalid power from the output link.
+    /// @test    Rejects due to invalid power.
     tArticle->mPotentialVector[0] = 120.0;
     tArticle->mInputPowerValid    = false;
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
     CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
+
+    /// @test    Rejects due to invalid power from the output link.
+    FriendlyGunnsElectConverterInput article2;
+    article2.initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tOutputLink.initialize(*tOutputConfigData, *tOutputInputData, tLinks, 1);
+    tOutputLink.mInputPowerValid = false;
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
+    CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the resetLastMinorStep method.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectConverterInput::testResetLastMinorStep()
+{
+    UT_RESULT;
+
+    /// - Initialize default constructed test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tArticle->mPotentialVector[0] = -1.0;
+
+    /// @test    Does nothing when network is not converged.
+    CPPUNIT_ASSERT(true == tArticle->resetLastMinorStep(0, 1));
+    CPPUNIT_ASSERT(-1.0 == tArticle->mPotentialVector[0]);
+
+    /// @test    Leaves positive potential vector alone.
+    tArticle->mPotentialVector[0] = 1.0;
+    CPPUNIT_ASSERT(true == tArticle->resetLastMinorStep(1, 1));
+    CPPUNIT_ASSERT(1.0  == tArticle->mPotentialVector[0]);
+
+    /// @test    Resets negative potential vector when network is converged.
+    tArticle->mPotentialVector[0] = -1.0;
+    CPPUNIT_ASSERT(true == tArticle->resetLastMinorStep(1, 1));
+    CPPUNIT_ASSERT(0.0  == tArticle->mPotentialVector[0]);
 
     UT_PASS;
 }

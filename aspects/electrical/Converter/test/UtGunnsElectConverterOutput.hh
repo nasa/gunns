@@ -5,7 +5,7 @@
 /// @defgroup UT_ELECTRICAL_CONVERTER_OUTPUT_LINK    Electrical Converter Output Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Converter Output Link
@@ -93,6 +93,7 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         unsigned int                             tTripPriority;        /**< (--)    Nominal config data. */
         double                                   tOutOverVoltageTrip;  /**< (V)     Nominal config data. */
         double                                   tOutOverCurrentTrip;  /**< (amp)   Nominal config data. */
+        bool                                     tEnableCurrentLimit;  /**< (--)    Nominal config data. */
         bool                                     tMalfBlockageFlag;    /**< (--)    Nominal input data. */
         double                                   tMalfBlockageValue;   /**< (--)    Nominal input data. */
         bool                                     tEnabled;             /**< (--)    Nominal input data. */

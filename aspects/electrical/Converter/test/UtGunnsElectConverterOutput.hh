@@ -92,6 +92,7 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         double                                   tConverterEfficiency; /**< (--)    Nominal config data. */
         unsigned int                             tTripPriority;        /**< (--)    Nominal config data. */
         double                                   tOutOverVoltageTrip;  /**< (V)     Nominal config data. */
+        double                                   tOutUnderVoltageTrip; /**< (V)     Nominal config data. */
         double                                   tOutOverCurrentTrip;  /**< (amp)   Nominal config data. */
         bool                                     tEnableCurrentLimit;  /**< (--)    Nominal config data. */
         bool                                     tMalfBlockageFlag;    /**< (--)    Nominal input data. */

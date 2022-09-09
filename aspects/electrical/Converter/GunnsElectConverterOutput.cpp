@@ -17,18 +17,19 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name                       (--)    Link name.
-/// @param[in] nodes                      (--)    Network nodes array.
-/// @param[in] regulatorType              (--)    The type of output regulation.
-/// @param[in] outputConductance          (1/ohm) Conductance of the output channel.
-/// @param[in] converterEfficiency        (--)    The voltage conversion efficiency (0-1).
-/// @param[in] outputVoltageSensor        (--)    Pointer to the output voltage sensor spotter.
-/// @param[in] outputCurrentSensor        (--)    Pointer to the output current sensor spotter.
-/// @param[in] tripPriority               (--)    Priority of trips in the network.
-/// @param[in] outputOverVoltageTripLimit (V)     Output over-voltage trip limit.
-/// @param[in] outputOverCurrentTripLimit (amp)   Output over-current trip limit.
-/// @param[in] inputLink                  (--)    Pointer to the input side link.
-/// @param[in] enableCurrentLimiting      (--)    Limits output current instead of over-current tripping.
+/// @param[in] name                        (--)    Link name.
+/// @param[in] nodes                       (--)    Network nodes array.
+/// @param[in] regulatorType               (--)    The type of output regulation.
+/// @param[in] outputConductance           (1/ohm) Conductance of the output channel.
+/// @param[in] converterEfficiency         (--)    The voltage conversion efficiency (0-1).
+/// @param[in] outputVoltageSensor         (--)    Pointer to the output voltage sensor spotter.
+/// @param[in] outputCurrentSensor         (--)    Pointer to the output current sensor spotter.
+/// @param[in] tripPriority                (--)    Priority of trips in the network.
+/// @param[in] outputOverVoltageTripLimit  (V)     Output over-voltage trip limit.
+/// @param[in] outputOverCurrentTripLimit  (amp)   Output over-current trip limit.
+/// @param[in] inputLink                   (--)    Pointer to the input side link.
+/// @param[in] enableCurrentLimiting       (--)    Limits output current instead of over-current tripping.
+/// @param[in] outputUnderVoltageTripLimit (V)     Output under-voltage trip limit.
 ///
 /// @details  Default Electrical Converter Output link config data constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,8 @@ GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
         const float                                    outputOverVoltageTripLimit,
         const float                                    outputOverCurrentTripLimit,
         GunnsElectConverterInput*                      inputLink,
-        const bool                                     enableCurrentLimiting)
+        const bool                                     enableCurrentLimiting,
+        const float                                    outputUnderVoltageTripLimit)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mRegulatorType(regulatorType),
@@ -56,7 +58,8 @@ GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
     mOutputOverVoltageTripLimit(outputOverVoltageTripLimit),
     mOutputOverCurrentTripLimit(outputOverCurrentTripLimit),
     mInputLink(inputLink),
-    mEnableCurrentLimiting(enableCurrentLimiting)
+    mEnableCurrentLimiting(enableCurrentLimiting),
+    mOutputUnderVoltageTripLimit(outputUnderVoltageTripLimit)
 {
     // nothing to do
 }
@@ -87,7 +90,8 @@ GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
     mOutputOverVoltageTripLimit(that.mOutputOverVoltageTripLimit),
     mOutputOverCurrentTripLimit(that.mOutputOverCurrentTripLimit),
     mInputLink(that.mInputLink),
-    mEnableCurrentLimiting(that.mEnableCurrentLimiting)
+    mEnableCurrentLimiting(that.mEnableCurrentLimiting),
+    mOutputUnderVoltageTripLimit(that.mOutputUnderVoltageTripLimit)
 {
     // nothing to do
 }
@@ -169,6 +173,7 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mLoadResistance(0.0),
     mTotalPowerLoss(0.0),
     mOutputOverVoltageTrip(),
+    mOutputUnderVoltageTrip(),
     mOutputOverCurrentTrip(),
     mLeadsInterface(false),
     mReverseBiasState(false),
@@ -236,8 +241,9 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
         configData.mOutputCurrentSensor->setStepPreSolverFlag(false);
         configData.mOutputCurrentSensor->setStepPostSolverFlag(true);
     }
-    mOutputOverVoltageTrip.initialize(configData.mOutputOverVoltageTripLimit, configData.mTripPriority, false);
-    mOutputOverCurrentTrip.initialize(configData.mOutputOverCurrentTripLimit, configData.mTripPriority, false);
+    mOutputOverVoltageTrip .initialize(configData.mOutputOverVoltageTripLimit,  configData.mTripPriority, false);
+    mOutputUnderVoltageTrip.initialize(configData.mOutputUnderVoltageTripLimit, configData.mTripPriority, false);
+    mOutputOverCurrentTrip .initialize(configData.mOutputOverCurrentTripLimit,  configData.mTripPriority, false);
 
     mEnabled      = inputData.mEnabled;
     mInputVoltage = inputData.mInputVoltage;
@@ -415,7 +421,8 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
         double sourceCurrent = 0.0;
         mSourceVoltage       = 0.0;
         if (mEnabled and mOutputPowerAvailable
-                and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped())) {
+                and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped() or
+                         mOutputUnderVoltageTrip.isTripped())) {
             switch (mRegulatorType) {
                 case (CURRENT) :
                     sourceCurrent  = applyBlockage(mSetpoint);
@@ -534,7 +541,8 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
             ///   If it is set to 1, then you'll get an over-voltage trip along with leaving
             ///   the current limiting state.
             if (mEnabled) {
-                mOutputOverVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
+                mOutputOverVoltageTrip .checkForTrip(result, sensedVout, convergedStep);
+                mOutputUnderVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
                 if (not mEnableCurrentLimiting) {
                     mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
                 }

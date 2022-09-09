@@ -68,10 +68,10 @@ class GunnsElectConverterOutputInputData;
 ///           to the Ground node, it does nothing.  A converter input-output pair can be used to
 ///           simulate a short-circuit between separate networks.
 ///
-///           This contains optional trip logic for output over-volt and over-current trips.  For
-///           voltage regulation modes (VOLTAGE and TRANSFORMER), this can optionally do output
-///           current limiting instead of over-current tripping.  These features can be fed by
-///           optional sensors in the network, or use 'truth' values.
+///           This contains optional trip logic for output over-volt, under-volt, and over-current
+///           trips.  For voltage regulation modes (VOLTAGE and TRANSFORMER), this can optionally do
+///           output current limiting instead of over-current tripping.  These features can be fed
+///           by optional sensors in the network, or use 'truth' values.
 ///
 ///           This has an optional pointer to a paired GunnsElectConverterInput link.  This should
 ///           be used when and only when both links are in the same network.  This causes the two
@@ -136,37 +136,40 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool getCurrentLimitingState() const;
         /// @brief  Returns the output over-voltage trip logic.
         GunnsTripLogic* getOutputOverVoltageTrip();
+        /// @brief  Returns the output under-voltage trip logic.
+        GunnsTripLogic* getOutputUnderVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
 
     protected:
-        GunnsElectConverterOutput::RegulatorType mRegulatorType;         /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
-        double                                   mOutputConductance;     /**<    (1/ohm) trick_chkpnt_io(**) The output conductance. */
-        double                                   mConverterEfficiency;   /**<    (1)     trick_chkpnt_io(**) The conversion efficiency (0-1). */
-        SensorAnalog*                            mOutputVoltageSensor;   /**<    (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor. */
-        SensorAnalog*                            mOutputCurrentSensor;   /**<    (1)     trick_chkpnt_io(**) Pointer to the output current sensor. */
-        GunnsElectConverterInput*                mInputLink;             /**< *o (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
-        bool                                     mEnableCurrentLimiting; /**<    (1)     trick_chkpnt_io(**) Limits output current instead of over-current tripping. */
-        bool                                     mEnabled;               /**<    (1)                         Operation is enabled. */
-        double                                   mInputVoltage;          /**<    (V)                         Input channel voltage received from the input side. */
-        bool                                     mInputVoltageValid;     /**<    (1)     trick_chkpnt_io(**) The input channel voltage value is valid. */
-        bool                                     mOutputPowerAvailable;  /**<    (1)     trick_chkpnt_io(**) Power is available to the output channel during this major step. */
-        double                                   mSetpoint;              /**<    (1)                         Commanded regulation setpoint. */
-        bool                                     mResetTrips;            /**<    (1)     trick_chkpnt_io(**) Input command to reset trips. */
-        double                                   mInputPower;            /**<    (W)                         Input channel power load sent to the input side. */
-        bool                                     mInputPowerValid;       /**<    (1)     trick_chkpnt_io(**) The input channel power load value is valid. */
-        double                                   mOutputChannelLoss;     /**<    (W)     trick_chkpnt_io(**) Power loss through the output channel resistance. */
-        double                                   mLoadResistance;        /**<    (ohm)                       Estimate of total downstream load resistance. */
-        double                                   mTotalPowerLoss;        /**<    (W)                         Total power loss through converter efficiency and output channel resistance. */
-        GunnsTripGreaterThan                     mOutputOverVoltageTrip; /**<    (1)                         Output over-voltage trip function. */
-        GunnsTripGreaterThan                     mOutputOverCurrentTrip; /**<    (1)                         Output over-current trip function. */
-        bool                                     mLeadsInterface;        /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
-        bool                                     mReverseBiasState;      /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
-        bool                                     mSolutionReset;         /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
-        bool                                     mBiasFlippedReverse;    /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped reverse during this major step. */
-        bool                                     mCurrentLimitingState;  /**<    (1)                         Converter is currently in the current limiting state. */
-        bool                                     mCurrentLimitFlipped;   /**<    (1)     trick_chkpnt_io(**) Converter has flipped to current limiting this major step.. */
-        double                                   mSourceVoltage;         /**<    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
+        GunnsElectConverterOutput::RegulatorType mRegulatorType;          /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
+        double                                   mOutputConductance;      /**<    (1/ohm) trick_chkpnt_io(**) The output conductance. */
+        double                                   mConverterEfficiency;    /**<    (1)     trick_chkpnt_io(**) The conversion efficiency (0-1). */
+        SensorAnalog*                            mOutputVoltageSensor;    /**<    (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor. */
+        SensorAnalog*                            mOutputCurrentSensor;    /**<    (1)     trick_chkpnt_io(**) Pointer to the output current sensor. */
+        GunnsElectConverterInput*                mInputLink;              /**< *o (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
+        bool                                     mEnableCurrentLimiting;  /**<    (1)     trick_chkpnt_io(**) Limits output current instead of over-current tripping. */
+        bool                                     mEnabled;                /**<    (1)                         Operation is enabled. */
+        double                                   mInputVoltage;           /**<    (V)                         Input channel voltage received from the input side. */
+        bool                                     mInputVoltageValid;      /**<    (1)     trick_chkpnt_io(**) The input channel voltage value is valid. */
+        bool                                     mOutputPowerAvailable;   /**<    (1)     trick_chkpnt_io(**) Power is available to the output channel during this major step. */
+        double                                   mSetpoint;               /**<    (1)                         Commanded regulation setpoint. */
+        bool                                     mResetTrips;             /**<    (1)     trick_chkpnt_io(**) Input command to reset trips. */
+        double                                   mInputPower;             /**<    (W)                         Input channel power load sent to the input side. */
+        bool                                     mInputPowerValid;        /**<    (1)     trick_chkpnt_io(**) The input channel power load value is valid. */
+        double                                   mOutputChannelLoss;      /**<    (W)     trick_chkpnt_io(**) Power loss through the output channel resistance. */
+        double                                   mLoadResistance;         /**<    (ohm)                       Estimate of total downstream load resistance. */
+        double                                   mTotalPowerLoss;         /**<    (W)                         Total power loss through converter efficiency and output channel resistance. */
+        GunnsTripGreaterThan                     mOutputOverVoltageTrip;  /**<    (1)                         Output over-voltage trip function. */
+        GunnsTripLessThan                        mOutputUnderVoltageTrip; /**<    (1)                         Output under-voltage trip function. */
+        GunnsTripGreaterThan                     mOutputOverCurrentTrip;  /**<    (1)                         Output over-current trip function. */
+        bool                                     mLeadsInterface;         /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
+        bool                                     mReverseBiasState;       /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
+        bool                                     mSolutionReset;          /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
+        bool                                     mBiasFlippedReverse;     /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped reverse during this major step. */
+        bool                                     mCurrentLimitingState;   /**<    (1)                         Converter is currently in the current limiting state. */
+        bool                                     mCurrentLimitFlipped;    /**<    (1)     trick_chkpnt_io(**) Converter has flipped to current limiting this major step.. */
+        double                                   mSourceVoltage;          /**<    (V)     trick_chkpnt_io(**) Active voltage source value when acting in a voltage source mode. */
         /// @brief  Validates the configuration and input data.
         void validate(const GunnsElectConverterOutputConfigData& configData,
                       const GunnsElectConverterOutputInputData&  inputData) const;
@@ -201,30 +204,32 @@ class GunnsElectConverterOutput : public GunnsBasicLink
 class GunnsElectConverterOutputConfigData: public GunnsBasicLinkConfigData
 {
     public:
-        GunnsElectConverterOutput::RegulatorType mRegulatorType;              /**< (1)     trick_chkpnt_io(**) The type of output regulation. */
-        double                                   mOutputConductance;          /**< (1/ohm) trick_chkpnt_io(**) The output conductance. */
-        double                                   mConverterEfficiency;        /**< (1)     trick_chkpnt_io(**) The voltage conversion efficiency (0-1). */
-        GunnsSensorAnalogWrapper*                mOutputVoltageSensor;        /**< (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor spotter. */
-        GunnsSensorAnalogWrapper*                mOutputCurrentSensor;        /**< (1)     trick_chkpnt_io(**) Pointer to the output current sensor spotter. */
-        unsigned int                             mTripPriority;               /**< (1)     trick_chkpnt_io(**) Priority of trips in the network. */
-        float                                    mOutputOverVoltageTripLimit; /**< (V)     trick_chkpnt_io(**) Output over-voltage trip limit. */
-        float                                    mOutputOverCurrentTripLimit; /**< (amp)   trick_chkpnt_io(**) Output over-current trip limit. */
-        GunnsElectConverterInput*                mInputLink;                  /**< (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
-        bool                                     mEnableCurrentLimiting;      /**< (1)     trick_chkpnt_io(**) Limits output current instead of over-current tripping. */
+        GunnsElectConverterOutput::RegulatorType mRegulatorType;               /**< (1)     trick_chkpnt_io(**) The type of output regulation. */
+        bool                                     mEnableCurrentLimiting;       /**< (1)     trick_chkpnt_io(**) Limits output current instead of over-current tripping. */
+        double                                   mOutputConductance;           /**< (1/ohm) trick_chkpnt_io(**) The output conductance. */
+        double                                   mConverterEfficiency;         /**< (1)     trick_chkpnt_io(**) The voltage conversion efficiency (0-1). */
+        GunnsSensorAnalogWrapper*                mOutputVoltageSensor;         /**< (1)     trick_chkpnt_io(**) Pointer to the output voltage sensor spotter. */
+        GunnsSensorAnalogWrapper*                mOutputCurrentSensor;         /**< (1)     trick_chkpnt_io(**) Pointer to the output current sensor spotter. */
+        unsigned int                             mTripPriority;                /**< (1)     trick_chkpnt_io(**) Priority of trips in the network. */
+        float                                    mOutputOverVoltageTripLimit;  /**< (V)     trick_chkpnt_io(**) Output over-voltage trip limit. */
+        float                                    mOutputUnderVoltageTripLimit; /**< (V)     trick_chkpnt_io(**) Output under-voltage trip limit. */
+        float                                    mOutputOverCurrentTripLimit;  /**< (amp)   trick_chkpnt_io(**) Output over-current trip limit. */
+        GunnsElectConverterInput*                mInputLink;                   /**< (1)     trick_chkpnt_io(**) Pointer to the converter input side link. */
         /// @brief  Default constructs this Electrical Converter Output configuration data.
         GunnsElectConverterOutputConfigData(
-                const std::string&                             name                       = "",
-                GunnsNodeList*                                 nodes                      = 0,
-                const GunnsElectConverterOutput::RegulatorType regulatorType              = GunnsElectConverterOutput::VOLTAGE,
-                const double                                   outputConductance          = 0.0,
-                const double                                   converterEfficiency        = 0.0,
-                GunnsSensorAnalogWrapper*                      outputVoltageSensor        = 0,
-                GunnsSensorAnalogWrapper*                      outputCurrentSensor        = 0,
-                const unsigned int                             tripPriority               = 0,
-                const float                                    outputOverVoltageTripLimit = 0.0,
-                const float                                    outputOverCurrentTripLimit = 0.0,
-                GunnsElectConverterInput*                      inputLink                  = 0,
-                const bool                                     enableCurrentLimiting      = false);
+                const std::string&                             name                        = "",
+                GunnsNodeList*                                 nodes                       = 0,
+                const GunnsElectConverterOutput::RegulatorType regulatorType               = GunnsElectConverterOutput::VOLTAGE,
+                const double                                   outputConductance           = 0.0,
+                const double                                   converterEfficiency         = 0.0,
+                GunnsSensorAnalogWrapper*                      outputVoltageSensor         = 0,
+                GunnsSensorAnalogWrapper*                      outputCurrentSensor         = 0,
+                const unsigned int                             tripPriority                = 0,
+                const float                                    outputOverVoltageTripLimit  = 0.0,
+                const float                                    outputOverCurrentTripLimit  = 0.0,
+                GunnsElectConverterInput*                      inputLink                   = 0,
+                const bool                                     enableCurrentLimiting       = false,
+                const float                                    outputUnderVoltageTripLimit = 0.0);
         /// @brief  Default destructs this Electrical Converter Output configuration data.
         virtual ~GunnsElectConverterOutputConfigData();
         /// @brief  Copy constructs this Electrical Converter Output configuration data.
@@ -291,6 +296,20 @@ inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedSte
 {
     mSolutionReset = true;
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Resets the tripped state of the contained trip logic functions.  If we have a pointer
+///           to the other side, reset its trips as well.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::resetTrips()
+{
+    mOutputOverVoltageTrip.resetTrip();
+    mOutputUnderVoltageTrip.resetTrip();
+    mOutputOverCurrentTrip.resetTrip();
+    if (mInputLink) {
+        mInputLink->resetTrips();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,19 +401,6 @@ inline bool GunnsElectConverterOutput::getCurrentLimitingState() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Resets the tripped state of the contained trip logic functions.  If we have a pointer
-///           to the other side, reset its trips as well.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectConverterOutput::resetTrips()
-{
-    mOutputOverVoltageTrip.resetTrip();
-    mOutputOverCurrentTrip.resetTrip();
-    if (mInputLink) {
-        mInputLink->resetTrips();
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  GunnsTripLogic*  (--)  Pointer to the output over-voltage trip logic.
 ///
 /// @details  Returns the address of the mOutputOverVoltageTrip attribute.
@@ -402,6 +408,16 @@ inline void GunnsElectConverterOutput::resetTrips()
 inline GunnsTripLogic* GunnsElectConverterOutput::getOutputOverVoltageTrip()
 {
     return &mOutputOverVoltageTrip;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  GunnsTripLogic*  (--)  Pointer to the output under-voltage trip logic.
+///
+/// @details  Returns the address of the mOutputUnderVoltageTrip attribute.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsTripLogic* GunnsElectConverterOutput::getOutputUnderVoltageTrip()
+{
+    return &mOutputUnderVoltageTrip;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

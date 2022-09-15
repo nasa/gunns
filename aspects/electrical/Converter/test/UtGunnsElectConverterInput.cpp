@@ -483,13 +483,6 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
-        /// @test    minorStep resets the valid power & voltage flags.
-        tArticle->mInputVoltageValid = false;
-        tArticle->mInputPowerValid   = false;
-        tArticle->minorStep(0.0, 0);
-        CPPUNIT_ASSERT(true == tArticle->mInputVoltageValid);
-        CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
-
         /// @test    minorStep when output link has invalid power.
         tOutputLink.mInputPowerValid = false;
         tArticle->minorStep(0.0, 0);
@@ -703,10 +696,11 @@ void UtGunnsElectConverterInput::testConfirmSolutionAcceptable()
     /// @test    Rejects due to invalid power from the output link.
     FriendlyGunnsElectConverterInput article2;
     article2.initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tOutputConfigData->mInputLink = &article2;
     tOutputLink.initialize(*tOutputConfigData, *tOutputInputData, tLinks, 1);
     tOutputLink.mInputPowerValid = false;
-    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == tArticle->confirmSolutionAcceptable(tTripPriority, 1));
-    CPPUNIT_ASSERT(true  == tArticle->mInputVoltageValid);
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT == article2.confirmSolutionAcceptable(tTripPriority, 1));
+    CPPUNIT_ASSERT(false == article2.mInputVoltageValid);
 
     UT_PASS;
 }

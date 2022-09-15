@@ -118,6 +118,8 @@ class GunnsElectConverterInput : public GunnsBasicLink
         void setInputPower(const double inputPower);
         /// @brief  Returns the input voltage.
         double getInputVoltage() const;
+        /// @brief  Returns the input voltage valid flag.
+        bool getInputVoltageValid() const;
         /// @brief  Returns the input under-voltage trip logic.
         GunnsTripLogic* getInputUnderVoltageTrip();
         /// @brief  Returns the input over-voltage trip logic.
@@ -275,6 +277,16 @@ inline void GunnsElectConverterInput::setInputPower(const double inputPower)
 inline double GunnsElectConverterInput::getInputVoltage() const
 {
     return mInputVoltage;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  Whether the input-side voltage value is valid.
+///
+/// @details  Returns the value of mInputVoltageValid.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterInput::getInputVoltageValid() const
+{
+    return mInputVoltageValid;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

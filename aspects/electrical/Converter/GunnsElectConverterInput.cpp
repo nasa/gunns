@@ -311,7 +311,6 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
         mPower               = 0.0;
 
     } else {
-        mInputVoltageValid = true;
         computeInputVoltage(mInputVoltage);
 
         /// - If we precede the pointed-to output link, drive the interface with it.  Otherwise we
@@ -393,12 +392,15 @@ void GunnsElectConverterInput::computeFlows(const double dt __attribute__((unuse
 GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptable(
         const int convergedStep, const int absoluteStep __attribute__((unused)))
 {
+    /// - Always confirm the solution and reset the voltage valid flag when on the Ground node.
     GunnsBasicLink::SolutionResult result = CONFIRM;
-
-    /// - We only check for solution rejection and state change after the network has converged.
-    ///   Always confirm when on the Ground node.
-    if ( (mNodeMap[0] != getGroundNodeIndex()) and (convergedStep > 0) ) {
-
+    if (mNodeMap[0] == getGroundNodeIndex()) {
+        mInputVoltageValid = false;
+    } else if (0 == convergedStep) {
+        /// - We only check for solution rejection and state change after the network has converged.
+        ///   Until it has converged, we assume hte input voltage is valid.
+        mInputVoltageValid = true;
+    } else {
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
         float sensedVin = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);

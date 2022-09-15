@@ -110,8 +110,6 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         /// @brief  Returns the link's assessment of the network solution.
         virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                          const int absoluteStep);
-        /// @brief Resets the link back to the previous minor step iteration.
-        virtual bool resetLastMinorStep(const int convergedStep, const int absoluteStep);
         /// @brief  Computes and returns the input channel power and validity.
         bool computeInputPower(double& inputPower);
         /// @brief  Returns if the link is non-linear.
@@ -165,7 +163,6 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripGreaterThan                     mOutputOverCurrentTrip;  /**<    (1)                         Output over-current trip function. */
         bool                                     mLeadsInterface;         /**< *o (1)     trick_chkpnt_io(**) This precedes the mInputLink in the network. */
         bool                                     mReverseBiasState;       /**<    (1)     trick_chkpnt_io(**) Converter is dioded off due to reverse voltage bias. */
-        bool                                     mSolutionReset;          /**<    (1)     trick_chkpnt_io(**) Previous solution was reset by solver. */
         bool                                     mBiasFlippedReverse;     /**<    (1)     trick_chkpnt_io(**) Voltage bias has flipped reverse during this major step. */
         bool                                     mCurrentLimitingState;   /**<    (1)                         Converter is currently in the current limiting state. */
         bool                                     mCurrentLimitFlipped;    /**<    (1)     trick_chkpnt_io(**) Converter has flipped to current limiting this major step.. */
@@ -279,22 +276,6 @@ class GunnsElectConverterOutputInputData : public GunnsBasicLinkInputData
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline bool GunnsElectConverterOutput::isNonLinear()
 {
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  convergedStep  (1)  Not used.
-/// @param[in]  absoluteStep   (1)  Not used.
-///
-/// @returns  bool  (1)  Always returns true.
-///
-/// @details  Sets a flag indicating that the last minor step solution was invalid, so we can't
-///           compute outputs from it.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep __attribute__((unused)),
-                                                          const int absoluteStep __attribute__((unused)))
-{
-    mSolutionReset = true;
     return true;
 }
 

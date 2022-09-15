@@ -177,7 +177,6 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mOutputOverCurrentTrip(),
     mLeadsInterface(false),
     mReverseBiasState(false),
-    mSolutionReset(false),
     mBiasFlippedReverse(false),
     mCurrentLimitingState(false),
     mCurrentLimitFlipped(false),
@@ -343,7 +342,6 @@ void GunnsElectConverterOutput::restartModel()
     mInputPowerValid     = true;
     mOutputChannelLoss   = 0.0;
     mReverseBiasState    = false;
-    mSolutionReset       = false;
     mCurrentLimitFlipped = false;
 }
 
@@ -387,15 +385,15 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
         mSourceVector[0]     = 0.0;
 
     } else {
-        mInputPowerValid = true;
         computeInputPower(mInputPower);
-        mSolutionReset = false;
 
         /// - If we precede the pointed-to input link, drive the interface with it.  Otherwise we
         ///   expect the interface to be driven by the input link or by other means.
         if (mLeadsInterface) {
             mInputVoltageValid = mInputLink->computeInputVoltage(mInputVoltage);
             mInputLink->setInputPower(mInputPower);
+        } else if (mInputLink) {
+            mInputVoltageValid = mInputLink->getInputVoltageValid();
         } else {
             mInputVoltageValid = true;
         }
@@ -435,7 +433,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
                     conductance = FLT_EPSILON;
                     break;
                 case (TRANSFORMER) :
-                    if (mCurrentLimitingState) {
+                    if (mEnableCurrentLimiting and mCurrentLimitingState) {
                         sourceCurrent = mOutputOverCurrentTrip.getLimit();
                         conductance   = FLT_EPSILON;
                     } else {
@@ -444,7 +442,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
                     }
                     break;
                 default :    // VOLTAGE
-                    if (mCurrentLimitingState) {
+                    if (mEnableCurrentLimiting and mCurrentLimitingState) {
                         sourceCurrent = mOutputOverCurrentTrip.getLimit();
                         conductance   = FLT_EPSILON;
                     } else {
@@ -501,11 +499,11 @@ void GunnsElectConverterOutput::computeFlows(const double dt __attribute__((unus
 GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAcceptable(
         const int convergedStep, const int absoluteStep __attribute__((unused)))
 {
+    ///   Always confirm the solution and reset power valid flag when on the Ground node.
     GunnsBasicLink::SolutionResult result = CONFIRM;
-    mSolutionReset = false;
-
-    ///   Always confirm when on the Ground node.
-    if (mNodeMap[0] != getGroundNodeIndex()) {
+    if (mNodeMap[0] == getGroundNodeIndex()) {
+        mInputPowerValid = false;
+    } else {
 
         /// - If the voltage bias switched states in either direction, reject the solution and
         ///   start over.  Zero the input power for the next minor step because this power value
@@ -574,6 +572,9 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
         /// - Reject the solution if the voltage value from the input link is invalid.  This
         ///   happens when we lead the interface, the input link rejected the network solution on
         ///   the previous minor step and hasn't computed a valid voltage for this minor step yet.
+        if (mInputLink) {
+            mInputVoltageValid = mInputLink->getInputVoltageValid();
+        }
         if (not mInputVoltageValid) {
             result = REJECT;
         }
@@ -614,7 +615,7 @@ bool GunnsElectConverterOutput::updateBias()
 bool GunnsElectConverterOutput::computeInputPower(double& inputPower)
 {
     /// - Zero outputs if the last minor step solution was invalid or we are on the Ground node.
-    if (mSolutionReset or (mNodeMap[0] == getGroundNodeIndex())) {
+    if (mNodeMap[0] == getGroundNodeIndex() or not mInputPowerValid) {
         mPower             = 0.0;
         mOutputChannelLoss = 0.0;
         inputPower         = 0.0;

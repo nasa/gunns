@@ -771,6 +771,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     tArticle->setCurrentLimitingState(false);
     CPPUNIT_ASSERT(false == tArticle->getCurrentLimitingState());
 
+    /// @test    Set output conductance.
+    tArticle->setOutputConductance(1.0);
+    CPPUNIT_ASSERT(1.0 == tArticle->mOutputConductance);
+
     UT_PASS;
 }
 

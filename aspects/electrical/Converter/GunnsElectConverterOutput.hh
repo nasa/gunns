@@ -124,6 +124,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         void setSetpoint(const double setpoint);
         /// @brief  Sets the current limiting state.
         void setCurrentLimitingState(const bool state);
+        /// @brief  Sets the output conductance.
+        void setOutputConductance(const double conductance);
         /// @brief  Returns the commanded setpoint.
         double getSetpoint() const;
         /// @brief  Returns the input power.
@@ -339,6 +341,16 @@ inline void GunnsElectConverterOutput::setSetpoint(const double setpoint)
 inline void GunnsElectConverterOutput::setCurrentLimitingState(const bool state)
 {
     mCurrentLimitingState = state;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  conductance  (1/ohm)  Conductance value for the converter output.
+///
+/// @details  Sets mOutputConductance to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterOutput::setOutputConductance(const double conductance)
+{
+    mOutputConductance = conductance;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

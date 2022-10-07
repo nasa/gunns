@@ -28,7 +28,7 @@ LIBRARY DEPENDENCY:
 /// @param[in] outputOverVoltageTripLimit  (V)     Output over-voltage trip limit.
 /// @param[in] outputOverCurrentTripLimit  (amp)   Output over-current trip limit.
 /// @param[in] inputLink                   (--)    Pointer to the input side link.
-/// @param[in] enableCurrentLimiting       (--)    Limits output current instead of over-current tripping.
+/// @param[in] enableLimiting              (--)    Limits output current or voltage instead of tripping.
 /// @param[in] outputUnderVoltageTripLimit (V)     Output under-voltage trip limit.
 ///
 /// @details  Default Electrical Converter Output link config data constructor.
@@ -45,21 +45,21 @@ GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
         const float                                    outputOverVoltageTripLimit,
         const float                                    outputOverCurrentTripLimit,
         GunnsElectConverterInput*                      inputLink,
-        const bool                                     enableCurrentLimiting,
+        const bool                                     enableLimiting,
         const float                                    outputUnderVoltageTripLimit)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mRegulatorType(regulatorType),
+    mEnableLimiting(enableLimiting),
     mOutputConductance(outputConductance),
     mConverterEfficiency(converterEfficiency),
     mOutputVoltageSensor(outputVoltageSensor),
     mOutputCurrentSensor(outputCurrentSensor),
     mTripPriority(tripPriority),
     mOutputOverVoltageTripLimit(outputOverVoltageTripLimit),
+    mOutputUnderVoltageTripLimit(outputUnderVoltageTripLimit),
     mOutputOverCurrentTripLimit(outputOverCurrentTripLimit),
-    mInputLink(inputLink),
-    mEnableCurrentLimiting(enableCurrentLimiting),
-    mOutputUnderVoltageTripLimit(outputUnderVoltageTripLimit)
+    mInputLink(inputLink)
 {
     // nothing to do
 }
@@ -82,16 +82,16 @@ GunnsElectConverterOutputConfigData::GunnsElectConverterOutputConfigData(
     :
     GunnsBasicLinkConfigData(that),
     mRegulatorType(that.mRegulatorType),
+    mEnableLimiting(that.mEnableLimiting),
     mOutputConductance(that.mOutputConductance),
     mConverterEfficiency(that.mConverterEfficiency),
     mOutputVoltageSensor(that.mOutputVoltageSensor),
     mOutputCurrentSensor(that.mOutputCurrentSensor),
     mTripPriority(that.mTripPriority),
     mOutputOverVoltageTripLimit(that.mOutputOverVoltageTripLimit),
+    mOutputUnderVoltageTripLimit(that.mOutputUnderVoltageTripLimit),
     mOutputOverCurrentTripLimit(that.mOutputOverCurrentTripLimit),
-    mInputLink(that.mInputLink),
-    mEnableCurrentLimiting(that.mEnableCurrentLimiting),
-    mOutputUnderVoltageTripLimit(that.mOutputUnderVoltageTripLimit)
+    mInputLink(that.mInputLink)
 {
     // nothing to do
 }
@@ -160,7 +160,7 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mOutputVoltageSensor(0),
     mOutputCurrentSensor(0),
     mInputLink(0),
-    mEnableCurrentLimiting(false),
+    mEnableLimiting(false),
     mEnabled(false),
     mInputVoltage(0.0),
     mInputVoltageValid(false),
@@ -178,8 +178,8 @@ GunnsElectConverterOutput::GunnsElectConverterOutput()
     mLeadsInterface(false),
     mReverseBiasState(false),
     mBiasFlippedReverse(false),
-    mCurrentLimitingState(false),
-    mCurrentLimitFlipped(false),
+    mLimitState(false),
+    mLimitStateFlipped(false),
     mSourceVoltage(0.0)
 {
     // nothing to do
@@ -219,10 +219,10 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
     validate(configData, inputData);
 
     /// - Initialize from configuration and input data.
-    mRegulatorType         = configData.mRegulatorType;
-    mOutputConductance     = configData.mOutputConductance;
-    mConverterEfficiency   = configData.mConverterEfficiency;
-    mEnableCurrentLimiting = configData.mEnableCurrentLimiting;
+    mRegulatorType       = configData.mRegulatorType;
+    mOutputConductance   = configData.mOutputConductance;
+    mConverterEfficiency = configData.mConverterEfficiency;
+    mEnableLimiting      = configData.mEnableLimiting;
     if (configData.mInputLink) {
         mInputLink = configData.mInputLink;
         mInputLink->registerOutputLink(this);
@@ -258,8 +258,8 @@ void GunnsElectConverterOutput::initialize(      GunnsElectConverterOutputConfig
     mInputVoltageValid    = true;
     mInputPowerValid      = true;
     mReverseBiasState     = (VOLTAGE == mRegulatorType) and (mSetpoint < mNodes[0]->getPotential());
-    mCurrentLimitingState = false;
-    mCurrentLimitFlipped  = false;
+    mLimitState           = false;
+    mLimitStateFlipped    = false;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -337,12 +337,12 @@ void GunnsElectConverterOutput::restartModel()
     GunnsBasicLink::restartModel();
 
     /// - Reset non-checkpointed and non-config data.
-    mInputVoltageValid   = true;
-    mResetTrips          = false;
-    mInputPowerValid     = true;
-    mOutputChannelLoss   = 0.0;
-    mReverseBiasState    = false;
-    mCurrentLimitFlipped = false;
+    mInputVoltageValid = true;
+    mResetTrips        = false;
+    mInputPowerValid   = true;
+    mOutputChannelLoss = 0.0;
+    mReverseBiasState  = false;
+    mLimitStateFlipped = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,8 +362,8 @@ void GunnsElectConverterOutput::step(const double dt)
         mResetTrips = false;
         resetTrips();
     }
-    mBiasFlippedReverse  = false;
-    mCurrentLimitFlipped = false;
+    mBiasFlippedReverse = false;
+    mLimitStateFlipped  = false;
 
     minorStep(0.0, 1);
 }
@@ -418,39 +418,8 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
         double conductance   = 0.0;
         double sourceCurrent = 0.0;
         mSourceVoltage       = 0.0;
-        if (mEnabled and mOutputPowerAvailable
-                and not (mOutputOverVoltageTrip.isTripped() or mOutputOverCurrentTrip.isTripped() or
-                         mOutputUnderVoltageTrip.isTripped())) {
-            switch (mRegulatorType) {
-                case (CURRENT) :
-                    sourceCurrent  = applyBlockage(mSetpoint);
-                    conductance    = FLT_EPSILON;
-                    break;
-                case (POWER) :
-                    if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
-                        sourceCurrent = applyBlockage(sqrt(mSetpoint / mLoadResistance));
-                    }
-                    conductance = FLT_EPSILON;
-                    break;
-                case (TRANSFORMER) :
-                    if (mEnableCurrentLimiting and mCurrentLimitingState) {
-                        sourceCurrent = mOutputOverCurrentTrip.getLimit();
-                        conductance   = FLT_EPSILON;
-                    } else {
-                        conductance    = applyBlockage(mOutputConductance);
-                        mSourceVoltage = mInputVoltage * mSetpoint;
-                    }
-                    break;
-                default :    // VOLTAGE
-                    if (mEnableCurrentLimiting and mCurrentLimitingState) {
-                        sourceCurrent = mOutputOverCurrentTrip.getLimit();
-                        conductance   = FLT_EPSILON;
-                    } else {
-                        conductance    = applyBlockage(mOutputConductance);
-                        mSourceVoltage = mSetpoint;
-                    }
-                    break;
-            }
+        if (mEnabled and mOutputPowerAvailable and not isAnyTrips()) {
+            computeRegulationSources(conductance, mSourceVoltage, sourceCurrent);
         }
 
         /// - When in the reverse bias state, zero conductance to prevent negative current.
@@ -465,6 +434,58 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
             mAdmittanceUpdate    = true;
         }
         mSourceVector[0] = mSourceVoltage * conductance + sourceCurrent;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] conductance (1/ohm) Returned value of link conductance.
+/// @param[out] voltage     (V)     Returned value of source voltage.
+/// @param[out] current     (amp)   Returned value of source current.
+///
+/// @details  Computes the source effects of the link (conductance, voltage, current) based on
+///           regulation type and limiting state.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::computeRegulationSources(double& conductance, double& voltage, double& current)
+{
+    switch (mRegulatorType) {
+        case (CURRENT) :
+            if (mLimitState) {
+                conductance    = applyBlockage(mOutputConductance);
+                mSourceVoltage = mOutputUnderVoltageTrip.getLimit();
+            } else {
+                current        = applyBlockage(mSetpoint);
+                conductance    = FLT_EPSILON;
+            }
+            break;
+        case (POWER) :
+            if (mLimitState) {
+                conductance    = applyBlockage(mOutputConductance);
+                mSourceVoltage = mOutputUnderVoltageTrip.getLimit();
+            } else {
+                conductance = FLT_EPSILON;
+                if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
+                    current = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+                }
+            }
+            break;
+        case (TRANSFORMER) :
+            if (mLimitState) {
+                current     = mOutputOverCurrentTrip.getLimit();
+                conductance = FLT_EPSILON;
+            } else {
+                conductance    = applyBlockage(mOutputConductance);
+                mSourceVoltage = mInputVoltage * mSetpoint;
+            }
+            break;
+        default :    // VOLTAGE
+            if (mLimitState) {
+                current     = mOutputOverCurrentTrip.getLimit();
+                conductance = FLT_EPSILON;
+            } else {
+                conductance    = applyBlockage(mOutputConductance);
+                mSourceVoltage = mSetpoint;
+            }
+            break;
     }
 }
 
@@ -540,32 +561,14 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
             ///   the current limiting state.
             if (mEnabled) {
                 mOutputOverVoltageTrip .checkForTrip(result, sensedVout, convergedStep);
-                mOutputUnderVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
-                if (not mEnableCurrentLimiting) {
+                if (not (mEnableLimiting and not isVoltageRegulator())) {
+                    mOutputUnderVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
+                }
+                if (not (mEnableLimiting and isVoltageRegulator())) {
                     mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
                 }
             }
-
-            /// - Reject the solution when current limiting state changes.  Exit the limiting
-            ///   state if output voltage is over the setpoint.  Enter the limiting state if
-            ///   output current is over the limit.  To prevent endless state oscillating in
-            ///   feedback with the rest of the circuit, and to prevent getting stuck in the
-            ///   current limiting (current source) state when the circuit is over-volted,
-            ///   only allow one flip to the current limiting state per major step.
-            if (mEnableCurrentLimiting and not mCurrentLimitFlipped) {
-                if (mCurrentLimitingState) {
-                    if (sensedVout > mSetpoint) {
-                        mCurrentLimitingState = false;
-                        result                = REJECT;
-                    }
-                } else {
-                    if (sensedIout > mOutputOverCurrentTrip.getLimit()) {
-                        mCurrentLimitingState = true;
-                        mCurrentLimitFlipped  = true;
-                        result                = REJECT;
-                    }
-                }
-            }
+            updateLimitState(result, sensedVout, sensedIout);
         }
         mInputPowerValid = (REJECT != result);
 
@@ -594,14 +597,52 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 bool GunnsElectConverterOutput::updateBias()
 {
     const bool lastBias = mReverseBiasState;
-    if (CURRENT == mRegulatorType or POWER == mRegulatorType or
-            mSourceVoltage >= mPotentialVector[0]) {
+    if (mSourceVoltage >= mPotentialVector[0] or not isVoltageRegulator()) {
         mReverseBiasState = false;
-    } else if (not mBiasFlippedReverse and not mCurrentLimitingState) {
+    } else if (not mBiasFlippedReverse and not mLimitState) {
         mReverseBiasState   = true;
         mBiasFlippedReverse = true;
     }
     return (lastBias != mReverseBiasState);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] result  (--)  Network solution result.
+/// @param[in]  voltage (V)   Output electrical voltage value.
+/// @param[in]  current (amp) Output electrical current value.
+///
+/// @details  Updates the current/voltage limit state.Reject the solution when limit state changes.
+///           For voltage regulator types, enter the current-limiting state if output current is
+///           over the limit, and exit limiting when voltage is over the regulation setpoint.
+///           For current regulator types, enter the voltage-limiting state if output voltage is
+///           under the limit, and exit when output voltage is over the limit.  To prevent endless
+///           state oscillating in feeedback with the rest of the circuit, and to prevent getting
+///           stuck in the limiting state when it should not be, only allow one flip to the limiting
+///           state per major step.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectConverterOutput::updateLimitState(GunnsBasicLink::SolutionResult& result,
+                                                 const float                     voltage,
+                                                 const float                     current)
+{
+    if (mEnabled and mEnableLimiting) {
+        if (mLimitState) {
+            if ( (voltage > mSetpoint                          and     isVoltageRegulator()) or
+                 (voltage > mOutputUnderVoltageTrip.getLimit() and not isVoltageRegulator()) ) {
+                mLimitState = false;
+                result      = REJECT;
+            }
+        } else if (not mLimitStateFlipped) {
+            if ( (current > mOutputOverCurrentTrip.getLimit()  and     isVoltageRegulator()) or
+                 (voltage < mOutputUnderVoltageTrip.getLimit() and not isVoltageRegulator()) ) {
+                mLimitState        = true;
+                mLimitStateFlipped = true;
+                result             = REJECT;
+            }
+        }
+    } else {
+        mLimitState        = false;
+        mLimitStateFlipped = false;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -18,9 +18,31 @@ class SuperNetworkSetupTemplate:
 
   def render(self):
     r = (
+      '\'\'\'\n'
+      '####################################################################################################\n')
+    for notice in self.data['doxNotices']:
+      r = r + notice
+    for copyright in self.data['doxCopyrights']:
+      r = r + copyright
+    for license in self.data['doxLicenses']:
+      r = r + license
+    for dox in self.data['doxData'][:-1]:
+      r = r + dox + '\n'
+    for dox in self.data['doxData'][-1:]:
+      r = r + dox + '\n\n'
+    for reference in self.data['doxReferences'][:-1]:
+      r = r + reference
+    for reference in self.data['doxReferences'][-1:]:
+      r = r + reference + '\n'
+    if len(self.data['doxAssumptions']) > 0:
+      r = r + ('@details ASSUMPTIONS AND LIMITATIONS:\n')
+      for assumption in self.data['doxAssumptions'][:-1]:
+        r = r + assumption + '\n'
+      for assumption in self.data['doxAssumptions'][-1:]:
+        r = r + assumption + '\n\n'
+    r = r + (self.data['revline'] + '\n'
       '####################################################################################################\n'
-      + self.data['revline'] + '\n'
-      '####################################################################################################\n'
+      '\'\'\'\n'
       '\n'
       'import trick\n'
       '\n'

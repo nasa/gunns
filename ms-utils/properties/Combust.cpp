@@ -2,7 +2,7 @@
 @file
 @brief Combustion Model Implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -521,7 +521,7 @@ void Combust::solveEquilibrium(double temp){
 
         /// - Check for errors
         for(int i = 0; i < mNCompounds; i++){
-            if(productRatios[i] < 0.0 or isnan(productRatios[i]) or productRatios[i] > 1.0){
+            if(productRatios[i] < 0.0 or std::isnan(productRatios[i]) or productRatios[i] > 1.0){
                 throwError( "solveEquilibrium Error",
                         "solveEquilibrium. Could not solve Elemental Potential Equations.");
             }

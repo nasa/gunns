@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Basic Jumper Plug Class implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -249,7 +249,7 @@ void GunnsBasicJumperPlug::processConnectionRequest()
         } else try {
             mConnectedNode = connectToSocket(getConnectionRequest());
             setLastDisconnection(getNoConnection());
-        } catch (TsInvalidStateTransitionException) {
+        } catch (TsInvalidStateTransitionException& e) {
             //do nothing
         }
     }

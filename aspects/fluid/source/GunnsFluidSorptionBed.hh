@@ -8,6 +8,9 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_SORPTION_BED  Sorption Bed Link
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @details
 PURPOSE:
 - (Provides the classes for the GUNNS Fluid Sorption Bed link.)
@@ -70,7 +73,7 @@ class GunnsFluidSorptionBedSorbate
         virtual ~GunnsFluidSorptionBedSorbate();
         /// @brief  Initializes this Sorption Bed Sorbate.
         void init(const SorbateProperties* properties, const int fluidIndex, const int tcIndex,
-                  const double loading, const PolyFluid* fluid);
+                  const double loading, const double volume, const PolyFluid* fluid);
         /// @brief  Stores pointers to interacting sorbates in the sorption bed.
         void registerInteractions(GunnsFluidSorptionBedSorbate* sorbates, const unsigned int nSorbates);
         /// @brief  Computes the equilibrium sorbant-sorbate loading at current conditions.
@@ -97,6 +100,8 @@ class GunnsFluidSorptionBedSorbate
         std::vector<unsigned int>                    mBlockingCompoundIndex; /**< ** (1) trick_chkpnt_io(**) Index of the blocking compounds interaction data in the Sorbate Properties. */
         std::vector<GunnsFluidSorptionBedFluidIndex> mOffgasIndexes;         /**< ** (1) trick_chkpnt_io(**) Fluid indexes of the offgasing compounds. */
         static const float                           mLimitAdsorbFraction;   /**< ** (1) trick_chkpnt_io(**) Limit on fraction of influx that can be adsorbed. */
+        /// @brief  Formats and throws H&S error and exception with the given description.
+        void throwInitException(const std::string& reason) const;
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
@@ -114,10 +119,10 @@ class GunnsFluidSorptionBedSorbate
 class GunnsFluidSorptionBedSegmentConfigData
 {
     public:
-        const std::string        mName;       /**< (1)   trick_chkpnt_io(**) Name of the sorption bed segment. */
+        std::string              mName;       /**< (1)   trick_chkpnt_io(**) Name of the sorption bed segment. */
         const SorbantProperties* mProperties; /**< (1)   trick_chkpnt_io(**) Properties of the sorbant & sorbates in this segment. */
-        const double             mVolume;     /**< (m3)  trick_chkpnt_io(**) Total volume of this segment including sorbant material and voids. */
-        const double             mHtc;        /**< (W/K) trick_chkpnt_io(**) Convective heat transfer coefficient between sorbant and fluid. */
+        double                   mVolume;     /**< (m3)  trick_chkpnt_io(**) Total volume of this segment including sorbant material and voids. */
+        double                   mHtc;        /**< (W/K) trick_chkpnt_io(**) Convective heat transfer coefficient between sorbant and fluid. */
         /// @brief  Constructs this Sorption Bed Segment Configuration Data.
         GunnsFluidSorptionBedSegmentConfigData(const std::string& name, const SorbantProperties* sorbant,
                                                const double volume, const double htc);
@@ -137,9 +142,9 @@ class GunnsFluidSorptionBedSegmentConfigData
 class GunnsFluidSorptionBedSegmentInputData
 {
     public:
-        const unsigned int           mSegment; /**< (1)         trick_chkpnt_io(**) The segment number to load. */
-        const ChemicalCompound::Type mSorbate; /**< (1)         trick_chkpnt_io(**) The sorbate compound type to load. */
-        const double                 mLoading; /**< (kg*mol/m3) trick_chkpnt_io(**) Initial loading amount. */
+        unsigned int           mSegment; /**< (1)         trick_chkpnt_io(**) The segment number to load. */
+        ChemicalCompound::Type mSorbate; /**< (1)         trick_chkpnt_io(**) The sorbate compound type to load. */
+        double                 mLoading; /**< (kg*mol/m3) trick_chkpnt_io(**) Initial loading amount. */
         /// @brief  Constructs this Sorption Bed Segment Input Data.
         GunnsFluidSorptionBedSegmentInputData(const unsigned int segment, const ChemicalCompound::Type sorbate,
                                               const double loading);
@@ -191,6 +196,8 @@ class GunnsFluidSorptionBedSegment
         /// @brief  Updates fluid masses in the exit stream.
         void exchangeFluid(const int fluidIndex, const int tcIndex, const double mdotInBulk,
                            const double ndotInTc, const double dndot, const double molWeight);
+        /// @brief  Returns the effective sorbant volume including degradation malfunction.
+        double computeEffectiveSorbantVolume() const;
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
@@ -222,7 +229,7 @@ class GunnsFluidSorptionBedConfigData : public GunnsFluidConductorConfigData
         /// @brief  Adds configuration data for a new bed segment with defined sorbant type.
         void addSegment(const SorbantProperties::Type definedType, const double volume, const double htc);
         /// @brief  Adds configuration data for a new bed segment with custom sorbant type.
-        void addSegment(const SorbantProperties* customType, const double volume, const double htc);
+        void addSegment(SorbantProperties* customType, const double volume, const double htc);
 
     protected:
         DefinedSorbantProperties*      mDefinedSorbants; /**< ** (1) trick_chkpnt_io(**) Properties of defined sorbant types. */
@@ -323,12 +330,18 @@ class GunnsFluidSorptionBed : public GunnsFluidConductor
         virtual void restartModel();
         /// @brief  Zeroes the adsorbed mass and adsorption rate output arrays.
         void zeroAdsorbOutputs();
+        /// @brief  Zeroes the adsorbed mass and adsorption rate temporary working arrays.
+        void zeroAdsorbWork();
         /// @brief  Computes the adsorbed mass and adsorption rate output values.
         double computeAdsorbOutputs();
         /// @brief  Checks for valid implementation-specific port node assignment.
         virtual bool checkSpecificPortRules(const int port, const int node) const;
 
     private:
+        double* mWorkFluidRates;  /**< ** (kg*mol/s) trick_chkpnt_io(**) Temporary work array for total adsorption rate of each bulk fluid constituent over all segments. */
+        double* mWorkTcRates;     /**< ** (kg*mol/s) trick_chkpnt_io(**) Temporary work array for total adsorption rate of each trace compound over all segments. */
+        double* mWorkFluidMasses; /**< ** (kg)       trick_chkpnt_io(**) Temporary work array for total adsorbed mass of each bulk fluid constituent over all segments. */
+        double* mWorkTcMasses;    /**< ** (kg)       trick_chkpnt_io(**) Temporary work array for total adsorbed mass of each trace compound over all segments. */
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         GunnsFluidSorptionBed(const GunnsFluidSorptionBed&);
         /// @brief  Assignment operator unavailable since declared private and not implemented.
@@ -375,6 +388,19 @@ inline const std::vector<GunnsFluidSorptionBedFluidIndex>* GunnsFluidSorptionBed
 inline unsigned int GunnsFluidSorptionBedSegment::getNSorbates() const
 {
     return mNSorbates;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns double (m3) Effective sorbant volume with degradation malfunction applied.
+///
+/// @details  Computes and returns the effective sorbant volume considering degradation malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidSorptionBedSegment::computeEffectiveSorbantVolume() const
+{
+    if (mMalfDegradeFlag) {
+        return mVolSorbant * MsMath::limitRange(0.0, 1.0 - mMalfDegradeValue, 1.0);
+    }
+    return mVolSorbant;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -56,10 +56,26 @@ GunnsFluidSorptionBedSorbate::~GunnsFluidSorptionBedSorbate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] reason (--) String describing the reason for the error throw.
+///
+/// @throws  TsInitializationException
+///
+/// @details  Throws H&S error and exception with the given reason string.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidSorptionBedSorbate::throwInitException(const std::string& reason) const
+{
+    TsHsMsg msg(TS_HS_ERROR, TS_HS_GUNNS);
+    msg << "throwing TsInitializationException Invalid Initialization Data - " << reason;
+    hsSendMsg(msg);
+    throw TsInitializationException("Invalid Initialization Data", "no name", reason);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] properties  (--)        Pointer to the sorbate properties object.
 /// @param[in] fluidIndex  (--)        Index of this sorbate in the fluid constituents.
 /// @param[in] tcIndex     (--)        Index of this sorbate in the trace compounds.
 /// @param[in] loading     (kg*mol/m3) Initial sorbate loading.
+/// @param[in] volume      (m3)        Effective volume of sorbant.
 /// @param[in] fluid       (--)        Pointer to the link internal fluid.
 ///
 /// @throws  TsInitializationException
@@ -70,19 +86,19 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
                                         const int                fluidIndex,
                                         const int                tcIndex,
                                         const double             loading,
+                                        const double             volume,
                                         const PolyFluid*         fluid)
 {
     /// - Validate the initial loading.
     if (loading < 0.0) {
-        TsHsMsg msg(TS_HS_ERROR, TS_HS_GUNNS);
-        msg << "throwing TsInitializationException Invalid Initialization Data - loading is < 0.";
-        hsSendMsg(msg);
-        throw TsInitializationException("Invalid Initialization Data", "no name", "loading is < 0");
+        throwInitException("loading is < 0");
     }
     mProperties          = properties;
     mFluidIndexes.mFluid = fluidIndex;
     mFluidIndexes.mTc    = tcIndex;
     mLoading             = loading;
+    //TODO what about initial TC mass?
+    updateLoadedMass(volume);
 
     /// - Store the fluid indexes for the offgas compounds.
     const std::vector<SorbateInteractingCompounds>* sorbateOffgasCompounds = mProperties->getOffgasCompounds();
@@ -101,6 +117,8 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
 /// @param[in] sorbates  (--) Array of all sorbate types in the sorption bed.
 /// @param[in] nSorbates (--) Size of the sorbates array.
 ///
+/// @throws  TsInitializationException
+///
 /// @details  Stores pointers to the other sorbates that interact with this sorbate in the bed as
 ///           blocking compounds, so that we can reference them and compute their effect in
 ///           updateLoadingEquil.
@@ -108,9 +126,22 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
 void GunnsFluidSorptionBedSorbate::registerInteractions(GunnsFluidSorptionBedSorbate* sorbates,
                                                         const unsigned int            nSorbates)
 {
+    if (not mProperties) {
+        throwInitException("mProperties is NULL");
+    }
     for (unsigned int i=0; i<mProperties->getBlockingCompounds()->size(); ++i) {
         const ChemicalCompound::Type compound = mProperties->getBlockingCompounds()->at(i).mCompound;
-        for (unsigned int j=0; i<nSorbates; ++j) {
+        for (unsigned int j=0; j<nSorbates; ++j) {
+            //TODO do we really need all this?
+            if (not &sorbates[j]) {
+                throwInitException("sorbates[j] is NULL");
+            }
+            if (not sorbates[j].getProperties()) {
+                throwInitException("sorbates[j].getProperties() is NULL");
+            }
+            if (not sorbates[j].getProperties()->getCompound()) {
+                throwInitException("sorbates[j].getProperties()->getCompound() is NULL");
+            }
             if (compound == sorbates[j].getProperties()->getCompound()->mType) {
                 mBlockingStates.push_back(&sorbates[j]);
                 mBlockingCompoundIndex.push_back(i);
@@ -139,14 +170,14 @@ void GunnsFluidSorptionBedSorbate::updateLoadingEquil(const double pp, const dou
                        * blockingCompounds->at(mBlockingCompoundIndex.at(i)).mInteraction, 1.0);
     }
     if (mMalfLoadingEquilFlag) {
-        mLoadingEquil *= std::max(0.0, mMalfLoadingEquilValue);
+        mLoadingEquil *= fmax(0.0, mMalfLoadingEquilValue);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] timestep    (s)           Integration time step.
 /// @param[in] inFlux      (kg*mol/m3/s) Flow rate of sorbate in the freestream prior to sorption.
-/// @param[in] desorbLimit (kg*mol/m3/s) Limit on desorption rate.
+/// @param[in] desorbLimit (kg*mol/m3/s) Limit on desorption rate, as positive value > 0.
 ///
 /// @details  Computes & stores the current loading rate, limited to the incoming freestream mass
 ///           (for adsorption) or the loaded mass (for desorption), and integrates it into the
@@ -157,13 +188,15 @@ void GunnsFluidSorptionBedSorbate::updateLoadingEquil(const double pp, const dou
 void GunnsFluidSorptionBedSorbate::updateLoading(const double timestep, const double inFlux, const double desorbLimit)
 {
     mLoadingRate = mProperties->computeLoadingRate(mLoadingEquil, mLoading);
-    if (mLoadingEquil >= mLoading) {
-        mLoadingRate = std::min(mLoadingRate, mLimitAdsorbFraction * inFlux);
+    if (mLoadingRate >= 0.0) {
+        mLoadingRate = fmin(mLoadingRate, mLimitAdsorbFraction * inFlux);
     } else {
-        mLoadingRate = std::max(std::max(-mLoading / timestep, -desorbLimit), mLoadingRate);
+        /// - Note that the desorbLimit is given as a posiive value, but mLoadingRate is negative
+        ///   for desorption, so we flip the sign on desorbLimit inside here.
+        mLoadingRate = fmax(fmax(-mLoading / timestep, -desorbLimit), mLoadingRate);
     }
-    mLoading += std::max(0.0, mLoadingRate * timestep);
-    mLoadingFraction = mLoading / std::max(mLoadingEquil, DBL_EPSILON);
+    mLoading = fmax(0.0, mLoading + mLoadingRate * timestep);
+    mLoadingFraction = mLoading / fmax(mLoadingEquil, DBL_EPSILON);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,10 +253,10 @@ void GunnsFluidSorptionBedSorbate::restartModel()
 /// @details  Constructs this Sorption Bed Segment Configuration Data with arguments.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(
-        const std::string&       name,
+        const std::string& name,
         const SorbantProperties* sorbant,
-        const double             volume,
-        const double             htc)
+        const double       volume,
+        const double       htc)
     :
     mName(name),
     mProperties(sorbant),
@@ -368,14 +401,6 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
     mVolume     = configData.mVolume;
     mVolSorbant = mProperties->computeVolume(configData.mVolume);
 
-    /// - Validate the initialization.
-    if (mHtc < 0.0) {
-        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "heat transfer coefficient < 0");
-    }
-    if (mVolume < DBL_EPSILON) {
-        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "volume < DBL_ESPSILON");
-    }
-
     /// - The SorbantProperties for the sorbant in this bed define the list of possible sorbates,
     ///   but these are optional in the network.  Find the sorbates that are present in the network
     ///   as bulk fluids and/or trace compounds.  For those that exist in the network, store their
@@ -401,6 +426,7 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
     TS_NEW_CLASS_ARRAY_EXT(mSorbates, static_cast<int>(mNSorbates), GunnsFluidSorptionBedSorbate,
                            (), mName + ".mSorbates");
 
+    double effectiveSorbantVol = computeEffectiveSorbantVolume();
     for (unsigned int i=0; i<mNSorbates; ++i) {
         /// - Find initial loading of this sorbate in the loading input data.
         double load = 0.0;
@@ -411,18 +437,26 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
         }
         try {
             mSorbates[i].init(&mProperties->getSorbates()->at(sorbateIndexes[i]),
-                              fluidIndexes[i], tcIndexes[i], load, mFluid);
+                              fluidIndexes[i], tcIndexes[i], load, effectiveSorbantVol, mFluid);
         } catch (TsInitializationException& e) {
             const std::string compoundName = mProperties->getSorbates()->at(sorbateIndexes[i]).getCompound()->mName;
             std::ostringstream msg;
-            msg << "caught error from sorbate " << compoundName;
+            msg << "caught error from sorbate " << compoundName << ": " << e.getCause();
             GUNNS_ERROR(TsInitializationException, "Invalid Initialization", msg.str());
         }
     }
 
     /// - Initialize sorbate interactions.
     for (unsigned int i=0; i<mNSorbates; ++i) {
-        mSorbates[i].registerInteractions(mSorbates, mNSorbates);
+        try {
+            mSorbates[i].registerInteractions(mSorbates, mNSorbates);
+        } catch (TsInitializationException& e) {
+            //TODO refactor with above, DRY
+            const std::string compoundName = mProperties->getSorbates()->at(sorbateIndexes[i]).getCompound()->mName;
+            std::ostringstream msg;
+            msg << "caught error from sorbate " << compoundName << ": " << e.getCause();
+            GUNNS_ERROR(TsInitializationException, "Invalid Initialization", msg.str());
+        }
     }
 }
 
@@ -479,19 +513,20 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         /// - Find mole rate of desorption that would saturate the exit stream.  This is an
         ///   approximation since the total pressure doesn't include the addition of the desorbed
         ///   fluid and this doesn't account for other sorbates desorbing at the same time.
+        ///   We only do this for sorbates that are bulk fluids, since for trace compounds we do
+        ///   not model fluid states such as phase or saturation.
+        double desorbLimit = 1.0e10; //TODO magic # arbitrary large limit
         const FluidProperties::FluidType fluidType = mSorbates[i].getProperties()->getCompound()->mFluidType;
-        const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
-        const double ndotSat = ndot * pSat / std::max(pOut, DBL_EPSILON);
-        const double desorbLimit = ndotSat - ndotIn;
+        if (fluidIndex >= 0) {
+            const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
+            const double ndotSat = ndot * pSat / fmax(pOut, DBL_EPSILON);
+            desorbLimit = fmax(0.0, ndotSat - ndotIn);
+        }
         const double adsorbLimit = ndotIn / mVolSorbant;
 
         /// - Update loading rates (kg*mol/m3/s), bounded by adsorption and desorption rate limits.
         mSorbates[i].updateLoading(timestep, adsorbLimit, desorbLimit / mVolSorbant);
-        double effectiveSorbantVol = mVolSorbant;
-        if (mMalfDegradeFlag) {
-            effectiveSorbantVol *= MsMath::limitRange(0.0, 1.0 - mMalfDegradeValue, 1.0);
-        }
-        mSorbates[i].updateLoadedMass(effectiveSorbantVol);
+        mSorbates[i].updateLoadedMass(computeEffectiveSorbantVolume());
 
         /// - Update the bulk fluid flow with the adsorption/desorption flow rate for input to the next
         ///   segment.
@@ -531,9 +566,12 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
 
         /// - Update total thermal capacity of sorbant + sorbates for output to the thermal aspect.
         ///   Sorbate loading can significantly change the thermal capacity of the combined sorbant +
-        ///   sorbates mass, for absorbing future heat flux.
-        const double cp = mFluid->getProperties(fluidType)->getSpecificHeat(mTemperature);
-        thermCap += cp * mSorbates[i].mLoadedMass;
+        ///   sorbates mass, for absorbing future heat flux.  We only do this for sorbates that are
+        ///   bulk fluids, since we don't model thermal capacity for trace compounds.
+        if (fluidIndex >= 0) {
+            const double cp = mFluid->getProperties(fluidType)->getSpecificHeat(mTemperature);
+            thermCap += cp * mSorbates[i].mLoadedMass;
+        }
     }
 
     /// - Update bulk fluid and trace compounds constituent mixture fractions in the exit stream.
@@ -566,12 +604,12 @@ void GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const int
     if (dndot < -DBL_EPSILON) {
         /// - Adsorption from fluid.  If there is incoming trace compound, adsorb from it first,
         ///   then any remainder from the bulk fluid.
-        const double tcSorb = std::max(dndot, -ndotInTc); // tcSorb is <= 0.
+        const double tcSorb = fmax(dndot, -ndotInTc); // tcSorb is <= 0.
         ndotOutTc += tcSorb;
         if (fluidIndex >= 0) {
             const double dnRemain = -dndot + tcSorb;      // tcSorb is <= 0, dnRemain is >= 0.
             const double bulkSorb = dnRemain * molWeight;
-            mFluid->setMass(fluidIndex, std::max(mdotInBulk - bulkSorb, 0.0));
+            mFluid->setMass(fluidIndex, fmax(mdotInBulk - bulkSorb, 0.0));
         }
     } else if (dndot > DBL_EPSILON) {
         /// - Desorption to fluid.  Only desorb to the trace compound if there is no bulk fluid.
@@ -677,7 +715,7 @@ void GunnsFluidSorptionBedConfigData::addSegment(const SorbantProperties::Type d
 ///           properties, volume, and heat transfer coefficient.  This overloaded function accepts a
 ///           pointer to one of this bed's custom sorbant properties.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSorptionBedConfigData::addSegment(const SorbantProperties* customType,
+void GunnsFluidSorptionBedConfigData::addSegment(SorbantProperties* customType,
                                                  const double volume, const double htc)
 {
     const SorbantProperties* foundProperties = 0;
@@ -737,7 +775,11 @@ GunnsFluidSorptionBed::GunnsFluidSorptionBed()
     mAdsorptionFluidRates(0),
     mAdsorptionTcRates(0),
     mAdsorbedFluidMasses(0),
-    mAdsorbedTcMasses(0)
+    mAdsorbedTcMasses(0),
+    mWorkFluidRates(0),
+    mWorkTcRates(0),
+    mWorkFluidMasses(0),
+    mWorkTcMasses(0)
 {
     // nothing to do
 }
@@ -747,9 +789,13 @@ GunnsFluidSorptionBed::GunnsFluidSorptionBed()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSorptionBed::~GunnsFluidSorptionBed()
 {
+    delete [] mWorkTcMasses;
+    delete [] mWorkTcRates;
     TS_DELETE_ARRAY(mAdsorbedTcMasses);
-    TS_DELETE_ARRAY(mAdsorbedFluidMasses);
     TS_DELETE_ARRAY(mAdsorptionTcRates);
+    delete [] mWorkFluidMasses;
+    delete [] mWorkFluidRates;
+    TS_DELETE_ARRAY(mAdsorbedFluidMasses);
     TS_DELETE_ARRAY(mAdsorptionFluidRates);
     TS_DELETE_ARRAY(mSegments);
 }
@@ -796,19 +842,31 @@ void GunnsFluidSorptionBed::initialize(const GunnsFluidSorptionBedConfigData& co
                 loading.push_back(inputData.mLoading.at(j));
             }
         }
-        mSegments[i].init(configData.mSegments.at(i), mNodes[0]->getFluidConfig(), loading);
-        mVolume += mSegments[i].mVolume;
         mSegments[i].mTemperature = inputData.mWallTemperature;
         mSegments[i].mFluid = mInternalFluid;
+        mSegments[i].init(configData.mSegments.at(i), mNodes[0]->getFluidConfig(), loading);
+        mVolume += mSegments[i].mVolume;
     }
 
+    /// - Allocate and intialize the adsorption totals arrays.
     const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
     TS_NEW_PRIM_ARRAY_EXT(mAdsorptionFluidRates, nFluids, double, mName + ".mAdsorptionFluidRates");
     TS_NEW_PRIM_ARRAY_EXT(mAdsorbedFluidMasses,  nFluids, double, mName + ".mAdsorbedFluidMasses");
-    for (int i=0; i<nFluids; ++i) {
-        mAdsorptionFluidRates[i] = 0.0;
-        mAdsorbedFluidMasses[i]  = 0.0;
+    mWorkFluidRates  = new double[nFluids];
+    mWorkFluidMasses = new double[nFluids];
+
+    const GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
+    if (tc) {
+        const int nTc = tc->getConfig()->mNTypes;
+        if (nTc > 0) {
+            TS_NEW_PRIM_ARRAY_EXT(mAdsorptionTcRates, nTc, double, mName + ".mAdsorptionTcRates");
+            TS_NEW_PRIM_ARRAY_EXT(mAdsorbedTcMasses,  nTc, double, mName + ".mAdsorbedTcMasses");
+            mWorkTcRates  = new double[nTc];
+            mWorkTcMasses = new double [nTc];
+        }
     }
+    zeroAdsorbOutputs();
+    computeAdsorbOutputs();
 
     /// - Set the initialization complete flag.
     mInitFlag           = true;
@@ -903,6 +961,27 @@ void GunnsFluidSorptionBed::zeroAdsorbOutputs()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Zeroes the bulk fluid and trace compounds adsorbed mass and adsorption rate temprary
+///           working arrays.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidSorptionBed::zeroAdsorbWork()
+{
+    const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
+    for (int i=0; i<nFluids; ++i) {
+        mWorkFluidRates[i]  = 0.0;
+        mWorkFluidMasses[i] = 0.0;
+    }
+
+    const GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
+    if (tc) {
+        for (int i=0; i<tc->getConfig()->mNTypes; ++i) {
+            mWorkTcRates[i]  = 0.0;
+            mWorkTcMasses[i] = 0.0;
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  double  (kg*mol/s)  Total adsorbed mole rate of all bulk fluid constituents.
 ///
 /// @details  Computes the bulk fluid and trace compounds adsorbed mass and adsorption rate values
@@ -910,20 +989,14 @@ void GunnsFluidSorptionBed::zeroAdsorbOutputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidSorptionBed::computeAdsorbOutputs()
 {
+    zeroAdsorbWork();
     double totalAdsorptionRate = 0.0;
-
-    zeroAdsorbOutputs();
     const unsigned int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
-    double fluidRate[nFluids];
-    double fluidMass[nFluids];
-
     unsigned int nTc = 0;
     const GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
     if (tc) {
         nTc = tc->getConfig()->mNTypes;
     }
-    double tcRate[nTc];  // this will be array size zero if there are no TC's
-    double tcMass[nTc];  // this will be array size zero if there are no TC's
 
     for (unsigned int i=0; i<mNSegments; ++i) {
         for (unsigned int j=0; j<mSegments[i].getNSorbates(); ++j) {
@@ -931,26 +1004,28 @@ double GunnsFluidSorptionBed::computeAdsorbOutputs()
             const int fluidIndex = sorbate.getFluidIndexes()->mFluid;
             const int tcIndex    = sorbate.getFluidIndexes()->mTc;
             if (fluidIndex >= 0) {
-                totalAdsorptionRate   += sorbate.mAdsorptionRate;
-                fluidRate[fluidIndex] += sorbate.mAdsorptionRate;
-                fluidMass[fluidIndex] += sorbate.mLoadedMass;
+                totalAdsorptionRate          += sorbate.mAdsorptionRate;
+                mWorkFluidRates[fluidIndex]  += sorbate.mAdsorptionRate;
+                mWorkFluidMasses[fluidIndex] += sorbate.mLoadedMass;
                 //TODO must include offgas compounds if they're bulk fluids!
-            }
-            if (tcIndex >= 0) {
-                tcRate[tcIndex] += sorbate.mAdsorptionRate;
-                tcMass[tcIndex] += sorbate.mLoadedMass;
+            } else if (tcIndex >= 0) {
+                /// - For compounds that are both a bulk fluid and a TC, we only report loading as
+                ///   being in the bulk fluid, and report zero loading of the TC - this reflects
+                ///   that this model desorbs these 'dual' compounds to the bulk fluid, not the TC.
+                mWorkTcRates[tcIndex]  += sorbate.mAdsorptionRate;
+                mWorkTcMasses[tcIndex] += sorbate.mLoadedMass;
             }
         }
     }
 
     /// - Convert absorbed mole rate into mass rate.
     for (unsigned int i=0; i<nFluids; ++i) {
-        mAdsorptionFluidRates[i] = fluidRate[i] * mInternalFluid->getProperties(mInternalFluid->getType(i))->getMWeight();
-        mAdsorbedFluidMasses[i]  = fluidMass[i];
+        mAdsorptionFluidRates[i] = mWorkFluidRates[i] * mInternalFluid->getProperties(mInternalFluid->getType(i))->getMWeight();
+        mAdsorbedFluidMasses[i]  = mWorkFluidMasses[i];
     }
     for (unsigned int i=0; i<nTc; ++i) {
-        mAdsorptionTcRates[i] = tcRate[i] * tc->getConfig()->mCompounds.at(i)->mMWeight;
-        mAdsorbedTcMasses[i]  = fluidMass[i];
+        mAdsorptionTcRates[i] = mWorkTcRates[i] * tc->getConfig()->mCompounds.at(i)->mMWeight;
+        mAdsorbedTcMasses[i]  = mWorkTcMasses[i];
     }
 
     return totalAdsorptionRate;
@@ -1009,7 +1084,6 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
                 ///   on these intermediate pressures is negligible.
                 segP = nextSegP;
             }
-
         } else if (mFlowRate < 0.0) {
             mInternalFluid->setState(mNodes[1]->getContent());
             for (int i=0; i<mNodes[0]->getFluidConfig()->mNTypes; ++i) {

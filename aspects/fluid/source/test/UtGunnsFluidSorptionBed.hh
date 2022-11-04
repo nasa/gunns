@@ -75,13 +75,11 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         CPPUNIT_TEST(testNominalInitialization);
         CPPUNIT_TEST(testInitializationExceptions);
         CPPUNIT_TEST(testRestart);
-        CPPUNIT_TEST(testAccessorsAndGetters);
-        CPPUNIT_TEST(testStep);
-        CPPUNIT_TEST(testComputeFlowsToNode);
-        CPPUNIT_TEST(testComputeFlowsFromNode);
-        CPPUNIT_TEST(testComputeFlowsZeroFlow);
-        CPPUNIT_TEST(testComputeFlowsZeroDensity);
-        CPPUNIT_TEST(testComputeFlowsTcOnly);
+        CPPUNIT_TEST(testBedSorbateLoadingEquil);
+        CPPUNIT_TEST(testBedSorbateUpdateLoading);
+        CPPUNIT_TEST(testBedSegmentUpdate);
+        CPPUNIT_TEST(testComputeFlows);
+        //TODO specific port rules
         CPPUNIT_TEST_SUITE_END();
 
         double                              tMaxConductivity;    /**< (m2)   Nominal config data. */
@@ -95,6 +93,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         GunnsNodeList                       tNodeList;           /**< (--)   Network nodes list. */
         std::vector<GunnsBasicLink*>        tLinks;              /**< (--)   Network links. */
         int                                 tPort0;              /**< (--)   Nominal initialization data. */
+        int                                 tPort1;              /**< (--)   Nominal initialization data. */
         double                              tTimeStep;           /**< (s)    Time step. */
         DefinedFluidProperties*             tFluidProperties;    /**< (--)   Predefined fluid properties. */
         DefinedChemicalCompounds*           tCompoundProperties; /**< (--)   Predefined chemical compound properties. */
@@ -104,6 +103,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         GunnsFluidTraceCompoundsInputData*  tFluidTcInput;       /**< (--)   Trace compounds input data for nodes. */
         PolyFluidInputData*                 tFluidInput1;        /**< (--)   Fluid 1 input data. */
         double                              tFractions1[3];      /**< (--)   Array of fluid mass fractions for node 0. */
+        SorbantProperties*                  tCustomSorbant;      /**< (--)   A custom sorbant properties. */
         static int                          TEST_ID;             /**< (--)   Test identification number. */
 
     public:
@@ -120,13 +120,10 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         void testNominalInitialization();
         void testInitializationExceptions();
         void testRestart();
-        void testAccessorsAndGetters();
-        void testStep();
-        void testComputeFlowsToNode();
-        void testComputeFlowsFromNode();
-        void testComputeFlowsZeroFlow();
-        void testComputeFlowsZeroDensity();
-        void testComputeFlowsTcOnly();
+        void testBedSorbateLoadingEquil();
+        void testBedSorbateUpdateLoading();
+        void testBedSegmentUpdate();
+        void testComputeFlows();
 };
 
 ///@}

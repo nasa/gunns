@@ -723,7 +723,7 @@ void UtGunnsFluidSorptionBed::testBedSegmentUpdate()
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
     //TODO testing segment 1 since it has a custom sorbant with blocking & offgas compounds
-    const double mdot = 0.001;
+    double       mdot = 0.001;
     const double pIn  = 100.5;
     const double pOut = 100.0;
     tArticle->mSegments[1].update(mdot, pIn, pOut, tTimeStep);

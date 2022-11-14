@@ -474,6 +474,8 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
 //       is adosrbed.
 //     - needed for LiOH, Metox, etc.
 //TODO offgassing convserve mass - reduce mass & volume of sorbant equal to offgas mass
+//     - this assumes that offgas comes entirely from sorbant, and not reactants from the thru fluid
+//       otherwise we'd need to use ChemicalReaction
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const double pOut, const double timestep)
 {
@@ -504,11 +506,11 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         if (fluidIndex >= 0) {
             ndotIn += ndot * mFluid->getMoleFraction(fluidIndex);
         }
+        const double mdotInBulk = ndotIn * molWeight;
         if (tcIndex >= 0) {
             ndotInTc = ndot * mFluid->getTraceCompounds()->getMoleFractions()[tcIndex];
             ndotIn += ndotInTc;
         }
-        const double mdotIn = ndotIn * molWeight;
 
         /// - Find mole rate of desorption that would saturate the exit stream.  This is an
         ///   approximation since the total pressure doesn't include the addition of the desorbed
@@ -530,8 +532,7 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
 
         /// - Update the bulk fluid flow with the adsorption/desorption flow rate for input to the next
         ///   segment.
-        flow -= mSorbates[i].mAdsorptionRate * molWeight;
-        exchangeFluid(fluidIndex, tcIndex, mdotIn, ndotInTc, mSorbates[i].mAdsorptionRate, molWeight);
+        flow += exchangeFluid(fluidIndex, tcIndex, mdotInBulk, ndotInTc, -mSorbates[i].mAdsorptionRate, molWeight);
 
         /// - Compute offgassing produced by adsorption of sorbates, and add the offgas compounds to the
         ///   exit fluid stream.
@@ -539,30 +540,32 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
             const std::vector<SorbateInteractingCompounds>*     offgasCompounds = mSorbates[i].getProperties()->getOffgasCompounds();
             const std::vector<GunnsFluidSorptionBedFluidIndex>* offgasIndexes   = mSorbates[i].getOffgasIndexes();
             for (unsigned int j=0; j<offgasCompounds->size(); ++j) {
-                const int offgasIndexBulk = offgasIndexes->at(i).mFluid;
-                const int offgasIndexTc   = offgasIndexes->at(i).mTc;
+                const int offgasIndexBulk = offgasIndexes->at(j).mFluid;
+                const int offgasIndexTc   = offgasIndexes->at(j).mTc;
                 if (offgasIndexBulk >= 0 or offgasIndexTc >= 0) {
                     const double offgasRate = mSorbates[i].mAdsorptionRate * offgasCompounds->at(j).mInteraction;
-                    double offgasBulkMdotIn = 0.0;
-                    double offgasTcNdotIn   = 0.0;
-                    double offgasMolWeight  = 0.0;
-                    if (offgasIndexBulk >= 0) {
-                        offgasBulkMdotIn = flowIn * mFluid->getMassFraction(offgasIndexBulk);
-                        offgasMolWeight  = mFluid->getProperties(mFluid->getType(offgasIndexBulk))->getMWeight();
+                    if (offgasRate >= DBL_EPSILON) {
+                        double offgasBulkMdotIn = 0.0;
+                        double offgasTcNdotIn   = 0.0;
+                        double offgasMolWeight  = 0.0;
+                        if (offgasIndexBulk >= 0) {
+                            offgasBulkMdotIn = flowIn * mFluid->getMassFraction(offgasIndexBulk);
+                            offgasMolWeight  = mFluid->getProperties(mFluid->getType(offgasIndexBulk))->getMWeight();
+                        }
+                        if (offgasIndexTc >= 0) {
+                            offgasTcNdotIn  = ndot * mFluid->getTraceCompounds()->getMoleFractions()[offgasIndexTc];
+                            offgasMolWeight = mFluid->getTraceCompounds()->getConfig()->mCompounds.at(offgasIndexTc)->mMWeight;
+                        }
+                        flow += exchangeFluid(offgasIndexBulk, offgasIndexTc, offgasBulkMdotIn,
+                                              offgasTcNdotIn, offgasRate, offgasMolWeight);
                     }
-                    if (offgasIndexTc >= 0) {
-                        offgasTcNdotIn  = ndot * mFluid->getTraceCompounds()->getMoleFractions()[offgasIndexTc];
-                        offgasMolWeight = mFluid->getTraceCompounds()->getConfig()->mCompounds.at(offgasIndexTc)->mMWeight;
-                    }
-                    exchangeFluid(offgasIndexBulk, offgasIndexTc, offgasBulkMdotIn, offgasTcNdotIn,
-                                  offgasRate, offgasMolWeight);
                 }
             }
         }
 
         /// - Add heats of sorption to the wall heat flux for output to the thermal aspect.  The
         ///   sorbate properties returns the heat flux sign as positive for exothermic.
-        heatFlux += mSorbates[i].getProperties()->computeHeatFlux(mSorbates[i].mAdsorptionRate);
+        heatFlux += mSorbates[i].computeHeatFlux();
 
         /// - Update total thermal capacity of sorbant + sorbates for output to the thermal aspect.
         ///   Sorbate loading can significantly change the thermal capacity of the combined sorbant +
@@ -592,14 +595,17 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
 /// @param[in] dndot      (kg*mol/s) Mole rate of sorbate added to the fluid.
 /// @param[in] molWeight  (1/mol)    Molecular weight of the compound.
 ///
-/// @details  Updates the compound mass in mFluid..  Only the masses of the bulk fluid constituents
+/// @returns  double (m/s) mass rate added (desorbed) to the bulk fluid.
+///
+/// @details  Updates the compound mass in mFluid.  Only the masses of the bulk fluid constituents
 ///           and trace compounds are set here, and their mixture fractions must be updated later.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const int tcIndex,
-                                                 const double mdotInBulk, const double ndotInTc,
-                                                 const double dndot, const double molWeight)
+double GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const int tcIndex,
+                                                   const double mdotInBulk, const double ndotInTc,
+                                                   const double dndot, const double molWeight)
 {
-    double ndotOutTc  = ndotInTc;
+    double mdotBulkDesorb = 0.0;
+    double ndotOutTc      = ndotInTc;
 
     if (dndot < -DBL_EPSILON) {
         /// - Adsorption from fluid.  If there is incoming trace compound, adsorb from it first,
@@ -608,13 +614,14 @@ void GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const int
         ndotOutTc += tcSorb;
         if (fluidIndex >= 0) {
             const double dnRemain = -dndot + tcSorb;      // tcSorb is <= 0, dnRemain is >= 0.
-            const double bulkSorb = dnRemain * molWeight;
-            mFluid->setMass(fluidIndex, fmax(mdotInBulk - bulkSorb, 0.0));
+            mdotBulkDesorb = -dnRemain * molWeight;
+            mFluid->setMass(fluidIndex, fmax(mdotInBulk + mdotBulkDesorb, 0.0));
         }
     } else if (dndot > DBL_EPSILON) {
         /// - Desorption to fluid.  Only desorb to the trace compound if there is no bulk fluid.
         if (fluidIndex >= 0) {
-            mFluid->setMass(fluidIndex, mdotInBulk + dndot * molWeight);
+            mdotBulkDesorb = dndot * molWeight;
+            mFluid->setMass(fluidIndex, mdotInBulk + mdotBulkDesorb);
         } else if (tcIndex >= 0) {
             ndotOutTc += dndot;
         }
@@ -624,6 +631,7 @@ void GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const int
     if (tcIndex >= 0) {
         mFluid->getTraceCompounds()->setMass(tcIndex, ndotOutTc * molWeight);
     }
+    return mdotBulkDesorb;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

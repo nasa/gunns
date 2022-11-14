@@ -293,6 +293,16 @@ void UtSorbantProperties::testCustomSorbant()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2LoadingRate,  co2LoadingRate,  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2Heat,         co2Heat,         DBL_EPSILON);
 
+    /// @test sorbate blocking and offgas compounds.
+    CPPUNIT_ASSERT(0                     == sorbates->at(0).getBlockingCompounds()->size());
+    CPPUNIT_ASSERT(0                     == sorbates->at(0).getOffgasCompounds()->size());
+    CPPUNIT_ASSERT(1                     == sorbates->at(1).getBlockingCompounds()->size());
+    CPPUNIT_ASSERT(1                     == sorbates->at(1).getOffgasCompounds()->size());
+    CPPUNIT_ASSERT(ChemicalCompound::H2O == sorbates->at(1).getBlockingCompounds()->at(0).mCompound);
+    CPPUNIT_ASSERT(1.0                   == sorbates->at(1).getBlockingCompounds()->at(0).mInteraction);
+    CPPUNIT_ASSERT(ChemicalCompound::NH3 == sorbates->at(1).getOffgasCompounds()->at(0).mCompound);
+    CPPUNIT_ASSERT(1.0e-6                == sorbates->at(1).getOffgasCompounds()->at(0).mInteraction);
+
     /// @test sorbant copy constructor.
     SorbantProperties* sorbant2 = new SorbantProperties(sorbant);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV,  sorbant2->computeVolume(enclosureVol),       DBL_EPSILON);

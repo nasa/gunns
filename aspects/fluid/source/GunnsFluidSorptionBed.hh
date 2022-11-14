@@ -82,6 +82,8 @@ class GunnsFluidSorptionBedSorbate
         void updateLoading(const double timestep, const double inFlux, const double desorbLimit);
         /// @brief  Updates the sorbed mass of this sorbate in the sorbant segment.
         void updateLoadedMass(const double volume);
+        /// @brief  Returns the heat flux to the sorbant caused by sorption of this sorbate.
+        double computeHeatFlux() const {return mProperties->computeHeatFlux(mAdsorptionRate);}
         /// @brief  Returns the Sorbate Properties of this Sorption Bed Sorbate.
         const SorbateProperties* getProperties() const;
         /// @brief  Returns the fluid indexes of this sorbate compound.
@@ -194,8 +196,8 @@ class GunnsFluidSorptionBedSegment
         double                   mHtc;        /**<    (W/K) trick_chkpnt_io(**) Convective heat transfer coefficient between sorbant and fluid. */
         double                   mVolSorbant; /**<    (m3)  trick_chkpnt_io(**) Volume of the sorbant in this segment, not including voids. */
         /// @brief  Updates fluid masses in the exit stream.
-        void exchangeFluid(const int fluidIndex, const int tcIndex, const double mdotInBulk,
-                           const double ndotInTc, const double dndot, const double molWeight);
+        double exchangeFluid(const int fluidIndex, const int tcIndex, const double mdotInBulk,
+                             const double ndotInTc, const double dndot, const double molWeight);
         /// @brief  Returns the effective sorbant volume including degradation malfunction.
         double computeEffectiveSorbantVolume() const;
 
@@ -378,6 +380,17 @@ inline const GunnsFluidSorptionBedFluidIndex* GunnsFluidSorptionBedSorbate::getF
 inline const std::vector<GunnsFluidSorptionBedFluidIndex>* GunnsFluidSorptionBedSorbate::getOffgasIndexes() const
 {
     return &mOffgasIndexes;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (W) Heat flux into the sorbant due to sorption.
+///
+/// @details  Calls the sorbate properties to get the heat of sorption given the current
+///           adsorption rate, and returns the returned value to the caller.
+////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidSorptionBedSorbate::computeHeatFlux() const
+{
+    return mProperties->computeHeatFlux(mAdsorptionRate);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

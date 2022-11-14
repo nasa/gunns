@@ -136,7 +136,7 @@ void UtGunnsFluidSorptionBed::setUp()
     co2OffgasNh3.mCompound    = ChemicalCompound::NH3;
     co2OffgasNh3.mInteraction = 1.0e-4;
     std::vector<SorbateInteractingCompounds> offgasCompounds;
-    blockingCompounds.push_back(co2OffgasNh3);
+    offgasCompounds.push_back(co2OffgasNh3);
 
     tCustomSorbant = tConfigData->addCustomSorbant(500.0, 0.4, 400.0);
     tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0,                  0,                1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
@@ -437,6 +437,13 @@ void UtGunnsFluidSorptionBed::testNominalInitialization()
     CPPUNIT_ASSERT(0                                    == tArticle->mSegments[0].mSorbates[0].getFluidIndexes()->mTc);
     CPPUNIT_ASSERT(2                                    == tArticle->mSegments[0].mSorbates[1].getFluidIndexes()->mFluid);
     CPPUNIT_ASSERT(1                                    == tArticle->mSegments[0].mSorbates[1].getFluidIndexes()->mTc);
+    CPPUNIT_ASSERT(-1                                   == tArticle->mSegments[1].mSorbates[0].getFluidIndexes()->mFluid);
+    CPPUNIT_ASSERT(0                                    == tArticle->mSegments[1].mSorbates[0].getFluidIndexes()->mTc);
+    CPPUNIT_ASSERT(0                                    == tArticle->mSegments[1].mSorbates[0].getOffgasIndexes()->size());
+    CPPUNIT_ASSERT(1                                    == tArticle->mSegments[1].mSorbates[1].getProperties()->getOffgasCompounds()->size());
+    CPPUNIT_ASSERT(1                                    == tArticle->mSegments[1].mSorbates[1].getOffgasIndexes()->size());
+    CPPUNIT_ASSERT(2                                    == tArticle->mSegments[1].mSorbates[1].getFluidIndexes()->mFluid);
+    CPPUNIT_ASSERT(1                                    == tArticle->mSegments[1].mSorbates[1].getFluidIndexes()->mTc);
     CPPUNIT_ASSERT(tConfigData->mSegments.at(0).mVolume == tArticle->mSegments[0].mVolume);
     CPPUNIT_ASSERT(tConfigData->mSegments.at(1).mVolume == tArticle->mSegments[1].mVolume);
     CPPUNIT_ASSERT(tInputData->mWallTemperature         == tArticle->mSegments[0].mTemperature);
@@ -449,10 +456,8 @@ void UtGunnsFluidSorptionBed::testNominalInitialization()
     CPPUNIT_ASSERT(tArticle->mInternalFluid             == tArticle->mSegments[1].mFluid);
 
     /// @test output loading arrays initialized from loadings in input data.
-    double expectedH2oFluid = 0.0;
     double expectedCo2Fluid = 0.0;
     double expectedH2oTc    = 0.0;
-    double expectedCo2tc    = 0.0;
     for (unsigned int i=0; i<tInputData->mLoading.size(); ++i) {
         if (ChemicalCompound::H2O == tInputData->mLoading.at(i).mSorbate) {
             /// - H2O is only a trace compound in this test.
@@ -479,7 +484,7 @@ void UtGunnsFluidSorptionBed::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorbedFluidMass(FluidProperties::GUNNS_O2),    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2Fluid, tArticle->getAdsorbedFluidMass(FluidProperties::GUNNS_CO2),   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2oTc,    tArticle->getAdsorbedTcMass(ChemicalCompound::H2O),           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2tc,    tArticle->getAdsorbedTcMass(ChemicalCompound::CO2),           DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorbedTcMass(ChemicalCompound::CO2),           DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_N2),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_O2),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_CO2), DBL_EPSILON);
@@ -707,6 +712,10 @@ void UtGunnsFluidSorptionBed::testBedSorbateUpdateLoading()
         tArticle->mSegments[0].mSorbates[1].updateLoadedMass(sorbantVol);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,      tArticle->mSegments[0].mSorbates[1].mLoadedMass,     DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSsorbRate, tArticle->mSegments[0].mSorbates[1].mAdsorptionRate, DBL_EPSILON);
+
+        /// @test GunnsFluidSorptionBedSorbate::computeHeatFlux.
+        const double expectedQ = tArticle->mSegments[0].mSorbates[1].getProperties()->computeHeatFlux(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mSegments[0].mSorbates[1].computeHeatFlux(), DBL_EPSILON);
     }
 
     UT_PASS;
@@ -722,16 +731,107 @@ void UtGunnsFluidSorptionBed::testBedSegmentUpdate()
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
-    //TODO testing segment 1 since it has a custom sorbant with blocking & offgas compounds
-    double       mdot = 0.001;
-    const double pIn  = 100.5;
-    const double pOut = 100.0;
-    tArticle->mSegments[1].update(mdot, pIn, pOut, tTimeStep);
+    /// - We test segment 1 since it has a custom sorbant with blocking & offgas compounds.
+    const double mdotIn = 0.001;
+    double       mdot   = mdotIn;
+    const double pIn    = 100.5;
+    const double pOut   = 100.0;
+    const double initH2oLoadEquil = tArticle->mSegments[1].mSorbates[0].mLoadingEquil;
+    const double initCo2LoadEquil = tArticle->mSegments[1].mSorbates[1].mLoadingEquil;
+    const double initH2oSorbRate  = tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
+    const double initCo2SorbRate  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate;
 
-    //TODO assert heat convection + reactions to fluid
-    //TODO assert sorbates updated loading equil, loading rate & loaded mass
-    //TODO assert updated thermal capacity
-    //TODO assert output fluid state
+    /// - Prepare the test article's internal fluid with the state of the supplying node.
+    tArticle->mInternalFluid->setState(tNodes[0].getContent());
+    for (int i=0; i<tNodes[0].getFluidConfig()->mNTypes; ++i) {
+        tArticle->mInternalFluid->setMass(i, tNodes[0].getContent()->getMassFraction(i) * mdotIn);
+    }
+
+    /// - Duplicate the prepared internal fluid for comparisons.
+    PolyFluid testFluid(*tArticle->mInternalFluid, "testFluid");
+
+    /// @test sorbates got updated.
+    tArticle->mSegments[1].update(mdot, pIn, pOut, tTimeStep);
+    const double h2oLoadEquil = tArticle->mSegments[1].mSorbates[0].mLoadingEquil;
+    const double co2LoadEquil = tArticle->mSegments[1].mSorbates[1].mLoadingEquil;
+    const double h2oSorbRate  = tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
+    const double co2SorbRate  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate;
+    CPPUNIT_ASSERT(initH2oLoadEquil != h2oLoadEquil);
+    CPPUNIT_ASSERT(initCo2LoadEquil != co2LoadEquil);
+    CPPUNIT_ASSERT(initH2oSorbRate  != h2oSorbRate);
+    CPPUNIT_ASSERT(initCo2SorbRate  != co2SorbRate);
+
+    /// @test heat of convection and reactions to fluid.
+    const double expectedQconvect = GunnsFluidUtils::computeConvectiveHeatFlux(&testFluid, mdotIn, tConfigData->mSegments[1].mHtc, tWallTemperature);
+    const double expectedQH2o     = tCustomSorbant->getSorbates()->at(0).computeHeatFlux(h2oSorbRate);
+    const double expectedQCo2     = tCustomSorbant->getSorbates()->at(1).computeHeatFlux(co2SorbRate);
+    const double expectedQ        = expectedQconvect + expectedQH2o + expectedQCo2;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mSegments[1].mHeatFlux, DBL_EPSILON);
+
+    /// @test updated segment thermal capacity as the sorbant plus the loaded sorbate capacities,
+    ///       not including sorbates that are only trace comopunds (in this case, H2O).
+    const double volSorbant = tCustomSorbant->computeVolume(tConfigData->mSegments.at(1).mVolume);
+    const double tcSorbant  = tCustomSorbant->computeThermalCapacity(volSorbant);
+    const double co2Cp      = testFluid.getProperties(FluidProperties::GUNNS_CO2)->getSpecificHeat(tWallTemperature);
+    const double tcCo2      = co2Cp * tArticle->mSegments[1].mSorbates[1].mLoadedMass;
+    const double expectedTc = tcSorbant + tcCo2;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTc, tArticle->mSegments[1].mThermCap, DBL_EPSILON);
+
+    /// @test updated exit temperature.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(testFluid.getTemperature(), tArticle->mInternalFluid->getTemperature(), DBL_EPSILON);
+
+    /// - Get bulk constituent mdots of inlet.
+    const double mdotN2In  = mdotIn * testFluid.getMassFraction(FluidProperties::GUNNS_N2);
+    const double mdotO2In  = mdotIn * testFluid.getMassFraction(FluidProperties::GUNNS_O2);
+    const double mdotCo2In = mdotIn * testFluid.getMassFraction(FluidProperties::GUNNS_CO2);
+    const double ndotIn    = mdotIn / testFluid.getMWeight();
+
+    /// - Get trace compounds mdots of inlet.
+    GunnsFluidTraceCompounds* testTc     = testFluid.getTraceCompounds();
+    GunnsFluidTraceCompounds* internalTc = tArticle->mInternalFluid->getTraceCompounds();
+    const double mdotH2oTcIn  = ndotIn * testTc->getMoleFraction(ChemicalCompound::H2O) * 18.0153;
+    const double mdotCo2TcIn  = ndotIn * testTc->getMoleFraction(ChemicalCompound::CO2) * 44.0095;
+    const double mdotNh3TcIn  = ndotIn * testTc->getMoleFraction(ChemicalCompound::NH3) * 17.0305; // independent check of compound properties MW NH3
+    const double mdotSorbH2o  = tArticle->mSegments[1].mSorbates[0].mAdsorptionRate * 18.0153; // independent check of compound properties MW H2O
+    const double mdotSorbCo2  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate * 44.0095; // independent check of compound properties MW CO2
+    const double mdotH2oTcOut = mdotH2oTcIn - mdotSorbH2o;
+    const double mdotCo2Out   = mdotCo2In + mdotCo2TcIn - mdotSorbCo2;
+
+    /// @test updated exit mdot.
+    const double expectedMdotOut = mdotIn - (mdotSorbCo2 - mdotCo2TcIn);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdotOut, mdot, DBL_EPSILON);
+
+    /// @test updated exit mixture of bulk fluids.
+    const double expectedXN2  = mdotN2In   / mdot;
+    const double expectedXO2  = mdotO2In   / mdot;
+    const double expectedXCo2 = mdotCo2Out / mdot;
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdotN2In,     tArticle->mInternalFluid->getConstituent(FluidProperties::GUNNS_N2)->getMass(),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdotO2In,     tArticle->mInternalFluid->getConstituent(FluidProperties::GUNNS_O2)->getMass(),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdotCo2Out,   tArticle->mInternalFluid->getConstituent(FluidProperties::GUNNS_CO2)->getMass(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdot,         tArticle->mInternalFluid->getMass(),                                             DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXN2,  tArticle->mInternalFluid->getMassFraction(FluidProperties::GUNNS_N2),            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXO2,  tArticle->mInternalFluid->getMassFraction(FluidProperties::GUNNS_O2),            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXCo2, tArticle->mInternalFluid->getMassFraction(FluidProperties::GUNNS_CO2),           DBL_EPSILON);
+
+    /// @test updated exit mixture of trace compounds.
+    const double ndotSorbCo2  = mdotSorbCo2 / 44.0095;
+    const double mdotNh3TcOut = mdotNh3TcIn + ndotSorbCo2 * 17.0305 * 1.0e-4; // from SetUp, co2OffgasNh3
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdotNh3TcOut, internalTc->getMass(ChemicalCompound::NH3), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdotH2oTcOut, internalTc->getMass(ChemicalCompound::H2O), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          internalTc->getMass(ChemicalCompound::CO2), DBL_EPSILON);
+
+    const double ndotNh3TcOut = mdotNh3TcOut / 17.0305;
+    const double ndotH2oTcOut = mdotH2oTcOut / 18.0153;
+    const double expectedNNh3 = ndotNh3TcOut / tArticle->mInternalFluid->getMole();
+    const double expectedNH2o = ndotH2oTcOut / tArticle->mInternalFluid->getMole();
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNNh3, internalTc->getMoleFraction(ChemicalCompound::NH3), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNH2o, internalTc->getMoleFraction(ChemicalCompound::H2O), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          internalTc->getMoleFraction(ChemicalCompound::CO2), DBL_EPSILON);
+
+    //TODO test desorption to saturation point of exit stream
 
     UT_PASS;
 }
@@ -747,8 +847,8 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
     /// @test bulk forward flow properties.
-    const double Pin  = 100.0;
-    const double Pout =  90.0;
+    const double Pin  = 101.0;
+    const double Pout = 100.0;
     tNodes[0].setPotential(Pin);
     tNodes[1].setPotential(Pout);
     tNodes[0].integrateFlows(tTimeStep);
@@ -770,17 +870,47 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,    tArticle->mVolFlowRate,   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,         DBL_EPSILON);
 
-    /// @test sorption outputs to node for forward flow.
-    //TODO first verify bed sorbate (done), then bed segment (not done),
-    //     so we don't have to do it all here
+    /// @test chaining of outputs from previous segment to inputs of next segment, by checking that
+    ///       downstream segments have less adsorption and heat flux than upstream, assuming similar
+    ///       sorption properties and initial loading.
+    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mHeatFlux)                    > fabs(tArticle->mSegments[1].mHeatFlux));
+    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate));
+    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate));
 
-    //TODO final state of mInternalFluid after sorptions
+    /// @test sorption outputs to node for forward flow.  This assumes we've already verified the
+    ///       bed sorbate and bed segments updates, above.  This includes the inlet CO2 trace
+    ///       compound mass for simplicity, so it's not exact, hance the larger tolerance.
+    const double approxSegFlow = expectedMdot
+                               - tArticle->mSegments[0].mSorbates[1].mAdsorptionRate
+                               - tArticle->mSegments[1].mSorbates[1].mAdsorptionRate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(approxSegFlow, tNodes[1].getInflux(), 1.0e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getInflux(), 0.0);
 
-    //TODO output fluid to node at modified segFlow
-    //TODO pulled rate from node 0 at mFlowRate
+    /// @test outflow from the source node for forward flow.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, tNodes[0].getOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tNodes[1].getOutflux(), 0.0);
 
-    /// @test link output arrays.
-    //TODO link output arrays
+    /// @test output loading arrays.
+    double expectedCo2Rate = 0.0;
+    double expectedH2oRate = 0.0;
+    double expectedCo2Mass = 0.0;
+    double expectedH2oMass = 0.0;
+    for (unsigned int i=0; i<2; ++i) {
+            expectedH2oMass += tArticle->mSegments[i].mSorbates[0].mLoadedMass;
+            expectedH2oRate += tArticle->mSegments[i].mSorbates[0].mAdsorptionRate * 18.0153;
+            expectedCo2Mass += tArticle->mSegments[i].mSorbates[1].mLoadedMass;
+            expectedCo2Rate += tArticle->mSegments[i].mSorbates[1].mAdsorptionRate * 44.0095;
+    }
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorbedFluidMass(FluidProperties::GUNNS_N2),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorbedFluidMass(FluidProperties::GUNNS_O2),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2Mass,  tArticle->getAdsorbedFluidMass(FluidProperties::GUNNS_CO2),   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2oMass,  tArticle->getAdsorbedTcMass(ChemicalCompound::H2O),           DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorbedTcMass(ChemicalCompound::CO2),           DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_N2),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_O2),  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCo2Rate,  tArticle->getAdsorptionFluidRate(FluidProperties::GUNNS_CO2), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2oRate,  tArticle->getAdsorptionTcRate(ChemicalCompound::H2O),         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionTcRate(ChemicalCompound::CO2),         DBL_EPSILON);
 
     //TODO reverse flow rate
 

@@ -83,7 +83,7 @@ class GunnsFluidSorptionBedSorbate
         /// @brief  Updates the sorbed mass of this sorbate in the sorbant segment.
         void updateLoadedMass(const double volume);
         /// @brief  Returns the heat flux to the sorbant caused by sorption of this sorbate.
-        double computeHeatFlux() const {return mProperties->computeHeatFlux(mAdsorptionRate);}
+        double computeHeatFlux() const;
         /// @brief  Returns the Sorbate Properties of this Sorption Bed Sorbate.
         const SorbateProperties* getProperties() const;
         /// @brief  Returns the fluid indexes of this sorbate compound.

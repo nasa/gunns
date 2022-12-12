@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid High-Fidelity Orifice Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -162,10 +162,10 @@ GunnsFluidHiFiOrifice::~GunnsFluidHiFiOrifice()
 /// @details  Initializes this GUNNS Fluid Hi-Fi Orifice link model with configuration and input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidHiFiOrifice::initialize(const GunnsFluidHiFiOrificeConfigData& configData,
-                                     const GunnsFluidHiFiOrificeInputData&  inputData,
-                                     std::vector<GunnsBasicLink*>&        links,
-                                     const int                            port0,
-                                     const int                            port1)
+                                       const GunnsFluidHiFiOrificeInputData&  inputData,
+                                       std::vector<GunnsBasicLink*>&          links,
+                                       const int                              port0,
+                                       const int                              port1)
 {
     /// - Initialize the parent class.
     int ports[2] = {port0, port1};
@@ -287,9 +287,14 @@ void GunnsFluidHiFiOrifice::step(const double dt)
     /// - Determine source node from last pass pressures.
     int inletPort = 0;
     int exitPort  = 1;
-    if (mPotentialVector[1] > mPotentialVector[0]) {
+    if (mNodeMap[0] == getGroundNodeIndex() or mPotentialVector[1] > mPotentialVector[0]) {
         inletPort = 1;
         exitPort  = 0;
+    }
+
+    /// - This skips processing when both ports are on the network ground node.
+    if (mNodeMap[inletPort] == getGroundNodeIndex()) {
+        return;
     }
 
     /// - Determine Reynolds number and actual coefficient of discharge considering laminar flow.
@@ -329,10 +334,21 @@ void GunnsFluidHiFiOrifice::computeConductance(const PolyFluid* fluid0, const Po
 
     /// - Conductance from conductivity and actual throat area: fixed area (at full open) is reduced
     ///   by optional derived class open/close position scalar and blockage malfunction.
-    double conductance = conductivity * getEffectiveArea();
+    const double conductance = conductivity * getEffectiveArea();
 
     /// - Convert mass to molar conductance by average molecular weight of the inlet & exit fluids.
-    const double avgMW = 0.5 * (fluid0->getMWeight() + fluid1->getMWeight());
+    ///   This avoids using the Ground node's MW since it is zero.  If both ports are on Ground
+    ///   then conductance is zero.
+    const double MW0 = fluid0->getMWeight();
+    const double MW1 = fluid1->getMWeight();
+    double avgMW = 0.0;
+    if (MW0 < DBL_EPSILON) {
+        avgMW = MW1;
+    } else if (MW1 < DBL_EPSILON) {
+        avgMW = MW0;
+    } else {
+        avgMW = 0.5 * (MW0 + MW1);
+    }
     if (avgMW > DBL_EPSILON) {
         mSystemConductance = MsMath::limitRange(0.0, (conductance / avgMW), mConductanceLimit);
     } else {
@@ -387,13 +403,13 @@ double GunnsFluidHiFiOrifice::computeGasConductivity(const PolyFluid* fluid0, co
 /// @details  Returns the ideal mass flux for critical (choked) gas flow through an orifice.  It
 ///           doesn't apply orifice area or Coefficient of Discharge here.  We use the standard
 ///           orifice flow equation derived from the continuity equation and isentropic relations
-///           for an ideal gas.
+///           for an ideal gas.  For an ideal gas, the flux is linear with inlet pressure.
 ///
 /// @note   Argument g must be > 1 to avoid divide-by-zero.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidHiFiOrifice::computeCriticalGasFlux(const double g,
                                                      const double p0,
-                                                     const double rho0)
+                                                     const double rho0) const
 {
     return sqrt(g * p0 * rho0 * powf((2/(g+1)), (g+1)/(g-1)));
 }
@@ -416,7 +432,7 @@ double GunnsFluidHiFiOrifice::computeCriticalGasFlux(const double g,
 double GunnsFluidHiFiOrifice::computeSubCriticalGasFlux(const double g,
                                                         const double p0,
                                                         const double rho0,
-                                                        const double p1)
+                                                        const double p1) const
 {
     return sqrt(2 * p0 * rho0 * g/(g-1) * (powf(p1/p0, 2/g) - powf(p1/p0, (g+1)/g)));
 }
@@ -430,7 +446,8 @@ double GunnsFluidHiFiOrifice::computeSubCriticalGasFlux(const double g,
 /// @details  Returns the linearized mass flow conductivity of the liquid flow.  Sets the flow
 ///           regime; for now we assume liquid flow to always be non-choked.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsFluidHiFiOrifice::computeLiquidConductivity(const PolyFluid* fluid0, const PolyFluid* fluid1)
+double GunnsFluidHiFiOrifice::computeLiquidConductivity(const PolyFluid* fluid0,
+                                                        const PolyFluid* fluid1) const
 {
     const double rho = 0.5 * (fluid0->getDensity() + fluid1->getDensity());
     const double dp  = UnitConversion::PA_PER_KPA * std::max((fluid0->getPressure() - fluid1->getPressure()),
@@ -455,7 +472,7 @@ double GunnsFluidHiFiOrifice::computeLiquidConductivity(const PolyFluid* fluid0,
 ///           densities is a simple correction for compressible flow.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidHiFiOrifice::computeBernoulliFlux(const double rho,
-                                                   const double dp)
+                                                   const double dp) const
 {
     return sqrt(2 * rho * dp);
 }
@@ -472,7 +489,6 @@ void GunnsFluidHiFiOrifice::buildAdmittanceMatrix()
         mAdmittanceMatrix[3]   =  mAdmittanceMatrix[0];
         mAdmittanceUpdate      = true;
     }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -501,7 +517,6 @@ void GunnsFluidHiFiOrifice::computeFlows(const double dt __attribute__((unused))
         mPortDirections[1] = NONE;
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] dt (s) Integration time step.

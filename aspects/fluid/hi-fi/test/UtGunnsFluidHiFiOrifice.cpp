@@ -1,13 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    (
-        (aspects/fluid/hi-fi/GunnsFluidHiFiOrifice.o)
-        (core/GunnsFluidConductor.o)
-    )
-***************************************************************************************************/
+*/
 #include "UtGunnsFluidHiFiOrifice.hh"
 
 #include "core/GunnsFluidUtils.hh"
@@ -123,9 +117,12 @@ void UtGunnsFluidHiFiOrifice::setUp()
 
     tNodes[2].initialize("UtTestNode2", tFluidConfig, tFluidInput3);
     tNodes[3].initialize("UtTestNode3", tFluidConfig, tFluidInput3);
+    tNodes[4].initialize("UtTestNode4", tFluidConfig, 0);
 
     tNodes[2].resetFlows();
     tNodes[3].resetFlows();
+    tNodes[4].resetContentState();
+    tNodes[4].resetFlows();
 
     /// - Define nominal configuration data
     tCoefficientType        = GunnsFluidHiFiOrificeConfigData::DISCHARGE_COEFF;
@@ -527,13 +524,13 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEffArea,               tArticle->getEffectiveArea(), DBL_EPSILON);
     CPPUNIT_ASSERT(tArticle->mPressureRatio < 1.0);
 
-    const double gamma = tNodes[1].getOutflow()->getAdiabaticIndex();
-    const double rho0  = tNodes[1].getOutflow()->getDensity();
-    const double flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    double gamma = tNodes[1].getOutflow()->getAdiabaticIndex();
+    double rho0  = tNodes[1].getOutflow()->getDensity();
+    double flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
-    const double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
-    const double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
-    const double expectedG = conductivity * expectedEffArea / avgMW;
+    double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
+    double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
+    double expectedG = conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -560,6 +557,63 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     double* conductorA = conductor.getAdmittanceMatrix();
     CPPUNIT_ASSERT_DOUBLES_EQUAL( conductorA[0], expectedG,     expectedG);
+
+    /// @test flow to port 1 Ground node uses inlet MW.
+    tNodes[0].setPotential(p0 * UnitConversion::KPA_PER_PA);
+    tNodes[1].setPotential(p1 * UnitConversion::KPA_PER_PA);
+    tNodes[0].updateMass();
+    tNodes[1].updateMass();
+    tNodes[0].resetFlows();
+    tNodes[1].resetFlows();
+    tArticle->setPort(1, 4);
+    tArticle->setPort(0, 0);
+    tArticle->mPotentialVector[0] = p0 * UnitConversion::KPA_PER_PA;
+    tArticle->mPotentialVector[1] = 0.0;
+    tArticle->step(tTimeStep);
+
+    gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
+    rho0  = tNodes[0].getOutflow()->getDensity();
+    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
+    conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
+    avgMW = tNodes[0].getOutflow()->getMWeight();
+    expectedG = conductivity * expectedEffArea / avgMW;
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedG, tArticle->mAdmittanceMatrix[1],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedG, tArticle->mAdmittanceMatrix[2],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[3],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],       DBL_EPSILON);
+    CPPUNIT_ASSERT_EQUAL        ( true,      tArticle->mAdmittanceUpdate);
+
+    /// @test both ports on Ground.
+    tArticle->setPort(0, 4);
+    tArticle->mPotentialVector[0] = 0.0;
+    CPPUNIT_ASSERT_NO_THROW(tArticle->step(tTimeStep));
+
+    /// @test flow to port 0 Ground node uses inlet MW.
+    tArticle->setPort(1, 0);
+    tArticle->mPotentialVector[1] = p0 * UnitConversion::KPA_PER_PA;
+    tArticle->step(tTimeStep);
+
+    gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
+    rho0  = tNodes[0].getOutflow()->getDensity();
+    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
+    conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
+    avgMW = tNodes[0].getOutflow()->getMWeight();
+    expectedG = conductivity * expectedEffArea / avgMW;
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedG, tArticle->mAdmittanceMatrix[1],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedG, tArticle->mAdmittanceMatrix[2],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[3],   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],       DBL_EPSILON);
+    CPPUNIT_ASSERT_EQUAL        ( true,      tArticle->mAdmittanceUpdate);
 
     std::cout << "... Pass";
 }

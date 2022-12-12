@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_HIFI_ORIFICE    High-Fidelity Orifice Model
 @ingroup   TSM_GUNNS_FLUID_HIFI
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2022 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -152,14 +152,15 @@ class GunnsFluidHiFiOrifice : public GunnsFluidLink
         double         computeGasConductivity(const PolyFluid* fluid0, const PolyFluid* fluid1);
         /// @brief  Returns the ideal mass flux for critical (choked) gas flow.
         double         computeCriticalGasFlux(const double gamma, const double p0,
-                                              const double rho0);
+                                              const double rho0) const;
         /// @brief  Returns the ideal mass flux for sub-critical (non-choked) gas flow.
         double         computeSubCriticalGasFlux(const double gamma, const double p0,
-                                                 const double rho0,  const double p1);
+                                                 const double rho0,  const double p1) const;
         /// @brief  Returns the linearized mass flow conductivity of a liquid flow.
-        double         computeLiquidConductivity(const PolyFluid* fluid0, const PolyFluid* fluid1);
+        double         computeLiquidConductivity(const PolyFluid* fluid0,
+                                                 const PolyFluid* fluid1) const;
         /// @brief  Returns the ideal mass flux for an incompressible flow.
-        double         computeBernoulliFlux(const double rho, const double dp);
+        double         computeBernoulliFlux(const double rho, const double dp) const;
         /// @brief  Builds the link contributions to the system admittance matrix.
         void           buildAdmittanceMatrix();
         /// @brief  Computes molar flux rate through the link.

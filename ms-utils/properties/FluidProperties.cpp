@@ -132,6 +132,8 @@ const double DefinedFluidProperties::mMWeightXe         = 131.293;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightN2O4       = 92.011;
 /// @details  Reference: NIST Chemistry Webbook.
+const double DefinedFluidProperties::mMWeightN2H4       = 32.0452;
+/// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightCH3N2H3    = 46.0717;
 /// @details  Reference: 3M (TM) Novec (TM) 7000 Engineering Fluid Product Information.
 const double DefinedFluidProperties::mMWeightHFE7000    = 200.0;
@@ -178,6 +180,9 @@ const double DefinedFluidProperties::mCriticalTemperatureXe         = 289.733;
 /// @details  Reference: "USAF Propellant Handbooks, Nitric Acid/Nitrogen Tetroxide Oxidizers, Vol. II",
 ///           Martin Marietta Corp., Feb. 1977.
 const double DefinedFluidProperties::mCriticalTemperatureN2O4       = 431.35;
+/// @details  Reference: "USAF Propellant Handbooks, Nitric Acid/Nitrogen Tetroxide Oxidizers, Vol. II",
+///           Martin Marietta Corp., Feb. 1977.
+const double DefinedFluidProperties::mCriticalTemperatureN2H4       = 653.0;
 /// @details  Reference: "USAF Propellant Handbooks, Hydrazine Fuels, Vol. I", Bell Aerospace Corp., Mar. 1970.
 const double DefinedFluidProperties::mCriticalTemperatureCH3N2H3    = 585.0;
 /// @details  Reference: 3M (TM) Novec (TM) 7000 Engineering Fluid Product Information.
@@ -569,6 +574,13 @@ DefinedFluidProperties::DefinedFluidProperties()
     mHeatOfVaporizationN2O4(1258.40074661114, -2.91735422884232, 261.95, 431.35),
 
     /************************************************************************
+                   Properties for N2H4
+    ************************************************************************/
+    mSaturationPressureN2H4(6.968218448, -2.586591091, -0.211863158, 1.0, mCriticalTemperatureN2H4/274.68),
+    mSaturationTemperatureN2H4(6.968218448, -2.586591091, -0.211863158, 0.418, 14784.0),
+    mHeatOfVaporizationN2H4(1859.5, -1.644, 274.68, 387.37),
+
+    /************************************************************************
                    Properties for CH3N2H3
     ************************************************************************/
     mSaturationPressureCH3N2H3(6.263433, -1.923808, -0.434885, 1.0, mCriticalTemperatureCH3N2H3/220.0),
@@ -821,6 +833,20 @@ DefinedFluidProperties::DefinedFluidProperties()
     mPressureMMH(9.935507e+2, 4.356428e-3, 7.055863e-2, -2.411805e-5, -1.605997e-3, 4.182414e-8,
                  220.0, 585.0, 1.0e-64, 1.0e+06),
     mTemperatureMMH(2480.7, 1.2624, 2758.4*220.0, 3219.2*585.0),
+
+    /************************************************************************
+                   Properties for liquid HYDRAZINE
+    ************************************************************************/
+    mDensityHYDRAZINE(1230.774, 5.91931e-5, -0.626700942, 2.06685e-7, -0.000452968, 1.25893e-9,
+                      274.68, 387.4, 1.0e-64, 1.0e+06),
+    mViscosityHYDRAZINE(0.032949161, 0.988079347, 274.68, 387.4),
+    mSpecificHeatHYDRAZINE(2343.3, 2.4825, 274.68, 387.4),
+    mThermalConductivityHYDRAZINE(0.088203316, 0.002744071, -4.68042e-6, 274.68, 387.4),
+    mPrandtlNumberHYDRAZINE(131.8770027, 0.989586693, 274.68, 387.4),
+    mAdiabaticIndexHYDRAZINE(0.64975127, 1.227552e-3, 200.0, 470.0),
+    mPressureHYDRAZINE(1230.774, 5.91931e-5, -0.626700942, 2.06685e-7, -0.000452968, 1.25893e-9,
+                       274.68, 387.4, 1.0e-64, 1.0e+06),
+    mTemperatureHYDRAZINE(2343.3, 2.4825, 3025.0*274.68, 3806.0*387.4),
 
     /************************************************************************
                    Properties for carbon monoxide (Ideal Gas)
@@ -1158,7 +1184,7 @@ DefinedFluidProperties::DefinedFluidProperties()
                    &mHeatOfVaporizationN2O4),
 
 /************************************************************************
-                Properties for NTO (Liquid)
+                Properties for MMH (Liquid)
 ************************************************************************/
     mPropertiesMMH(FluidProperties::GUNNS_MMH, FluidProperties::LIQUID,
                    mMWeightCH3N2H3,                mCriticalTemperatureCH3N2H3,
@@ -1167,7 +1193,19 @@ DefinedFluidProperties::DefinedFluidProperties()
                    &mPrandtlNumberMMH,             &mAdiabaticIndexMMH,
                    &mPressureMMH,                  &mTemperatureMMH,
                    &mSaturationPressureCH3N2H3,    &mSaturationTemperatureCH3N2H3,
-                   &mHeatOfVaporizationCH3N2H3)
+                   &mHeatOfVaporizationCH3N2H3),
+
+/************************************************************************
+                Properties for HYDRAZINE (Liquid)
+************************************************************************/
+    mPropertiesHYDRAZINE(FluidProperties::GUNNS_HYDRAZINE, FluidProperties::LIQUID,
+                   mMWeightN2H4,                         mCriticalTemperatureN2H4,
+                   &mDensityHYDRAZINE,                   &mViscosityHYDRAZINE,
+                   &mSpecificHeatHYDRAZINE,              &mThermalConductivityHYDRAZINE,
+                   &mPrandtlNumberHYDRAZINE,             &mAdiabaticIndexHYDRAZINE,
+                   &mPressureHYDRAZINE,                  &mTemperatureHYDRAZINE,
+                   &mSaturationPressureN2H4,             &mSaturationTemperatureN2H4,
+                   &mHeatOfVaporizationN2H4)
 {
     /// - Load the fluid properties array with the pointer to the properties for each fluid type
     mProperties[FluidProperties::GUNNS_CO]          = &mPropertiesCO;
@@ -1201,6 +1239,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     mProperties[FluidProperties::GUNNS_WATER_PVT]   = &mPropertiesWATERPVT;
     mProperties[FluidProperties::GUNNS_NTO]         = &mPropertiesNTO;
     mProperties[FluidProperties::GUNNS_MMH]         = &mPropertiesMMH;
+    mProperties[FluidProperties::GUNNS_HYDRAZINE]   = &mPropertiesHYDRAZINE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

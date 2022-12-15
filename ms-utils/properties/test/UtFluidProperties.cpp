@@ -296,6 +296,15 @@ void UtFluidProperties::testSpecificEnthalpyTemperatureConsistency()
         const double returned           = mArticle->getProperties(type)->
             getTemperature(specificEnthalpy, pressure);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
+    } {
+        FluidProperties::FluidType type = FluidProperties::GUNNS_HYDRAZINE;
+        const double pressure           = 600.0;
+        const double expected           = 300.0;
+        const double specificEnthalpy   = mArticle->getProperties(type)->
+            getSpecificEnthalpy(expected, pressure);
+        const double returned           = mArticle->getProperties(type)->
+            getTemperature(specificEnthalpy, pressure);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, 1.0e-10);
     }
 
     std::cout << "... Pass";
@@ -700,6 +709,15 @@ void UtFluidProperties::testInvalidRangeBounds()
             mArticle->mProperties[FluidProperties::GUNNS_MMH]->
             getSaturationTemperature(8031.0);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, mTolerance);
+    } {
+        /// @test getSaturationTemperature upper pressure limit
+        const double expected =
+            mArticle->mProperties[FluidProperties::GUNNS_HYDRAZINE]->
+            getSaturationTemperature(14784.0);
+        const double returned =
+            mArticle->mProperties[FluidProperties::GUNNS_HYDRAZINE]->
+            getSaturationTemperature(14785.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned, mTolerance);
     }
 
     std::cout << "... Pass";
@@ -1054,7 +1072,7 @@ void UtFluidProperties::testSaturationCurveConsistency()
                                    21.0, 207.0, 308.0, 309.0, 400.0,
                                   401.0, 402.0, 310.0,  60.0,  20.0,
                                   150.0, 311.0, 312.0, 313.0, 314.0,
-                                  315.0};
+                                  315.0, 316.0};
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);

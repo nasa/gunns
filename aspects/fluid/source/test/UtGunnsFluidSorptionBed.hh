@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_GUNNS_FLUID_SORPTION_BED    GUNNS Fluid Sorption Bed Unit Test
 /// @ingroup  UT_TSM_GUNNS_FLUID_SOURCE
 ///
-/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Sorption Bed
@@ -79,7 +79,8 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         CPPUNIT_TEST(testBedSorbateUpdateLoading);
         CPPUNIT_TEST(testBedSegmentUpdate);
         CPPUNIT_TEST(testComputeFlows);
-        //TODO specific port rules
+        CPPUNIT_TEST(testPortRules);
+        CPPUNIT_TEST(testRunExceptions);
         CPPUNIT_TEST_SUITE_END();
 
         double                              tMaxConductivity;    /**< (m2)   Nominal config data. */
@@ -89,7 +90,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         FriendlyGunnsFluidSorptionBed*      tArticle;            /**< (--)   Article under test. */
         std::string                         tLinkName;           /**< (--)   Nominal initialization data. */
         GunnsFluidTraceCompoundsInputData*  tTcInput;            /**< (--)   Trace compounds input data for nodes. */
-        GunnsFluidNode                      tNodes[2];           /**< (--)   Network nodes. */
+        GunnsFluidNode                      tNodes[4];           /**< (--)   Network nodes. */
         GunnsNodeList                       tNodeList;           /**< (--)   Network nodes list. */
         std::vector<GunnsBasicLink*>        tLinks;              /**< (--)   Network links. */
         int                                 tPort0;              /**< (--)   Nominal initialization data. */
@@ -102,7 +103,9 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         PolyFluidConfigData*                tFluidConfig;        /**< (--)   Fluid config data. */
         GunnsFluidTraceCompoundsInputData*  tFluidTcInput;       /**< (--)   Trace compounds input data for nodes. */
         PolyFluidInputData*                 tFluidInput1;        /**< (--)   Fluid 1 input data. */
-        double                              tFractions1[3];      /**< (--)   Array of fluid mass fractions for node 0. */
+        PolyFluidInputData*                 tFluidInput2;        /**< (--)   Fluid 2 input data. */
+        double                              tFractions1[4];      /**< (--)   Array of fluid mass fractions for node 0. */
+        double                              tFractions2[4];      /**< (--)   Array of fluid mass fractions for node 2. */
         SorbantProperties*                  tCustomSorbant;      /**< (--)   A custom sorbant properties. */
         static int                          TEST_ID;             /**< (--)   Test identification number. */
 
@@ -124,6 +127,8 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         void testBedSorbateUpdateLoading();
         void testBedSegmentUpdate();
         void testComputeFlows();
+        void testPortRules();
+        void testRunExceptions();
 };
 
 ///@}

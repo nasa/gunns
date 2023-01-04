@@ -2,7 +2,7 @@
 @file     GunnsFluidSorptionBed.cpp
 @brief    GUNNS Sorption Bed Link implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -56,21 +56,6 @@ GunnsFluidSorptionBedSorbate::~GunnsFluidSorptionBedSorbate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] reason (--) String describing the reason for the error throw.
-///
-/// @throws  TsInitializationException
-///
-/// @details  Throws H&S error and exception with the given reason string.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSorptionBedSorbate::throwInitException(const std::string& reason) const
-{
-    TsHsMsg msg(TS_HS_ERROR, TS_HS_GUNNS);
-    msg << "throwing TsInitializationException Invalid Initialization Data - " << reason;
-    hsSendMsg(msg);
-    throw TsInitializationException("Invalid Initialization Data", "no name", reason);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] properties  (--)        Pointer to the sorbate properties object.
 /// @param[in] fluidIndex  (--)        Index of this sorbate in the fluid constituents.
 /// @param[in] tcIndex     (--)        Index of this sorbate in the trace compounds.
@@ -78,9 +63,8 @@ void GunnsFluidSorptionBedSorbate::throwInitException(const std::string& reason)
 /// @param[in] volume      (m3)        Effective volume of sorbant.
 /// @param[in] fluid       (--)        Pointer to the link internal fluid.
 ///
-/// @throws  TsInitializationException
-///
-/// @details  Initializes this sorption bed sorbate.
+/// @details  Initializes this sorption bed sorbate.  Caller must ensure that the initial loading
+///           value is >= 0.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
                                         const int                fluidIndex,
@@ -89,10 +73,6 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
                                         const double             volume,
                                         const PolyFluid*         fluid)
 {
-    /// - Validate the initial loading.
-    if (loading < 0.0) {
-        throwInitException("loading is < 0");
-    }
     mProperties          = properties;
     mFluidIndexes.mFluid = fluidIndex;
     mFluidIndexes.mTc    = tcIndex;
@@ -117,8 +97,6 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
 /// @param[in] sorbates  (--) Array of all sorbate types in the sorption bed.
 /// @param[in] nSorbates (--) Size of the sorbates array.
 ///
-/// @throws  TsInitializationException
-///
 /// @details  Stores pointers to the other sorbates that interact with this sorbate in the bed as
 ///           blocking compounds, so that we can reference them and compute their effect in
 ///           updateLoadingEquil.
@@ -126,22 +104,9 @@ void GunnsFluidSorptionBedSorbate::init(const SorbateProperties* properties,
 void GunnsFluidSorptionBedSorbate::registerInteractions(GunnsFluidSorptionBedSorbate* sorbates,
                                                         const unsigned int            nSorbates)
 {
-    if (not mProperties) {
-        throwInitException("mProperties is NULL");
-    }
     for (unsigned int i=0; i<mProperties->getBlockingCompounds()->size(); ++i) {
         const ChemicalCompound::Type compound = mProperties->getBlockingCompounds()->at(i).mCompound;
         for (unsigned int j=0; j<nSorbates; ++j) {
-            //TODO do we really need all this?
-            if (not &sorbates[j]) {
-                throwInitException("sorbates[j] is NULL");
-            }
-            if (not sorbates[j].getProperties()) {
-                throwInitException("sorbates[j].getProperties() is NULL");
-            }
-            if (not sorbates[j].getProperties()->getCompound()) {
-                throwInitException("sorbates[j].getProperties()->getCompound() is NULL");
-            }
             if (compound == sorbates[j].getProperties()->getCompound()->mType) {
                 mBlockingStates.push_back(&sorbates[j]);
                 mBlockingCompoundIndex.push_back(i);
@@ -208,7 +173,7 @@ void GunnsFluidSorptionBedSorbate::updateLoading(const double timestep, const do
 ///           sums both the bulk fluid's and the trace compound's mole fractions, whichever are
 ///           present.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double GunnsFluidSorptionBedSorbate::getMoleFraction(const PolyFluid* fluid) const
+double GunnsFluidSorptionBedSorbate::getMoleFraction(const PolyFluid* fluid) const
 {
     double result = 0.0;
     if (mFluidIndexes.mFluid >= 0) {
@@ -253,10 +218,10 @@ void GunnsFluidSorptionBedSorbate::restartModel()
 /// @details  Constructs this Sorption Bed Segment Configuration Data with arguments.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(
-        const std::string& name,
+        const std::string&       name,
         const SorbantProperties* sorbant,
-        const double       volume,
-        const double       htc)
+        const double             volume,
+        const double              htc)
     :
     mName(name),
     mProperties(sorbant),
@@ -435,28 +400,13 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
                 load = loading.at(j).mLoading;
             }
         }
-        try {
-            mSorbates[i].init(&mProperties->getSorbates()->at(sorbateIndexes[i]),
-                              fluidIndexes[i], tcIndexes[i], load, effectiveSorbantVol, mFluid);
-        } catch (TsInitializationException& e) {
-            const std::string compoundName = mProperties->getSorbates()->at(sorbateIndexes[i]).getCompound()->mName;
-            std::ostringstream msg;
-            msg << "caught error from sorbate " << compoundName << ": " << e.getCause();
-            GUNNS_ERROR(TsInitializationException, "Invalid Initialization", msg.str());
-        }
+        mSorbates[i].init(&mProperties->getSorbates()->at(sorbateIndexes[i]),
+                          fluidIndexes[i], tcIndexes[i], load, effectiveSorbantVol, mFluid);
     }
 
     /// - Initialize sorbate interactions.
     for (unsigned int i=0; i<mNSorbates; ++i) {
-        try {
-            mSorbates[i].registerInteractions(mSorbates, mNSorbates);
-        } catch (TsInitializationException& e) {
-            //TODO refactor with above, DRY
-            const std::string compoundName = mProperties->getSorbates()->at(sorbateIndexes[i]).getCompound()->mName;
-            std::ostringstream msg;
-            msg << "caught error from sorbate " << compoundName << ": " << e.getCause();
-            GUNNS_ERROR(TsInitializationException, "Invalid Initialization", msg.str());
-        }
+        mSorbates[i].registerInteractions(mSorbates, mNSorbates);
     }
 }
 
@@ -990,15 +940,11 @@ void GunnsFluidSorptionBed::zeroAdsorbWork()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double  (kg*mol/s)  Total adsorbed mole rate of all bulk fluid constituents.
-///
-/// @details  Computes the bulk fluid and trace compounds adsorbed mass and adsorption rate values
-///           and returns the total bulk fluid adsorption mole rate.
+/// @details  Computes the bulk fluid and trace compounds adsorbed mass and adsorption rate values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsFluidSorptionBed::computeAdsorbOutputs()
+void GunnsFluidSorptionBed::computeAdsorbOutputs()
 {
     zeroAdsorbWork();
-    double totalAdsorptionRate = 0.0;
     const unsigned int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
     unsigned int nTc = 0;
     const GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
@@ -1012,7 +958,6 @@ double GunnsFluidSorptionBed::computeAdsorbOutputs()
             const int fluidIndex = sorbate.getFluidIndexes()->mFluid;
             const int tcIndex    = sorbate.getFluidIndexes()->mTc;
             if (fluidIndex >= 0) {
-                totalAdsorptionRate          += sorbate.mAdsorptionRate;
                 mWorkFluidRates[fluidIndex]  += sorbate.mAdsorptionRate;
                 mWorkFluidMasses[fluidIndex] += sorbate.mLoadedMass;
                 //TODO must include offgas compounds if they're bulk fluids!
@@ -1035,18 +980,21 @@ double GunnsFluidSorptionBed::computeAdsorbOutputs()
         mAdsorptionTcRates[i] = mWorkTcRates[i] * tc->getConfig()->mCompounds.at(i)->mMWeight;
         mAdsorbedTcMasses[i]  = mWorkTcMasses[i];
     }
-
-    return totalAdsorptionRate;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  Integration time step.
 ///
 /// @details    Update the internal fluids for constituent mass removed by adsorbtion or added by
-///             desorbtion.
+///             desorbtion.  Note that even with no pressure gradient across the link to cause fluid
+///             flow to conduct through the link, segments can desorb into the fluid, creating flow
+///             source to a node - this always is applied to the port 1 node.  This is a flow source
+///             effect, applied to the source vector on the next pass.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBed::computeFlows(const double dt)
 {
+    //TODO move stuff to transportFlows?  remember difference between compute & transport for
+    //   mass conservation
     mPotentialDrop = getDeltaPotential();
 
     /// - Compute molar flow rate.
@@ -1054,8 +1002,8 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
 
     /// - Convert the molar flow rate to mass rate using the molecular weight of the source node.
     int    sourcePort    = determineSourcePort(mFlux, 0, 1);
-    double sourceDensity =         mNodes[sourcePort]->getContent()->getDensity();
-    mFlowRate            = mFlux * mNodes[sourcePort]->getContent()->getMWeight();
+    double sourceDensity =         mNodes[sourcePort]->getOutflow()->getDensity();
+    mFlowRate            = mFlux * mNodes[sourcePort]->getOutflow()->getMWeight();
 
     /// - Calculate true volumetric flow rate from the mass flow rate, using the density of the
     ///   source node.
@@ -1068,20 +1016,22 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
     /// - Calculate hydraulic power.
     computePower();
 
-    /// - Skip sorption when the time step is negligible.
-    double totalAdsorptionRate = 0.0;
-    if (dt > DBL_EPSILON) {
+    /// - This term will track updated mass flow rate exiting each segment after sorption.
+    double segFlow = fabs(mFlowRate);
+
+    /// - Skip sorption when the time step is negligible or neither port node has fluid density
+    ///   (both ports are on Ground).
+    if (dt > DBL_EPSILON and sourceDensity > DBL_EPSILON) {
 
         const double dPoverV = fabs(mPotentialDrop) / mVolume;
-        double segFlow = fabs(mFlowRate);
 
-        if (mFlowRate > 0.0) {
+        if (mFlowRate >= 0.0) {
             mInternalFluid->setState(mNodes[0]->getContent());
             for (int i=0; i<mNodes[0]->getFluidConfig()->mNTypes; ++i) {
-                mInternalFluid->setMass(i, mNodes[0]->getContent()->getMassFraction(i) * segFlow);
+                mInternalFluid->setMass(i, mNodes[0]->getOutflow()->getMassFraction(i) * segFlow);
             }
             double segP = mPotentialVector[0];
-            for (unsigned int i=0; i<mNSegments; ++i) {
+            for (int i=0; i<static_cast<int>(mNSegments); ++i) {
                 const double nextSegP = segP - dPoverV * mSegments[i].mVolume;
                 /// - Update segments in order of flow direction.
                 mSegments[i].update(segFlow, segP, nextSegP, dt);
@@ -1095,29 +1045,34 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
         } else if (mFlowRate < 0.0) {
             mInternalFluid->setState(mNodes[1]->getContent());
             for (int i=0; i<mNodes[0]->getFluidConfig()->mNTypes; ++i) {
-                mInternalFluid->setMass(i, mNodes[1]->getContent()->getMassFraction(i) * segFlow);
+                mInternalFluid->setMass(i, mNodes[1]->getOutflow()->getMassFraction(i) * segFlow);
             }
             double segP = mPotentialVector[1];
-            for (unsigned int i=mNSegments-1; i>=0; --i) {
+            for (unsigned int i=mNSegments; i-- > 0;) { // this syntax safely loops the unsigned backwards to 0 inclusive.
                 const double nextSegP = segP - dPoverV * mSegments[i].mVolume;
                 mSegments[i].update(segFlow, segP, nextSegP, dt);
                 segP = nextSegP;
             }
         }
-
-        /// - Transport flow between nodes and correct the source vector for adsorption.
-        if (mFlowRate > 0.0) {
-            mNodes[0]->collectOutflux(mFlowRate);
-            mNodes[1]->collectInflux(segFlow, mInternalFluid);
-            mSourceVector[0] = 0.0;
-            mSourceVector[1] = totalAdsorptionRate;
-        } else if (mFlowRate < 0.0) {
-            mNodes[1]->collectOutflux(-mFlowRate);
-            mNodes[0]->collectInflux(segFlow, mInternalFluid);
-            mSourceVector[0] = totalAdsorptionRate;
-            mSourceVector[1] = 0.0;
-        }
     }
+
+    /// - Compute total bulk desorbed moles as difference between bulk moles in and out.
+    const double bulkDesorbMoleRate = segFlow / mInternalFluid->getMWeight()
+                                    - fabs(mFlowRate) / mNodes[sourcePort]->getOutflow()->getMWeight();
+
+    /// - Transport flow between nodes and correct the source vector for sorption.
+    if (mFlowRate >= 0.0) {
+        mNodes[0]->collectOutflux(mFlowRate);
+        mNodes[1]->collectInflux(segFlow, mInternalFluid);
+        mSourceVector[0] = 0.0;
+        mSourceVector[1] = bulkDesorbMoleRate;
+    } else if (mFlowRate < 0.0) {
+        mNodes[1]->collectOutflux(-mFlowRate);
+        mNodes[0]->collectInflux(segFlow, mInternalFluid);
+        mSourceVector[0] = bulkDesorbMoleRate;
+        mSourceVector[1] = 0.0;
+    }
+
     computeAdsorbOutputs();
 }
 

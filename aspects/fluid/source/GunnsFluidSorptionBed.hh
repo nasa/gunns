@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_SORPTION_BED  Sorption Bed Link
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -75,7 +75,7 @@ class GunnsFluidSorptionBedSorbate
         void init(const SorbateProperties* properties, const int fluidIndex, const int tcIndex,
                   const double loading, const double volume, const PolyFluid* fluid);
         /// @brief  Stores pointers to interacting sorbates in the sorption bed.
-        void registerInteractions(GunnsFluidSorptionBedSorbate* sorbates, const unsigned int nSorbates);
+        virtual void registerInteractions(GunnsFluidSorptionBedSorbate* sorbates, const unsigned int nSorbates);
         /// @brief  Computes the equilibrium sorbant-sorbate loading at current conditions.
         void updateLoadingEquil(const double pp, const double temperature);
         /// @brief  Updates the sorbate loading and rate in the sorbant segment.
@@ -102,8 +102,6 @@ class GunnsFluidSorptionBedSorbate
         std::vector<unsigned int>                    mBlockingCompoundIndex; /**< ** (1) trick_chkpnt_io(**) Index of the blocking compounds interaction data in the Sorbate Properties. */
         std::vector<GunnsFluidSorptionBedFluidIndex> mOffgasIndexes;         /**< ** (1) trick_chkpnt_io(**) Fluid indexes of the offgasing compounds. */
         static const float                           mLimitAdsorbFraction;   /**< ** (1) trick_chkpnt_io(**) Limit on fraction of influx that can be adsorbed. */
-        /// @brief  Formats and throws H&S error and exception with the given description.
-        void throwInitException(const std::string& reason) const;
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
@@ -188,6 +186,8 @@ class GunnsFluidSorptionBedSegment
         void update(double& flowIn, const double pIn, const double pOut, const double timestep);
         /// @brief  Returns the number of sorbates in this Sorption Bed Segment.
         unsigned int getNSorbates() const;
+        /// @brief  Sets and resets the degradation malfunction controls for this segment.
+        void setMalfDegrade(const bool flag = false, const double value = 0.0);
 
     protected:
         std::string              mName;       /**< *o (1)   trick_chkpnt_io(**) Name of this instance for messaging. */
@@ -335,7 +335,7 @@ class GunnsFluidSorptionBed : public GunnsFluidConductor
         /// @brief  Zeroes the adsorbed mass and adsorption rate temporary working arrays.
         void zeroAdsorbWork();
         /// @brief  Computes the adsorbed mass and adsorption rate output values.
-        double computeAdsorbOutputs();
+        void computeAdsorbOutputs();
         /// @brief  Checks for valid implementation-specific port node assignment.
         virtual bool checkSpecificPortRules(const int port, const int node) const;
 
@@ -401,6 +401,18 @@ inline double GunnsFluidSorptionBedSorbate::computeHeatFlux() const
 inline unsigned int GunnsFluidSorptionBedSegment::getNSorbates() const
 {
     return mNSorbates;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] flag  (--) True activates the malfunction.
+/// @param[in] value (--) Fraction (0-1) of degradation, fraction of sorbant that cannot sorb.
+///
+/// @details  Calling this with default arguments deactivates the malfunction.
+////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidSorptionBedSegment::setMalfDegrade(const bool flag, const double value)
+{
+    mMalfDegradeFlag  = flag;
+    mMalfDegradeValue = value;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

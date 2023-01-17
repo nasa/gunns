@@ -182,6 +182,10 @@ double GunnsFluidSorptionBedSorbate::getMoleFraction(const PolyFluid* fluid) con
     if (mFluidIndexes.mTc >= 0) {
         result += fluid->getTraceCompounds()->getMoleFractions()[mFluidIndexes.mTc];
     }
+
+    /// - Note that it is possible for this result to be > 1 if the compound is both a bulk fluid
+    ///   and trace compound.  This will cause many issues throughout the network that we can't
+    ///   prevent by limiting the result here, so we don't bother with limiting.
     return result;
 }
 
@@ -423,9 +427,14 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
 //     - blocks as inverse of loading/equil, so co-absorption gets better the more blocking comopund
 //       is adosrbed.
 //     - needed for LiOH, Metox, etc.
-//TODO offgassing convserve mass - reduce mass & volume of sorbant equal to offgas mass
+//TODO offgassing conserve mass - reduce mass & volume of sorbant equal to offgas mass
 //     - this assumes that offgas comes entirely from sorbant, and not reactants from the thru fluid
 //       otherwise we'd need to use ChemicalReaction
+//TODO note design limitation on desorption of trace compounds.  Because we can't create bulk flow
+//     when only desorbing trace compounds, mass isn't conserved.  Workaround is to have the user
+//     create a small leak flow from the pressurized cabin side through this link, by using a
+//     selective membrane link allowing N2 or some other inert fluid relative to our sorbants, to
+//     create a small bulk flow to allow TC's to desorb into.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const double pOut, const double timestep)
 {
@@ -467,12 +476,15 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         ///   fluid and this doesn't account for other sorbates desorbing at the same time.
         ///   We only do this for sorbates that are bulk fluids, since for trace compounds we do
         ///   not model fluid states such as phase or saturation.
-        double desorbLimit = 1.0e10; //TODO magic # arbitrary large limit
+        double desorbLimit = FLT_MAX; // use this number as an arbitrarily large limit
         const FluidProperties::FluidType fluidType = mSorbates[i].getProperties()->getCompound()->mFluidType;
         if (fluidIndex >= 0) {
             const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
             const double ndotSat = ndot * pSat / fmax(pOut, DBL_EPSILON);
-            desorbLimit = fmax(0.0, ndotSat - ndotIn);
+            //TDOO this might artificially increase our desorb time to vacuum... maybe skip this
+            // saturation check altogether?  Or make it optional
+            // because it's taking forever to desorb...
+//            desorbLimit = fmax(0.0, ndotSat - ndotIn);
         }
         const double adsorbLimit = ndotIn / mVolSorbant;
 
@@ -581,6 +593,7 @@ double GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const i
     if (tcIndex >= 0) {
         mFluid->getTraceCompounds()->setMass(tcIndex, ndotOutTc * molWeight);
     }
+
     return mdotBulkDesorb;
 }
 
@@ -864,11 +877,6 @@ void GunnsFluidSorptionBed::validate(const GunnsFluidSorptionBedConfigData& conf
             GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "a segment has null sorbant properties.");
         }
 
-        /// - Throw an exception if the sorbant properties is missing all sorbate properties.
-        if (0 == configData.mSegments.at(i).mProperties->getSorbates()->size()) {
-            GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "a segment sorbant properties has no sorbate properties.");
-        }
-
         /// - Throw an exception if a segment configuration data has zero volume.
         if (configData.mSegments.at(i).mVolume < DBL_EPSILON) {
             GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "a segment has zero volume.");
@@ -985,25 +993,20 @@ void GunnsFluidSorptionBed::computeAdsorbOutputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  Integration time step.
 ///
-/// @details    Update the internal fluids for constituent mass removed by adsorbtion or added by
-///             desorbtion.  Note that even with no pressure gradient across the link to cause fluid
-///             flow to conduct through the link, segments can desorb into the fluid, creating flow
-///             source to a node - this always is applied to the port 1 node.  This is a flow source
-///             effect, applied to the source vector on the next pass.
+/// @details  Calculates bulk through-flow properties, updates the bed segments, and transports the
+///           through-fluid from the source node and, after sorption exchange, to the sink node.
+///           Note that even with no pressure gradient across the link to cause fluid flow to
+///           conduct through the link, segments can desorb into the fluid, creating flow source to
+///           a node - this always is applied to the port 1 node.  This is a flow source effect,
+///           applied to the source vector on the next pass.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSorptionBed::computeFlows(const double dt)
+void GunnsFluidSorptionBed::transportFlows(const double dt)
 {
-    //TODO move stuff to transportFlows?  remember difference between compute & transport for
-    //   mass conservation
-    mPotentialDrop = getDeltaPotential();
-
-    /// - Compute molar flow rate.
-    computeFlux();
-
     /// - Convert the molar flow rate to mass rate using the molecular weight of the source node.
-    int    sourcePort    = determineSourcePort(mFlux, 0, 1);
-    double sourceDensity =         mNodes[sourcePort]->getOutflow()->getDensity();
-    mFlowRate            = mFlux * mNodes[sourcePort]->getOutflow()->getMWeight();
+    const int    sourcePort    = determineSourcePort(mFlux, 0, 1);
+    const int    sinkPort      = 1 - sourcePort;
+    const double sourceDensity = mNodes[sourcePort]->getOutflow()->getDensity();
+    mFlowRate                  = mFlux * mNodes[sourcePort]->getOutflow()->getMWeight();
 
     /// - Calculate true volumetric flow rate from the mass flow rate, using the density of the
     ///   source node.
@@ -1016,25 +1019,56 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
     /// - Calculate hydraulic power.
     computePower();
 
-    /// - This term will track updated mass flow rate exiting each segment after sorption.
-    double segFlow = fabs(mFlowRate);
+    /// - Update segments and get flow rate exiting the link to downstream after sorption.
+    const double exitFlow = updateSegments(dt, sourceDensity, sourcePort);
+
+    /// - Compute total bulk desorbed moles as difference between bulk moles in and out.
+    const double bulkDesorbMoleRate = exitFlow / mInternalFluid->getMWeight()
+                                    - fabs(mFlowRate) / mNodes[sourcePort]->getOutflow()->getMWeight();
+
+    /// - Transport flow between nodes and correct the source vector for sorption.
+    mNodes[sourcePort]->collectOutflux(fabs(mFlowRate));
+    mNodes[sinkPort]->collectInflux(exitFlow, mInternalFluid);
+    mSourceVector[sourcePort] = 0.0;
+    mSourceVector[sinkPort]   = bulkDesorbMoleRate;
+
+    computeAdsorbOutputs();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  dt            (s)     Integration time step.
+/// @param[in]  sourceDensity (kg/m3) Inlet fluid density.
+/// @param[in]  sourcePort    (--)    Port number supplying the inlet flow to this bed link.
+///
+/// @returns  double (kg/s) Flow rate exiting the bed link to the downstream node, after sorption.
+///
+/// @details  Iterates over the bed segments based on flow direction, updates them for sorption and
+///           and exchange with the through-fluid, and returns the exiting through flowrate after
+///           sorption.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourceDensity, const unsigned int sourcePort)
+{
+    /// - Initialize the exit flow as the inlet flow, before sorption.
+    double exitFlow = fabs(mFlowRate);
 
     /// - Skip sorption when the time step is negligible or neither port node has fluid density
     ///   (both ports are on Ground).
     if (dt > DBL_EPSILON and sourceDensity > DBL_EPSILON) {
 
+        /// - Using a minimum flow rate for setting the internal fluid from the source node outflow
+        ///   fluid allows a valid fluid mixture to remain in the internal fluid when bulk flow
+        ///   rate is zero.
+        mInternalFluid->setState(mNodes[sourcePort]->getOutflow());
+        mInternalFluid->setMass(std::max(exitFlow, DBL_EPSILON));
+
         const double dPoverV = fabs(mPotentialDrop) / mVolume;
+        double segP          = mPotentialVector[sourcePort];
 
         if (mFlowRate >= 0.0) {
-            mInternalFluid->setState(mNodes[0]->getContent());
-            for (int i=0; i<mNodes[0]->getFluidConfig()->mNTypes; ++i) {
-                mInternalFluid->setMass(i, mNodes[0]->getOutflow()->getMassFraction(i) * segFlow);
-            }
-            double segP = mPotentialVector[0];
-            for (int i=0; i<static_cast<int>(mNSegments); ++i) {
+            for (unsigned int i=0; i<static_cast<int>(mNSegments); ++i) {
                 const double nextSegP = segP - dPoverV * mSegments[i].mVolume;
                 /// - Update segments in order of flow direction.
-                mSegments[i].update(segFlow, segP, nextSegP, dt);
+                mSegments[i].update(exitFlow, segP, nextSegP, dt);
 
                 /// - Estimate total pressure in between segments, for inlet pressure to each
                 ///   segment, as interpolated between the node pressures by relative segment length
@@ -1043,37 +1077,14 @@ void GunnsFluidSorptionBed::computeFlows(const double dt)
                 segP = nextSegP;
             }
         } else if (mFlowRate < 0.0) {
-            mInternalFluid->setState(mNodes[1]->getContent());
-            for (int i=0; i<mNodes[0]->getFluidConfig()->mNTypes; ++i) {
-                mInternalFluid->setMass(i, mNodes[1]->getOutflow()->getMassFraction(i) * segFlow);
-            }
-            double segP = mPotentialVector[1];
             for (unsigned int i=mNSegments; i-- > 0;) { // this syntax safely loops the unsigned backwards to 0 inclusive.
                 const double nextSegP = segP - dPoverV * mSegments[i].mVolume;
-                mSegments[i].update(segFlow, segP, nextSegP, dt);
+                mSegments[i].update(exitFlow, segP, nextSegP, dt);
                 segP = nextSegP;
             }
         }
     }
-
-    /// - Compute total bulk desorbed moles as difference between bulk moles in and out.
-    const double bulkDesorbMoleRate = segFlow / mInternalFluid->getMWeight()
-                                    - fabs(mFlowRate) / mNodes[sourcePort]->getOutflow()->getMWeight();
-
-    /// - Transport flow between nodes and correct the source vector for sorption.
-    if (mFlowRate >= 0.0) {
-        mNodes[0]->collectOutflux(mFlowRate);
-        mNodes[1]->collectInflux(segFlow, mInternalFluid);
-        mSourceVector[0] = 0.0;
-        mSourceVector[1] = bulkDesorbMoleRate;
-    } else if (mFlowRate < 0.0) {
-        mNodes[1]->collectOutflux(-mFlowRate);
-        mNodes[0]->collectInflux(segFlow, mInternalFluid);
-        mSourceVector[0] = bulkDesorbMoleRate;
-        mSourceVector[1] = 0.0;
-    }
-
-    computeAdsorbOutputs();
+    return exitFlow;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

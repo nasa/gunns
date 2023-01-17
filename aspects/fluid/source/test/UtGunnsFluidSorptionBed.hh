@@ -78,7 +78,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         CPPUNIT_TEST(testBedSorbateLoadingEquil);
         CPPUNIT_TEST(testBedSorbateUpdateLoading);
         CPPUNIT_TEST(testBedSegmentUpdate);
-        CPPUNIT_TEST(testComputeFlows);
+        CPPUNIT_TEST(testTransportFlows);
         CPPUNIT_TEST(testPortRules);
         CPPUNIT_TEST(testRunExceptions);
         CPPUNIT_TEST_SUITE_END();
@@ -126,7 +126,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         void testBedSorbateLoadingEquil();
         void testBedSorbateUpdateLoading();
         void testBedSegmentUpdate();
-        void testComputeFlows();
+        void testTransportFlows();
         void testPortRules();
         void testRunExceptions();
 };

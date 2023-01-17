@@ -5,6 +5,7 @@
 
 #include "strings/UtResult.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "software/exceptions/TsOutOfBoundsException.hh"
 #include "UtGunnsFluidSorptionBed.hh"
 
 /// @details  Test identification number.
@@ -331,7 +332,7 @@ void UtGunnsFluidSorptionBed::testSegmentInput()
     CPPUNIT_ASSERT(ChemicalCompound::H2O == nominalInput.mSorbate);
     CPPUNIT_ASSERT(0.001                 == nominalInput.mLoading);
 
-    /// @test copy constructor TODO don't know why this isn't showing up in code coverage...?
+    /// @test copy constructor
     GunnsFluidSorptionBedSegmentInputData copyInput(nominalInput);
     CPPUNIT_ASSERT(3                     == copyInput.mSegment);
     CPPUNIT_ASSERT(ChemicalCompound::H2O == copyInput.mSorbate);
@@ -562,13 +563,6 @@ void UtGunnsFluidSorptionBed::testInitializationExceptions()
                          TsInitializationException);
     tConfigData->mSegments.at(0).mProperties = savedProperties;
 
-    /// @test exception thrown on a segment sorbant missing sorbate properties.
-    SorbantProperties emptySorbant(SorbantProperties::CUSTOM, 1.0, 0.5, 500.0);
-    tConfigData->mSegments.at(0).mProperties = &emptySorbant;
-    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
-                         TsInitializationException);
-    tConfigData->mSegments.at(0).mProperties = savedProperties;
-
     /// @test exception thrown on a segment with zero volume.
     const double savedVolume = tConfigData->mSegments.at(0).mVolume;
     tConfigData->mSegments.at(0).mVolume = 0.0;
@@ -617,7 +611,7 @@ void UtGunnsFluidSorptionBed::testRestart()
     CPPUNIT_ASSERT(0.0 == tArticle->mAdsorptionTcRates[0]);
     CPPUNIT_ASSERT(0.0 == tArticle->mSegments[0].mSorbates[1].mLoadedMass);
 
-    //TODO restart a bed sorbate directly for coverage
+    /// - Restart a bed sorbate directly for coverage
     tArticle->mSegments[0].mSorbates[0].restartModel();
 
     UT_PASS;
@@ -884,9 +878,9 @@ void UtGunnsFluidSorptionBed::testBedSegmentUpdate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Test for Compute Flows method.
+/// @details  Test for Transport Flows method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidSorptionBed::testComputeFlows()
+void UtGunnsFluidSorptionBed::testTransportFlows()
 {
     UT_RESULT;
 
@@ -905,6 +899,7 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     tArticle->step(tTimeStep);
     CPPUNIT_ASSERT(0.0 < tArticle->mAdmittanceMatrix[0]);
     tArticle->computeFlows(tTimeStep);
+    tArticle->transportFlows(tTimeStep);
 
     double expectedDP   = Pin - Pout;
     double expectedFlux = tArticle->mAdmittanceMatrix[0] * expectedDP;
@@ -993,6 +988,7 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     tArticle->step(tTimeStep);
     CPPUNIT_ASSERT(0.0 == tArticle->mAdmittanceMatrix[0]);
     tArticle->computeFlows(tTimeStep);
+    tArticle->transportFlows(tTimeStep);
 
     expectedDP   = 0.0;
     expectedFlux = 0.0;
@@ -1009,10 +1005,10 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     CPPUNIT_ASSERT(0.0 == tArticle->mSegments[0].mSorbates[1].mAdsorptionRate);
     CPPUNIT_ASSERT(0.0 == tArticle->mSegments[0].mHeatFlux);
     CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mSorbates[0].mAdsorptionRate);
-    CPPUNIT_ASSERT(0.0 == tArticle->mSegments[1].mSorbates[1].mAdsorptionRate);
+    CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mSorbates[1].mAdsorptionRate);
     CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mHeatFlux);
 
-    CPPUNIT_ASSERT(0.0 == tNodes[1].getInflux());
+    CPPUNIT_ASSERT(0.0 <  tNodes[1].getInflux());
     CPPUNIT_ASSERT(0.0 == tNodes[0].getInflux());
     CPPUNIT_ASSERT(0.0 == tNodes[1].getOutflux());
     CPPUNIT_ASSERT(0.0 == tNodes[0].getOutflux());
@@ -1049,6 +1045,7 @@ void UtGunnsFluidSorptionBed::testComputeFlows()
     tArticle->step(tTimeStep);
     CPPUNIT_ASSERT(0.0 < tArticle->mAdmittanceMatrix[0]);
     tArticle->computeFlows(tTimeStep);
+    tArticle->transportFlows(tTimeStep);
 
     expectedDP   = Pout - Pin;
     expectedFlux = tArticle->mAdmittanceMatrix[0] * expectedDP;
@@ -1156,11 +1153,29 @@ void UtGunnsFluidSorptionBed::testRunExceptions()
 {
     UT_RESULT;
 
-    //TODO call getAdsorbedTcMass when netowrk has no TC config
+    /// - Set up network node list with nodes having no trace compounds.
+    tFluidConfig->mTraceCompounds = 0;
+    tFluidInput1->mTraceCompounds = 0;
 
-    //TODO call getAdsorptionTcRate when netowrk has no TC config
+    GunnsFluidNode nodes[2];
+    nodes[0].initialize("node0", tFluidConfig);
+    nodes[0].getContent()->initialize(*tFluidConfig, *tFluidInput1);
+    nodes[0].resetFlows();
+    nodes[1].initialize("node0", tFluidConfig);
+    nodes[1].getContent()->initialize(*tFluidConfig, *tFluidInput1);
+    nodes[1].resetFlows();
 
-    //TODO
+    tNodeList.mNumNodes = 2;
+    tNodeList.mNodes    = nodes;
+
+    /// - Initialize the test article with nominal data and nodes that have no trace compounds.
+    CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
+
+    /// @test Throw error when getAdsorbedTcMass called and network has no trace compounds.
+    CPPUNIT_ASSERT_THROW(tArticle->getAdsorbedTcMass(ChemicalCompound::CO2), TsOutOfBoundsException);
+
+    /// @test Throw error when getAdsorptionTcRate called and network has no trace compounds.
+    CPPUNIT_ASSERT_THROW(tArticle->getAdsorptionTcRate(ChemicalCompound::CO2), TsOutOfBoundsException);
 
     UT_PASS_LAST;
 }

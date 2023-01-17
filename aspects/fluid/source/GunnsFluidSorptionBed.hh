@@ -58,6 +58,7 @@ struct GunnsFluidSorptionBedFluidIndex
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidSorptionBedSorbate
 {
+    TS_MAKE_SIM_COMPATIBLE(GunnsFluidSorptionBedSorbate);
     public:
         bool   mMalfLoadingEquilFlag;  /**< (1)                               Activates the equilibrium loading factor malfunction. */
         double mMalfLoadingEquilValue; /**< (1)                               Sets the equilibrium loading malfunction factor. */
@@ -165,6 +166,7 @@ class GunnsFluidSorptionBedSegmentInputData
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsFluidSorptionBedSegment
 {
+    TS_MAKE_SIM_COMPATIBLE(GunnsFluidSorptionBedSegment);
     public:
         bool                          mMalfDegradeFlag;  /**< (1)                       Activates the sorbant degradation malfunction. */
         double                        mMalfDegradeValue; /**< (1)                       Fraction of sorbant performance lost due to degradation. */
@@ -308,7 +310,7 @@ class GunnsFluidSorptionBed : public GunnsFluidConductor
                         const int                              port0,
                         const int                              port1);
         /// @brief  Updates the sorption and transports flows.
-        virtual void computeFlows(const double dt);
+        virtual void transportFlows(const double dt);
         /// @brief  Returns the total absorbed mass of the given fluid type.
         double getAdsorbedFluidMass(FluidProperties::FluidType type) const;
         /// @brief  Returns the total absorbed mass of the given trace compound type.
@@ -338,6 +340,8 @@ class GunnsFluidSorptionBed : public GunnsFluidConductor
         void computeAdsorbOutputs();
         /// @brief  Checks for valid implementation-specific port node assignment.
         virtual bool checkSpecificPortRules(const int port, const int node) const;
+        /// @brief  Update bed segments for sorption and exchange with the through-fluid.
+        double updateSegments(const double dt, const double sourceDensity, const unsigned int sourcePort);
 
     private:
         double* mWorkFluidRates;  /**< ** (kg*mol/s) trick_chkpnt_io(**) Temporary work array for total adsorption rate of each bulk fluid constituent over all segments. */

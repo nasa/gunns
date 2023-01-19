@@ -120,11 +120,13 @@ class UtGunnsElectConverterInput: public CppUnit::TestFixture
         unsigned int                         tTripPriority;       /**< (--) Nominal config data. */
         double                               tInOverVoltageTrip;  /**< (V)  Nominal config data. */
         double                               tInUnderVoltageTrip; /**< (V)  Nominal config data. */
+        TsLinearInterpolator*                tEfficiencyTable;    /**< (--) Nominal config data. */
         bool                                 tMalfBlockageFlag;   /**< (--) Nominal input data. */
         double                               tMalfBlockageValue;  /**< (--) Nominal input data. */
         bool                                 tEnabled;            /**< (--) Nominal input data. */
         double                               tInputVoltage;       /**< (V)  Nominal input data. */
         double                               tInputPower;         /**< (W)  Nominal input data. */
+        double                               tReferencePower;     /**< (W)  Nominal input data. */
         GunnsElectConverterOutputConfigData* tOutputConfigData;   /**< (--) Pointer to config data. */
         GunnsElectConverterOutputInputData*  tOutputInputData;    /**< (--) Pointer to input data. */
         FriendlyGunnsElectConverterOutput    tOutputLink;         /**< (--) Test converter output link. */

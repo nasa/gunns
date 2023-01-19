@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Input Link implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -26,6 +26,7 @@ LIBRARY DEPENDENCY:
 /// @param[in] tripPriority               (--) Priority of trips in the network.
 /// @param[in] inputUnderVoltageTripLimit (--) Input under-voltage trip limit.
 /// @param[in] inputOverVoltageTripLimit  (--) Input over-voltage trip limit.
+/// @param[in] efficiencyTable            (--) Pointer to the converter efficiency vs. power fraction table.
 ///
 /// @details  Default Electrical Converter Input link config data constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,14 +37,16 @@ GunnsElectConverterInputConfigData::GunnsElectConverterInputConfigData(
         GunnsSensorAnalogWrapper* inputCurrentSensor,
         const unsigned int        tripPriority,
         const float               inputUnderVoltageTripLimit,
-        const float               inputOverVoltageTripLimit)
+        const float               inputOverVoltageTripLimit,
+        TsLinearInterpolator*     efficiencyTable)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mInputVoltageSensor(inputVoltageSensor),
     mInputCurrentSensor(inputCurrentSensor),
     mTripPriority(tripPriority),
     mInputUnderVoltageTripLimit(inputUnderVoltageTripLimit),
-    mInputOverVoltageTripLimit(inputOverVoltageTripLimit)
+    mInputOverVoltageTripLimit(inputOverVoltageTripLimit),
+    mEfficiencyTable(efficiencyTable)
 {
     // nothing to do
 }
@@ -69,7 +72,8 @@ GunnsElectConverterInputConfigData::GunnsElectConverterInputConfigData(
     mInputCurrentSensor(that.mInputCurrentSensor),
     mTripPriority(that.mTripPriority),
     mInputUnderVoltageTripLimit(that.mInputUnderVoltageTripLimit),
-    mInputOverVoltageTripLimit(that.mInputOverVoltageTripLimit)
+    mInputOverVoltageTripLimit(that.mInputOverVoltageTripLimit),
+    mEfficiencyTable(that.mEfficiencyTable)
 {
     // nothing to do
 }
@@ -80,6 +84,7 @@ GunnsElectConverterInputConfigData::GunnsElectConverterInputConfigData(
 /// @param[in] enabled           (--) Initial operation enabled state.
 /// @param[in] inputVoltage      (V)  Initial input voltage.
 /// @param[in] inputPower        (W)  Initial input power load.
+/// @param[in] referencePower    (W)  Initial reference power load for efficiency calculation.
 ///
 /// @details  Default Electrical Converter Input link input data constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +92,14 @@ GunnsElectConverterInputInputData::GunnsElectConverterInputInputData(const bool 
                                                                      const double malfBlockageValue,
                                                                      const bool   enabled,
                                                                      const double inputVoltage,
-                                                                     const double inputPower)
+                                                                     const double inputPower,
+                                                                     const double referencePower)
     :
     GunnsBasicLinkInputData(malfBlockageFlag, malfBlockageValue),
     mEnabled(enabled),
     mInputVoltage(inputVoltage),
-    mInputPower(inputPower)
+    mInputPower(inputPower),
+    mReferencePower(referencePower)
 {
     // nothing to do
 }
@@ -116,7 +123,8 @@ GunnsElectConverterInputInputData::GunnsElectConverterInputInputData(
     GunnsBasicLinkInputData(that),
     mEnabled(that.mEnabled),
     mInputVoltage(that.mInputVoltage),
-    mInputPower(that.mInputPower)
+    mInputPower(that.mInputPower),
+    mReferencePower(that.mReferencePower)
 {
     // nothing to do
 }
@@ -129,15 +137,19 @@ GunnsElectConverterInput::GunnsElectConverterInput()
     GunnsBasicLink(NPORTS),
     mInputVoltageSensor(0),
     mInputCurrentSensor(0),
+    mEfficiencyTable(0),
     mOutputLink(0),
     mEnabled(false),
     mInputPower(0.0),
     mInputPowerValid(false),
     mResetTrips(false),
+    mReferencePower(0.0),
     mInputVoltage(0.0),
     mInputVoltageValid(false),
     mInputUnderVoltageTrip(),
     mInputOverVoltageTrip(),
+    mConverterEfficiency(0.0),
+    mTotalPowerLoss(0.0),
     mLeadsInterface(false),
     mOverloadedState(false),
     mLastOverloadedState(false)
@@ -194,9 +206,11 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     }
     mInputUnderVoltageTrip.initialize(configData.mInputUnderVoltageTripLimit, configData.mTripPriority, false);
     mInputOverVoltageTrip .initialize(configData.mInputOverVoltageTripLimit,  configData.mTripPriority, false);
-    mEnabled      = inputData.mEnabled;
-    mInputVoltage = inputData.mInputVoltage;
-    mInputPower   = inputData.mInputPower;
+    mEfficiencyTable = configData.mEfficiencyTable;
+    mEnabled         = inputData.mEnabled;
+    mInputVoltage    = inputData.mInputVoltage;
+    mInputPower      = inputData.mInputPower;
+    mReferencePower  = inputData.mReferencePower;
 
     /// - Initialize remaining state.
     mResetTrips          = false;
@@ -205,6 +219,8 @@ void GunnsElectConverterInput::initialize(      GunnsElectConverterInputConfigDa
     mLastOverloadedState = false;
     mInputVoltageValid   = true;
     mInputPowerValid     = true;
+    mConverterEfficiency = 1.0;
+    mTotalPowerLoss      = 0.0;
     mNodes[0]->setPotential(mInputVoltage);
 
     /// - Set init flag on successful validation.
@@ -241,13 +257,30 @@ void GunnsElectConverterInput::checkNodeList(GunnsNodeList* nodeList)
 /// @details  Validates this Electrical Converter Input link configuration and input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectConverterInput::validate(const GunnsElectConverterInputConfigData& configData,
-                                        const GunnsElectConverterInputInputData&  inputData __attribute__((unused))) const
+                                        const GunnsElectConverterInputInputData&  inputData) const
 {
     /// - Issue an error on backwards trip limits.
     if ( (configData.mInputUnderVoltageTripLimit > configData.mInputOverVoltageTripLimit) and
          (configData.mInputOverVoltageTripLimit != 0.0) ) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "input under-voltage trip limit > over-voltage limit.");
+    }
+
+    if (configData.mEfficiencyTable) {
+        /// - Issue an error on table limits out of bounds of valid efficiency (DBL_EPSILON-1).
+        ///   Check at every 10% power fraction.
+        for (int i=0; i<11; ++i) {
+            if (not MsMath::isInRange(DBL_EPSILON, configData.mEfficiencyTable->get(0.1 * i), 1.0)) {
+                GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                            "some of the efficiency table is not in valid range (DBL_EPSILON-1)");
+            }
+        }
+
+        /// - Issue an error if reference power not > 0 when the efficiency table is provided.
+        if (inputData.mReferencePower < DBL_EPSILON) {
+            GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
+                        "reference power < DBL_EPSILON while efficiency table is provided.");
+        }
     }
 }
 
@@ -326,13 +359,27 @@ void GunnsElectConverterInput::minorStep(const double dt __attribute__((unused))
             mInputPowerValid = true;
         }
 
-        /// - Scale the input load by the blockage malfunction, however note that intermediate
-        ///   values between 0 and 1 won't conserve energy between the input & output sides.  Use
-        ///   the output side blockage to conserve energy for intermediate values.
-        double scaledInputLoad = mInputPower;
-        if (mMalfBlockageFlag) {
-            scaledInputLoad *= 1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0);
+        /// - Apply efficiency loss to the input power load.  This is optional, only applied when
+        ///   the optional efficiency table is provided.  Efficiency is a lookup vs. ratio of
+        ///   demanded power from the output side (mInputPower) to the reference power value.
+        ///   This allows the reference power to change, as more converter cores are tied in
+        ///   parallel, etc.
+        double efficiency = 1.0;
+        if (mEfficiencyTable) {
+            const double powerFraction = mInputPower / std::max(DBL_EPSILON, mReferencePower);
+            efficiency = mEfficiencyTable->get(powerFraction);
         }
+
+        /// - The link blockage malfunction decreases efficiency towards zero.
+        if (mMalfBlockageFlag) {
+            efficiency *= 1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0);
+        }
+        mConverterEfficiency = MsMath::limitRange(DBL_EPSILON, efficiency, 1.0);
+        const double scaledInputLoad = mInputPower / mConverterEfficiency;
+
+        /// - Total power lost due to conversion efficiency; this can also be used as the waste heat
+        ///   generated by the converter.
+        mTotalPowerLoss = scaledInputLoad - mInputPower;
 
         double current = 0.0;
         if (mEnabled and not (mOverloadedState or mInputOverVoltageTrip.isTripped()

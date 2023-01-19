@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_INPUT_LINK    GUNNS Electrical Converter Input Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -33,6 +33,7 @@ PROGRAMMERS:
 #include "core/GunnsBasicLink.hh"
 #include "aspects/electrical/TripLogic/GunnsTripLogic.hh"
 #include "core/GunnsSensorAnalogWrapper.hh"
+#include "math/approximation/TsLinearInterpolator.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 
 // Forward-declaration of types.
@@ -116,6 +117,8 @@ class GunnsElectConverterInput : public GunnsBasicLink
         void setEnabled(const bool enabled);
         /// @brief  Sets the input power.
         void setInputPower(const double inputPower);
+        /// @biref  Sets the reference power for efficiency calculation.
+        void setReferencePower(const double referencePower);
         /// @brief  Returns the input voltage.
         double getInputVoltage() const;
         /// @brief  Returns the input voltage valid flag.
@@ -128,15 +131,19 @@ class GunnsElectConverterInput : public GunnsBasicLink
     protected:
         SensorAnalog*              mInputVoltageSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input voltage sensor. */
         SensorAnalog*              mInputCurrentSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input current sensor. */
+        TsLinearInterpolator*      mEfficiencyTable;       /**<    (1) trick_chkpnt_io(**) Pointer to the converter efficiency vs. power fraction table. */
         GunnsElectConverterOutput* mOutputLink;            /**< *o (1) trick_chkpnt_io(**) Pointer to the converter output side link. */
         bool                       mEnabled;               /**<    (1)                     Operation is enabled. */
         double                     mInputPower;            /**<    (W)                     Input channel power load received from the output side. */
         bool                       mInputPowerValid;       /**<    (1) trick_chkpnt_io(**) The input channel power load value is valid. */
         bool                       mResetTrips;            /**<    (1) trick_chkpnt_io(**) Input command to reset trips. */
+        double                     mReferencePower;        /**<    (1)                     Reference power load for efficiency calculation. */
         double                     mInputVoltage;          /**<    (V)                     Input channel voltage sent to the output side. */
         bool                       mInputVoltageValid;     /**<    (1) trick_chkpnt_io(**) Input channel voltage value is valid. */
         GunnsTripLessThan          mInputUnderVoltageTrip; /**<    (1)                     Input under-voltage trip function. */
         GunnsTripGreaterThan       mInputOverVoltageTrip;  /**<    (1)                     Input over-voltage trip function. */
+        double                     mConverterEfficiency;   /**<    (1) trick_chkpnt_io(**) The power conversion efficiency (0-1). */
+        double                     mTotalPowerLoss;        /**<    (W)                     Total power loss through converter efficiency. */
         bool                       mLeadsInterface;        /**< *o (1) trick_chkpnt_io(**) This precedes the mOutputLink in the network. */
         bool                       mOverloadedState;       /**<    (1) trick_chkpnt_io(**) Network can't supply the power load. */
         bool                       mLastOverloadedState;   /**<    (1) trick_chkpnt_io(**) Last pass value of mOverloadedState. */
@@ -171,6 +178,7 @@ class GunnsElectConverterInputConfigData: public GunnsBasicLinkConfigData
         unsigned int              mTripPriority;               /**< (1) trick_chkpnt_io(**) Priority of trips in the network. */
         float                     mInputUnderVoltageTripLimit; /**< (V) trick_chkpnt_io(**) Input under-voltage trip limit. */
         float                     mInputOverVoltageTripLimit;  /**< (V) trick_chkpnt_io(**) Input over-voltage trip limit. */
+        TsLinearInterpolator*     mEfficiencyTable;            /**< (1) trick_chkpnt_io(**) Pointer to the converter efficiency vs. power fraction table. */
         /// @brief  Default constructs this Electrical Converter Input configuration data.
         GunnsElectConverterInputConfigData(
                 const std::string&        name                       = "",
@@ -179,7 +187,8 @@ class GunnsElectConverterInputConfigData: public GunnsBasicLinkConfigData
                 GunnsSensorAnalogWrapper* inputCurrentSensor         = 0,
                 const unsigned int        tripPriority               = 0,
                 const float               inputUnderVoltageTripLimit = 0.0,
-                const float               inputOverVoltageTripLimit  = 0.0);
+                const float               inputOverVoltageTripLimit  = 0.0,
+                TsLinearInterpolator*     efficiencyTable            = 0);
         /// @brief  Default destructs this Electrical Converter Input configuration data.
         virtual ~GunnsElectConverterInputConfigData();
         /// @brief  Copy constructs this Electrical Converter Input configuration data.
@@ -201,12 +210,14 @@ class GunnsElectConverterInputInputData : public GunnsBasicLinkInputData
         bool   mEnabled;            /**< (1) trick_chkpnt_io(**) Initial operation enabled state. */
         double mInputVoltage;       /**< (V) trick_chkpnt_io(**) Initial input voltage. */
         double mInputPower;         /**< (W) trick_chkpnt_io(**) Initial input power load. */
+        double mReferencePower;     /**< (W) trick_chkpnt_io(**) Initial reference power load for efficiency calculation. */
         /// @brief  Default constructs this Electrical Converter Input input data.
         GunnsElectConverterInputInputData(const bool   malfBlockageFlag  = false,
                                           const double malfBlockageValue = 0.0,
                                           const bool   enabled           = false,
                                           const double inputVoltage      = 0.0,
-                                          const double inputPower        = 0.0);
+                                          const double inputPower        = 0.0,
+                                          const double referencePower    = 0.0);
         /// @brief  Default destructs this Electrical Converter Input input data.
         virtual ~GunnsElectConverterInputInputData();
         /// @brief  Copy constructs this Electrical Converter Input input data.
@@ -267,6 +278,16 @@ inline void GunnsElectConverterInput::setEnabled(const bool enabled)
 inline void GunnsElectConverterInput::setInputPower(const double inputPower)
 {
     mInputPower = inputPower;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  referencePower  (W)  Reference power value to use.
+///
+/// @details  Sets mReferencePower to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectConverterInput::setReferencePower(const double referencePower)
+{
+    mReferencePower = referencePower;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

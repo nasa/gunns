@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -29,11 +29,13 @@ UtGunnsElectConverterInput::UtGunnsElectConverterInput()
     tTripPriority(0),
     tInOverVoltageTrip(0.0),
     tInUnderVoltageTrip(0.0),
+    tEfficiencyTable(0),
     tMalfBlockageFlag(false),
     tMalfBlockageValue(0.0),
     tEnabled(false),
     tInputVoltage(0.0),
     tInputPower(0.0),
+    tReferencePower(0.0),
     tOutputConfigData(0),
     tOutputInputData(0),
     tOutputLink()
@@ -73,13 +75,17 @@ void UtGunnsElectConverterInput::setUp()
     tTripPriority       = 2;
     tInUnderVoltageTrip = 100.0;
     tInOverVoltageTrip  = 130.0;
+    const double powPoints[] = {0.0, 1.0};
+    const double effPoints[] = {0.5, 1.0};
+    tEfficiencyTable    = new TsLinearInterpolator(powPoints, effPoints, 2, 0.0, 1.0);
     tConfigData         = new GunnsElectConverterInputConfigData(tName,
                                                                  &tNodeList,
                                                                  &tSensorVin,
                                                                  &tSensorIin,
                                                                  tTripPriority,
                                                                  tInUnderVoltageTrip,
-                                                                 tInOverVoltageTrip);
+                                                                 tInOverVoltageTrip,
+                                                                 tEfficiencyTable);
 
     /// - Define the nominal input data.
     tMalfBlockageFlag  = true;
@@ -87,11 +93,13 @@ void UtGunnsElectConverterInput::setUp()
     tEnabled           = true;
     tInputVoltage      = 120.0;
     tInputPower        = 10.0;
+    tReferencePower    = 100.0;
     tInputData         = new GunnsElectConverterInputInputData(tMalfBlockageFlag,
                                                                tMalfBlockageValue,
                                                                tEnabled,
                                                                tInputVoltage,
-                                                               tInputPower);
+                                                               tInputPower,
+                                                               tReferencePower);
 
     /// - Default construct the nominal test article.
     tArticle = new FriendlyGunnsElectConverterInput;
@@ -127,6 +135,7 @@ void UtGunnsElectConverterInput::tearDown()
     delete tArticle;
     delete tInputData;
     delete tConfigData;
+    delete tEfficiencyTable;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +151,7 @@ void UtGunnsElectConverterInput::testConfig()
     CPPUNIT_ASSERT(tTripPriority       == tConfigData->mTripPriority);
     CPPUNIT_ASSERT(tInUnderVoltageTrip == tConfigData->mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(tInOverVoltageTrip  == tConfigData->mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(tEfficiencyTable    == tConfigData->mEfficiencyTable);
 
     /// @test    Configuration data default construction.
     GunnsElectConverterInputConfigData defaultConfig;
@@ -150,6 +160,7 @@ void UtGunnsElectConverterInput::testConfig()
     CPPUNIT_ASSERT(0   == defaultConfig.mTripPriority);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(0.0 == defaultConfig.mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(0   == defaultConfig.mEfficiencyTable);
 
     /// @test    Configuration data copy construction.
     GunnsElectConverterInputConfigData copyConfig(*tConfigData);
@@ -158,6 +169,7 @@ void UtGunnsElectConverterInput::testConfig()
     CPPUNIT_ASSERT(tTripPriority       == copyConfig.mTripPriority);
     CPPUNIT_ASSERT(tInUnderVoltageTrip == copyConfig.mInputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(tInOverVoltageTrip  == copyConfig.mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(tEfficiencyTable    == copyConfig.mEfficiencyTable);
 
     UT_PASS;
 }
@@ -175,6 +187,7 @@ void UtGunnsElectConverterInput::testInput()
     CPPUNIT_ASSERT(tEnabled           == tInputData->mEnabled);
     CPPUNIT_ASSERT(tInputVoltage      == tInputData->mInputVoltage);
     CPPUNIT_ASSERT(tInputPower        == tInputData->mInputPower);
+    CPPUNIT_ASSERT(tReferencePower    == tInputData->mReferencePower);
 
     /// @test    Input data default construction.
     GunnsElectConverterInputInputData defaultInput;
@@ -183,6 +196,7 @@ void UtGunnsElectConverterInput::testInput()
     CPPUNIT_ASSERT(false == defaultInput.mEnabled);
     CPPUNIT_ASSERT(0.0   == defaultInput.mInputVoltage);
     CPPUNIT_ASSERT(0.0   == defaultInput.mInputPower);
+    CPPUNIT_ASSERT(0.0   == defaultInput.mReferencePower);
 
     /// @test    Input data copy construction.
     GunnsElectConverterInputInputData copyInput(*tInputData);
@@ -191,6 +205,7 @@ void UtGunnsElectConverterInput::testInput()
     CPPUNIT_ASSERT(tEnabled           == copyInput.mEnabled);
     CPPUNIT_ASSERT(tInputVoltage      == copyInput.mInputVoltage);
     CPPUNIT_ASSERT(tInputPower        == copyInput.mInputPower);
+    CPPUNIT_ASSERT(tReferencePower    == copyInput.mReferencePower);
 
     UT_PASS;
 }
@@ -205,11 +220,13 @@ void UtGunnsElectConverterInput::testConstruction()
     /// @test    Default construction.
     CPPUNIT_ASSERT(0     == tArticle->mInputVoltageSensor);
     CPPUNIT_ASSERT(0     == tArticle->mInputCurrentSensor);
+    CPPUNIT_ASSERT(0     == tArticle->mEfficiencyTable);
     CPPUNIT_ASSERT(0     == tArticle->mOutputLink);
     CPPUNIT_ASSERT(false == tArticle->mEnabled);
     CPPUNIT_ASSERT(0.0   == tArticle->mInputPower);
     CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT(false == tArticle->mResetTrips);
+    CPPUNIT_ASSERT(0.0   == tArticle->mReferencePower);
     CPPUNIT_ASSERT(0.0   == tArticle->mInputVoltage);
     CPPUNIT_ASSERT(false == tArticle->mInputVoltageValid);
     CPPUNIT_ASSERT(false == tArticle->mInputUnderVoltageTrip.isTripped());
@@ -237,12 +254,16 @@ void UtGunnsElectConverterInput::testNominalInitialization()
     /// - Initialize default constructed test article with nominal initialization data.
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
 
+    /// @test    Efficiency table.
+    CPPUNIT_ASSERT(tEfficiencyTable == tArticle->mEfficiencyTable);
+
     /// @test    Nominal input data.
     CPPUNIT_ASSERT(tMalfBlockageFlag  == tArticle->mMalfBlockageFlag);
     CPPUNIT_ASSERT(tMalfBlockageValue == tArticle->mMalfBlockageValue);
     CPPUNIT_ASSERT(tInputVoltage      == tArticle->mInputVoltage);
     CPPUNIT_ASSERT(tInputPower        == tArticle->mInputPower);
     CPPUNIT_ASSERT(tEnabled           == tArticle->mEnabled);
+    CPPUNIT_ASSERT(tReferencePower    == tArticle->mReferencePower);
 
     /// @test    Sensors.
     CPPUNIT_ASSERT(&tSensorVin.mSensor == tArticle->mInputVoltageSensor);
@@ -291,6 +312,25 @@ void UtGunnsElectConverterInput::testInitializationErrors()
     tConfigData->mInputUnderVoltageTripLimit = tInOverVoltageTrip + 0.001;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
     tConfigData->mInputUnderVoltageTripLimit = tInUnderVoltageTrip;
+
+    /// @test    Exception not thrown for no efficiency table and zero reference power.
+    tConfigData->mEfficiencyTable = 0;
+    tInputData->mReferencePower   = 0.0;
+    CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
+
+    /// @test    Exception thrown for efficiency table with zero reference power.
+    tConfigData->mEfficiencyTable = tEfficiencyTable;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
+
+    /// @test    Exception thrown for efficiency table values out of range.
+    const double badPowPoints[] = {0.0, 1.0};
+    const double badEffPoints[] = {0.0, 1.0};
+    TsLinearInterpolator* badEffTable = new TsLinearInterpolator(badPowPoints, badEffPoints, 2, 0.0, 1.0);
+    tConfigData->mEfficiencyTable = badEffTable;
+    tInputData->mReferencePower   = tReferencePower;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
+    tConfigData->mEfficiencyTable = tEfficiencyTable;
+    delete badEffTable;
 
     /// @test    Exception not thrown for under-volt trip limit > over-volt limit but over-volt
     ///          limit = 0.
@@ -348,15 +388,20 @@ void UtGunnsElectConverterInput::testStep()
 
     {
         /// @test    Step and minorStep with normal inputs.
-        double nodeV     = 120.0;
-        double expectedG = 0.0;
-        double expectedW = -(1.0 - tMalfBlockageValue) * tInputPower / nodeV;
+        double nodeV       = 120.0;
+        double expectedG   = 0.0;
+        double expectedEff = 0.9 * (0.5 + 0.5 * tInputPower / tReferencePower);
+        double expectedPwr = tInputPower / expectedEff;
+        double expectedQ   = expectedPwr - tInputPower;
+        double expectedW   = -expectedPwr / nodeV;
         tArticle->mOverloadedState = true;
         tArticle->mPotentialVector[0] = nodeV;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEff, tArticle->mConverterEfficiency, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,   tArticle->mTotalPowerLoss,      DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,   tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
@@ -371,8 +416,25 @@ void UtGunnsElectConverterInput::testStep()
 
         CPPUNIT_ASSERT(false == tArticle->mInputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEff, tArticle->mConverterEfficiency, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,   tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+        CPPUNIT_ASSERT(false == tArticle->mResetTrips);
+
+        /// @test    No efficiency table and no blockage malf.
+        tArticle->setMalfBlockage();
+        tArticle->mEfficiencyTable = 0;
+        expectedEff = 1.0;
+        expectedPwr = tInputPower / expectedEff;
+        expectedQ   = expectedPwr - tInputPower;
+        expectedW   = -expectedPwr / nodeV;
+        tArticle->step(0.0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEff, tArticle->mConverterEfficiency, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,   tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
@@ -387,8 +449,9 @@ void UtGunnsElectConverterInput::testStep()
 
         CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.isTripped());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEff, tArticle->mConverterEfficiency, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,   tArticle->mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
     } {
@@ -430,9 +493,11 @@ void UtGunnsElectConverterInput::testMinorStep()
         double outPloss  = outI * outI / tOutputConfigData->mOutputConductance;
         double expectedP = (outP + outPloss) / tOutputConfigData->mConverterEfficiency;
         double expectedG = 0.0;
-        double expectedW = -(1.0 - tMalfBlockageValue) * expectedP / inV;
+        double expectedW = -expectedP / inV;
         tOutputLink.mInputPower       = expectedP;
         tArticle->mPotentialVector[0] = inV;
+        tArticle->setMalfBlockage();
+        tArticle->mEfficiencyTable = 0;
         tArticle->step(0.0);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mInputPower,          DBL_EPSILON);
@@ -589,6 +654,10 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->setInputPower(15.0);
     CPPUNIT_ASSERT(15.0 == tArticle->mInputPower);
 
+    /// @test    Set the reference power.
+    tArticle->setReferencePower(42.0);
+    CPPUNIT_ASSERT(42.0 == tArticle->mReferencePower);
+
     /// @test    Get the trip logics.
     CPPUNIT_ASSERT(&tArticle->mInputOverVoltageTrip  == tArticle->getInputOverVoltageTrip());
     CPPUNIT_ASSERT(&tArticle->mInputUnderVoltageTrip == tArticle->getInputUnderVoltageTrip());
@@ -596,6 +665,10 @@ void UtGunnsElectConverterInput::testAccessors()
     /// @test    Get the input voltage.
     tArticle->mInputVoltage = 5.0;
     CPPUNIT_ASSERT(5.0 == tArticle->getInputVoltage());
+
+    /// @test    Get the input voltage valid flag.
+    tArticle->mInputVoltageValid = true;
+    CPPUNIT_ASSERT(true == tArticle->getInputVoltageValid());
 
     UT_PASS;
 }

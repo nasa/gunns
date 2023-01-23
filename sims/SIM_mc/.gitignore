@@ -1,0 +1,4 @@
+# Ignore monte carlo outputs
+MONTE*/
+
+RUN*/_init_log.csv

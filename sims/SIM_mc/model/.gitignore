@@ -1,0 +1,4 @@
+# Ignore gunnsdraw backup files
+*.xml.dtmp
+*.xml.bak
+*.xml.bkp

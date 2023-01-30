@@ -1,5 +1,5 @@
-/****************************************** TRICK HEADER ******************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -9,23 +9,11 @@ PURPOSE:
      message the simulation is terminated if the subsystem sending the message is in the
      classes list of subsystems.)
 
-REQUIREMENTS:
-   ()
-
-REFERENCE:
-   ()
-
-ASSUMPTIONS AND LIMITATIONS:
-   ()
-
-LIBRARY DEPENDENCY:
-   ()
-
 PROGRAMMERS:
    (
      ((Wesley A. White) (Tietronix Software) (June 2013) (Initial version))
    )
-**************************************************************************************************/
+*/
 
 #include <sstream>
 #include <string>
@@ -34,15 +22,12 @@ PROGRAMMERS:
 #endif
 #include "TsHsTermination.hh"
 
-// Initialize static data members
-
-TsHsTermination::StringSet TsHsTermination::mFatalToSubsystem;
-bool TsHsTermination::mEnabled = true;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details Default constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-TsHsTermination::TsHsTermination()
+TsHsTermination::TsHsTermination():
+    mFatalToSubsystem(),
+    mEnabled(true)
 {
 }
 

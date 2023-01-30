@@ -5,7 +5,7 @@
 @defgroup  TSM_UTILITIES_SIMULATION_HS_MSG_MANAGER Message Manager
 @ingroup   TSM_UTILITIES_SIMULATION_HS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -41,6 +41,7 @@ PROGRAMMERS:
 #include "TsHsOutputPlugin.hh"
 #include "TsHsPluginConfig.hh"
 #include "TsHsConfig.hh"
+#include "TsHsTermination.hh"
 #include "TS_hs_msg_types.h"
 
 /// @brief Ideally this would be the last enum value, not a define.
@@ -116,6 +117,7 @@ public:
     TsHsPluginConfig mPluginConfig[HS_NUM_PLUGINS];  //    (--) Plugin status and path info
     TsHsMsgStdFilter mMsgFilter;                     //    (--) The message filter
     TsHsMsgQueue     mMsgQueue;                      //    (--) The message queue
+    TsHsTermination  mTermination;                   //    (--) Termination handling
     int              mRequestCount;                  //    (--) The total number of logging request attempts
     bool             mImmediateMode;                 //    (--) Process messages immediately, i.e. do not queue.
     bool             mUseHelperThread;               //    (--) Flag used to stop helper thread during shutdown.

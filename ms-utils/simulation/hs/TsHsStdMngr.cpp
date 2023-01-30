@@ -1,18 +1,9 @@
-/****************************************** TRICK HEADER ******************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
     (Health and status message manager - code)
-
-REQUIREMENTS:
-   ()
-
-REFERENCE:
-   ()
-
-ASSUMPTIONS AND LIMITATIONS:
-   ()
 
 LIBRARY DEPENDENCY:
    (
@@ -35,7 +26,8 @@ PROGRAMMERS:
      ((Wesley A. White) (Tietronix Software) (August 2011))
      ((Wesley A. White) (Tietronix Software) (June 2013))
    )
-**************************************************************************************************/
+*/
+
 #include <iostream>
 #include <iomanip>
 #include <cmath>
@@ -59,6 +51,7 @@ TsHsStdMngr::TsHsStdMngr() :
     mConfig(),
     mMsgFilter(),
     mMsgQueue(4000, false),
+    mTermination(),
     mRequestCount(0),
     mImmediateMode(true),
     mUseHelperThread(true),
@@ -78,6 +71,7 @@ TsHsStdMngr::TsHsStdMngr(const TsHsConfig& config) :
     mConfig(config),
     mMsgFilter(),
     mMsgQueue(4000, false),
+    mTermination(),
     mRequestCount(0),
     mImmediateMode(true),
     mUseHelperThread(true),
@@ -95,8 +89,8 @@ void TsHsStdMngr::configure()
     srand(1234);
 
     // Configure the termination capability
-    TsHsTermination::setFatalToMultipleSubsystems(mConfig.mTerminationSubsystems);
-    TsHsTermination::setEnabled(mConfig.mTerminationEnabled);
+    mTermination.setFatalToMultipleSubsystems(mConfig.mTerminationSubsystems);
+    mTermination.setEnabled(mConfig.mTerminationEnabled);
 
     // Set up text plugin config
     mPluginConfig[TS_HS_TEXT].mEnabled     = mConfig.mTextPluginEnabled;
@@ -329,6 +323,8 @@ void TsHsStdMngr::msg(
         // Queue the message
         mMsgQueue.insertMsg(file, line, function, type, truncatedSubsys, mtext, met, timestamp);
     }
+
+    mTermination.msg(file, line, function,type, subsys, mtext);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

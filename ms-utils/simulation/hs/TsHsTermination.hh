@@ -5,7 +5,7 @@
 @defgroup  TSM_UTILITIES_SIMULATION_HS_TERMINATION_PLUGIN Termination Plugin
 @ingroup   TSM_UTILITIES_SIMULATION_HS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -26,7 +26,8 @@ LIBRARY DEPENDENCY:
 
 PROGRAMMERS:
 - (
-     ((Wesley A. White) (Tietronix Software) (June 2013) (Initial version))
+     ((Collin Blake)    (CACI)               (January 2023) (Revision to remove static)
+      (Wesley A. White) (Tietronix Software) (June 2013) (Initial version))
   )
 
 @{
@@ -47,8 +48,8 @@ PROGRAMMERS:
 /// @details The following example shows how to change the behavior of the terminate class via
 ///          the HS default data file.
 /// @code
-///          TsHsTermination::setEnabled(true);
-///          TsHsTermination::setFatalToMultipleSubsystems("ECLSS:JEOD:MECH");
+///          <TerminationInstance>.setEnabled(true);
+///          <TerminationInstance>setFatalToMultipleSubsystems("ECLSS:JEOD:MECH");
 ///
 /// @endcode
 /// @details The string "ECLSS:JEOD:MECH" is used to identify those systems for which TS_HS_FATAL
@@ -70,32 +71,32 @@ public:
    ~TsHsTermination();
 
     /// @brief Log a message.
-    static bool msg(const std::string& file, const int line, const std::string& function, TS_HS_MSG_TYPE type, const std::string& subsystems, const std::string& hsmsg);
+    bool msg(const std::string& file, const int line, const std::string& function, TS_HS_MSG_TYPE type, const std::string& subsystems, const std::string& hsmsg);
 
     /// @brief Turn on/off sim termination behavior for the specified subsystem
-    static void setFatalToSubsystem(const std::string subsystem, bool fatal = true);
+    void setFatalToSubsystem(const std::string subsystem, bool fatal = true);
 
     /// @brief Turn on sim termination behavior for the specified delimited list of subsystems (only)
-    static void setFatalToMultipleSubsystems(const std::string subsystems);
+    void setFatalToMultipleSubsystems(const std::string subsystems);
 
     /// @brief Turn on sim termination behavior for the specified delimited list of subsystems
-    static void appendFatalToMultipleSubsystems(const std::string subsystems);
+    void appendFatalToMultipleSubsystems(const std::string subsystems);
 
     /// @brief Test whether or not termination behavior is "on" for the specified subsystem
-    static bool isFatalToSubsystem(const std::string subsystem);
+    bool isFatalToSubsystem(const std::string subsystem);
 
     /// @brief Returns true if H&S terminations are enabled
-    static bool isEnabled() { return mEnabled; }
+    bool isEnabled() { return mEnabled; }
 
     /// @brief Enables/disables H&S terminations
-    static void setEnabled(bool flag) { mEnabled = flag; }
+    void setEnabled(bool flag) { mEnabled = flag; }
 
 private:
 
     typedef std::set<std::string> StringSet;
 
-    static StringSet mFatalToSubsystem; // ** (--) Used to make termination conditional by subsystem
-    static bool      mEnabled;          // ** (--) Disables ability to term
+    StringSet mFatalToSubsystem; // ** (--) Used to make termination conditional by subsystem
+    bool      mEnabled;          // ** (--) Disables ability to term
 
     // Not implemented
     TsHsTermination(const TsHsTermination&);

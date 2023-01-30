@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -321,16 +321,10 @@ void TsHsMsg::send(const std::string& file, unsigned line, const std::string& fu
 
 #ifdef no_TRICK_ENV
     tsGlobalHsMngr->msg(file, line, function, mSeverity, mSubsys.c_str(), getMessageText().c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, mSeverity, mSubsys.c_str(), getMessageText().c_str());
 #else
     const char* subsys =  tsHsGetSubstringFromJob(mSubsys);
 
     tsGlobalHsMngr->msg(file, line, function, mSeverity, subsys, getMessageText().c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, mSeverity, subsys, getMessageText().c_str());
 #endif
 }
 
@@ -370,16 +364,10 @@ void tsHsSendMsgFileLine(const std::string& file, unsigned line, const std::stri
     std::string mtext = msg.getMessageText();
 #ifdef no_TRICK_ENV
     tsGlobalHsMngr->msg(file, line, function, msg.getSeverity(),  msg.getSubsys().c_str(), mtext.c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, msg.getSeverity(),  msg.getSubsys().c_str(), mtext);
 #else
     const char* subsys =  tsHsGetSubstringFromJob(msg.getSubsys());
 
     tsGlobalHsMngr->msg(file, line, function, msg.getSeverity(), subsys, mtext.c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, msg.getSeverity(), subsys, mtext);
 #endif
 }
 
@@ -402,16 +390,10 @@ void tsHsSendMsgFileLine(const std::string& file, unsigned line, const std::stri
 
 #ifdef no_TRICK_ENV
     tsGlobalHsMngr->msg(file, line, function, severity, subsys.c_str(), mtext.c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, severity, subsys.c_str(), mtext.c_str());
 #else
     const char* simsubsys =  tsHsGetSubstringFromJob(subsys);
 
     tsGlobalHsMngr->msg(file, line, function, severity, simsubsys, mtext.c_str());
-
-    // The following will do nothing, unless certain termination conditions are met.
-    TsHsTermination::msg(file, line, function, severity, simsubsys, mtext.c_str());
 #endif
 }
 

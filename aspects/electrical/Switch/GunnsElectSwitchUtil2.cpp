@@ -8,7 +8,8 @@
 
 LIBRARY DEPENDENCY:
  ((simulation/hs/TsHsMsg.o)
-  (software/exceptions/TsInitializationException.o))
+  (software/exceptions/TsInitializationException.o)
+  (aspects/electrical/TripLogic/GunnsTripLogic.hh))
 */
 
 #include "GunnsElectSwitchUtil2.hh"
@@ -152,8 +153,6 @@ GunnsElectSwitchUtil2::GunnsElectSwitchUtil2()
     mMalfFailClosed(false),
     mMalfFailOpen(false),
     mResistance(0.0),
-    mInputVoltage(0.0),
-    mCurrent(0.0),
     mPosition(false),
     mPositionCommand(false),
     mResetTripsCommand(false),
@@ -275,6 +274,12 @@ void GunnsElectSwitchUtil2::updateState()
         resetTrips();
     }
 
+    /// - Clear trips on reception of trip reset command.
+    if (mResetTripsCommand) {
+        resetTrips();
+        mResetTripsCommand = false;
+    }
+
     /// - Update switch position with commands and malfunctions.
     if (mMalfFailClosed) {
         mPosition = true;
@@ -309,7 +314,8 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
             /// - Input under-voltage trip reset check and warning.  Upon trip of this reset
             ///   (rejection of the network solution), this resets itself and the actual under-
             ///   voltage trip.
-            if (mInputUnderVoltageReset.checkForTrip(result, voltage, convergedStep)) {
+            if (mInputUnderVoltageTrip.isTripped() and
+                    mInputUnderVoltageReset.checkForTrip(result, voltage, convergedStep)) {
                 mInputUnderVoltageReset.resetTrip();
                 mInputUnderVoltageTrip.resetTrip();
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
@@ -320,7 +326,8 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
             /// - Input over-voltage trip reset check and warning.  Upon trip of this reset
             ///   (rejection of the network solution), this resets itself and the actual over-
             ///   voltage trip.
-            if (mInputOverVoltageReset.checkForTrip(result, voltage, convergedStep)) {
+            if (mInputOverVoltageTrip.isTripped() and
+                    mInputOverVoltageReset.checkForTrip(result, voltage, convergedStep)) {
                 mInputOverVoltageReset.resetTrip();
                 mInputOverVoltageTrip.resetTrip();
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);

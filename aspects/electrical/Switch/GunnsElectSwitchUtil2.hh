@@ -86,10 +86,6 @@ class GunnsElectSwitchUtil2
         void setPositionCommand(const bool position);
         /// @brief Causes the switch to reset all of its trip states and logic.
         void resetTrips();
-        /// @brief Sets the input voltage of this switch.
-        void setInputVoltage(const float voltage);
-        /// @brief Sets the electrical current through this switch.
-        void setCurrent(const float current);
         /// @brief Returns the effective electrical resistance between the switch poles.
         double getResistance() const;
         /// @brief Returns whether the switch is physically closed.
@@ -123,8 +119,6 @@ class GunnsElectSwitchUtil2
 
     protected:
         float                mResistance;             /**<    (ohm) trick_chkpnt_io(**) Default electrical resistance of the switch. */
-        float                mInputVoltage;           /**<    (V)   trick_chkpnt_io(**) Switch input voltage, provided by external model. */
-        float                mCurrent;                /**<    (amp) trick_chkpnt_io(**) Switch through-current, provided by external model. */
         bool                 mPosition;               /**<    (1)                       Actual position of the switch (true = closed). */
         bool                 mPositionCommand;        /**<    (1)                       Switch position command (true = closed). */
         bool                 mResetTripsCommand;      /**<    (1)                       Reset trips command (true = reset). */
@@ -206,26 +200,6 @@ class GunnsElectSwitchUtil2InputData {
 };
 
 /// @}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] voltage (V) The value of voltage at the switch input.
-///
-/// @details  Sets mInputVoltage to the given value.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectSwitchUtil2::setInputVoltage(const float voltage)
-{
-    mInputVoltage = voltage;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] current (amp) The value of current through the switch.
-///
-/// @details  Sets mCurrent to the given value.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectSwitchUtil2::setCurrent(const float current)
-{
-    mCurrent = current;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] position (--) The switch position, true = closed.

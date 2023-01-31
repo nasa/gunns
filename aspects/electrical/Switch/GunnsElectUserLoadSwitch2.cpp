@@ -13,6 +13,7 @@ LIBRARY DEPENDENCY:
      (aspects/electrical/UserLoad/UserLoadBase.o)
      (aspects/electrical/resistive/GunnsShortUtil.o)
      (software/exceptions/TsInitializationException.o)
+     (common/sensors/TsNoise.o)
   )
 */
 
@@ -173,13 +174,11 @@ void GunnsElectUserLoadSwitch2::initialize(const GunnsElectUserLoadSwitch2Config
 
     /// - Initialize config & input data.  The switch object doesn't throw H&S errors or identify
     ///   itself in its warnings, so we re-throw its exceptions.
-    try {
-        mSwitch.initialize(configData.mSwitch, inputData.mSwitch, configData.mName + ".mSwitch");
-    } catch (TsInitializationException& e) {
-        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
-                "mSwitch failed to initialize.")
-    }
-    mShort.initialize(inputData.mShort);
+    mSwitch             .initialize(configData.mSwitch,              inputData.mSwitch,              configData.mName + ".mSwitch");
+    mCurrentSensor      .initialize(configData.mCurrentSensor,       inputData.mCurrentSensor,       configData.mName + ".mCurrentSensor");
+    mInputVoltageSensor .initialize(configData.mInputVoltageSensor,  inputData.mInputVoltageSensor,  configData.mName + ".mInputVoltageSensor");
+    mOutputVoltageSensor.initialize(configData.mOutputVoltageSensor, inputData.mOutputVoltageSensor, configData.mName + ".mOutputVoltageSensor");
+    mShort              .initialize(inputData.mShort);
     mLoadsPowerRefV       = configData.mLoadsPowerRefV;
     mLoadsOverrideActive  = inputData.mLoadsOverrideActive;
     mLoadsOverrideVoltage = inputData.mLoadsOverrideVoltage;

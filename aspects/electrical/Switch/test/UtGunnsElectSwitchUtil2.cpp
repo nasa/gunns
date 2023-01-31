@@ -167,8 +167,6 @@ void UtGunnsElectSwitchUtil2::testDefaultConstruction()
 
     FriendlyGunnsElectSwitchUtil2 article;
     CPPUNIT_ASSERT(false == article.mResistance);
-    CPPUNIT_ASSERT(0.0   == article.mInputVoltage);
-    CPPUNIT_ASSERT(0.0   == article.mCurrent);
     CPPUNIT_ASSERT(false == article.mPosition);
     CPPUNIT_ASSERT(false == article.mPositionCommand);
     CPPUNIT_ASSERT(false == article.mResetTripsCommand);

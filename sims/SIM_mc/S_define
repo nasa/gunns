@@ -7,7 +7,7 @@
 // Default system classes
 #include "sim_objects/default_trick_sys.sm"
 
-##include "core/GunnsMonteCarlo.hh"
+##include "model/GunnsMonteCarlo.hh"
 ##include "model/GunnsMcModelFluid.hh"
 
 class GunnsMcSimObject : public Trick::SimObject
@@ -18,13 +18,15 @@ class GunnsMcSimObject : public Trick::SimObject
 
         GunnsMcSimObject()
         {
-            ("initialization") model.initialize();
+            ("initialization")            model.initialize();
             (MODEL_TIMESTEP, "scheduled") model.update(MODEL_TIMESTEP);
-            ("monte_slave_pre") monteCarlo.updateSlavePre();
-            ("monte_slave_post") monteCarlo.updateSlavePost();
-            ("monte_master_pre") monteCarlo.updateMasterPre();
-            ("monte_master_post") monteCarlo.updateMasterPost();
-            ("monte_master_shutdown") monteCarlo.updateMasterShutdown();
+            ("monte_slave_init")          monteCarlo.initSlave();
+            ("monte_slave_pre")           monteCarlo.updateSlavePre();
+            ("monte_slave_post")          monteCarlo.updateSlavePost();
+            ("monte_master_init")         monteCarlo.initMaster();
+            ("monte_master_pre")          monteCarlo.updateMasterPre();
+            ("monte_master_post")         monteCarlo.updateMasterPost();
+            ("monte_master_shutdown")     monteCarlo.updateMasterShutdown();
         }
     private:
         // Copy constructor unavailable since declared private and not implemented.

@@ -269,6 +269,8 @@ void GunnsElectSwitchUtil2::applyConstraints()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectSwitchUtil2::updateState()
 {
+    applyConstraints();
+
     /// - Clear trips on reception of the open command.
     if (isTripped() and not mPositionCommand) {
         resetTrips();
@@ -308,8 +310,10 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
 
     if (convergedStep > 0) {
 
-        /// - Update the trip reset logic if the switch is tripped open and not failed open.
-        if (isTripped() and not mMalfFailOpen) {
+        /// - Update the trip reset logic if the switch is tripped open and not failed open or has
+        ///   a non-reseting over-current trip.
+        if ( (mInputUnderVoltageTrip.isTripped() or mInputOverVoltageTrip.isTripped()) and not
+                (mMalfFailOpen or mPosOverCurrentTrip.isTripped() or mNegOverCurrentTrip.isTripped()) ) {
 
             /// - Input under-voltage trip reset check and warning.  Upon trip of this reset
             ///   (rejection of the network solution), this resets itself and the actual under-
@@ -357,7 +361,7 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
                 GUNNS_WARNING(msg.str());
             }
 
-            /// - Input under-voltage trip check and warning.
+            /// - Input over-voltage trip check and warning.
             if (mInputOverVoltageTrip.checkForTrip(result, voltage, convergedStep)) {
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
                 msg << mName << " input over-voltage trip at converged step " << convergedStep << ", " << voltage << " > trip limit of " << mInputOverVoltageTrip.getLimit();

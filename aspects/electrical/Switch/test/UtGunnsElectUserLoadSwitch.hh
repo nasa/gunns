@@ -5,7 +5,7 @@
 /// @defgroup UT_SWITCH_USER_LOAD   Electrical User Load Switch Unit Tests
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Electrical User Load Switch link model.
@@ -37,17 +37,17 @@ inline FriendlyGunnsElectUserLoadSwitch::FriendlyGunnsElectUserLoadSwitch() : Gu
 inline FriendlyGunnsElectUserLoadSwitch::~FriendlyGunnsElectUserLoadSwitch() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Valve unit tests.
+/// @brief    User Load Switch link unit tests.
 ////
 /// @details  This class provides the unit tests for the GUNNS Electrical User Load Switch link
 ///           model within the CPPUnit framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class UtGunnsElectUserLoadSwitch: public CppUnit::TestFixture
+class UtGunnsElectUserLoadSwitch : public CppUnit::TestFixture
 {
     public:
-        /// @brief    Default constructs this Check Valve unit test.
+        /// @brief    Default constructs this Electrical User Load Switch unit test.
         UtGunnsElectUserLoadSwitch();
-        /// @brief    Default constructs this Check Valve unit test.
+        /// @brief    Default constructs this Electrical User Load Switch unit test.
         virtual ~UtGunnsElectUserLoadSwitch();
         /// @brief    Executes before each test.
         void setUp();

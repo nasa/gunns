@@ -97,7 +97,6 @@ class GunnsElectUserLoadSwitch2 : public GunnsBasicConductor
         GunnsElectUserLoad* getUserLoad(const unsigned int index);
 
     protected:
-        double                           mLoadsPowerRefV;       /**<    (V)     trick_chkpnt_io(**) Optional reference voltage for user loads power. */
         double                           mLoadsVoltage;         /**<    (V)     trick_chkpnt_io(**) Outlet voltage of switch, input to loads. */
         double                           mLoadsPower;           /**<    (W)     trick_chkpnt_io(**) Total power consumed by user loads. */
         bool                             mLoadsOverrideActive;  /**<    (1)                         Load voltage override mode is active. */
@@ -141,7 +140,6 @@ class GunnsElectUserLoadSwitch2ConfigData : public GunnsBasicConductorConfigData
         SensorAnalogConfigData          mCurrentSensor;       /**< (1) trick_chkpnt_io(**) The switch through-current sensor config data. */
         SensorAnalogConfigData          mInputVoltageSensor;  /**< (1) trick_chkpnt_io(**) The switch input voltage sensor config data. */
         SensorAnalogConfigData          mOutputVoltageSensor; /**< (1) trick_chkpnt_io(**) The switch output voltage sensor config data. */
-        double                          mLoadsPowerRefV;      /**< (V) trick_chkpnt_io(**) Optional reference voltage for user loads power. */
         /// @brief Default constructs this Electrical User Load Switch configuration data.
         GunnsElectUserLoadSwitch2ConfigData(const std::string& name,
                                             GunnsNodeList*     nodes,

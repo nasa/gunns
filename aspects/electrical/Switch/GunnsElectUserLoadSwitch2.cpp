@@ -63,8 +63,7 @@ GunnsElectUserLoadSwitch2ConfigData::GunnsElectUserLoadSwitch2ConfigData(
     mSwitch(switchResistance, switchTripPriority),
     mCurrentSensor(curentSensorMinRange, curentSensorMaxRange),
     mInputVoltageSensor(inputVoltageSensorMinRange, inputVoltageSensorMaxRange),
-    mOutputVoltageSensor(outputVoltageSensorMinRange, outputVoltageSensorMaxRange),
-    mLoadsPowerRefV(0.0)
+    mOutputVoltageSensor(outputVoltageSensorMinRange, outputVoltageSensorMaxRange)
 {
     mCurrentSensor.mNoiseFunction       = TsNoise::getNoiseFunction();
     mInputVoltageSensor.mNoiseFunction  = TsNoise::getNoiseFunction();
@@ -80,13 +79,17 @@ GunnsElectUserLoadSwitch2ConfigData::~GunnsElectUserLoadSwitch2ConfigData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  malfBlockageFlag      (--)   Blockage malfunction flag.
-/// @param[in]  malfBlockageValue     (--)   Blockage malfunction fractional value (0-1).
-/// @param[in]  switchIsClosed        (--)   True if the switch is initially closed.
-/// @param[in]  switchPosTripLimit    (amp)  Switch's positive over-current trip limit.
-/// @param[in]  switchNegTripLimit    (amp)  Switch's negative over-current trip limit.
-/// @param[in]  loadsOverrideActive   (--)   Initial state of the loads voltage override mode.
-/// @param[in]  loadsOverrideVoltage  (--)   Initial loads voltage override voltage.
+/// @param[in] malfBlockageFlag           (--)  Blockage malfunction flag.
+/// @param[in] malfBlockageValue          (--)  Blockage malfunction fractional value (0-1).
+/// @param[in] switchIsClosed             (--)  True if the switch is initially closed.
+/// @param[in] inputUnderVoltageTripLimit (V)   Initial input under-voltage trip limit.
+/// @param[in] inputUnderVoltageTripReset (V)   Initial input under-voltage trip reset.
+/// @param[in] inputOverVoltageTripLimit  (V)   Initial input under-voltage trip limit.
+/// @param[in] inputOverVoltageTripReset  (V)   Initial input under-voltage trip reset.
+/// @param[in] switchPosTripLimit         (amp) Initial positive over-current trip limit.
+/// @param[in] switchNegTripLimit         (amp) Initial negative over-current trip limit.
+/// @param[in] loadsOverrideActive        (--)  Initial state of the loads voltage override mode.
+/// @param[in] loadsOverrideVoltage       (--)  Initial loads voltage override voltage.
 ///
 /// @details  Default constructs this Electrical User Load Switch input data.  No arguments are
 ///           provided to the electrical short input data, but it can be set via the input file.
@@ -127,8 +130,10 @@ GunnsElectUserLoadSwitch2InputData::~GunnsElectUserLoadSwitch2InputData()
 GunnsElectUserLoadSwitch2::GunnsElectUserLoadSwitch2():
     GunnsBasicConductor(),
     mSwitch(),
+    mCurrentSensor(),
+    mInputVoltageSensor(),
+    mOutputVoltageSensor(),
     mShort(),
-    mLoadsPowerRefV(0.0),
     mLoadsVoltage(0.0),
     mLoadsPower(0.0),
     mLoadsOverrideActive(false),
@@ -169,17 +174,12 @@ void GunnsElectUserLoadSwitch2::initialize(const GunnsElectUserLoadSwitch2Config
     /// - Reset init flag.
     mInitFlag = false;
 
-    /// - Initialize class attributes.  The user loads must be initialized by their owner, not here.
-    mLoadsVoltage = 0.0;
-
-    /// - Initialize config & input data.  The switch object doesn't throw H&S errors or identify
-    ///   itself in its warnings, so we re-throw its exceptions.
+    /// - Initialize config & input data.
     mSwitch             .initialize(configData.mSwitch,              inputData.mSwitch,              configData.mName + ".mSwitch");
     mCurrentSensor      .initialize(configData.mCurrentSensor,       inputData.mCurrentSensor,       configData.mName + ".mCurrentSensor");
     mInputVoltageSensor .initialize(configData.mInputVoltageSensor,  inputData.mInputVoltageSensor,  configData.mName + ".mInputVoltageSensor");
     mOutputVoltageSensor.initialize(configData.mOutputVoltageSensor, inputData.mOutputVoltageSensor, configData.mName + ".mOutputVoltageSensor");
     mShort              .initialize(inputData.mShort);
-    mLoadsPowerRefV       = configData.mLoadsPowerRefV;
     mLoadsOverrideActive  = inputData.mLoadsOverrideActive;
     mLoadsOverrideVoltage = inputData.mLoadsOverrideVoltage;
 
@@ -187,6 +187,10 @@ void GunnsElectUserLoadSwitch2::initialize(const GunnsElectUserLoadSwitch2Config
     for (unsigned int i=0; i<mUserLoads.size(); ++i) {
         mUserLoads[i]->initLoad();
     }
+
+    /// - Initialize class attributes.
+    mLoadsVoltage = 0.0;
+    mLoadsPower   = 0.0;
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -202,6 +206,7 @@ void GunnsElectUserLoadSwitch2::restartModel()
 
     /// - Reset non-config & non-checkpointed class attributes.
     mLoadsVoltage = 0.0;
+    mLoadsPower   = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,8 +356,13 @@ GunnsBasicLink::SolutionResult GunnsElectUserLoadSwitch2::confirmSolutionAccepta
            for (unsigned int i=0; i<mUserLoads.size(); ++i) {
                fuseTrips = fuseTrips or mUserLoads[i]->getLoad()->updateFuse(mPotentialVector[0]);
            }
+       }
+       if (fuseTrips) {
+           result = GunnsBasicLink::REJECT;
+       } else {
            mPotentialDrop = getDeltaPotential();
            computeFlux();
+
            /// - Update sensors with current & voltage from the network solution.  Note since we
            ///   don't have timestep in this function we pass zero timestep to the sensors here, so
            ///   we have to update them again in the step function with a timestep for their drift
@@ -360,10 +370,7 @@ GunnsBasicLink::SolutionResult GunnsElectUserLoadSwitch2::confirmSolutionAccepta
            mCurrentSensor      .sense(0.0, true, mFlux);
            mInputVoltageSensor .sense(0.0, true, mPotentialVector[0]);
            mOutputVoltageSensor.sense(0.0, true, mLoadsVoltage);
-       }
-       if (fuseTrips) {
-           result = GunnsBasicLink::REJECT;
-       } else {
+
            mSwitch.updateTrips(mCurrentSensor.getSensedOutput(),
                                mInputVoltageSensor.getSensedOutput(), convergedStep);
            if (mSwitch.isWaitingToTrip() ) {
@@ -448,10 +455,6 @@ void GunnsElectUserLoadSwitch2::computeFlux()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Computes mPower as the total power consumed thru the link including the switch and
 ///           user loads, and mLoadsPower as the total power consumed by just the user loads.
-///           The mLoadsPower is adjusted to an optional reference voltage if it is provided:
-///             P = I * V, Pref = Iref * Vref, I = Iref
-///             Pref = P*Vref/V
-///
 ///           In the voltage override mode, the mLoadsPower is the sum of the user loads and the
 ///           power used by the downstream circuit, if any.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -471,10 +474,6 @@ void GunnsElectUserLoadSwitch2::computePower()
         }
     } else {
         GunnsBasicLink::computePower();
-        /// - Switch resistance is accounted for in mPower
-        mLoadsPower = -mPower;
-        if (0.0 != mLoadsPowerRefV and 0.0 < mLoadsVoltage) {
-            mLoadsPower *= mLoadsPowerRefV / mLoadsVoltage;
-        }
+        mLoadsPower = -mPower - mFlux * mFlux * mSwitch.getResistance();
     }
 }

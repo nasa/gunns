@@ -12,6 +12,7 @@
 #include "UT_SwitchElect.hh"
 #include "UtGunnsElectSelector.hh"
 #include "UtGunnsElectUserLoadSwitch.hh"
+#include "UtGunnsElectUserLoadSwitch2.hh"
 #include "aspects/electrical/Switch/Switch.hh"
 #include "aspects/electrical/Switch/SwitchElect.hh"
 
@@ -38,6 +39,7 @@ int main() {
     runner.addTest(UT_SwitchElect::suite());
     runner.addTest(UtGunnsElectSelector::suite());
     runner.addTest(UtGunnsElectUserLoadSwitch::suite());
+    runner.addTest(UtGunnsElectUserLoadSwitch2::suite());
 
     runner.run();
 

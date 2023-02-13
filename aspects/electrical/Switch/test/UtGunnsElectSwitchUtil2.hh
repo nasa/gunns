@@ -2,7 +2,7 @@
 #define UtGunnsElectSwitchUtil2_EXISTS_
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup UT_SWITCH_UTIL Electrical Switch Utility class Unit Test
+/// @defgroup UT_SWITCH_UTIL_2 Electrical Switch Utility class Unit Test
 /// @ingroup  UT_GUNNS
 ///
 /// @copyright Copyright 2023 United States Government as represented by the Administrator of the

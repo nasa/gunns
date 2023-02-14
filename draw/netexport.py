@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2022 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -919,6 +919,16 @@ for port in ports:
         sys.exit(console.abort('a port ' + port_attr['label'] + ' on ' + nodeName + ' isn\'t connected to a link.'))
     if '' == nodeName:
         sys.exit(console.abort('a port ' + port_attr['label'] + ' on ' + linkName + ' isn\'t connected to a node.'))
+    # A link cannot have more than one port with the same label unless they connect
+    # to nodes in different containers, i.e. the main network and a sub-net interface.
+    portNodeParentId = getParentId(getPortNode(port, numberedNodes, gndNodes))
+    for otherPort in ports:
+        if otherPort is not port:
+            otherLinkName = getPortLinkName(otherPort, links)
+            otherPortLabel = otherPort.attrib['label']
+            otherPortNodeParentId = getParentId(getPortNode(otherPort, numberedNodes, gndNodes))
+            if otherLinkName == linkName and otherPortLabel == port_attr['label'] and otherPortNodeParentId == portNodeParentId:
+                sys.exit(console.abort('link ' + linkName + ' has more than one port ' + otherPortLabel + ' connected to nodes in the same container.'))
 
 # Build jumper plugs
 #   loop over links

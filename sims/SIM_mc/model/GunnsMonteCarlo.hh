@@ -56,7 +56,17 @@ struct GunnsMonteCarloPsoState
 {
     public:
         std::vector<double> mState; /**< (1) TODO */
+        std::vector<double> mVelocity; /**< (1) TODO */
+        std::vector<double> mAcceleration; /**< (1) TODO */
         double              mCost;  /**< (1) TODO */
+        /// @brief Assignment operator for this PSO particle state.
+        GunnsMonteCarloPsoState& operator =(const GunnsMonteCarloPsoState& that) {
+            if (this != &that) {
+                this->mState = that.mState;
+                this->mCost  = that.mCost;
+            }
+            return *this;
+        }
 };
 
 //TODO factor optimization stuff out to separate optimization class
@@ -68,14 +78,21 @@ struct GunnsMonteCarloPsoParticle
 };
 
 //TODO
+// weights for PSO variant:
+//
+// inertia
+// cognitive
+// social
 struct GunnsMonteCarloPsoConfigData
 {
     public:
         unsigned int mNumParticles;    /**< *o (1) trick_chkpnt_io(**) Number of particles in the PSO swarm. */
         unsigned int mMaxEpoch;        /**< *o (1) trick_chkpnt_io(**) Maximum number of epochs, or iterations, in the total run. */
         double       mInertiaWeight;   // TODO < 1 initial particle inertia weight
+        double       mInertiaWeightEnd; // TODO for annealing
         double       mCognitiveCoeff;  //TODO typicallly between 1-3
         double       mSocialCoeff;     //TODO typicallly between 1-3
+        double       mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum magnitude of particle state velocity. */
         unsigned int mRandomSeed;      /**< *o (1) trick_chkpnt_io(**) the seed value for RNJesus */
 };
 
@@ -85,12 +102,13 @@ class GunnsMonteCarloPso
     public:
         GunnsMonteCarloPsoConfigData             mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
         const std::vector<GunnsMonteCarloInput>* mInStatesMaster;  /**< ** (1) trick_chkpnt_io(**) Pointer to the Master state space description. */
-        unsigned int                             mRunCounter;      /**< *o (1) trick_chkpnt_io(**) Count of the elapsed runs in the current epoch. */
+        int                                      mRunCounter;      /**< *o (1) trick_chkpnt_io(**) Count of the elapsed runs in the current epoch. */
         int                                      mEpoch;           /**< *o (1) trick_chkpnt_io(**) The current epoch number. */
         std::vector<GunnsMonteCarloPsoParticle>  mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
         GunnsMonteCarloPsoParticle*              mActiveParticle;  /**< *o (1) trick_chkpnt_io(**) The PSO particle currently being run. */
         GunnsMonteCarloPsoState                  mGlobalBestState; /**< *o (1) trick_chkpnt_io(**) Best state from all particles. */
         double                                   mAnnealingCoeff;  /**< *o (1) trick_chkpnt_io(**) TODO change this to start/end inertia weights */
+        std::vector<double>                      mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum velocity of state parameters. */
         /// @brief Constructs the GUNNS Monte Carlo Particle Swarm Optimization object.
         GunnsMonteCarloPso();
         /// @brief Destructs the GUNNS Monte Carlo Particle Swarm Optimization object.
@@ -103,9 +121,15 @@ class GunnsMonteCarloPso
         //TODO
         void initSwarm();
         //TODO
-        void randomizeSwarm();
+        void randomizeSwarmState();
+        //TODO
+        void randomizeSwarmVelocity();
+        //TODO
+        void uniformSwarm();
         //TODO
         void update();
+        //TODO
+        void updateBestStates();
         /// @brief TODO
         void propagateSwarm(const double inertiaWeight);
         /// @brief TODO
@@ -114,6 +138,16 @@ class GunnsMonteCarloPso
         unsigned int getNumRuns() const {return mConfigData.mNumParticles * mConfigData.mMaxEpoch;}
         /// @brief TODO returns the MC var states from the active particle to teh MC manager to send to teh slave
         const std::vector<double>* getState() const;
+        /// @brief Returns the RSS magnitude of the given vector's components.
+        double computeVectorMagnitude(const std::vector<double>& vec) const;
+        //TODO
+        void normalizeVector(std::vector<double>& vec, const double magnitude) const;
+        //TODO
+        void printStates() const;
+        //TODO
+        void printGlobalBest() const;
+        //TODO
+        void assignCost(const double cost);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -137,23 +171,38 @@ class GunnsMonteCarlo
     //TODO don't where this will end up.  Since you have to modify a Trick sim object to add the
     // monte carlo jobs, then might as well add this object directly to the sim object.  It's going to have
     // vectors of pointers to all the model input & output terms,
-    // so this doesn't need to be direclty associated with a network.
-    //TODO should have a polymorphic interface to the optimziation object
-    // the optijmizer object will have its own config data, like PSO swarm size, weights, etc.
+    // so this doesn't need to be directly associated with a network.
+    //TODO should have a polymorphic interface to the optimization object
+    // the optimizer object will have its own config data, like PSO swarm size, weights, etc.
     //TODO #slaves corresponds to # parallel runs (CPU's) in the compute farm, not PSO swarm size
     //TODO short-term goals:
-    // - assign particles to slave runs
-    // - update epoch (iteration)
-    // - send particle states as inputs to slave runs
-    //   - have an extra 'active' particle pointer that points to the particle who's up next,
-    //     and that creates a fixed set ot terms to give to trick as teh MC vars
-    //   - since this, and the particle's state members, don't get created until init, we can't assign
-    //     the MC vars to Trick in the input file, have to do it in init
+    // - Now that algorithm appears to be working, we see a lot of converging to local minimum,
+    //   never finds global min on its own.
+    //   + Try one particle initial state at teh correct answer, see if it stays there, and if other
+    ///    particles converge on it: Result - this works, most particles eventually converge on that state
+    //   + Try the annealing - changing inertia weight.  Implemented, but doesn't seemt to help.
+    //TODO long-term issues:
+    // - parallel slaves data coherency problems: these are only a problem if run parallel, i.e.
+    //   more than 1 slave.  We can run serial: 1 slave, to avoid these for now, and solve these
+    //   problems later:
+    //   - ensure data coherence between returned data back from slave to particle that drove the inputs to slave
+    //     - add data like epoch & run # as MC vars sent to slave and reflected back from slave, verify they match
+    //       in the master post job.  Then set up large # of slaves and particles, different # so there is overlap
+    //       compare reflected #'s from returned slave with send #'s in master post job, see if they sync
+    //     - Trick documentation never explains how multiple parallel slaves are handled
+    //     - Trick example sims only ever use one slave.  SIM_Cannon with amoeba optimization algo only uses 1 slave...
+    //     - As expected, no data coherency between slave post and master post -- slave data comes back in a different
+    //       order and at random times relative to calls to master post.  So, we must use the returned run ID to
+    //       know which particle to put the returned data back into
+    //       - however, data IS coherent if only 1 slave - parallelization causes the problem
+    //   - ensure data back from all slaves in an epoch before propagating the swarm and starting next epoch
 //        GunnsOptimizer*      mOptimizer; //TODO pointer to the optimizer object
         GunnsMonteCarloPso   mOptimizer;        /**< *o (1) trick_chkpnt_io(**) The optimizer object. */
         bool                 mIsMaster;         /**< *o (1) trick_chkpnt_io(**) This instance is in the Monte Carlo Master role. */
         bool                 mIsSlave;          /**< *o (1) trick_chkpnt_io(**) This instance is in the Monte Carlo Slave role. */
         int                  mSlaveId;          /**< *o (1) trick_chkpnt_io(**) The Slave role identifier of this instance. */
+        double               mRunId;            /**< *o (1) trick_chkpnt_io(**) The run identifier. */
+        double               mRunIdReturned;    /**< *o (1) trick_chkpnt_io(**) The returned run identifier from the Slave. */
         std::vector<GunnsMonteCarloInput> mInStatesMaster;  /**< ** (1) trick_chkpnt_io(**) State values in Master written to Slave. */
         std::vector<double*> mOutDoublesSlave;  /**< ** (1) trick_chkpnt_io(**) Pointers to doubles for output from Slave. */
         std::vector<GunnsMonteCarloTarget> mOutDoublesMaster; /**< ** (1) trick_chkpnt_io(**) Doubles values in Master read from Slave. */

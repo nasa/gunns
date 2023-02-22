@@ -52,6 +52,39 @@ class FriendlyGunnsFluidSorptionBedSorbate : public GunnsFluidSorptionBedSorbate
         friend class UtGunnsFluidSorptionBed;
 };
 
+class FriendlySorbantProperties : public SorbantProperties
+{
+    public:
+        FriendlySorbantProperties(const SorbantProperties::Type type     = SorbantProperties::CUSTOM,
+                                  const double                  density  = 0.0,
+                                  const double                  porosity = 0.0,
+                                  const double                  cp       = 0.0)
+            :
+            SorbantProperties(type, density, porosity, cp) {;}
+        virtual ~FriendlySorbantProperties() {;}
+        friend class UtGunnsFluidSorptionBed;
+};
+
+class FriendlySorbateProperties : public SorbateProperties
+{
+    public:
+        FriendlySorbateProperties(const ChemicalCompound*                         compound,
+                                  const std::vector<SorbateInteractingCompounds>* blockingCompounds,
+                                  const std::vector<SorbateInteractingCompounds>* offgasCompunds,
+                                  const double                                    tothA0,
+                                  const double                                    tothB0,
+                                  const double                                    tothE,
+                                  const double                                    tothT0,
+                                  const double                                    tothC0,
+                                  const double                                    dh,
+                                  const double                                    km)
+            :
+            SorbateProperties(compound, blockingCompounds, offgasCompunds, tothA0, tothB0, tothE,
+                              tothT0, tothC0, dh, km) {;}
+        virtual ~FriendlySorbateProperties() {;}
+        friend class UtGunnsFluidSorptionBed;
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Fluid Sorption Bed unit tests.
 ////

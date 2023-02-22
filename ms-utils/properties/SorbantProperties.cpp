@@ -2,7 +2,7 @@
 @file     SorbantProperties.cpp
 @brief    Chemical Sorbant & Sorbate Properties implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -65,15 +65,12 @@ SorbateProperties::SorbateProperties(const ChemicalCompound*                    
         mOffgasCompounds = *offgasCompounds;
     }
 
-    /// - Validate constructud values.
+    /// - Validate constructed values.
     if (km < DBL_EPSILON) {
         throw TsInitializationException();
     }
     for (unsigned int i=0; i<mBlockingCompounds.size(); ++i) {
         if (mBlockingCompounds[i].mCompound == compound->mType) {
-            throw TsInitializationException();
-        }
-        if (not MsMath::isInRange(0.0, mBlockingCompounds[i].mInteraction, 1.0)) {
             throw TsInitializationException();
         }
     }

@@ -131,8 +131,16 @@ void GunnsFluidSorptionBedSorbate::updateLoadingEquil(const double pp, const dou
     mLoadingEquil = mProperties->computeLoadingEquil(pp, temperature);
     const std::vector<SorbateInteractingCompounds>* blockingCompounds = mProperties->getBlockingCompounds();
     for (unsigned int i=0; i<mBlockingStates.size(); ++i) {
-        mLoadingEquil *= 1.0 - MsMath::limitRange(0.0, mBlockingStates.at(i)->mLoadingFraction
-                       * blockingCompounds->at(mBlockingCompoundIndex.at(i)).mInteraction, 1.0);
+        /// - Each interacting compound scales the loading equilibrium of this compound.  Blocking
+        ///   compounds block by how much they are present.  Co-absorption compounds block by how
+        ///   much they are NOT present.
+        double interaction = blockingCompounds->at(mBlockingCompoundIndex.at(i)).mInteraction;
+        if (interaction >= 0.0) {
+            interaction *= mBlockingStates.at(i)->mLoadingFraction;
+        } else {
+            interaction *= (mBlockingStates.at(i)->mLoadingFraction - 1.0);
+        }
+        mLoadingEquil *= (1.0 - MsMath::limitRange(0.0, interaction, 1.0));
     }
     if (mMalfLoadingEquilFlag) {
         mLoadingEquil *= fmax(0.0, mMalfLoadingEquilValue);
@@ -423,13 +431,6 @@ void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfig
 /// @details  Updates the state of this sorbate segment, computes exit fluid properties and heat
 ///           transfer with the wall.
 //TODO break this up, get the cyclo complex down...
-//TODO implement co-absorption as neg. value in blocking interaction?
-//     - blocks as inverse of loading/equil, so co-absorption gets better the more blocking comopund
-//       is adosrbed.
-//     - needed for LiOH, Metox, etc.
-//TODO offgassing conserve mass - reduce mass & volume of sorbant equal to offgas mass
-//     - this assumes that offgas comes entirely from sorbant, and not reactants from the thru fluid
-//       otherwise we'd need to use ChemicalReaction
 //TODO note design limitation on desorption of trace compounds.  Because we can't create bulk flow
 //     when only desorbing trace compounds, mass isn't conserved.  Workaround is to have the user
 //     create a small leak flow from the pressurized cabin side through this link, by using a
@@ -481,10 +482,7 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         if (fluidIndex >= 0) {
             const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
             const double ndotSat = ndot * pSat / fmax(pOut, DBL_EPSILON);
-            //TDOO this might artificially increase our desorb time to vacuum... maybe skip this
-            // saturation check altogether?  Or make it optional
-            // because it's taking forever to desorb...
-//            desorbLimit = fmax(0.0, ndotSat - ndotIn);
+            desorbLimit = fmax(0.0, ndotSat - ndotIn);
         }
         const double adsorbLimit = ndotIn / mVolSorbant;
 
@@ -968,7 +966,6 @@ void GunnsFluidSorptionBed::computeAdsorbOutputs()
             if (fluidIndex >= 0) {
                 mWorkFluidRates[fluidIndex]  += sorbate.mAdsorptionRate;
                 mWorkFluidMasses[fluidIndex] += sorbate.mLoadedMass;
-                //TODO must include offgas compounds if they're bulk fluids!
             } else if (tcIndex >= 0) {
                 /// - For compounds that are both a bulk fluid and a TC, we only report loading as
                 ///   being in the bulk fluid, and report zero loading of the TC - this reflects

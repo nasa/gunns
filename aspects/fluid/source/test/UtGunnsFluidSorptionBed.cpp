@@ -618,7 +618,7 @@ void UtGunnsFluidSorptionBed::testRestart()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Test the UtGunnsFluidSorptionBed::updateLoadingEquil method.
+/// @details  Test the GunnsFluidSorptionBedSorbate::updateLoadingEquil method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSorptionBed::testBedSorbateLoadingEquil()
 {
@@ -658,13 +658,33 @@ void UtGunnsFluidSorptionBed::testBedSorbateLoadingEquil()
                                         * blockingFactor;
         tArticle->mSegments[1].mSorbates[1].updateLoadingEquil(pp, temperature);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectEquilLoading, tArticle->mSegments[1].mSorbates[1].mLoadingEquil, DBL_EPSILON);
+    } {
+        /// - Create a friendly pointer to the CO2 sorbate in the tCustomSorbant, use it to access
+        ///   the blocking compound (H2O blocking CO2) and change its interaction so that it
+        ///   co-adsorbs CO2 instead of blocks.
+        FriendlySorbantProperties* sorbant = static_cast<FriendlySorbantProperties*>(tCustomSorbant);
+        FriendlySorbateProperties* sorbate = static_cast<FriendlySorbateProperties*>(&sorbant->mSorbates.at(1));
+        const double coadsorbInteraction   = -1.0;
+        sorbate->mBlockingCompounds.at(0).mInteraction = coadsorbInteraction;
+
+        /// @test equilibrium loading with co-adsorbption compounds
+        const std::vector<SorbateProperties>* sorbates = tCustomSorbant->getSorbates();
+        const double pp                 =   0.1;
+        const double temperature        = 290.0;
+        const double coadsorberFraction =   0.5;
+        tArticle->mSegments[1].mSorbates[0].mLoadingFraction = coadsorberFraction;
+        const double coadsorbFactor     = 1.0 + coadsorberFraction * coadsorbInteraction;
+        const double expectEquilLoading = sorbates->at(1).computeLoadingEquil(pp, temperature)
+                                        * coadsorbFactor;
+        tArticle->mSegments[1].mSorbates[1].updateLoadingEquil(pp, temperature);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectEquilLoading, tArticle->mSegments[1].mSorbates[1].mLoadingEquil, DBL_EPSILON);
     }
 
     UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Test the UtGunnsFluidSorptionBed::updateLoading and updateLoaadedMass methods.
+/// @details  Test the GunnsFluidSorptionBed::updateLoading and updateLoaadedMass methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidSorptionBed::testBedSorbateUpdateLoading()
 {
@@ -800,7 +820,7 @@ void UtGunnsFluidSorptionBed::testBedSegmentUpdate()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mSegments[1].mHeatFlux, DBL_EPSILON);
 
     /// @test updated segment thermal capacity as the sorbant plus the loaded sorbate capacities,
-    ///       not including sorbates that are only trace comopunds (in this case, H2O).
+    ///       not including sorbates that are only trace compounds (in this case, H2O).
     const double volSorbant = tCustomSorbant->computeVolume(tConfigData->mSegments.at(1).mVolume);
     const double tcSorbant  = tCustomSorbant->computeThermalCapacity(volSorbant);
     const double co2Cp      = testFluid.getProperties(FluidProperties::GUNNS_CO2)->getSpecificHeat(tWallTemperature);
@@ -977,13 +997,14 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2oRate,  tArticle->getAdsorptionTcRate(ChemicalCompound::H2O),         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->getAdsorptionTcRate(ChemicalCompound::CO2),         DBL_EPSILON);
 
-    /// - @test zero bulk inflow rate.  1st segment desorbs H2O, creating flow to port 1 node.
+    /// - @test zero bulk inflow rate.
     tNodes[0].setPotential(Pin);
     tNodes[1].setPotential(Pin);
     tNodes[0].resetFlows();
     tNodes[1].resetFlows();
     tArticle->mPotentialVector[0] = Pin;
     tArticle->mPotentialVector[1] = Pin;
+    tArticle->mSegments[1].mTemperature = 350.0;
 
     tArticle->step(tTimeStep);
     CPPUNIT_ASSERT(0.0 == tArticle->mAdmittanceMatrix[0]);
@@ -1005,10 +1026,10 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     CPPUNIT_ASSERT(0.0 == tArticle->mSegments[0].mSorbates[1].mAdsorptionRate);
     CPPUNIT_ASSERT(0.0 == tArticle->mSegments[0].mHeatFlux);
     CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mSorbates[0].mAdsorptionRate);
-    CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mSorbates[1].mAdsorptionRate);
+    CPPUNIT_ASSERT(0.0 == tArticle->mSegments[1].mSorbates[1].mAdsorptionRate);
     CPPUNIT_ASSERT(0.0 >  tArticle->mSegments[1].mHeatFlux);
 
-    CPPUNIT_ASSERT(0.0 <  tNodes[1].getInflux());
+    CPPUNIT_ASSERT(0.0 == tNodes[1].getInflux());
     CPPUNIT_ASSERT(0.0 == tNodes[0].getInflux());
     CPPUNIT_ASSERT(0.0 == tNodes[1].getOutflux());
     CPPUNIT_ASSERT(0.0 == tNodes[0].getOutflux());

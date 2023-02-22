@@ -2,7 +2,7 @@
 @file   UtSorbantProperties.cpp
 @brief  Unit tests for SorbantProperties
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -352,13 +352,6 @@ void UtSorbantProperties::testConstructionExceptions()
     blocking.mInteraction = 1.0;
     std::vector<SorbateInteractingCompounds> blockingCompounds;
     blockingCompounds.push_back(blocking);
-    CPPUNIT_ASSERT_THROW(sorbant.addSorbate(ChemicalCompound::H2O, &blockingCompounds, 0, 1.767e+2, 2.787e-5, 1.093e+3, -1.190e-3, 2.213e+1, -50.2, 1.0), TsInitializationException);
-
-    /// @test exception from blocking interaction < 0 and > 1.
-    blockingCompounds.at(0).mCompound    = ChemicalCompound::CO2;
-    blockingCompounds.at(0).mInteraction = -0.001;
-    CPPUNIT_ASSERT_THROW(sorbant.addSorbate(ChemicalCompound::H2O, &blockingCompounds, 0, 1.767e+2, 2.787e-5, 1.093e+3, -1.190e-3, 2.213e+1, -50.2, 1.0), TsInitializationException);
-    blockingCompounds.at(0).mInteraction = 1.001;
     CPPUNIT_ASSERT_THROW(sorbant.addSorbate(ChemicalCompound::H2O, &blockingCompounds, 0, 1.767e+2, 2.787e-5, 1.093e+3, -1.190e-3, 2.213e+1, -50.2, 1.0), TsInitializationException);
 
     /// @test exception from offgas compound = sorbate compound.

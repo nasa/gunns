@@ -8,7 +8,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_SORBANT  Chemical Sorbant & Sorbate Properties
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -91,6 +91,10 @@ class SorbateProperties
         const std::vector<SorbateInteractingCompounds>* getBlockingCompounds() const;
         /// @brief  Returns the offgassing chemical compound types of this Sorbate Properties.
         const std::vector<SorbateInteractingCompounds>* getOffgasCompounds() const;
+        /// @brief  Adds a blocking compound with the given properties to this Sorbate Properties.
+        void addBlockingCompound(const ChemicalCompound::Type compound, const double interaction);
+        /// @brief  Adds an offgas compound with the given properties to this Sorbate Properties.
+        void addOffgasCompound(const ChemicalCompound::Type compound, const double interaction);
 
     protected:
         const ChemicalCompound*                  mCompound;          /**<    (1)             trick_chkpnt_io(**) Chemical compound properties of this sorbate. */
@@ -141,16 +145,16 @@ class SorbantProperties {
         /// @brief  Assigns this Sorbant Properties.
         SorbantProperties& operator =(const SorbantProperties&);
         /// @brief  Adds a sorbate with given properties to this Sorbant Properties.
-        void addSorbate(const ChemicalCompound::Type                    compound,
-                        const std::vector<SorbateInteractingCompounds>* blockingCompounds,
-                        const std::vector<SorbateInteractingCompounds>* offgasCompunds,
-                        const double                                    tothA0,
-                        const double                                    tothB0,
-                        const double                                    tothE,
-                        const double                                    tothT0,
-                        const double                                    tothC0,
-                        const double                                    dh,
-                        const double                                    km);
+        SorbateProperties* addSorbate(const ChemicalCompound::Type                    compound,
+                                      const std::vector<SorbateInteractingCompounds>* blockingCompounds,
+                                      const std::vector<SorbateInteractingCompounds>* offgasCompunds,
+                                      const double                                    tothA0,
+                                      const double                                    tothB0,
+                                      const double                                    tothE,
+                                      const double                                    tothT0,
+                                      const double                                    tothC0,
+                                      const double                                    dh,
+                                      const double                                    km);
         /// @brief  Returns the sorbate properties for this sorbant.
         const std::vector<SorbateProperties>* getSorbates() const;
         /// @brief  Returns the volume of sorbant material in the enclosure, not including voids.

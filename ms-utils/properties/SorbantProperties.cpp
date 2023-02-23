@@ -156,6 +156,33 @@ double SorbateProperties::computeLoadingEquil(const double pp, const double temp
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] compound    (--) The chemical compound that interacts with this Sorbate.
+/// @param[in] interaction (--) The amount of interaction with this Sorbate.
+///
+/// @details  Pushes a new SorbateInteractingCompounds onto mBlockingCompounds with the given
+///           values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void SorbateProperties::addBlockingCompound(const ChemicalCompound::Type compound, const double interaction)
+{
+    mBlockingCompounds.push_back(SorbateInteractingCompounds());
+    mBlockingCompounds.back().mCompound    = compound;
+    mBlockingCompounds.back().mInteraction = interaction;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] compound    (--) The chemical compound that interacts with this Sorbate.
+/// @param[in] interaction (--) The amount of interaction with this Sorbate.
+///
+/// @details  Pushes a new SorbateInteractingCompounds onto mOffgasCompounds with the given values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void SorbateProperties::addOffgasCompound(const ChemicalCompound::Type compound, const double interaction)
+{
+    mOffgasCompounds.push_back(SorbateInteractingCompounds());
+    mOffgasCompounds.back().mCompound    = compound;
+    mOffgasCompounds.back().mInteraction = interaction;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] type     (--)     Defined type of this sorbant.
 /// @param[in] density  (kg/m3)  Density of this sorbant material.
 /// @param[in] porosity (--)     Fraction of the packed sorbant enclosure volume that is voids.
@@ -241,24 +268,27 @@ SorbantProperties& SorbantProperties::operator =(const SorbantProperties& that)
 /// @param[in] dh                (kJ/mol)        Heat of adsorption of the sorbate in this sorbant.
 /// @param[in] km                (1/s)           Adsorption time constant.
 ///
+/// @returns  Pointer to the newly created sorbate.
+///
 /// @details  Adds a sorbate with the given properties to the list of sorbates that this sorbant
-///           will interact with.
+///           will interact with, and returns a pointer to the new sorbate.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void SorbantProperties::addSorbate(const ChemicalCompound::Type                    compound,
-                                   const std::vector<SorbateInteractingCompounds>* blockingCompounds,
-                                   const std::vector<SorbateInteractingCompounds>* offgasCompounds,
-                                   const double                                    tothA0,
-                                   const double                                    tothB0,
-                                   const double                                    tothE,
-                                   const double                                    tothT0,
-                                   const double                                    tothC0,
-                                   const double                                    dh,
-                                   const double                                    km)
+SorbateProperties* SorbantProperties::addSorbate(const ChemicalCompound::Type                    compound,
+                                                 const std::vector<SorbateInteractingCompounds>* blockingCompounds,
+                                                 const std::vector<SorbateInteractingCompounds>* offgasCompounds,
+                                                 const double                                    tothA0,
+                                                 const double                                    tothB0,
+                                                 const double                                    tothE,
+                                                 const double                                    tothT0,
+                                                 const double                                    tothC0,
+                                                 const double                                    dh,
+                                                 const double                                    km)
 {
     const ChemicalCompound* properties = mDefinedCompounds.getCompound(compound);
     SorbateProperties newSorbate(properties, blockingCompounds, offgasCompounds,
                                  tothA0, tothB0, tothE, tothT0, tothC0, dh, km);
     mSorbates.push_back(newSorbate);
+    return &mSorbates.back();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -153,25 +153,12 @@ void UtGunnsFluidSorptionBed::setUp()
     tConfigData->addSegment(SorbantProperties::SILICA_GEL_B125, 0.001, 200.0);
 
     /// - Define custom sorbant with blocking and offgas compounds.
-    SorbateInteractingCompounds h2oBlockingCo2;
-    h2oBlockingCo2.mCompound    = ChemicalCompound::H2O;
-    h2oBlockingCo2.mInteraction = 1.0;
-    std::vector<SorbateInteractingCompounds> blockingCompounds;
-    blockingCompounds.push_back(h2oBlockingCo2);
-
-    SorbateInteractingCompounds co2OffgasNh3;
-    SorbateInteractingCompounds co2OffgasO2;
-    co2OffgasNh3.mCompound    = ChemicalCompound::NH3;
-    co2OffgasO2.mCompound     = ChemicalCompound::O2;  // not realistic, this is just for testing
-    co2OffgasNh3.mInteraction = 1.0e-4;
-    co2OffgasO2.mInteraction  = 5.0e-5;
-    std::vector<SorbateInteractingCompounds> offgasCompounds;
-    offgasCompounds.push_back(co2OffgasNh3);
-    offgasCompounds.push_back(co2OffgasO2);
-
     tCustomSorbant = tConfigData->addCustomSorbant(500.0, 0.4, 400.0);
-    tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0,                  0,                1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
-    tCustomSorbant->addSorbate(ChemicalCompound::CO2, &blockingCompounds, &offgasCompounds, 7.678e-6, 5.164e-7,  2.330e+3, -3.053e-1,  2.386e+2, -40.0, 0.011375);
+    SorbateProperties* sorbateH2o = tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0, 0, 1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
+    SorbateProperties* sorbateCo2 = tCustomSorbant->addSorbate(ChemicalCompound::CO2, 0, 0, 7.678e-6, 5.164e-7,  2.330e+3, -3.053e-1,  2.386e+2, -40.0, 0.011375);
+    sorbateCo2->addBlockingCompound(ChemicalCompound::H2O, 1.0);
+    sorbateCo2->addOffgasCompound  (ChemicalCompound::NH3, 1.0e-4);
+    sorbateCo2->addOffgasCompound  (ChemicalCompound::O2,  5.0e-5);  // not realistic, this is just for testing
     tConfigData->addSegment(tCustomSorbant, 0.001, 200.0);
 
     /// - Define default input data
@@ -667,7 +654,7 @@ void UtGunnsFluidSorptionBed::testBedSorbateLoadingEquil()
         const double coadsorbInteraction   = -1.0;
         sorbate->mBlockingCompounds.at(0).mInteraction = coadsorbInteraction;
 
-        /// @test equilibrium loading with co-adsorbption compounds
+        /// @test equilibrium loading with co-adsorption compounds
         const std::vector<SorbateProperties>* sorbates = tCustomSorbant->getSorbates();
         const double pp                 =   0.1;
         const double temperature        = 290.0;

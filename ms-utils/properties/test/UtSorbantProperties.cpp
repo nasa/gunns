@@ -254,8 +254,12 @@ void UtSorbantProperties::testCustomSorbant()
     SorbantProperties sorbant(SorbantProperties::CUSTOM, density, porosity, specificHeat);
     sorbant.addSorbate(ChemicalCompound::H2O, 0, 0,
             h2oTothA, h2oTothB, h2oTothE, h2oTothT0, h2oTothC0, h2oDh, h2oKm);
-    sorbant.addSorbate(ChemicalCompound::CO2, &blockingCompounds, &offgasCompounds,
+    SorbateProperties* sorbateCo2 = sorbant.addSorbate(ChemicalCompound::CO2, &blockingCompounds, &offgasCompounds,
             h2oTothA, h2oTothB, h2oTothE, h2oTothT0, h2oTothC0, h2oDh, h2oKm);
+
+    /// - Add more blocking and offgas compounds.
+    sorbateCo2->addBlockingCompound(ChemicalCompound::O2, -1.0);
+    sorbateCo2->addOffgasCompound(ChemicalCompound::CH4, 1.0e-4);
 
     /// @test sorbant computeVolume and computeThermalCapacity.
     const double expectedV  = enclosureVol * (1.0 - porosity);
@@ -296,12 +300,16 @@ void UtSorbantProperties::testCustomSorbant()
     /// @test sorbate blocking and offgas compounds.
     CPPUNIT_ASSERT(0                     == sorbates->at(0).getBlockingCompounds()->size());
     CPPUNIT_ASSERT(0                     == sorbates->at(0).getOffgasCompounds()->size());
-    CPPUNIT_ASSERT(1                     == sorbates->at(1).getBlockingCompounds()->size());
-    CPPUNIT_ASSERT(1                     == sorbates->at(1).getOffgasCompounds()->size());
+    CPPUNIT_ASSERT(2                     == sorbates->at(1).getBlockingCompounds()->size());
+    CPPUNIT_ASSERT(2                     == sorbates->at(1).getOffgasCompounds()->size());
     CPPUNIT_ASSERT(ChemicalCompound::H2O == sorbates->at(1).getBlockingCompounds()->at(0).mCompound);
     CPPUNIT_ASSERT(1.0                   == sorbates->at(1).getBlockingCompounds()->at(0).mInteraction);
+    CPPUNIT_ASSERT(ChemicalCompound::O2  == sorbates->at(1).getBlockingCompounds()->at(1).mCompound);
+    CPPUNIT_ASSERT(-1.0                  == sorbates->at(1).getBlockingCompounds()->at(1).mInteraction);
     CPPUNIT_ASSERT(ChemicalCompound::NH3 == sorbates->at(1).getOffgasCompounds()->at(0).mCompound);
     CPPUNIT_ASSERT(1.0e-6                == sorbates->at(1).getOffgasCompounds()->at(0).mInteraction);
+    CPPUNIT_ASSERT(ChemicalCompound::CH4 == sorbates->at(1).getOffgasCompounds()->at(1).mCompound);
+    CPPUNIT_ASSERT(1.0e-4                == sorbates->at(1).getOffgasCompounds()->at(1).mInteraction);
 
     /// @test sorbant copy constructor.
     SorbantProperties* sorbant2 = new SorbantProperties(sorbant);

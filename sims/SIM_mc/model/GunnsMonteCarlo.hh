@@ -86,14 +86,20 @@ struct GunnsMonteCarloPsoParticle
 struct GunnsMonteCarloPsoConfigData
 {
     public:
-        unsigned int mNumParticles;    /**< *o (1) trick_chkpnt_io(**) Number of particles in the PSO swarm. */
-        unsigned int mMaxEpoch;        /**< *o (1) trick_chkpnt_io(**) Maximum number of epochs, or iterations, in the total run. */
-        double       mInertiaWeight;   // TODO < 1 initial particle inertia weight
-        double       mInertiaWeightEnd; // TODO for annealing
-        double       mCognitiveCoeff;  //TODO typicallly between 1-3
-        double       mSocialCoeff;     //TODO typicallly between 1-3
-        double       mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum magnitude of particle state velocity. */
-        unsigned int mRandomSeed;      /**< *o (1) trick_chkpnt_io(**) the seed value for RNJesus */
+        enum SwarmDistribution {
+            RANDOM          = 0, ///< Uniform random distribution
+            MIN_MAX_CORNERS = 1, ///< Half the swarm at max corner, half at min corner
+            FILE            = 2  ///< Read from file
+        };
+        unsigned int      mNumParticles;     /**< *o (1) trick_chkpnt_io(**) Number of particles in the PSO swarm. */
+        unsigned int      mMaxEpoch;         /**< *o (1) trick_chkpnt_io(**) Maximum number of epochs, or iterations, in the total run. */
+        double            mInertiaWeight;    // TODO < 1 initial particle inertia weight
+        double            mInertiaWeightEnd; // TODO for annealing
+        double            mCognitiveCoeff;   //TODO typicallly between 1-3
+        double            mSocialCoeff;      //TODO typicallly between 1-3
+        double            mMaxVelocity;      /**< *o (1) trick_chkpnt_io(**) Maximum magnitude of particle state velocity. */
+        unsigned int      mRandomSeed;       /**< *o (1) trick_chkpnt_io(**) the seed value for RNJesus */
+        SwarmDistribution mInitDistribution; /**< *o (1) trick_chkpnt_io(**) Distribution of initial swarm particle states. */
 };
 
 //TODO Particle Swarm Optimization
@@ -125,6 +131,10 @@ class GunnsMonteCarloPso
         //TODO
         void randomizeSwarmVelocity();
         //TODO
+        void minMaxSwarmState();
+        //TODO
+        void readFileSwarmState();
+        //TODO
         void uniformSwarm();
         //TODO
         void update();
@@ -148,6 +158,8 @@ class GunnsMonteCarloPso
         void printGlobalBest() const;
         //TODO
         void assignCost(const double cost);
+        //TODO
+        void shutdown() const;
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -176,11 +188,18 @@ class GunnsMonteCarlo
     // the optimizer object will have its own config data, like PSO swarm size, weights, etc.
     //TODO #slaves corresponds to # parallel runs (CPU's) in the compute farm, not PSO swarm size
     //TODO short-term goals:
-    // - Now that algorithm appears to be working, we see a lot of converging to local minimum,
-    //   never finds global min on its own.
-    //   + Try one particle initial state at teh correct answer, see if it stays there, and if other
-    ///    particles converge on it: Result - this works, most particles eventually converge on that state
-    //   + Try the annealing - changing inertia weight.  Implemented, but doesn't seemt to help.
+    // - Start the Python wrapper - will handle epochs for parallelization of slave runs in each epoch,
+    //   as well as init-ing states from saved state file
+    //   - saved swarm state between epochs in same format as final output file, for consistency
+    // advice from Chip:
+    // - recommend 24-30 particles
+    // - try initial particle states in the corners, or maybe all together in a single corner, etc.
+    //   Configure the optimizer.
+    // - save final results of all particles + global best, use taht as input to next
+    //   run, and tend to use lower velocity limit on next run becuase you know you're
+    //   closer to the globabl min
+    // - try initial states at corners or one corner as an optional alternative to random
+    //   (still with random vel)
     //TODO long-term issues:
     // - parallel slaves data coherency problems: these are only a problem if run parallel, i.e.
     //   more than 1 slave.  We can run serial: 1 slave, to avoid these for now, and solve these

@@ -12,6 +12,7 @@ LIBRARY DEPENDENCY:
 /// - GUNNS inlcudes:
 #include "GunnsMonteCarlo.hh"
 #include "math/MsMath.hh"
+#include "strings/Strings.hh"
 
 /// - Trick includes:
 #include "sim_services/MonteCarlo/include/montecarlo_c_intf.h"
@@ -19,6 +20,8 @@ LIBRARY DEPENDENCY:
 /// - System includes:
 #include <cfloat>
 #include <iostream> //TODO testing
+#include <sstream>
+#include <fstream>
 
 //TODO
 GunnsMonteCarloPso::GunnsMonteCarloPso()
@@ -77,8 +80,6 @@ void GunnsMonteCarloPso::initialize(
     mGlobalBestState.mCost = DBL_MAX;
 
     initSwarm();
-//    mRunCounter = UINT_MAX - 1;
-//    mEpoch      = -1;
     mRunCounter = -1;
     mEpoch      =  0;
 
@@ -89,31 +90,24 @@ void GunnsMonteCarloPso::initialize(
 //TODO have user option to select between random & uniform
 void GunnsMonteCarloPso::initSwarm()
 {
-    //for now just randomize
-    if (true) {
-        randomizeSwarmState();
-        randomizeSwarmVelocity();
-    } else {
-        uniformSwarm();
-        randomizeSwarmVelocity();
-    }
-
-    // cheat and init particle 0 state to [min, min...] and particle n to [max, max...],
-    // with zero velocity
-//    GunnsMonteCarloPsoState& state0 = mParticles.at(0).mCurrentState;
-//    GunnsMonteCarloPsoState& stateN = mParticles.at(mConfigData.mNumParticles - 1).mCurrentState;
-//    for (unsigned int j=0; j<state0.mState.size(); ++j) {
-//        state0.mState.at(j) = mInStatesMaster->at(j).mMinimum;
-//        stateN.mState.at(j) = mInStatesMaster->at(j).mMaximum;
-//        state0.mVelocity.at(j) = 0.0;
-//        stateN.mVelocity.at(j) = 0.0;
-//    }
-    // TODO cheat and init 0th particle to correct answer, see what happens...
-//    GunnsMonteCarloPsoState& state0 = mParticles.at(0).mCurrentState;
-//    state0.mState.at(0) = 0.001;
-//    state0.mState.at(1) = 0.002;
-//    state0.mState.at(2) = 0.0005;
-//    state0.mState.at(3) = 0.00025;
+    switch (mConfigData.mInitDistribution) {
+        case (GunnsMonteCarloPsoConfigData::RANDOM) :
+            randomizeSwarmState();
+            randomizeSwarmVelocity();
+            break;
+        case (GunnsMonteCarloPsoConfigData::MIN_MAX_CORNERS) :
+            minMaxSwarmState();
+            randomizeSwarmVelocity();
+            break;
+        case (GunnsMonteCarloPsoConfigData::FILE) :
+            readFileSwarmState();
+            randomizeSwarmVelocity();
+            break;
+        default :   // invalid selection
+            randomizeSwarmState();
+            randomizeSwarmVelocity();
+            break;
+    };
 
     /// - Initialize the global best state cost and all particle's best state cost to a high number
     ///   for improvement.
@@ -135,6 +129,60 @@ void GunnsMonteCarloPso::randomizeSwarmState()
             state.mState.at(j) = mInStatesMaster->at(j).mMinimum + range * rand() / RAND_MAX;
         }
     }
+}
+
+//TODO
+// Initializes half of the swarm state to (min, min, ...) and have to (max, max, ...).
+void GunnsMonteCarloPso::minMaxSwarmState()
+{
+    for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+        GunnsMonteCarloPsoState& state = mParticles.at(i).mCurrentState;
+        for (unsigned int j=0; j<state.mState.size(); ++j) {
+            if (i < mConfigData.mNumParticles / 2) {
+                state.mState.at(j) = mInStatesMaster->at(j).mMinimum;
+            } else {
+                state.mState.at(j) = mInStatesMaster->at(j).mMaximum;
+            }
+        }
+    }
+}
+
+//TODO
+// initializes swarm positions from file
+void GunnsMonteCarloPso::readFileSwarmState()
+{
+    std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
+    std::ifstream file (pathFile.c_str(), (std::ifstream::in));
+    if (file.fail()) {
+//        GUNNS_WARNING("error opening file: " << pathFile);
+    } else {
+        /// - Read the whole file into a stream.
+        std::stringstream fString;
+        fString << file.rdbuf();
+
+        //TODO check file for correct columns/rows for our swarm
+
+        /// - Split the stream by separate lines.
+        std::vector<std::string> fLines = Strings::split(fString.str(), "\n");
+
+        for (unsigned int line=1; line<fLines.size(); ++line) {
+            std::istringstream in(fLines.at(line));
+            std::string particle;  // dummy to hold the 0th column value
+            in >> particle;
+            if (line < 2) {
+                /// - Initialize the global best state from the 1st line (header is 0th line).
+                for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
+                    in >> mGlobalBestState.mState.at(i);
+                }
+            } else if (line < mParticles.size() + 2) {
+                /// - Initialize the particle states from the subsequent lines.
+                for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
+                    in >> mParticles.at(line-2).mCurrentState.mState.at(i);
+                }
+            }
+        }
+    }
+    file.close();
 }
 
 //TODO
@@ -357,6 +405,43 @@ void GunnsMonteCarloPso::printGlobalBest() const
     std::cout << " cost: " << mGlobalBestState.mCost << std::endl;
 }
 
+void GunnsMonteCarloPso::shutdown() const
+{
+    printGlobalBest();
+    /// - Write the swarm state to an output file.
+    std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
+    std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
+    if (file.fail()) {
+//        GUNNS_WARNING("error opening file: " << pathFile);
+    } else {
+        /// - Write the header row.
+        //TODO do we need particle velocity?
+        //TODO do we need particle personal best state?
+        file << "Particle";
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " pos_" << j;
+        }
+        file << std::endl;
+
+        /// - Write the first data row as the global best state.
+        file << "global_best";
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " " << mGlobalBestState.mState.at(j);
+        }
+        file << std::endl;
+
+        /// - Write a data row for each particle state.
+        for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+            file << i;
+            for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+                file << " " << mParticles.at(i).mCurrentState.mState.at(j);
+            }
+            file << std::endl;
+        }
+    }
+    file.close();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Constructs the Monte Carlo Manager Object.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,15 +512,6 @@ void GunnsMonteCarlo::initSlave()
 void GunnsMonteCarlo::updateMasterPre()
 {
     std::cout << "updateMasterPre" << std::endl;
-    // for now, randomly determine the state values, limited between min & max
-//    for (unsigned int i=0; i<mInStatesMaster.size(); ++i) {
-//        const double range = mInStatesMaster.at(i).mMaximum - mInStatesMaster.at(i).mMinimum;
-//        const double state = mInStatesMaster.at(i).mMinimum + range * rand() / RAND_MAX;
-//        //TODO get the state from the optimizer
-//        *mInStatesMaster.at(i).mAddress = state;
-//        std::cout << " " << mInStatesMaster.at(i).mName
-//                  << " " << *mInStatesMaster.at(i).mAddress << std::endl;
-//    }
 
     mOptimizer.update();
     const std::vector<double>* state = mOptimizer.getState();
@@ -467,11 +543,9 @@ void GunnsMonteCarlo::updateMasterPost()
     //TODO maybe move to slave for the whole-run use case
     double totalCost = 0.0;
     for (unsigned int i=0; i<mOutDoublesMaster.size(); ++i) {
-        const double error = fabs(mOutDoublesMaster.at(i).mOutput - mOutDoublesMaster.at(i).mTarget);
-        // weighted average of the error:
-//        totalCost += error * mOutDoublesMaster.at(i).mCostWeight / mSumCostWeights;
-        // simple sum of error * weight:
-        totalCost += error * mOutDoublesMaster.at(i).mCostWeight;
+        const double error = mOutDoublesMaster.at(i).mOutput - mOutDoublesMaster.at(i).mTarget;
+        // simple sum of error^2 * weight:
+        totalCost += error * error * mOutDoublesMaster.at(i).mCostWeight;
     }
     std::cout << " cost: " << totalCost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
     mOptimizer.assignCost(totalCost);
@@ -481,7 +555,7 @@ void GunnsMonteCarlo::updateMasterPost()
 void GunnsMonteCarlo::updateMasterShutdown()
 {
     std::cout << "updateMasterShutdown" << std::endl;
-    mOptimizer.printGlobalBest();
+    mOptimizer.shutdown();
 }
 
 //TODO

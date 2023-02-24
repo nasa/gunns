@@ -16,31 +16,33 @@ input_vars = [
 output_vars = [
     ['mc.model.netNodes[1].mContent.mPressure', 101.0447089840857,     1.0],
     ['mc.model.netNodes[2].mContent.mPressure',  90.37713522203975,    1.0],
+    # doing all 4 conductances instead of 2 press, 2 G didn't work very well
+#    ['mc.model.valve1.FlowRate',                  0.05474700689532216, 5.0],
+#    ['mc.model.valve2.mFlowRate',                 0.05474700689532223, 5.0],
     ['mc.model.conductor1.mFlowRate',             0.01824900229844743, 5.0],
     ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 5.0],
     ]
 
-# Configure the optimizer.
-mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 20
-mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 200
+# Chip's recommendation:
+mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 30
+mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 400
+# These seem to work best:
 mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeight    = 0.5
 mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeightEnd = 0.5
 mc.monteCarlo.mOptimizer.mConfigData.mCognitiveCoeff   = 2.0
 mc.monteCarlo.mOptimizer.mConfigData.mSocialCoeff      = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 1.0
+mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 0.1
 mc.monteCarlo.mOptimizer.mConfigData.mRandomSeed       = 42
+mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.MIN_MAX_CORNERS
+#mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.FILE
 
-# Best results so far for 20x200 swarm: coeffs: 0.5/2/2, cost: 0.188
-# inert weight 0.4: 0.377
-# inert weight 0.6: 0.238
-# coeffs 2.1: 0.250
-# coeffs 1.9: 0.188
-# coeffs 2.1/1.9: 0.378
-# coeffs 1.9/2.1: 0.232
-# So notihing seems better than 0.5/2/2 for standard PSO
-# For 0.5/2/2, 4 00 epochs: 0.155
-# For 0.5/2/2, 1000 epochs: 0.103 - pretty good answer, so is converging just very slowly
-#     and once gets within a certain amount, has very slow approach
+# Max vel = 1
+# Result for 30x400 swarm, random dist, cost: .00708
+# Result for 30x400 swarm, corner dist, cost: .00473
+# Max vel = 0.5
+# Result for 30x400 swarm, random dist, cost: .0069
+# Result for 30x400 swarm, corner dist, cost: .00278
+#  2nd run from save file, max vel 0.1, cost: .00149
 
 # Compare Trelea vs. Common:
 # Common:   0.5/2/2 for 20x200 swarm: 0.188

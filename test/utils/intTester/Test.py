@@ -1,10 +1,11 @@
-# Copyright 2021 United States Government as represented by the Administrator of the
+# Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
-from   math    import fabs
-from   pprint  import pprint
-from   sys     import path
-from   time    import sleep
+from math            import fabs
+from pprint          import pprint
+from sys             import path
+from time            import sleep
+from trick.unit_test import *
 import csv
 
 class Test(object):
@@ -142,12 +143,12 @@ class Test(object):
 
     #--- define useful test utilities
     def registerEventBasedTest(self, eventName, startTime, setupFunction, finishTime, evaluationFunction):
-        print "Scheduling setup of : " +eventName+" for time : " + str(startTime) + " seconds."
+        print("Scheduling setup of : " +eventName+" for time : " + str(startTime) + " seconds.")
         setupEvent = TestEvent(self.testName + eventName + "Setup")
         setupEvent.action = setupFunction
         setupEvent.registerEvent(startTime)
 
-        print "Scheduling evaluation of : " +eventName+" for time : " + str(finishTime) + " seconds."
+        print("Scheduling evaluation of : " +eventName+" for time : " + str(finishTime) + " seconds.")
         evaluateEvent = TestEvent(self.testName + eventName + "Evaluate")
         evaluateEvent.action = evaluationFunction
         evaluateEvent.registerEvent(finishTime)
@@ -192,7 +193,6 @@ class Test(object):
     # Set of test comparison operations that wrap Trick's built in unit-test
     # functionality. They output an xml test report that can be read by
     # CI. These require Trick13.
-    from trick.unit_test import *
     def testTrue(self, value, testCase):
         """Test for true"""
         TRICK_EXPECT_TRUE( value , self.testName , testCase)

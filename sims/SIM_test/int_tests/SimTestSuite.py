@@ -1,4 +1,4 @@
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import os
@@ -6,11 +6,16 @@ INT_TESTER_HOME = os.environ["GUNNS_HOME"]+"/test/utils/intTester/"
 #===============================================================================================
 # Integration test includes
 #===============================================================================================
-execfile(INT_TESTER_HOME+"TestSuite.py")
-execfile("int_tests/TestFluidNetwork.py")
-execfile("int_tests/TestBasicNetwork.py")
-execfile("int_tests/TestThermalNetwork.py")
-execfile("int_tests/TestHsLog.py")
+f = INT_TESTER_HOME+"TestSuite.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
+f = "int_tests/TestFluidNetwork.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
+f = "int_tests/TestBasicNetwork.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
+f = "int_tests/TestThermalNetwork.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
+f = "int_tests/TestHsLog.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
 
 #===============================================================================================
 # Test Header

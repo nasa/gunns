@@ -1,4 +1,4 @@
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import socket
@@ -9,7 +9,8 @@ from trick.unit_test import *
 #===============================================================================================
 # Integration test includes
 #===============================================================================================
-execfile("int_tests/BasicNetworkConstants.py")
+f = "int_tests/BasicNetworkConstants.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
 
 #===============================================================================================
 # GUNNS SIM_test Simple Basic Network Test Class
@@ -47,7 +48,7 @@ class TestBasicNetwork(Test):
 
     # Check function
     def checkNodesInitState(self):
-       nodeNameKeys = sorted(basicNodeNames.iterkeys())
+       nodeNameKeys = sorted(basicNodeNames.keys())
 
        for nodeName in nodeNameKeys:
           print("-------------------------------------------------------------------------------------------------")
@@ -62,7 +63,7 @@ class TestBasicNetwork(Test):
 
     # Check function
     def checkNodesFinalState(self):
-       nodeNameKeys = sorted(nodeNames.iterkeys())
+       nodeNameKeys = sorted(nodeNames.keys())
 
        for nodeName in nodeNameKeys:
           print("-------------------------------------------------------------------------------------------------")

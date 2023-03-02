@@ -1,9 +1,10 @@
-# Copyright 2021 United States Government as represented by the Administrator of the
+# Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 import os
 INT_TESTER_HOME = os.environ["GUNNS_HOME"]+"/test/utils/intTester/"
-execfile(INT_TESTER_HOME+"Test.py")
+f = INT_TESTER_HOME+"Test.py"
+exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
 
 class TestSuite:
     """Test suite class. This class is instantiated inside of an integration test file. It is
@@ -58,7 +59,7 @@ class TestSuite:
         for test in self.testList:
             self.runTest(test)
             endOfTestSuiteTime = test.lastTestTime
-        print "Scheduling sim to stop at : " + str(endOfTestSuiteTime+self.testTearDownTime) + " seconds."
+        print("Scheduling sim to stop at : " + str(endOfTestSuiteTime+self.testTearDownTime) + " seconds.")
         self.scheduleSimShutdown(endOfTestSuiteTime+self.testTearDownTime)
 
     def runTest(self, testToRun):

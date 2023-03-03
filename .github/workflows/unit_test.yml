@@ -19,10 +19,11 @@ jobs:
 
     steps:
     - name: Update package manager
-      run: yum install -y yum-utils
-      run: dnf config-manager --set-enabled ol8_codeready_builder
-      run: yum repolist
-      run: yum install -y epel-release && yum update -y
+      run: |
+        yum install -y yum-utils
+        dnf config-manager --set-enabled ol8_codeready_builder
+        yum repolist
+        yum install -y epel-release && yum update -y
 
     - name: Install dependencies
       run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind python3

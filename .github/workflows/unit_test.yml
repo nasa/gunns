@@ -15,7 +15,7 @@ on:
 jobs:
   all_unit_tests:
     runs-on: ubuntu-latest
-    container: docker://oraclelinux::8
+    container: docker://oraclelinux:8
 
     steps:
     - name: Update package manager

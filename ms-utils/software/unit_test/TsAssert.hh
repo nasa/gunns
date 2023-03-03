@@ -4,7 +4,7 @@
 @defgroup  TSM_UTILITIES_SOFTWARE_UNIT_TEST_ASSERT Assert Macros
 @ingroup   TSM_UTILITIES_SOFTWARE_UNIT_TEST
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -39,7 +39,7 @@ static double autoDelta(
         int sig_figs)
 {
     // Exit if the expected value is garbage
-    if (isnan(param) || isinf(param)) {
+    if (std::isnan(param) || std::isinf(param)) {
         return param;
     }
 

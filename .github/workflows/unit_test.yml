@@ -15,17 +15,20 @@ on:
 jobs:
   all_unit_tests:
     runs-on: ubuntu-latest
-    container: docker://centos:7
+    container: docker://oraclelinux::8
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@master
-
-    - name: Add yum repo
-      run: yum -y install epel-release.noarch && yum -y update
+    - name: Update package manager
+      run: yum install -y yum-utils
+      run: dnf config-manager --set-enabled ol8_codeready_builder
+      run: yum repolist
+      run: yum install -y epel-release && yum update -y
 
     - name: Install dependencies
-      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind
+      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind python3
+
+    - name: Checkout repository
+      uses: actions/checkout@master
 
     - name: Run tests
       run: |
@@ -44,5 +47,5 @@ jobs:
         ./make_all_ut.sh
         # Scan results for pass/fail
         chmod +x scan_all_ut.py
-        python ./scan_all_ut.py
+        python3 ./scan_all_ut.py
 

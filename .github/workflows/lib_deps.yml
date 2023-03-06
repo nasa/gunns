@@ -20,23 +20,18 @@ on:
 jobs:
   lib_deps:
     runs-on: ubuntu-latest
-    container: docker://centos:7
+    container: docker://oraclelinux:8
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@master
+    - name: Update package manager
+      run: dnf -y install epel-release && dnf -y update && dnf install -y 'dnf-command(config-manager)'
 
-    - name: Add yum repo
-      run: yum -y install epel-release.noarch && yum -y update
-
-    - name: Install dependencies
-      # Note most of these are for Trick
+    - name: Install Trick dependencies
       run: >
-        yum install -y bison clang-devel cmake curl-devel flex gcc gcc-c++ git glibc-devel gtest-devel
-        java-1.8.0-openjdk-devel libX11-devel libxml2-devel libXi-devel libXmu-devel libXt-devel
-        llvm-devel llvm-static make tcsh csh mesa-libGL-devel mesa-libGLU-devel maven cppunit ncurses-devel
-        openmotif-devel perl-Digest-MD5 protobuf-devel python-devel sqlite-devel swig systemd-devel
-        udunits2-devel which zip zlib-devel tkinter
+        dnf install -y bison clang flex git llvm make maven swig cmake clang-devel
+        gcc gcc-c++ java-11-openjdk-devel libxml2-devel llvm-devel llvm-static
+        ncurses-devel openmotif openmotif-devel perl perl-Digest-MD5 udunits2
+        udunits2-devel which zlib-devel libX11-devel libXt-devel python3-devel diffutils
 
     - name: Build Trick
       # Failure here is likely due to new or changed dependencies of Trick, see above
@@ -47,6 +42,9 @@ jobs:
         cd ${TRICK_HOME}
         ./configure
         make
+
+    - name: Checkout repository
+      uses: actions/checkout@master
 
     # TODO use better way to define env vars globally for all steps
     - name: Build gunns/lib/trick
@@ -66,5 +64,5 @@ jobs:
         export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
         export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
         cd sims/SIM_class_test_compile
-        python ./test_all.py
+        python3 ./test_all.py
         

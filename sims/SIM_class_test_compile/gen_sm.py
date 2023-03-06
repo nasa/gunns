@@ -1,5 +1,6 @@
-#!/usr/bin/python
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+#!/usr/bin/env python3
+#
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -17,11 +18,8 @@ import sys
 if (len(sys.argv) != 2):
     quit();
 
-# Python 2.7 vs. 3 by feature detection.
-try:
-    execfile('class_custom_construction.py')
-except NameError:
-    exec(compile(open('class_custom_construction.py', "rb").read(), 'class_custom_construction.py', 'exec'))
+# Python 3 is required.
+exec(compile(open('class_custom_construction.py', "rb").read(), 'class_custom_construction.py', 'exec'))
 
 # extract class type from the given path:
 classType = os.path.basename(sys.argv[1]).split('.')[0]

@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -16,7 +16,7 @@
 # - auto-generate the test_class.sh Trick sim object to instantiate the test class in the sim,
 # - build the sim and handle & report on build errors.
 #
-# This requires Trick 19 or later.
+# This requires Trick 19 or later, and Python 3.
 #
 # This could be parallelized to run faster, but would take a lot of effort to set up.
 # Each core could run a separate class build, but would have to use separate ClassTest.sm
@@ -29,7 +29,7 @@ import sys
 # to the overall output errors file.
 def testtype(classpath):
     os.system('make clean')
-    os.system('python gen_sm.py ' + classpath)
+    os.system('python3 gen_sm.py ' + classpath)
     os.system('trick-CP')
     if os.path.isfile('build/MAKE_err'):
         os.system('cat build/MAKE_err >> test_all_output_errors')
@@ -38,11 +38,7 @@ def testtype(classpath):
 # Begin Main Script
 ###################
 
-# Python 2.7 vs. 3 by feature detection.
-try:
-    execfile('class_ignore_list.py')
-except NameError:
-    exec(compile(open('class_ignore_list.py', "rb").read(), 'class_ignore_list.py', 'exec'))
+exec(compile(open('class_ignore_list.py', "rb").read(), 'class_ignore_list.py', 'exec'))
 
 outputfile = 'test_all_output_errors'
 os.system('rm ' + outputfile)

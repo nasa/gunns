@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 #
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -19,6 +19,6 @@
 # $ source test_class.sh aspects/electrical/Switch/GunnsElectUserLoadSwitch.hh
 #
 make clean
-python gen_sm.py $1
+python3 gen_sm.py $1
 trick-CP
 

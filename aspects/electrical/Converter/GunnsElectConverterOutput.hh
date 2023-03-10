@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -134,6 +134,10 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         bool getInputPowerValid() const;
         /// @brief  Returns the current/voltage limiting state.
         bool getLimitingState() const;
+        /// @brief  Returns the enabled flag.
+        bool getEnabled() const;
+        /// @brief  Returns the controlled voltage.
+        double getControlVoltage() const;
         /// @brief  Returns the output over-voltage trip logic.
         GunnsTripLogic* getOutputOverVoltageTrip();
         /// @brief  Returns the output under-voltage trip logic.
@@ -401,6 +405,16 @@ inline bool GunnsElectConverterOutput::getInputPowerValid() const
 inline bool GunnsElectConverterOutput::getLimitingState() const
 {
     return mLimitState;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  True if the converter is enabled.
+///
+/// @details  Returns the value of mEnabled.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::getEnabled() const
+{
+    return mEnabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

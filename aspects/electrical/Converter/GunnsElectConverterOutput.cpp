@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Output Link implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -679,4 +679,26 @@ bool GunnsElectConverterOutput::computeInputPower(double& inputPower)
         mTotalPowerLoss = inputPower - mPower;
     }
     return mInputPowerValid;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double  (V)  The controlled voltage value.
+///
+/// @details  Returns what would be the ideal regulated voltage in this regulator's current state,
+///           regardless of enabled or reverse bias state.  Returns zero if for any reason, other
+///           than being disabled, that this couldn't regulate the node voltage.  This always
+///           returns zero for the regulator types that do not control voltage.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsElectConverterOutput::getControlVoltage() const
+{
+    double result = 0.0;
+    if (isVoltageRegulator() and mOutputPowerAvailable and not ( (mOutputConductance < DBL_EPSILON)
+        or isAnyTrips() or mLimitState or (mMalfBlockageFlag and mMalfBlockageValue > 0.0) )) {
+        if (TRANSFORMER == mRegulatorType) {
+            result = mInputVoltage * mSetpoint;
+        } else if (VOLTAGE == mRegulatorType) {
+            result = mSetpoint;
+        }
+    }
+    return result;
 }

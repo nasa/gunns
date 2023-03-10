@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Orchestrator implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -1029,11 +1029,6 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
                     } else {
                         decompose(mAdmittanceMatrix, mNetworkSize);
                     }
-
-                    /// - Initial node network capacitance calculations immediately following the
-                    ///   matrix decomposition.
-                    perturbNetworkCapacitances();
-
                 } else {
                     throw TsOutOfBoundsException("Iteration Limit Exceeded", "Gunns",
                                                  "decomposition limit exceeded.");
@@ -1043,8 +1038,9 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
         /// - Solve the system of equations.  The result of this is a new potential vector.  This is
         ///   only needed in NORMAL mode.  In DUMMY mode, the links are responsible for their own
         ///   potential.  In SLAVE mode, an external potential vector is received from the caller.
-        /// - Final node network capacitance calculations following the network solution.
+        /// - Node network capacitance calculations before and after the network solution.
         if (NORMAL == mSolverMode) {
+            perturbNetworkCapacitances();
             solveCholesky();
             cleanPotentialVector();
             computeNetworkCapacitances(timeStep);
@@ -1497,8 +1493,8 @@ inline void Gunns::cleanPotentialVector()
 /// @throws   TsNumericalException
 ///
 /// @details  This method is the first half of the network capacitance computations.  For each node
-///           that requests its network capacitance, a unit flux is added to the node's source
-///           vector and the system of equations solved using the recent matrix decomposition.  The
+///           that requests its network capacitance, requested flux is added to the node's source
+///           vector and the system of equations solved using the last matrix decomposition.  The
 ///           computeNetworkCapacitances() method is called later to finish the computations.  Nodes
 ///           that do not request their value have it reset here.
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -28,6 +28,7 @@ GunnsMonteCarloPso::GunnsMonteCarloPso()
     :
     mConfigData(),
     mInStatesMaster(0),
+    mGlobalRunCounter(0),
     mRunCounter(0),
     mEpoch(0),
     mParticles(),
@@ -80,8 +81,20 @@ void GunnsMonteCarloPso::initialize(
     mGlobalBestState.mCost = DBL_MAX;
 
     initSwarm();
-    mRunCounter = -1;
-    mEpoch      =  0;
+    mGlobalRunCounter = -1;
+    mRunCounter       = -1;
+    mEpoch            =  1;
+
+    /// - Start the global cost/epoch history file
+    std::string pathFile = "pso_cost_history.csv"; //TODO prepend path, etc.
+    std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
+    if (file.fail()) {
+//        GUNNS_WARNING("error opening file: " << pathFile);
+    } else {
+        /// - Write the header row.
+        file << "Epoch,Global_Best_Cost " << std::endl;
+    }
+    file.close();
 
     printStates();
     printGlobalBest();
@@ -94,21 +107,35 @@ void GunnsMonteCarloPso::initSwarm()
         case (GunnsMonteCarloPsoConfigData::RANDOM) :
             randomizeSwarmState();
             randomizeSwarmVelocity();
+            initBestCosts();
             break;
         case (GunnsMonteCarloPsoConfigData::MIN_MAX_CORNERS) :
+            std::cout << "init MIN_MAX_CORNERS\n";
             minMaxSwarmState();
             randomizeSwarmVelocity();
+            initBestCosts();
             break;
         case (GunnsMonteCarloPsoConfigData::FILE) :
-            readFileSwarmState();
+            readFileSwarmState(false);
             randomizeSwarmVelocity();
+            initBestCosts();
+            break;
+        case (GunnsMonteCarloPsoConfigData::FILE_CONTINUOUS) :
+            std::cout << "init FILE_CONTINUOUS\n";
+            readFileSwarmState(true);
+            printStates();
             break;
         default :   // invalid selection
             randomizeSwarmState();
             randomizeSwarmVelocity();
+            initBestCosts();
             break;
     };
+}
 
+//TODO
+void GunnsMonteCarloPso::initBestCosts()
+{
     /// - Initialize the global best state cost and all particle's best state cost to a high number
     ///   for improvement.
     mGlobalBestState.mCost = DBL_MAX;
@@ -148,8 +175,9 @@ void GunnsMonteCarloPso::minMaxSwarmState()
 }
 
 //TODO
-// initializes swarm positions from file
-void GunnsMonteCarloPso::readFileSwarmState()
+/// @param[in] continuous (--) If true, also inits velocity and best state.
+// initializes just the swarm from file
+void GunnsMonteCarloPso::readFileSwarmState(const bool continuous)
 {
     std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
     std::ifstream file (pathFile.c_str(), (std::ifstream::in));
@@ -171,13 +199,25 @@ void GunnsMonteCarloPso::readFileSwarmState()
             in >> particle;
             if (line < 2) {
                 /// - Initialize the global best state from the 1st line (header is 0th line).
+                in >> mGlobalBestState.mCost;
                 for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
                     in >> mGlobalBestState.mState.at(i);
                 }
             } else if (line < mParticles.size() + 2) {
                 /// - Initialize the particle states from the subsequent lines.
+                in >> mParticles.at(line-2).mCurrentState.mCost;
                 for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
                     in >> mParticles.at(line-2).mCurrentState.mState.at(i);
+                }
+                /// - For continuous propagation, also read the velocity and best state.
+                if (continuous) {
+                    for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
+                        in >> mParticles.at(line-2).mCurrentState.mVelocity.at(i);
+                    }
+                    in >> mParticles.at(line-2).mBestState.mCost;
+                    for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
+                        in >> mParticles.at(line-2).mBestState.mState.at(i);
+                    }
                 }
             }
         }
@@ -227,6 +267,7 @@ void GunnsMonteCarloPso::uniformSwarm()
 void GunnsMonteCarloPso::update()
 {
     // update the run count & epoch.  each epoch runs each particle once.
+    mGlobalRunCounter++;
     mRunCounter++;
     if (mRunCounter >= mConfigData.mNumParticles) {
         mRunCounter = 0;
@@ -242,10 +283,22 @@ void GunnsMonteCarloPso::update()
         propagateSwarm(inertiaWeight);
         printStates();
         printGlobalBest();
+
+        /// - Append to the global cost/epoch history file
+        std::string pathFile = "pso_cost_history.csv"; //TODO prepend path, etc.
+        std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::app));
+        if (file.fail()) {
+    //        GUNNS_WARNING("error opening file: " << pathFile);
+        } else {
+            /// - Write the data row for this epoch.
+            file << mEpoch << "," << mGlobalBestState.mCost << std::endl;
+        }
+        file.close();
     }
 
     // point hte active particle to the particle that's up next
     mActiveParticle = &mParticles.at(mRunCounter);
+    mActiveParticle->mCurrentState.mRunId = mGlobalRunCounter;
     std::cout << "PSO update Epoch " << mEpoch << ", run " << mRunCounter << ", best cost: " << mGlobalBestState.mCost << std::endl;
 }
 
@@ -275,9 +328,11 @@ void GunnsMonteCarloPso::updateBestStates()
 //TODO see Chip Birge's matlab implementation pso_new.m,
 // - use the Common PSO propagation and 'wraparound' at boundaries
 // - redo our annealing to match Chip's, start & end inertia, etc.
+//TODO this is never getting called when runnign from pso.py...
 void GunnsMonteCarloPso::propagateSwarm(const double inertiaWeight)
 {
 //    randomizeSwarmState(); TODO for testing
+    std::cout << "PSO propagateSwarm" << std::endl;
     updateBestStates();
 
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
@@ -340,9 +395,18 @@ const std::vector<double>* GunnsMonteCarloPso::getState() const
 }
 
 //TODO
-void GunnsMonteCarloPso::assignCost(const double cost)
+void GunnsMonteCarloPso::assignCost(const double cost, const double runId, const double runIdReturned)
 {
-    mActiveParticle->mCurrentState.mCost = cost;
+    // find the particle whose state run id matches the returned runIf, and assign this cost to it
+    for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+        if (runIdReturned == mParticles.at(i).mCurrentState.mRunId) {
+            mParticles.at(i).mCurrentState.mCost = cost;
+            return;
+        }
+    }
+    // if there was no match, we've done something wrong
+    std::cout << "ERROR, RUN ID NO MATCH" << std::endl;
+//    mActiveParticle->mCurrentState.mCost = cost;
 }
 
 //TODO delete, dead code
@@ -407,6 +471,7 @@ void GunnsMonteCarloPso::printGlobalBest() const
 
 void GunnsMonteCarloPso::shutdown() const
 {
+    std::cout << "PSO shutdown" << std::endl;
     printGlobalBest();
     /// - Write the swarm state to an output file.
     std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
@@ -417,14 +482,28 @@ void GunnsMonteCarloPso::shutdown() const
         /// - Write the header row.
         //TODO do we need particle velocity?
         //TODO do we need particle personal best state?
-        file << "Particle";
+        file << "Particle cost";
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
             file << " pos_" << j;
+        }
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " vel_" << j;
+        }
+        file << " best_cost";
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " best_pos_" << j;
         }
         file << std::endl;
 
         /// - Write the first data row as the global best state.
-        file << "global_best";
+        file << "global_best " << mGlobalBestState.mCost;
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " " << mGlobalBestState.mState.at(j);
+        }
+        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+            file << " 0.0"; // zero velocity
+        }
+        file << " " << mGlobalBestState.mCost;
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
             file << " " << mGlobalBestState.mState.at(j);
         }
@@ -432,9 +511,16 @@ void GunnsMonteCarloPso::shutdown() const
 
         /// - Write a data row for each particle state.
         for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-            file << i;
+            file << i << " " << mParticles.at(i).mCurrentState.mCost;
             for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
                 file << " " << mParticles.at(i).mCurrentState.mState.at(j);
+            }
+            for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+                file << " " << mParticles.at(i).mCurrentState.mVelocity.at(j);
+            }
+            file << " " << mParticles.at(i).mBestState.mCost;
+            for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
+                file << " " << mParticles.at(i).mBestState.mState.at(j);
             }
             file << std::endl;
         }
@@ -489,7 +575,7 @@ void GunnsMonteCarlo::initMaster()
         //TODO throw error
     }
 
-//    mRunId = 1; //TODO
+    mRunId = -1; //TODO so actual run id's start counting from zero in updateMasterPre
 
     /// - Initialize the optimizer.
     //TODO change args once optimizer has config data
@@ -548,13 +634,19 @@ void GunnsMonteCarlo::updateMasterPost()
         totalCost += error * error * mOutDoublesMaster.at(i).mCostWeight;
     }
     std::cout << " cost: " << totalCost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
-    mOptimizer.assignCost(totalCost);
+    //TODO when running with multiple parallel slaves using python wrapper, the slave runs still
+    // come back in a different order, so we must send the run ID along with the cost to the optimizer
+    // so it can assign the cost to the correct run.
+    mOptimizer.assignCost(totalCost, mRunId, mRunIdReturned);
 }
+
+//TODO from Chip, recommend lookup 'Pareto front', multi-objective optimization
 
 //TODO
 void GunnsMonteCarlo::updateMasterShutdown()
 {
     std::cout << "updateMasterShutdown" << std::endl;
+    mOptimizer.update(); // this propagates the swarm at the end of the last epoch, so we can save it to the file for pso.py
     mOptimizer.shutdown();
 }
 

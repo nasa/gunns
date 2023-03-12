@@ -59,11 +59,13 @@ struct GunnsMonteCarloPsoState
         std::vector<double> mVelocity; /**< (1) TODO */
         std::vector<double> mAcceleration; /**< (1) TODO */
         double              mCost;  /**< (1) TODO */
+        double              mRunId; /**< (1) TODO */
         /// @brief Assignment operator for this PSO particle state.
         GunnsMonteCarloPsoState& operator =(const GunnsMonteCarloPsoState& that) {
             if (this != &that) {
                 this->mState = that.mState;
                 this->mCost  = that.mCost;
+                this->mRunId = that.mRunId;
             }
             return *this;
         }
@@ -89,7 +91,8 @@ struct GunnsMonteCarloPsoConfigData
         enum SwarmDistribution {
             RANDOM          = 0, ///< Uniform random distribution
             MIN_MAX_CORNERS = 1, ///< Half the swarm at max corner, half at min corner
-            FILE            = 2  ///< Read from file
+            FILE            = 2, ///< Read from file position, use new random velocity and empty best state
+            FILE_CONTINUOUS = 3, ///< Read from file position, velocity and best state.
         };
         unsigned int      mNumParticles;     /**< *o (1) trick_chkpnt_io(**) Number of particles in the PSO swarm. */
         unsigned int      mMaxEpoch;         /**< *o (1) trick_chkpnt_io(**) Maximum number of epochs, or iterations, in the total run. */
@@ -108,6 +111,7 @@ class GunnsMonteCarloPso
     public:
         GunnsMonteCarloPsoConfigData             mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
         const std::vector<GunnsMonteCarloInput>* mInStatesMaster;  /**< ** (1) trick_chkpnt_io(**) Pointer to the Master state space description. */
+        int                                      mGlobalRunCounter; /**< *o (1) trick_chkpnt_io(**) Count of the total elapsed runs from all epochs. */
         int                                      mRunCounter;      /**< *o (1) trick_chkpnt_io(**) Count of the elapsed runs in the current epoch. */
         int                                      mEpoch;           /**< *o (1) trick_chkpnt_io(**) The current epoch number. */
         std::vector<GunnsMonteCarloPsoParticle>  mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
@@ -127,13 +131,15 @@ class GunnsMonteCarloPso
         //TODO
         void initSwarm();
         //TODO
+        void initBestCosts();
+        //TODO
         void randomizeSwarmState();
         //TODO
         void randomizeSwarmVelocity();
         //TODO
         void minMaxSwarmState();
         //TODO
-        void readFileSwarmState();
+        void readFileSwarmState(const bool continuous);
         //TODO
         void uniformSwarm();
         //TODO
@@ -157,7 +163,7 @@ class GunnsMonteCarloPso
         //TODO
         void printGlobalBest() const;
         //TODO
-        void assignCost(const double cost);
+        void assignCost(const double cost, double runID, double runIdReturned);
         //TODO
         void shutdown() const;
 
@@ -191,6 +197,11 @@ class GunnsMonteCarlo
     // - Start the Python wrapper - will handle epochs for parallelization of slave runs in each epoch,
     //   as well as init-ing states from saved state file
     //   - saved swarm state between epochs in same format as final output file, for consistency
+    //   - note that for very short slave runs (small models over short simulated time length), the
+    //     serial approach is actually faster than the python wrapper, because of the overhead of
+    //     starting/stopping the main trick sim for each epoch.  However for larger models over more
+    //     realistically long slave runs, parallel is faster.
+    // - implement the log data use case
     // advice from Chip:
     // - recommend 24-30 particles
     // - try initial particle states in the corners, or maybe all together in a single corner, etc.
@@ -215,6 +226,18 @@ class GunnsMonteCarlo
     //       know which particle to put the returned data back into
     //       - however, data IS coherent if only 1 slave - parallelization causes the problem
     //   - ensure data back from all slaves in an epoch before propagating the swarm and starting next epoch
+    // - a hybrid approach that switches to gradient search once the PSO gets close enough might work
+    //   very well, as the PSO is likely to be in the same trouch as the global minimum.
+    //   - idea about how the gradient search should work and maybe why Ryan's approach didn't.
+    //     I originally thought that we'd want to find the slope of each input variable in isolation, holding the
+    //     other inputs constant, and i think that's what Ryan did.  However, increasing one input variable,
+    //     say a downstream valve conductance, has an unpredictable effect on cost function, becuase it effects
+    //     more than 1 outputs it affects its thru flow rate the most, but also its up & downstream pressures,
+    //     and to a lesser extent, other flows & pressures elsewhere in the circuit.  This might explain why
+    //     Ryan doesn't see a clear trend, and gets chaotic-looking noise.  What might work better is if we
+    //     get the gradient for all combinations of +/- delta of all input variables.  So if we have 4 input vars,
+    //     then 16 combinations and try all those.  Assuming we're close to the global min, some of those should
+    //     produce clear trends for better or worse cost function.
 //        GunnsOptimizer*      mOptimizer; //TODO pointer to the optimizer object
         GunnsMonteCarloPso   mOptimizer;        /**< *o (1) trick_chkpnt_io(**) The optimizer object. */
         bool                 mIsMaster;         /**< *o (1) trick_chkpnt_io(**) This instance is in the Monte Carlo Master role. */

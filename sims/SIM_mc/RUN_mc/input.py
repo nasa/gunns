@@ -23,18 +23,21 @@ output_vars = [
     ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 5.0],
     ]
 
+#mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 5
+#mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 2
 # Chip's recommendation:
 mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 30
-mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 400
+mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 100
 # These seem to work best:
 mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeight    = 0.5
 mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeightEnd = 0.5
 mc.monteCarlo.mOptimizer.mConfigData.mCognitiveCoeff   = 2.0
 mc.monteCarlo.mOptimizer.mConfigData.mSocialCoeff      = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 0.1
+mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 0.5
 mc.monteCarlo.mOptimizer.mConfigData.mRandomSeed       = 42
 mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.MIN_MAX_CORNERS
 #mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.FILE
+#mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.FILE_CONTINUOUS
 
 # Max vel = 1
 # Result for 30x400 swarm, random dist, cost: .00708

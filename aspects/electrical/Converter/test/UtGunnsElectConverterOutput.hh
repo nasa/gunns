@@ -5,7 +5,7 @@
 /// @defgroup UT_ELECTRICAL_CONVERTER_OUTPUT_LINK    Electrical Converter Output Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Converter Output Link
@@ -58,6 +58,8 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         void testConfirmSolutionAcceptable();
         /// @brief  Tests the computeFlows method.
         void testComputeFlows();
+        /// @brief  Tests the getControlVoltage method.
+        void testControlVoltage();
 
     private:
         /// @brief  Sets up the suite of tests for the GunnsElectConverterInput unit testing.
@@ -74,6 +76,7 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST(testConfirmSolutionAcceptable);
         CPPUNIT_TEST(testComputeFlows);
+        CPPUNIT_TEST(testControlVoltage);
         CPPUNIT_TEST_SUITE_END();
         /// @brief  Enumeration for the number of nodes.
         enum {N_NODES = 3};

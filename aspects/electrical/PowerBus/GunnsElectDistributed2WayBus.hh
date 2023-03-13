@@ -16,10 +16,13 @@ PURPOSE:
 - (Classes for the GUNNS Electrical Distributed 2-Way Bus Interface.)
 
 REFERENCE:
-- (TBD)
+- ((GUNNS Wiki: https://github.com/nasa/gunns/wiki/Distributed-Bi-Directional-Flow-Electrical-Interface))
 
 ASSUMPTIONS AND LIMITATIONS:
-- (TODO, and there are many)
+- ((Only one side of the interface regulates the shared bus voltage at any given time.)
+   (Role switching logic does not account for voltage drop from the supplies to this interface.)
+   (Switching of flow direction and voltage control across the interface is limited by round-trip
+    data transport time, and is generally much slower than real-world circuits.))
 
 LIBRARY DEPENDENCY:
 - ((GunnsElectDistributed2WayBus.o))
@@ -93,35 +96,28 @@ class GunnsElectDistributed2WayBusNotification
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Electrical Distributed 2-Way Bus Interface.
 ///
-/// @details  TODO
-//TODO notes:
-// - this is designed to be generic and reusable outside of GUNNS
-// - NO dependencies on any other GUNNS code
-// - implement handshaking and coordination of bi-directional power flow between distributed models
-//   (HLA, etc.)
-// - enable bi-directional power flow over a single bus as needed between distributed models
-// - similar in concept to GunnsFluidDistributedIf
-//   - Supply/Demand roles, handshaking to swap roles
-//   - instead of capacitance, supply is determined by higher available voltage source
-// - this interfaces with another instance of itself over the HLA/interface, 1 in each model
-// - local model registers 0 or more voltage supplies with this
-//   - the interface to model is a simple data container with values for:
-//     - regulated voltage
-//     - available flag, meaning the reg is enabled and has a flow path to this interface
-//   - local model drives these during runtime from the
-//     current state of each respective voltage supply model
-// - this loops over the local voltage supplies and characterizes a total equivalent supply, sends
-//   this to other side
-// - this also has 1 constant-power load that it places on the local model node, when in Demand role
-// - Even in Supply role, the available V from Demand side is applied as a dioded voltage supply on
-//   the Supply side, in case the supply side V reg suddenly goes down, so we don't momentary lose all
-//   voltage - local model can immediately take the Demands-side voltage.  (GUNNS would use this in
-//   its minor steps, etc.)
-// - GUNNS will have a new link that contains this interface, for use in GUNNS networks
-// - This whole thing will allow for switching power flow direction, although with more lag than is realistic.
-//
-// TODO
-// - implement force demand & supply role flags
+/// @details  See the GUNNS Wiki link in REFERENCE above.  Main features:
+///           - Designed to be generic and reusable outside of GUNNS/Trick.
+///           - No dependencies on any other GUNNS code or Trick code.
+///           - Implements handshaking and coordination of bi-directional power flow between
+///             distributed models.
+///           - Interfaces with another instance of itself over the data interface (HLA, etc.)
+///             - The side of the interface maintaining the bus voltage is the Supply role, supplies
+///               voltage to the other side, and receives the other side's demanded power to be
+///               placed as a load on this side.
+///             - The side of the interface not maintaining the bus voltage is the Demand role,
+///               receives the supplied voltage from the other side to be placed as a voltage
+///               boundary condition on this side, and returns the resulting power load in the
+///               voltage supply to the other side.
+///             - The Supply role is determined as the side with the highest connected and available
+///               voltage regulation.
+///           - The local model registers 0 or more voltage supplies with this.  Each interface to
+///             the local voltage supplies is a simple data container with values for:
+///             - Regulated voltage,
+///             - Available flag, meaning the regulator is enabled and has a flow path to this
+///               interface.
+///             - The local model drives these during runtime from the current state of each
+///               respective voltage regulator model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectDistributed2WayBus
 {
@@ -140,6 +136,12 @@ class GunnsElectDistributed2WayBus
         void updateFrameCounts();
         /// @brief  Updates the interface logic.
         void update(const float localVoltage, const float localPowerDemand);
+        /// @brief  Forces this interface to remain in Demand role.
+        void forceDemandRole();
+        /// @brief  Forces this interface to remain in Supply role.
+        void forceSupplyRole();
+        /// @brief  Resets the forced role and lets the interface logic determine role normally.
+        void resetForceRole();
         /// @brief  Returns whether this Distributed 2-Way Bus Interface is in the Demand role.
         bool isInDemandRole() const;
         /// @brief  Returns the power demand from the remote model to apply to the local model.
@@ -150,8 +152,14 @@ class GunnsElectDistributed2WayBus
         unsigned int popNotification(GunnsElectDistributed2WayBusNotification& notification);
 
     protected:
+        typedef enum {
+            NONE   = 0, /**< No role. */
+            SUPPLY = 1, /**< Supply role. */
+            DEMAND = 2  /**< Demand role. */
+        } Roles;
         std::string                                           mName;            /**< *o (1) trick_chkpnt_io(**) Sim-unique name of this instance for notifications. */
         bool                                                  mIsPrimarySide;   /**<    (1) trick_chkpnt_io(**) This is the primary side of the interface if true. */
+        Roles                                                 mForcedRole;      /**<    (1)                     The role this interface is forced to be in, if any. */
         std::vector<GunnsElectDistributed2WayBusSupplyData*>  mSupplyDatas;     /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */
         int                                                   mLoopLatency;     /**<    (1)                     Measured round-trip data loop latency, in number of model update steps. */
         int                                                   mFramesSinceFlip; /**< (1) Count of main model frames since our last mode flip. */
@@ -182,6 +190,30 @@ inline GunnsElectDistributed2WayBusSupplyData* GunnsElectDistributed2WayBus::cre
     GunnsElectDistributed2WayBusSupplyData* newSupplyData = new GunnsElectDistributed2WayBusSupplyData();
     mSupplyDatas.push_back(newSupplyData);
     return newSupplyData;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets the mForcedRole attribute to DEMAND.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectDistributed2WayBus::forceDemandRole()
+{
+    mForcedRole = DEMAND;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets the mForcedRole attribute to SUPPLY.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectDistributed2WayBus::forceSupplyRole()
+{
+    mForcedRole = SUPPLY;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets the mForcedRole attribute to NONE.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectDistributed2WayBus::resetForceRole()
+{
+    mForcedRole = NONE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

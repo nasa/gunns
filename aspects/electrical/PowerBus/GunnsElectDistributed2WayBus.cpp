@@ -68,6 +68,7 @@ GunnsElectDistributed2WayBus::GunnsElectDistributed2WayBus()
     mOutData(),
     mName(""),
     mIsPrimarySide(false),
+    mForcedRole(NONE),
     mSupplyDatas(),
     mLoopLatency(0),
     mFramesSinceFlip(0)
@@ -146,36 +147,45 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
     /// - Find the highest available voltage that can be supplied here from the local model.
     float availV = 0.0;
     for (unsigned int i=0; i<mSupplyDatas.size(); ++i) {
-        if (mSupplyDatas.at(i)->mAvailable and
-                mSupplyDatas.at(i)->mMaximumVoltage > availV) {
+        if (mSupplyDatas.at(i)->mAvailable and mSupplyDatas.at(i)->mMaximumVoltage > availV) {
             availV = mSupplyDatas.at(i)->mMaximumVoltage;
         }
     }
 
-    /// - Mode switching logic:
-    ///   - If we are in Demand, the remote side is also in Demand, and sufficient time has passed
-    ///     since our last mode change, then we switch to Supply.
-    ///   - If we are in Supply and our highest available local supply voltage < remote's supply
-    ///     voltage, then we switch to Demand.  This keeps the Supply role on the side with the
-    ///     higher available local supply voltage.
-    /// - Wait and only do mode changes when we have valid data from other side.
-    if (mInData.mFrameLoopback > 0) {
-        if (mOutData.mDemandMode) {
-            if (mInData.mDemandMode and (mFramesSinceFlip > mLoopLatency)) {
-                mOutData.mDemandMode = false;
-                mFramesSinceFlip     = 0;
-                pushNotification(GunnsElectDistributed2WayBusNotification::WARN,
-                                 "flipping to Supply role in response to remote's takeover of Demand role.");
+    switch (mForcedRole) {
+        case SUPPLY:
+            mOutData.mDemandMode = false;
+            break;
+        case DEMAND:
+            mOutData.mDemandMode = true;
+            break;
+        default: // default role determination
+            /// - Mode switching logic:
+            ///   - If we are in Demand, the remote side is also in Demand, and sufficient time has
+            ///     passed since our last mode change, then we switch to Supply.
+            ///   - If we are in Supply and our highest available local supply voltage < remote's
+            ///     supply voltage, then we switch to Demand.  This keeps the Supply role on the
+            ///     side with the higher available local supply voltage.
+            /// - Wait and only do mode changes when we have valid data from other side.
+            if (mInData.mFrameLoopback > 0) {
+                if (mOutData.mDemandMode) {
+                    if (mInData.mDemandMode and (mFramesSinceFlip > mLoopLatency)) {
+                        mOutData.mDemandMode = false;
+                        mFramesSinceFlip     = 0;
+                        pushNotification(GunnsElectDistributed2WayBusNotification::INFO,
+                                "flipping to Supply role in response to remote's takeover of Demand role.");
+                    }
+                } else {
+                    if (availV < mInData.mSupplyVoltage) {
+                        mOutData.mDemandMode = true;
+                        mFramesSinceFlip     = 0;
+                        std::ostringstream msg;
+                        msg << "flipping to Demand role with available V: " << availV << " < remote V: " << mInData.mSupplyVoltage << ".";
+                        pushNotification(GunnsElectDistributed2WayBusNotification::INFO, msg.str());
+                    }
+                }
             }
-        } else {
-            if (availV < mInData.mSupplyVoltage) {
-                mOutData.mDemandMode = true;
-                mFramesSinceFlip     = 0;
-                std::ostringstream msg;
-                msg << "flipping to Demand role with available V: " << availV << " < remote V: " << mInData.mSupplyVoltage << ".";
-                pushNotification(GunnsElectDistributed2WayBusNotification::WARN, msg.str());
-            }
-        }
+            break;
     }
 
     /// - Update the voltage sent to the other side.  When in Demand mode, we send our highest

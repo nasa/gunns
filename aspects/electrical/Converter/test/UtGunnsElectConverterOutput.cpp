@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -758,9 +758,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     /// @test    Link is non-linear.
     CPPUNIT_ASSERT(true == tArticle->isNonLinear());
 
-    /// @test    Can set the enabled flag.
+    /// @test    Can set & get the enabled flag.
     tArticle->setEnabled(true);
     CPPUNIT_ASSERT(true == tArticle->mEnabled);
+    CPPUNIT_ASSERT(true == tArticle->getEnabled());
 
     /// @test    Can set the input voltage.
     tArticle->setInputVoltage(120.0);
@@ -1065,6 +1066,65 @@ void UtGunnsElectConverterOutput::testComputeFlows()
     CPPUNIT_ASSERT(0.0 == tArticle->mPotentialDrop);
     CPPUNIT_ASSERT(0.0 == tArticle->mFlux);
     CPPUNIT_ASSERT(0.0 == tNodes[0].getInflux());
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the getControlVoltage method.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectConverterOutput::testControlVoltage()
+{
+    UT_RESULT;
+
+    /// - Initialize default constructed test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+
+    /// @test    Nominal control voltage output for a transformer.
+    double expectedV = tInputVoltage * tSetpoint;
+    tArticle->step(0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), DBL_EPSILON);
+
+    /// @test    Nominal control voltage output for a voltage regulator.
+    tArticle->mRegulatorType = GunnsElectConverterOutput::VOLTAGE;
+    tArticle->setSetpoint(tInputVoltage);
+    expectedV = tInputVoltage;
+    tArticle->step(0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), DBL_EPSILON);
+
+    /// @test    No control voltage when completely blocked.
+    tArticle->setMalfBlockage(true, 1.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    tArticle->setMalfBlockage();
+
+    /// @test    No control voltage when in the limiting state.
+    tArticle->setLimitingState(true);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    tArticle->setLimitingState(false);
+
+    /// @test    No control voltage when tripped.
+    GunnsBasicLink::SolutionResult result = GunnsBasicLink::CONFIRM;
+    CPPUNIT_ASSERT(true == tArticle->getOutputOverCurrentTrip()->checkForTrip(result, tOutOverCurrentTrip + 1.0, tTripPriority));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    tArticle->getOutputOverCurrentTrip()->resetTrip();
+
+    /// @test    No control voltage with zero output conductance.
+    tArticle->mOutputConductance = 0.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    tArticle->mOutputConductance = tOutputConductance;
+
+    /// @test    No control voltage without power available.
+    tArticle->mOutputPowerAvailable = false;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    tArticle->mOutputPowerAvailable = true;
+
+    /// @test    No control voltage for a power regulator.
+    tArticle->mRegulatorType = GunnsElectConverterOutput::POWER;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+
+    /// @test    No control voltage for a current regulator.
+    tArticle->mRegulatorType = GunnsElectConverterOutput::CURRENT;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
 
     UT_PASS_FINAL;
 }

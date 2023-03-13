@@ -693,7 +693,7 @@ double GunnsElectConverterOutput::getControlVoltage() const
 {
     double result = 0.0;
     if (isVoltageRegulator() and mOutputPowerAvailable and not ( (mOutputConductance < DBL_EPSILON)
-        or isAnyTrips() or mLimitState or (mMalfBlockageFlag and mMalfBlockageValue > 0.0) )) {
+        or isAnyTrips() or mLimitState or (mMalfBlockageFlag and mMalfBlockageValue >= 1.0) )) {
         if (TRANSFORMER == mRegulatorType) {
             result = mInputVoltage * mSetpoint;
         } else if (VOLTAGE == mRegulatorType) {

@@ -122,6 +122,8 @@ class GunnsElectDistributedIf : public GunnsBasicLink
         /// @details The interface logic object and malfunction targets are public to allow access
         ///          from the Trick events processor.
         GunnsElectDistributed2WayBus mInterface;         /**< (1) The interface logic. */
+        GunnsElectConverterInput     mPowerLoad;         /**< (1) Constant power load on the local network. */
+        GunnsElectConverterOutput    mVoltageSource;     /**< (1) Voltage source to the local network. */
         bool                         mMalfPowerLoad;     /**< (1) Disables the power load draw from the local network. */
         bool                         mMalfVoltageSource; /**< (1) Disables the voltage source supply to the local network. */
         /// @}
@@ -147,8 +149,6 @@ class GunnsElectDistributedIf : public GunnsBasicLink
         virtual bool isNonLinear();
 
     protected:
-        GunnsElectConverterInput                       mPowerLoad;          /**<    (1) trick_chkpnt_io(**) Constant power load on the local network. */
-        GunnsElectConverterOutput                      mVoltageSource;      /**<    (1) trick_chkpnt_io(**) Voltage source to the local network. */
         std::vector<GunnsElectDistributedIfSupplyData> mSupplies;           /**< ** (1) trick_chkpnt_io(**) Local voltage supply descriptions to the interface utility. */
         unsigned int                                   mNumSupplies;        /**< *o (1) trick_chkpnt_io(**) Number of supplies. */
         unsigned int                                   mSupplyMonitorIndex; /**<    (1) trick_chkpnt_io(**) Index of the supply data to monitor. */

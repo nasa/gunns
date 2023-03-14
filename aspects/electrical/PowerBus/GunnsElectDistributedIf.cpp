@@ -106,10 +106,10 @@ GunnsElectDistributedIf::GunnsElectDistributedIf()
     :
     GunnsBasicLink(NPORTS),
     mInterface(),
-    mMalfPowerLoad(false),
-    mMalfVoltageSource(false),
     mPowerLoad(),
     mVoltageSource(),
+    mMalfPowerLoad(false),
+    mMalfVoltageSource(false),
     mSupplies(),
     mNumSupplies(0),
     mSupplyMonitorIndex(0),

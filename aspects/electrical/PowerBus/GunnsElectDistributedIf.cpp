@@ -160,6 +160,11 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
         mSupplies.push_back(supply);
     }
     mInterface.initialize(mName + ".mInterface", configData.mIsPairPrimary, mNodes[0]->getPotential());
+    if (inputData.mForceSupplyMode) {
+        mInterface.forceSupplyRole();
+    } else if (inputData.mForceDemandMode) {
+        mInterface.forceDemandRole();
+    }
     processIfNotifications(true);
     updateSupplyMonitor();
 
@@ -168,8 +173,7 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
     GunnsElectConverterInputInputData  cplInput;
     mPowerLoad.initialize(cplConfig, cplInput, networkLinks, port0);
 
-    GunnsElectConverterOutputConfigData vsConfig(configData.mName + ".mVoltageSource",
-                                                 configData.mNodeList,
+    GunnsElectConverterOutputConfigData vsConfig(configData.mName + ".mVoltageSource", configData.mNodeList,
                                                  GunnsElectConverterOutput::TRANSFORMER,
                                                  configData.mConductance, 1.0);
     GunnsElectConverterOutputInputData  vsInput(false, 0.0, false, 0.0, 0.0, 1.0);
@@ -359,23 +363,26 @@ void GunnsElectDistributedIf::processIfNotifications(const bool isInit)
     unsigned int numNotifs = 0;
     do {
         numNotifs = mInterface.popNotification(notification);
-        if (GunnsElectDistributed2WayBusNotification::INFO != notification.mLevel) {
+        if (GunnsElectDistributed2WayBusNotification::NONE != notification.mLevel) {
             std::ostringstream msg;
             msg << "from mInterface: " << notification.mMessage;
             switch (notification.mLevel) {
                 case GunnsElectDistributed2WayBusNotification::INFO:
                     GUNNS_INFO(msg.str());
                     break;
-                case GunnsElectDistributed2WayBusNotification::WARN:
-                    GUNNS_WARNING(msg.str());
-                    break;
-                case GunnsElectDistributed2WayBusNotification::ERR:
-                    if (isInit) {
-                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
-                    } else {
-                        GUNNS_ERROR(TsOutOfBoundsException, "Catch and re-throw", msg.str());
-                    }
-                    break;
+// The interface currently has no WARN outputs, so this is untestable:
+//                case GunnsElectDistributed2WayBusNotification::WARN:
+//                    GUNNS_WARNING(msg.str());
+//                    break;
+// The interface's only ERR output is when given an empty name during initialize, which think link
+// never does, so this is untestable:
+//                case GunnsElectDistributed2WayBusNotification::ERR:
+//                    if (isInit) {
+//                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
+//                    } else {
+//                        GUNNS_ERROR(TsOutOfBoundsException, "Catch and re-throw", msg.str());
+//                    }
+//                    break;
                 default: // this won't happen, checked by the if statement
                     break;
             }

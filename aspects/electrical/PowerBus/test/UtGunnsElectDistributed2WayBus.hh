@@ -30,6 +30,7 @@ class FriendlyGunnsElectDistributed2WayBus : public GunnsElectDistributed2WayBus
         FriendlyGunnsElectDistributed2WayBus() {;}
         virtual ~FriendlyGunnsElectDistributed2WayBus() {;}
         friend class UtGunnsElectDistributed2WayBus;
+        friend class UtGunnsElectDistributedIf;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,35 +80,9 @@ class UtGunnsElectDistributed2WayBus : public CppUnit::TestFixture
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         /// @brief  Enumeration for the number of nodes.
-//        enum {N_NODES = 3};
-//        std::vector<GunnsBasicLink*>             tLinks;               /**< (--)    Network links vector. */
-//        GunnsBasicNode                           tNodes[N_NODES];      /**< (--)    Network nodes. */
-//        GunnsNodeList                            tNodeList;            /**< (--)    Network nodes list. */
-//        int                                      tPort0;               /**< (--)    Port 0 node mapping. */
-        std::string                              tName;                /**< (--)    Test article name. */
-//        GunnsElectDistributed2WayBusConfigData*     tConfigData;          /**< (--)    Pointer to config data. */
-//        GunnsElectDistributed2WayBusInputData*      tInputData;           /**< (--)    Pointer to input data. */
-        FriendlyGunnsElectDistributed2WayBus*       tArticle;             /**< (--)    Pointer to article under test. */
-//        GunnsSensorAnalogWrapper                 tSensorVout;          /**< (--)    Sensor object. */
-//        GunnsSensorAnalogWrapper                 tSensorIout;          /**< (--)    Sensor object. */
-//        GunnsElectDistributed2WayBus::RegulatorType tRegulatorType;       /**< (--)    Nominal config data. */
-//        double                                   tOutputConductance;   /**< (1/ohm) Nominal config data. */
-//        double                                   tConverterEfficiency; /**< (--)    Nominal config data. */
-//        unsigned int                             tTripPriority;        /**< (--)    Nominal config data. */
-//        double                                   tOutOverVoltageTrip;  /**< (V)     Nominal config data. */
-//        double                                   tOutUnderVoltageTrip; /**< (V)     Nominal config data. */
-//        double                                   tOutOverCurrentTrip;  /**< (amp)   Nominal config data. */
-//        bool                                     tEnableLimit;         /**< (--)    Nominal config data. */
-//        bool                                     tMalfBlockageFlag;    /**< (--)    Nominal input data. */
-//        double                                   tMalfBlockageValue;   /**< (--)    Nominal input data. */
-//        bool                                     tEnabled;             /**< (--)    Nominal input data. */
-//        double                                   tInputVoltage;        /**< (V)     Nominal input data. */
-//        double                                   tInputPower;          /**< (W)     Nominal input data. */
-//        double                                   tSetpoint;            /**< (--)    Nominal input data. */
-//        GunnsElectDistributed2WayBusConfigData*      tInputConfigData;     /**< (--)    Pointer to config data. */
-//        GunnsElectDistributed2WayBusInputData*       tInputInputData;      /**< (--)    Pointer to input data. */
-//        FriendlyGunnsElectDistributed2WayBus         tInputLink;           /**< (--)    Test converter input link. */
-        static int                               TEST_ID;              /**< (--)    Test identification number. */
+        std::string                           tName;    /**< (--) Test article name. */
+        FriendlyGunnsElectDistributed2WayBus* tArticle; /**< (--) Pointer to article under test. */
+        static int                            TEST_ID;  /**< (--) Test identification number. */
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         UtGunnsElectDistributed2WayBus(const UtGunnsElectDistributed2WayBus& that);
         /// @brief  Assignment operator unavailable since declared private and not implemented.

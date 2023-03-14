@@ -10,6 +10,7 @@
 #include <cppunit/ui/text/TestRunner.h>
 #include "UtPowerBusElect.hh"
 #include "UtGunnsElectDistributed2WayBus.hh"
+#include "UtGunnsElectDistributedIf.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    argc  int     --  not used
@@ -24,6 +25,7 @@ int main(int argc, char** argv) {
 
     runner.addTest(UtPowerBusElect::suite());
     runner.addTest(UtGunnsElectDistributed2WayBus::suite());
+    runner.addTest(UtGunnsElectDistributedIf::suite());
 
     runner.run();
 

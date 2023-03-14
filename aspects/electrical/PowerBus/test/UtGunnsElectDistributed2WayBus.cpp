@@ -36,75 +36,8 @@ void UtGunnsElectDistributed2WayBus::setUp()
 {
     tName = "tArticle";
 
-//    /// - Define the nominal port mapping.
-//    tPort0 = 0;
-//
-//    /// - Initialize the nodes list.
-//    tNodeList.mNodes    = tNodes;
-//    tNodeList.mNumNodes = N_NODES;
-//
-//    /// - Initialize the sensors.
-//    {
-//        GunnsSensorAnalogWrapperConfigData sensorConfig("tSensorVout", 0.0, 1.0E10);
-//        GunnsSensorAnalogWrapperInputData  sensorInput;
-//        tSensorVout.initialize(&sensorConfig, &sensorInput);
-//    } {
-//        GunnsSensorAnalogWrapperConfigData sensorConfig("tSensorIout", 0.0, 1.0E10);
-//        GunnsSensorAnalogWrapperInputData  sensorInput;
-//        tSensorIout.initialize(&sensorConfig, &sensorInput);
-//    }
-//
-//    /// - Define the nominal configuration data.
-//    tRegulatorType       = GunnsElectDistributed2WayBus::TRANSFORMER;
-//    tOutputConductance   = 10.0;
-//    tConverterEfficiency = 0.9;
-//    tTripPriority        = 2;
-//    tOutOverVoltageTrip  = 130.0;
-//    tOutUnderVoltageTrip = 90.0;
-//    tOutOverCurrentTrip  = 100.0;
-//    tEnableLimit         = true;
-//    tConfigData          = new GunnsElectDistributed2WayBusConfigData(tName,
-//                                                                  &tNodeList,
-//                                                                  tRegulatorType,
-//                                                                  tOutputConductance,
-//                                                                  tConverterEfficiency,
-//                                                                  &tSensorVout,
-//                                                                  &tSensorIout,
-//                                                                  tTripPriority,
-//                                                                  tOutOverVoltageTrip,
-//                                                                  tOutOverCurrentTrip,
-//                                                                  &tInputLink,
-//                                                                  tEnableLimit,
-//                                                                  tOutUnderVoltageTrip);
-//
-//    /// - Define the nominal input data.
-//    tMalfBlockageFlag  = true;
-//    tMalfBlockageValue = 0.1;
-//    tEnabled           = true;
-//    tInputVoltage      = 120.0;
-//    tInputPower        = 10.0;
-//    tSetpoint          = 1.0;
-//    tInputData         = new GunnsElectDistributed2WayBusInputData(tMalfBlockageFlag,
-//                                                                tMalfBlockageValue,
-//                                                                tEnabled,
-//                                                                tInputVoltage,
-//                                                                tInputPower,
-//                                                                tSetpoint);
-
     /// - Default construct the nominal test article.
     tArticle = new FriendlyGunnsElectDistributed2WayBus;
-
-//    /// - Define nominal input link config data.
-//    tInputConfigData = new GunnsElectDistributed2WayBusConfigData("tInputLink",
-//                                                              &tNodeList,
-//                                                              0,
-//                                                              0,
-//                                                              3,
-//                                                              0.0,
-//                                                              140.0);
-//
-//    /// - Define nominal input link input data.
-//    tInputInputData = new GunnsElectDistributed2WayBusInputData(false, 0.0, true, 0.0);
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -116,11 +49,7 @@ void UtGunnsElectDistributed2WayBus::setUp()
 void UtGunnsElectDistributed2WayBus::tearDown()
 {
     /// - Deletes for news in setUp
-//    delete tInputInputData;
-//    delete tInputConfigData;
     delete tArticle;
-//    delete tInputData;
-//    delete tConfigData;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,5 +371,5 @@ void UtGunnsElectDistributed2WayBus::testAccessors()
     tArticle->mInData.mSupplyVoltage = 100.0;
     CPPUNIT_ASSERT(100.0 == tArticle->getRemoteSupply());
 
-    UT_PASS_FINAL;
+    UT_PASS_LAST;
 }

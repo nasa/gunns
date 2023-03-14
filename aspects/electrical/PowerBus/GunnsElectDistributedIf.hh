@@ -108,17 +108,10 @@ struct GunnsElectDistributedIfSupplyData
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Distributed Bi-Directional Interface Link
 ///
-/// @details  TODO
-//TODO
-// - This will wrap a GunnsElectDistributed2WayBus object in a network and provide
-//   all interfaces
-// - This will hold pointers to all the voltage supply links (GunnsElectConverterOutput)
-//   in the network that could possibly supply to this location, including those that normally
-//   aren't connected but could be via cross-ties and short-circuits in contingencies.
-// - Acts as either a dioded voltage source, or constant power load on the local node, based on the
-//   2WayBus mode.
-// - This needs to determine whether there is conductance between the local node and each voltage
-//   supply, using the solver's network capacitance feature
+/// @details  This wraps a GunnsElectDistributed2WayBus object in a network and provides all
+///           interfaces between it and the network.  This contains a ConverterOutput and Input, for
+///           applying the voltage source and power load effects on the network node, respectively,
+///           and these are driven depending on the state of the interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectDistributedIf : public GunnsBasicLink
 {

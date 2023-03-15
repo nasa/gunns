@@ -15,7 +15,6 @@ int UtGunnsElectDistributed2WayBus::TEST_ID = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 UtGunnsElectDistributed2WayBus::UtGunnsElectDistributed2WayBus()
     :
-    tName(""),
     tArticle(0)
 {
     // nothing to do
@@ -34,8 +33,6 @@ UtGunnsElectDistributed2WayBus::~UtGunnsElectDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectDistributed2WayBus::setUp()
 {
-    tName = "tArticle";
-
     /// - Default construct the nominal test article.
     tArticle = new FriendlyGunnsElectDistributed2WayBus;
 
@@ -100,7 +97,6 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
     CPPUNIT_ASSERT(false                              == tArticle->mOutData.mDemandMode);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(""                                 == tArticle->mName);
     CPPUNIT_ASSERT(false                              == tArticle->mIsPrimarySide);
     CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tArticle->mForcedRole);
     CPPUNIT_ASSERT(0                                  == tArticle->mSupplyDatas.size());
@@ -134,9 +130,8 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
 
     /// @test    Initialize function as primary side.
     const float voltage = 120.0;
-    tArticle->initialize(tName, true, voltage);
+    tArticle->initialize(true, voltage);
 
-    CPPUNIT_ASSERT(tName   == tArticle->mName);
     CPPUNIT_ASSERT(true    == tArticle->mIsPrimarySide);
     CPPUNIT_ASSERT(true    == tArticle->mInData.mDemandMode);
     CPPUNIT_ASSERT(0.0     == tArticle->mInData.mDemandPower);
@@ -147,9 +142,8 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
 
     /// @test    Initialize function as secondary side.
     FriendlyGunnsElectDistributed2WayBus article2;
-    article2.initialize(tName, false, voltage);
+    article2.initialize(false, voltage);
 
-    CPPUNIT_ASSERT(tName   == article2.mName);
     CPPUNIT_ASSERT(false   == article2.mIsPrimarySide);
     CPPUNIT_ASSERT(false   == article2.mInData.mDemandMode);
     CPPUNIT_ASSERT(0.0     == article2.mInData.mDemandPower);
@@ -162,20 +156,14 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for Electrical Distributed 2-Way Bus Interface nominal initialization with exceptions.
+/// @details  Tests for Electrical Distributed 2-Way Bus Interface nominal initialization with
+///           exceptions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectDistributed2WayBus::testInitializationErrors()
 {
     UT_RESULT;
 
-    /// @test Error notification for given empty name.
-    tArticle->initialize("", true, 120.0);
-
-    CPPUNIT_ASSERT(1 == tArticle->mNotifications.size());
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBusNotification::ERR
-                     == tArticle->mNotifications.at(0).mLevel);
-    CPPUNIT_ASSERT("an GunnsElectDistributed2WayBus instance is missing its name."
-                     == tArticle->mNotifications.at(0).mMessage);
+    /// - currently nothing to test
 
     UT_PASS;
 }
@@ -188,7 +176,7 @@ void UtGunnsElectDistributed2WayBus::testUpdateFrameCounts()
     UT_RESULT;
 
     /// - Initialize default constructed test article with nominal initialization data.
-    tArticle->initialize(tName, true, 120.0);
+    tArticle->initialize(true, 120.0);
 
     /// @test    updateFrameCounts method.
     tArticle->mOutData.mFrameCount   = 43;
@@ -214,7 +202,7 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
     /// - Initialize default constructed test article with nominal initialization data.
     GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
     GunnsElectDistributed2WayBusSupplyData* supply2 = tArticle->createSupplyData();
-    tArticle->initialize(tName, true, 120.0);
+    tArticle->initialize(true, 120.0);
     tArticle->mOutData.mFrameCount = 43;
 
     GunnsElectDistributed2WayBusNotification notif;
@@ -306,7 +294,7 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
 
     /// - Initialize default constructed test article with nominal initialization data.
     GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
-    tArticle->initialize(tName, true, 120.0);
+    tArticle->initialize(true, 120.0);
     tArticle->mOutData.mFrameCount = 43;
 
     GunnsElectDistributed2WayBusNotification notif;

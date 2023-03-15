@@ -80,7 +80,6 @@ class UtGunnsElectDistributed2WayBus : public CppUnit::TestFixture
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         /// @brief  Enumeration for the number of nodes.
-        std::string                           tName;    /**< (--) Test article name. */
         FriendlyGunnsElectDistributed2WayBus* tArticle; /**< (--) Pointer to article under test. */
         static int                            TEST_ID;  /**< (--) Test identification number. */
         /// @brief  Copy constructor unavailable since declared private and not implemented.

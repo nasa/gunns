@@ -33,8 +33,8 @@ PROGRAMMERS:
 @{
 */
 
-#include <string>
 #include <vector>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Electrical Distributed 2-Way Bus voltage supply data.
@@ -131,7 +131,7 @@ class GunnsElectDistributed2WayBus
         /// @brief  Creates an interface for a voltage supply in the local model.
         GunnsElectDistributed2WayBusSupplyData* createSupplyData();
         /// @brief  Initializes this Distributed 2-Way Bus Interface.
-        void initialize(const std::string& name = "", const bool isPrimarySide = false, const float voltage = 0.0);
+        void initialize(const bool isPrimarySide = false, const float voltage = 0.0);
         /// @brief  Updates frame counters, should be called once per main model step.
         void updateFrameCounts();
         /// @brief  Updates the interface logic.
@@ -157,7 +157,6 @@ class GunnsElectDistributed2WayBus
             SUPPLY = 1, /**< Supply role. */
             DEMAND = 2  /**< Demand role. */
         } Roles;
-        std::string                                           mName;            /**< *o (1) trick_chkpnt_io(**) Sim-unique name of this instance for notifications. */
         bool                                                  mIsPrimarySide;   /**<    (1) trick_chkpnt_io(**) This is the primary side of the interface if true. */
         Roles                                                 mForcedRole;      /**<    (1)                     The role this interface is forced to be in, if any. */
         std::vector<GunnsElectDistributed2WayBusSupplyData*>  mSupplyDatas;     /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */

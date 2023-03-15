@@ -159,7 +159,7 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
         supply.mNetCapDV   = 0.0;
         mSupplies.push_back(supply);
     }
-    mInterface.initialize(mName + ".mInterface", configData.mIsPairPrimary, mNodes[0]->getPotential());
+    mInterface.initialize(configData.mIsPairPrimary, mNodes[0]->getPotential());
     if (inputData.mForceSupplyMode) {
         mInterface.forceSupplyRole();
     } else if (inputData.mForceDemandMode) {
@@ -370,12 +370,10 @@ void GunnsElectDistributedIf::processIfNotifications(const bool isInit)
                 case GunnsElectDistributed2WayBusNotification::INFO:
                     GUNNS_INFO(msg.str());
                     break;
-// The interface currently has no WARN outputs, so this is untestable:
+// The interface currently has no WARN or ERR outputs, so these are untestable:
 //                case GunnsElectDistributed2WayBusNotification::WARN:
 //                    GUNNS_WARNING(msg.str());
 //                    break;
-// The interface's only ERR output is when given an empty name during initialize, which think link
-// never does, so this is untestable:
 //                case GunnsElectDistributed2WayBusNotification::ERR:
 //                    if (isInit) {
 //                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());

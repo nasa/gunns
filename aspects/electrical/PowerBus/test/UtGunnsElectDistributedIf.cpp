@@ -219,7 +219,6 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tInterface->mForcedRole);
 
     /// @test    Initialization of child objects.
-    CPPUNIT_ASSERT(tName + ".mInterface"     == tInterface->mName);
     CPPUNIT_ASSERT(0                         == tInterface->mNotifications.size());
     CPPUNIT_ASSERT(tName + ".mVoltageSource" == tVoltageSource->mName);
     CPPUNIT_ASSERT(true                      == tVoltageSource->mInitFlag);

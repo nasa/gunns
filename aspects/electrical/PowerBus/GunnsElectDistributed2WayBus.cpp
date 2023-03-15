@@ -66,7 +66,6 @@ GunnsElectDistributed2WayBus::GunnsElectDistributed2WayBus()
     :
     mInData(),
     mOutData(),
-    mName(""),
     mIsPrimarySide(false),
     mForcedRole(NONE),
     mSupplyDatas(),
@@ -88,7 +87,6 @@ GunnsElectDistributed2WayBus::~GunnsElectDistributed2WayBus()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name          (--) Sim-unique name of this instance for notifications.
 /// @param[in] isPrimarySide (--) This is the primary side of the interface if true.
 /// @param[in] voltage       (V)  Initial voltage at the interface location.
 ///
@@ -98,14 +96,8 @@ GunnsElectDistributed2WayBus::~GunnsElectDistributed2WayBus()
 ///           init, while the other side defaults to Demand.  If both sides initialize to the same
 ///           mode, they will sort it out at runtime.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributed2WayBus::initialize(const std::string& name, const bool isPrimarySide,
-                                              const float voltage)
+void GunnsElectDistributed2WayBus::initialize(const bool isPrimarySide, const float voltage)
 {
-    mName = name;
-    if (mName.empty()) {
-        pushNotification(GunnsElectDistributed2WayBusNotification::ERR,
-                         "an GunnsElectDistributed2WayBus instance is missing its name.");
-    }
     mIsPrimarySide = isPrimarySide;
 
     mInData.mDemandMode    = mIsPrimarySide;

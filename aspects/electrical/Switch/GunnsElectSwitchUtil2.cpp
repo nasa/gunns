@@ -352,7 +352,7 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
             }
 
         /// - Update the trip logic if the switch is not tripped open and not failed closed.
-        } else if (not isTripped() and not mMalfFailClosed) {
+        } else if (mPositionCommand and not isTripped() and not mMalfFailClosed) {
 
             /// - Input under-voltage trip check and warning.
             if (mInputUnderVoltageTrip.checkForTrip(result, voltage, convergedStep)) {

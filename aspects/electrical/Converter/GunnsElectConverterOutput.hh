@@ -110,6 +110,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         /// @brief  Returns the link's assessment of the network solution.
         virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                          const int absoluteStep);
+        /// @brief  Resets the link back to the previous minor step iteration.
+        virtual bool resetLastMinorStep(const int convergedStep, const int absoluteStep);
         /// @brief  Computes and returns the input channel power and validity.
         bool computeInputPower(double& inputPower);
         /// @brief  Returns if the link is non-linear.
@@ -494,6 +496,25 @@ inline bool GunnsElectConverterOutput::isAnyTrips() const
 inline bool GunnsElectConverterOutput::isVoltageRegulator() const
 {
     return (VOLTAGE == mRegulatorType) or (TRANSFORMER == mRegulatorType);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] convergedStep (--) Unused.
+/// @param[in] absoluteStep  (--) Unused.
+///
+/// @returns  bool (--) Always returns true.
+///
+/// @details  After a network reset to the last minor step, any input power calculation will be
+///           invalid until we've confirmed the next minor step solution.  The solver resets the
+///           potential vector to the previous value, and this becomes out of sync with our inputs
+///           to the system of equations, so any calculation of flux and power based on those values
+///           may be incorrect.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep, __attribute__((unused))
+                                                          const int absoluteStep __attribute__((unused)))
+{
+    mInputPowerValid = false;
+    return true;
 }
 
 #endif

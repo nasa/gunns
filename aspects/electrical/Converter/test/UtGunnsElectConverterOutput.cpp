@@ -796,6 +796,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     tArticle->setOutputConductance(1.0);
     CPPUNIT_ASSERT(1.0 == tArticle->mOutputConductance);
 
+    /// @test    resetLastMinorStep.
+    CPPUNIT_ASSERT(true == tArticle->resetLastMinorStep(0, 0));
+    CPPUNIT_ASSERT(false == tArticle->mInputPowerValid);
+
     UT_PASS;
 }
 

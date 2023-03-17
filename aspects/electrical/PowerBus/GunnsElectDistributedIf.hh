@@ -210,7 +210,9 @@ inline bool GunnsElectDistributedIf::isNonLinear()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsElectDistributedIf::updateSupplyMonitor()
 {
-    mSupplyMonitor = &mSupplies.at(mSupplyMonitorIndex);
+    if (mSupplyMonitorIndex < mSupplies.size()) {
+        mSupplyMonitor = &mSupplies.at(mSupplyMonitorIndex);
+    }
 }
 
 #endif

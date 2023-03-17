@@ -422,6 +422,9 @@ void UtGunnsElectDistributedIf::testAccessors()
     /// @test    Link is non-linear.
     CPPUNIT_ASSERT(true == tArticle->isNonLinear());
 
+    /// @test    No exception from updateSupplyMonitor with zero vector size.
+    CPPUNIT_ASSERT_NO_THROW(tArticle->updateSupplyMonitor());
+
     UT_PASS;
 }
 

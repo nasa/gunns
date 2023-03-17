@@ -508,6 +508,27 @@ void UtGunnsElectConverterInput::testMinorStep()
         CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
 
         /// @test    Step and minorStep with zero input voltage.
+        expectedW = -expectedP / (0.99 * tInUnderVoltageTrip);
+        tArticle->mPotentialVector[0] = 0.1;
+        tArticle->step(0.0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+
+        /// @test    Step and minorStep with non-zero input voltage and zero IUV limit
+        expectedW = -expectedP / inV;
+        tArticle->mPotentialVector[0] = inV;
+        tArticle->mInputUnderVoltageTrip.setLimit(0.0);
+        tArticle->step(0.0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
+        CPPUNIT_ASSERT(false == tArticle->mOverloadedState);
+
+        /// @test    Step and minorStep with zero input voltage and zero IUV limit
         expectedW = 0.0;
         tArticle->mPotentialVector[0] = 0.0;
         tArticle->step(0.0);

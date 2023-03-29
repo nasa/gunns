@@ -19,7 +19,9 @@ class GunnsMcSimObject : public Trick::SimObject
         GunnsMcSimObject()
         {
             ("initialization")            model.initialize();
+            (MODEL_TIMESTEP, "scheduled") monteCarlo.updateSlaveInputs();  // this should preceed model updates
             (MODEL_TIMESTEP, "scheduled") model.update(MODEL_TIMESTEP);
+            (MODEL_TIMESTEP, "scheduled") monteCarlo.updateSlaveOutputs(); // this should follow model updates
             ("monte_slave_init")          monteCarlo.initSlave();
             ("monte_slave_pre")           monteCarlo.updateSlavePre();
             ("monte_slave_post")          monteCarlo.updateSlavePost();

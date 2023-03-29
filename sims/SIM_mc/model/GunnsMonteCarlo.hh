@@ -47,9 +47,10 @@ struct GunnsMonteCarloInput
 struct GunnsMonteCarloTarget
 {
     public:
-        double mOutput;     /**< (1) Output value from Slave run. */
-        double mTarget;     /**< (1) Target value to achieve. */
-        double mCostWeight; /**< (1) Weight for the cost function. */
+        std::string         mName;       /**< (1) State model variable name. */
+        double              mOutput;     /**< (1) Output value from Slave run. */
+        std::vector<double> mTarget;     /**< (1) Target values to achieve. */
+        double              mCostWeight; /**< (1) Weight for the cost function. */
 };
 
 struct GunnsMonteCarloPsoState
@@ -80,11 +81,6 @@ struct GunnsMonteCarloPsoParticle
 };
 
 //TODO
-// weights for PSO variant:
-//
-// inertia
-// cognitive
-// social
 struct GunnsMonteCarloPsoConfigData
 {
     public:
@@ -194,15 +190,17 @@ class GunnsMonteCarlo
     // the optimizer object will have its own config data, like PSO swarm size, weights, etc.
     //TODO #slaves corresponds to # parallel runs (CPU's) in the compute farm, not PSO swarm size
     //TODO short-term goals:
-    // - Start the Python wrapper - will handle epochs for parallelization of slave runs in each epoch,
-    //   as well as init-ing states from saved state file
-    //   - saved swarm state between epochs in same format as final output file, for consistency
-    //   - note that for very short slave runs (small models over short simulated time length), the
+    // - refactor & cleanup
+    // + implement the log data use case:
+    //   + drive model from a file
+    //   + read another file for desired output trajectory we are trying to match
+    //   + upgrade cost function to cost entire run
+    //   + note that for very short slave runs (small models over short simulated time length), the
     //     serial approach is actually faster than the python wrapper, because of the overhead of
     //     starting/stopping the main trick sim for each epoch.  However for larger models over more
     //     realistically long slave runs, parallel is faster.
-    // - implement the log data use case
     // advice from Chip:
+    // - recommend lookup 'Pareto front', multi-objective optimization
     // - recommend 24-30 particles
     // - try initial particle states in the corners, or maybe all together in a single corner, etc.
     //   Configure the optimizer.
@@ -250,6 +248,13 @@ class GunnsMonteCarlo
         std::vector<GunnsMonteCarloTarget> mOutDoublesMaster; /**< ** (1) trick_chkpnt_io(**) Doubles values in Master read from Slave. */
         double               mSumCostWeights;   /**< *o (1) trick_chkpnt_io(**) Sum of the output target cost weights. */
         std::string          mName;             /**< *o (1) trick_chkpnt_io(**) Name of this instance for output messages. */
+        std::vector<double*> mInDriverVars;     /**< *o (1) trick_chkpnt_io(**) Target model variables for the input driver data. */
+        std::vector< std::vector<double> > mInDriverData; /**< *o (1) trick_chkpnt_io(**) The input driver data. */
+        unsigned int         mStepCount;        /**< *o (1) trick_chkpnt_io(**) Elapsed model step count for updating slave inputs. */
+        std::vector<std::string> mOutTargetNames;   /**< *o (1) trick_chkpnt_io(**) Model variables names of the output target trajectory data. */
+        std::vector<double*> mOutTargetVars;    /**< *o (1) trick_chkpnt_io(**) Model variable addresses for the output target trajectory data. */
+        std::vector< std::vector<double> > mOutTargetData; /**< *o (1) trick_chkpnt_io(**) The output target data. */
+        std::vector<double>  mOutTargetCosts;   /**< *o (1) trick_chkpnt_io(**) The output target costs from the Slave role. */
         bool                 mInitFlag;         /**< *o (1) trick_chkpnt_io(**) This instance has been initialized. */
         /// @brief Constructs the GUNNS Monte Carlo Manager object.
         GunnsMonteCarlo();
@@ -269,6 +274,10 @@ class GunnsMonteCarlo
         void updateSlavePre();
         /// @brief Updates the Slave role after to the Slave run.
         void updateSlavePost();
+        /// @brief Drives inputs to the model cyclically in each Slave run.
+        void updateSlaveInputs();
+        /// @brief Drives outputs from the model cyclically in each Slave run.
+        void updateSlaveOutputs();
         /// @brief Returns the object name.
         const char* getName() const;
         /// @brief Returns the initialization status.
@@ -276,7 +285,17 @@ class GunnsMonteCarlo
         /// @brief Adds a model variable to the Master-to-Slave data.
         void addInDouble(double* address, const double min, const double max, const std::string& name);
         /// @brief Adds a model variable to the Slave-to-Master data.
-        void addOutDouble(double* outDouble, const double targetValue, const double costWeight);
+        void addOutDouble(const std::string& varName, double* outDouble, const double targetValue, const double costWeight);
+        //TODO
+        void addDriverDouble(double* address);
+        //TODO
+        void addDriverDataRow(const std::string& values);
+        //TODO
+        void addOutTargetDouble(const std::string& varName, double* address);
+        //TODO
+        void addOutTargetDataRow(const std::string& values);
+        /// @brief Computes the cost function of a scalar run.
+        double computeCostFunctionScalar();
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

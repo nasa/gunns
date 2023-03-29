@@ -21,7 +21,7 @@ LIBRARY DEPENDENCY:
 #include <cfloat>
 #include <iostream> //TODO testing
 #include <sstream>
-#include <fstream>
+//#include <fstream>
 
 //TODO
 GunnsMonteCarloPso::GunnsMonteCarloPso()
@@ -543,6 +543,13 @@ GunnsMonteCarlo::GunnsMonteCarlo()
     mOutDoublesMaster(),
     mSumCostWeights(0.0),
     mName(),
+    mInDriverVars(),
+    mInDriverData(),
+    mStepCount(0),
+    mOutTargetNames(),
+    mOutTargetVars(),
+    mOutTargetData(),
+    mOutTargetCosts(),
     mInitFlag(false)
 {
     // nothing to do
@@ -580,6 +587,22 @@ void GunnsMonteCarlo::initMaster()
     /// - Initialize the optimizer.
     //TODO change args once optimizer has config data
     mOptimizer.initialize(&mInStatesMaster);
+
+    //TODO test by inspection, delete:
+    std::cout << "OutTargetData:" << std::endl;
+    for (unsigned int i=0; i<mOutTargetVars.size(); ++i) {
+        std::cout << " " << *mOutTargetVars.at(i);
+    }
+    std::cout << std::endl;
+    for (unsigned int i=0; i<mOutTargetData.size(); ++i) {
+        for (unsigned int j=0; j<mOutTargetData.at(i).size(); ++j) {
+            std::cout << " " << mOutTargetData.at(i).at(j);
+        }
+        std::cout << std::endl;
+    }
+
+    //TODO throw if mInDriverData and mOutTargetData don't have the same size, as it's likely a
+    //     mismatch in the user's files
 }
 
 //TODO
@@ -615,32 +638,35 @@ void GunnsMonteCarlo::updateMasterPre()
 //TODO
 void GunnsMonteCarlo::updateMasterPost()
 {
-    // read Slave output values from the MC Master/Slave buffer
     std::cout << "updateMasterPost " << mOutDoublesMaster.size();
 
+    // read Slave output scalar values from the MC Master/Slave buffer
+    double cost = 0.0;
     for (unsigned int i=0; i<mOutDoublesMaster.size(); ++i) {
         mc_read((char*) &mOutDoublesMaster.at(i).mOutput, sizeof(double));
         std::cout << " " << mOutDoublesMaster.at(i).mOutput;
     }
+    mc_read((char*) &cost,           sizeof(double));
     mc_read((char*) &mRunIdReturned, sizeof(double));
 
-    // do cost function
-    //TODO long term extract to user-customizable function
-    //TODO maybe move to slave for the whole-run use case
-    double totalCost = 0.0;
-    for (unsigned int i=0; i<mOutDoublesMaster.size(); ++i) {
-        const double error = mOutDoublesMaster.at(i).mOutput - mOutDoublesMaster.at(i).mTarget;
-        // simple sum of error^2 * weight:
-        totalCost += error * error * mOutDoublesMaster.at(i).mCostWeight;
-    }
-    std::cout << " cost: " << totalCost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
+    std::cout << " cost: " << cost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
     //TODO when running with multiple parallel slaves using python wrapper, the slave runs still
     // come back in a different order, so we must send the run ID along with the cost to the optimizer
     // so it can assign the cost to the correct run.
-    mOptimizer.assignCost(totalCost, mRunId, mRunIdReturned);
+    mOptimizer.assignCost(cost, mRunId, mRunIdReturned);
 }
 
-//TODO from Chip, recommend lookup 'Pareto front', multi-objective optimization
+//TODO
+double GunnsMonteCarlo::computeCostFunctionScalar()
+{
+    double cost = 0.0;
+    for (unsigned int i=0; i<mOutDoublesMaster.size(); ++i) {
+        const double error = mOutDoublesMaster.at(i).mOutput - mOutDoublesMaster.at(i).mTarget.at(0);
+        // simple sum of error^2 * weight:
+        cost += error * error * mOutDoublesMaster.at(i).mCostWeight;
+    }
+    return cost;
+}
 
 //TODO
 void GunnsMonteCarlo::updateMasterShutdown()
@@ -660,13 +686,54 @@ void GunnsMonteCarlo::updateSlavePre()
 void GunnsMonteCarlo::updateSlavePost()
 {
     // write Slave output values to the MC Master/Slave buffer
+    // note we can only use this buffer for small amounts of data, because it is a TCP port, which
+    // has a limited buffer size (8 KB default).  It's not appropriate to use this buffer for large
+    // amounts of data (like would normally go to a log file).
     for (unsigned int i=0; i<mOutDoublesSlave.size(); ++i) {
         mc_write((char*) mOutDoublesSlave.at(i), sizeof(double));
     }
+
+    double cost = 0.0;
+    if (mOutTargetCosts.size() > 0) {
+        // sum the total cost of log data variables.
+        for (unsigned int i=0; i<mOutTargetCosts.size(); ++i) {
+            cost += mOutTargetCosts.at(i);
+        }
+    } else {
+        // compute the total cost of scalar data variables
+        cost = computeCostFunctionScalar();
+    }
+    // write the total cost for this run to the MC Master/Slave buffer.
+    mc_write((char*) &cost, sizeof(double));
+
     //TODO note Trick doesn't handle this if the run id's are ints -- value of the int
     // gets garbled by the time it makes it back to Master
     mRunIdReturned = mRunId;
     mc_write((char*) &mRunIdReturned, sizeof(double));
+}
+
+//TODO
+// - note it is essential to call this from a scheduled Trick job before the model update
+void GunnsMonteCarlo::updateSlaveInputs()
+{
+    if (mStepCount < mInDriverData.size()) {
+        for (unsigned int i=0; i<mInDriverVars.size(); ++i) {
+            *mInDriverVars.at(i) = mInDriverData.at(mStepCount).at(i);
+        }
+    }
+}
+
+//TODO
+// - note it is essential to call this from a scheduled Trick job after the model update
+void GunnsMonteCarlo::updateSlaveOutputs()
+{
+    // update cost function for trajectory data - note this does not include the weight
+    for (unsigned int i=0; i<mOutTargetVars.size(); ++i) {
+        // the cost function - TODO extract this to a function pointer that can be customizable
+        const double error = *mOutTargetVars.at(i) - mOutTargetData.at(mStepCount).at(i);
+        mOutTargetCosts.at(i) += (error * error);
+    }
+    mStepCount++;
 }
 
 // TODO
@@ -686,15 +753,79 @@ void GunnsMonteCarlo::addInDouble(double* address, const double min, const doubl
 //  output to the Master.  On the Master side, size the vector that
 //  will receive the values from the Slave.
 // This allows the Slave output data to be defined by the input file
-void GunnsMonteCarlo::addOutDouble(double* outDouble, const double targetValue, const double costWeight)
+//TODO store the targetValue in the 0th row of the mOutTargetData vector -- that way we use the same
+//  variables for steady-state runs (target data is scalar) and logged runs (target data is a log)
+void GunnsMonteCarlo::addOutDouble(const std::string& varName, double* outDouble, const double targetValue, const double costWeight)
 {
     if (mc_is_slave()) {
         mOutDoublesSlave.push_back(outDouble);
     } else {
         GunnsMonteCarloTarget target;
+        target.mName       = varName;
         target.mOutput     = 0.0;
-        target.mTarget     = targetValue;
+        target.mTarget.push_back(targetValue);
         target.mCostWeight = costWeight;
         mOutDoublesMaster.push_back(target);
     }
+}
+
+//TODO
+void GunnsMonteCarlo::addDriverDouble(double* address)
+{
+    mInDriverVars.push_back(address);
+}
+
+//TODO
+void GunnsMonteCarlo::addDriverDataRow(const std::string& values)
+{
+    std::vector<double> newRow;
+    std::string s = values;
+    std::string delimiter = ",";
+
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> tokens;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        token = s.substr(0, pos);
+        tokens.push_back(token);
+        s.erase(0, pos + delimiter.length());
+    }
+    tokens.push_back(s);
+    for (unsigned int i=1; i<tokens.size(); ++i) {
+        newRow.push_back(atof(tokens.at(i).c_str()));
+    }
+    mInDriverData.push_back(newRow);
+}
+
+//TODO can we refactor this with addDriverDouble or addOutDouble?
+void GunnsMonteCarlo::addOutTargetDouble(const std::string& varName, double* address)
+{
+    //TODO Master role doesn't need the address of the var because it will never use it, only the slave
+    //     does.  Master needs the name of the var for possible outputs to user.
+    //     Slave needs the address, same as addOutDouble
+    mOutTargetNames.push_back(varName);
+    mOutTargetVars.push_back(address);
+}
+
+//TODO can we refactor with addDriverData rows?
+void GunnsMonteCarlo::addOutTargetDataRow(const std::string& values)
+{
+    std::vector<double> newDataRow;
+    std::string s = values;
+    std::string delimiter = ",";
+
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> tokens;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        token = s.substr(0, pos);
+        tokens.push_back(token);
+        s.erase(0, pos + delimiter.length());
+    }
+    tokens.push_back(s);
+    for (unsigned int i=1; i<tokens.size(); ++i) {
+        newDataRow.push_back(atof(tokens.at(i).c_str()));
+    }
+    mOutTargetData.push_back(newDataRow);
+    mOutTargetCosts.push_back(0.0);
 }

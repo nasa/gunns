@@ -67,7 +67,6 @@ mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPs
 # start/end 0.6/0.4, gains 2/2, 20x200 Common: 0.300
 # start/end 0.4/0.6, gains 2/2, 20x200 Common: 0.296
 
-
 # Add the Slave input variables (currently only doubles are supported).
 for var in input_vars:
     # Register MC variable with the Master/Optimizer
@@ -82,7 +81,33 @@ trick_mc.mc.add_variable(mcvar)
 
 # Add the Slave output variables (currently only doubles are supported).
 for var in output_vars:
-    mc.monteCarlo.addOutDouble(trick.get_address(var[0]), var[1], var[2])
+    mc.monteCarlo.addOutDouble(var[0], trick.get_address(var[0]), var[1], var[2])
+
+# Add the scripted input driver data to the model
+try:
+    with open('input_driver_data.csv', 'r') as f:
+        lines = f.readlines()
+        var_list = lines[0].strip().split(',')
+        for var in var_list[1:]:
+            mc.monteCarlo.addDriverDouble(trick.get_address(var))
+        for line in lines[1:]:
+            mc.monteCarlo.addDriverDataRow(line.strip())
+        f.close()
+except:
+    pass
+
+# Add the desired output target data to the model
+try:
+    with open('output_target_data.csv', 'r') as f:
+        lines = f.readlines()
+        var_list = lines[0].strip().split(',')
+        for var in var_list[1:]:
+            mc.monteCarlo.addOutTargetDouble(var, trick.get_address(var))
+        for line in lines[1:]:
+            mc.monteCarlo.addOutTargetDataRow(line.strip())
+        f.close()
+except:
+    pass
 
 # Enable Monte Carlo.
 trick.mc_set_enabled(1)

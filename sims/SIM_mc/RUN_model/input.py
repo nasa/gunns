@@ -8,12 +8,44 @@ trick.add_external_application(simControlPanel)
 trickView = trick.TrickView()
 trick.add_external_application(trickView)
 trick.real_time_enable()
-trick.sim_services.exec_set_terminate_time(86400)
+trick.sim_services.exec_set_terminate_time(10.1)
 trick.exec_set_software_frame(0.0125)
 trick.TMM_reduced_checkpoint(False)
 trick_mm.mm.set_expanded_arrays(True)
 trick_sys.sched.set_enable_freeze(True)
 trick_sys.sched.set_freeze_command(True)
+
+# Schedule driver inputs:
+trick.add_read(0.0, "mc.model.valve1.setPosition(1.0)")
+trick.add_read(0.0, "mc.model.valve2.setPosition(1.0)")
+trick.add_read(1.0, "mc.model.valve2.setPosition(0.5)")
+trick.add_read(2.0, "mc.model.valve2.setPosition(0.0)")
+trick.add_read(2.0, "mc.model.valve1.setPosition(0.5)")
+trick.add_read(3.0, "mc.model.valve1.setPosition(0.0)")
+trick.add_read(4.0, "mc.model.valve1.setPosition(0.5)")
+trick.add_read(5.0, "mc.model.valve1.setPosition(1.0)")
+trick.add_read(6.0, "mc.model.valve2.setPosition(0.5)")
+trick.add_read(7.0, "mc.model.valve2.setPosition(1.0)")
+trick.add_read(8.0, "mc.model.valve1.setPosition(0.5)")
+
+# Set up data log:
+log_variables = [
+    "mc.model.valve1.mPosition",
+    "mc.model.valve2.mPosition",
+    "mc.model.netNodes[1].mContent.mPressure",
+    "mc.model.netNodes[2].mContent.mPressure",
+    "mc.model.conductor1.mFlowRate",
+    "mc.model.conductor2.mFlowRate",
+    ]
+recording_group_name = "Log_Data"
+dr_group = trick.DRAscii( recording_group_name )
+dr_group.thisown = 0
+dr_group.set_cycle(0.1)
+dr_group.set_freq( trick.DR_Always )
+dr_group.enable()
+for var in log_variables:
+    dr_group.add_variable(var)
+trick.add_data_record_group(dr_group, trick.DR_Buffer)
 
 # Note: default tuning of model gives steady-state flows & pressures @ time 10 sec:
 # mc.model.conductor1.mFlowRate = 0.01824900229844743

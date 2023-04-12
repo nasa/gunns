@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS    Gunns Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns orchestrator class
@@ -22,7 +22,7 @@
 #include "core/Gunns.hh"
 #include "core/GunnsFluidCapacitor.hh"
 #include "core/GunnsFluidConductor.hh"
-#include "aspects/electrical/ConstantPowerLoad/EpsConstantPowerLoad.hh"
+#include "UtGunnsEpsConstantPowerLoad.hh"
 #include "core/GunnsBasicConductor.hh"
 #include "core/GunnsBasicPotential.hh"
 #include "core/GunnsBasicCapacitor.hh"

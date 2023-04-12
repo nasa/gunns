@@ -1,20 +1,7 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
- PURPOSE:
-    (Provides the classes for modeling the GUNNS Electrical User Load for constant power.
-     See the header file for more details.
-    )
-
- REQUIREMENTS:
-    ()
-
- REFERENCE:
-    ()
-
- ASSUMPTIONS AND LIMITATIONS:
-    ()
 LIBRARY DEPENDENCY:
     (
      (aspects/electrical/UserLoad/UserLoadBase.o)
@@ -23,12 +10,7 @@ LIBRARY DEPENDENCY:
      (software/exceptions/TsInitializationException.o)
      (software/exceptions/TsNumericalException.o)
     )
-
- PROGRAMMERS:
-    (
-     (Shailaja Janapati) (L3) (10-2011) (Initial Prototype)
-    )
- **************************************************************************************************/
+*/
 
 #include <cmath>
 #include <cfloat>
@@ -304,7 +286,8 @@ void ConstantPowerLoad::computeActualPower() {
     mCurrent = mActualPower / mVoltage;
 
     if (0.0 < mActualPower) { // check to eliminate potential divide by zero error
-        mEquivalentResistance = mVoltage*mVoltage /mActualPower;
+        const double limitVoltage = std::max(mVoltage, 0.99 * mUnderVoltageLimit);
+        mEquivalentResistance = limitVoltage*limitVoltage /mActualPower;
 
     } else if (0.0 > mActualPower){ // if the power is less than zero set resistance to maximum value
         mEquivalentResistance = MAXIMUM_RESISTANCE;

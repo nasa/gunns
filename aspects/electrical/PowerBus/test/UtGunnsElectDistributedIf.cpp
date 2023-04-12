@@ -383,6 +383,8 @@ void UtGunnsElectDistributedIf::testMinorStep()
     CPPUNIT_ASSERT(false == tVoltageSource->mEnabled);
     CPPUNIT_ASSERT(true  == tPowerLoad->mEnabled);
     CPPUNIT_ASSERT(10.0  == tPowerLoad->mInputPower);
+    const double iuvLimit = 0.9 * tNodes[tPort0].getPotential();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(iuvLimit, tPowerLoad->getInputUnderVoltageTrip()->getLimit(), DBL_EPSILON);
 
     /// @test    Minor step in Supply role, with the internal power load link failed.
     tArticle->mMalfPowerLoad = true;
@@ -403,6 +405,7 @@ void UtGunnsElectDistributedIf::testMinorStep()
     CPPUNIT_ASSERT(true  == tVoltageSource->mEnabled);
     CPPUNIT_ASSERT(false == tPowerLoad->mEnabled);
     CPPUNIT_ASSERT(0.0   == tPowerLoad->mInputPower);
+    CPPUNIT_ASSERT(0.0   == tPowerLoad->getInputUnderVoltageTrip()->getLimit());
 
     /// @test    Minor step in Demand role, with the internal voltage source link failed.
     tArticle->mMalfVoltageSource = true;

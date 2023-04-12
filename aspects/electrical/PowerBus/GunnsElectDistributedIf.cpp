@@ -228,10 +228,17 @@ void GunnsElectDistributedIf::minorStep(const double dt        __attribute__((un
         mVoltageSource.setEnabled(not mMalfVoltageSource);
         mPowerLoad.setEnabled(false);
         mPowerLoad.setInputPower(0.0);
+        mPowerLoad.getInputUnderVoltageTrip()->setLimit(0.0);
     } else {
         mVoltageSource.setEnabled(false);
         mPowerLoad.setEnabled(not mMalfPowerLoad);
         mPowerLoad.setInputPower(mInterface.getRemoteLoad());
+        /// - Set the power load's IUV trip limit so that it won't overload the input.  This helps
+        ///   the network converge when the upstream supply can't meet the power demand.  Note that
+        ///   the IUV trip isn't enabled because trip priority is always 0 - but the
+        ///   GunnsElectConverterInput still uses the limit value to avoid overloading the input
+        ///   even when the IUV trip isn't enabled.
+        mPowerLoad.getInputUnderVoltageTrip()->setLimit(0.9 * mPotentialVector[0]);
     }
 
     /// - This link has no contributions to the network system of equations; the child converter

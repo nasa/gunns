@@ -1,12 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (aspects/electrical/ConstantPowerLoad/EpsConstantPowerLoad.o)
-    )
-***************************************************************************************************/
 #include "UtEpsConstantPowerLoad.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -246,7 +242,7 @@ void UtEpsConstantPowerLoad::testStep() {
     /// - Load up a negative Potential vector
     mArticle->mPotentialVector[0] = 0.0;
     mArticle->mPotentialVector[1] = 0.1;
-    double conductivity = 1.0 / 1.0E15;
+    double conductivity = 0.0;
 
     mArticle->step(mTimeStep);
 
@@ -281,6 +277,12 @@ void UtEpsConstantPowerLoad::testStep() {
 
     CPPUNIT_ASSERT(conductivity != mArticle->mEffectiveConductivity);
     CPPUNIT_ASSERT(power        != mArticle->mPower);
+
+    /// - Test for potential less than the link minimum.
+    mArticle->mPotentialVector[0] = 0.3;
+    conductivity = mDefaultPower / (0.99 * 0.99 * 0.4 * 0.4);
+    mArticle->step(mTimeStep);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(conductivity, mArticle->mEffectiveConductivity, mTolerance);
 
     std::cout << "... Pass";
 }

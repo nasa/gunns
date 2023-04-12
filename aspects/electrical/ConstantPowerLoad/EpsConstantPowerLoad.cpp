@@ -1,50 +1,27 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- PURPOSE:
-     (Provides the classes for modeling constant power load.)
-
- REQUIREMENTS:
-     ()
-
- REFERENCE:
-     ()
-
- ASSUMPTIONS AND LIMITATIONS:
-     ()
 
 LIBRARY DEPENDENCY:
     (
      (core/GunnsBasicConductor.o)
-     (core/GunnsBasicLink.o)
      (simulation/hs/TsHsMsg.o)
      (software/exceptions/TsInitializationException.o)
     )
+*/
 
- PROGRAMMERS:
-    (
-     (Jason Harvey) (L3)   (2011-02) (Initial Prototype))
-     (Kevin Supak)  (L3)   (2011-02) (Updated to Coding Standards))
-     (Chetan Patel) (ESCG) (2012-02) (Renamed and added min power to be constanct power load))
-    )
- **************************************************************************************************/
 #include "EpsConstantPowerLoad.hh"
-
-#include <string>
-#include <vector>
-
-#include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name                 (--) Link name
-/// @param[in] nodes                (--) Network nodes array
-/// @param[in] defaultConductivity  (--) Default conductivity of the link
-/// @param[in] defaultPower         (--) Default power load of the link
-/// @param[in] minimumVoltageLimit  (V)  Minimum voltage limit to act like constant power load
-/// @details  Constructs the Basic Constant Load Config data
+/// @param[in] name                 (--) Link name.
+/// @param[in] nodes                (--) Network nodes array.
+/// @param[in] defaultConductivity  (--) Default conductivity of the link.
+/// @param[in] defaultPower         (--) Default power load of the link.
+/// @param[in] minimumVoltageLimit  (V)  Minimum voltage limit to act like constant power load.
+///
+/// @details  Default constructs the constant power load config data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 EpsConstantPowerLoadConfigData::EpsConstantPowerLoadConfigData(
         const std::string& name,
@@ -55,50 +32,71 @@ EpsConstantPowerLoadConfigData::EpsConstantPowerLoadConfigData(
     :
     GunnsBasicConductorConfigData(name, nodes, defaultConductivity),
     mDefaultPower(defaultPower),
-    mMinimumVoltageLimit(minimumVoltageLimit) {}
+    mMinimumVoltageLimit(minimumVoltageLimit)
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Object to copy
-/// @details  Copy Constructs the Basic Constant Load Config data
+/// @param[in] that (--) Object to copy.
+///
+/// @details  Copy constructs the constant power load config data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 EpsConstantPowerLoadConfigData::EpsConstantPowerLoadConfigData(
         const EpsConstantPowerLoadConfigData& that)
     :
     GunnsBasicConductorConfigData(that),
     mDefaultPower(that.mDefaultPower),
-    mMinimumVoltageLimit(that.mMinimumVoltageLimit) {}
+    mMinimumVoltageLimit(that.mMinimumVoltageLimit)
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Destructs the Basic Constant Load Config Data Object
+/// @details  Destructs the constant power load config data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-EpsConstantPowerLoadConfigData::~EpsConstantPowerLoadConfigData() {}
+EpsConstantPowerLoadConfigData::~EpsConstantPowerLoadConfigData()
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] malfBlockageFlag  (--) Blockage malfunction flag
-/// @param[in] malfBlockageValue (--) Blockage malfunction fractional value (0-1)
-/// @details  Default constructs this Basic Constant Load input data.
+/// @param[in] malfBlockageFlag  (--) Blockage malfunction flag.
+/// @param[in] malfBlockageValue (--) Blockage malfunction fractional value (0-1).
+///
+/// @details  Default constructs the constant power load input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 EpsConstantPowerLoadInputData::EpsConstantPowerLoadInputData(const bool   malfBlockageFlag,
-                                                                 const double malfBlockageValue)
+                                                             const double malfBlockageValue)
     :
-    GunnsBasicConductorInputData(malfBlockageFlag, malfBlockageValue) {}
+    GunnsBasicConductorInputData(malfBlockageFlag, malfBlockageValue)
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Object to copy
-/// @details  Copy constructs this Basic Constant Load input data.
+/// @param[in] that (--) Object to copy.
+///
+/// @details  Copy constructs the constant power load input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 EpsConstantPowerLoadInputData::EpsConstantPowerLoadInputData(
         const EpsConstantPowerLoadInputData& that)
     :
-    GunnsBasicConductorInputData(that) {}
+    GunnsBasicConductorInputData(that)
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Default destructs this Basic Constant Load input data.
+/// @details  Default destructs the constant power load input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-EpsConstantPowerLoadInputData::~EpsConstantPowerLoadInputData() {}
+EpsConstantPowerLoadInputData::~EpsConstantPowerLoadInputData()
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Constructs the Basic Constant Load Object
+/// @details  Default constructs the constant power load link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 EpsConstantPowerLoad::EpsConstantPowerLoad()
     :
@@ -106,29 +104,36 @@ EpsConstantPowerLoad::EpsConstantPowerLoad()
     mDesiredPower(0.0),
     mPowerDraw(0.0),
     mMinimumVoltageLimit(0.0),
-    mBiasPowerLoadValue(0.0) {
-    // nothing to do here
+    mBiasPowerLoadValue(0.0)
+{
+    // nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Destructs the Basic Constant Load Object
+/// @details  Destructs the constant power load link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-EpsConstantPowerLoad::~EpsConstantPowerLoad() {}
+EpsConstantPowerLoad::~EpsConstantPowerLoad()
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]     configData   (--) Reference to Link Config Data
-/// @param[in]     inputData    (--) Reference to Link Input Data
-/// @param[in,out] networkLinks (--) Reference to the Network Link Vector
-/// @param[in]     port0        (--) Port 0 Mapping
-/// @param[in]     port1        (--) Port 1 Mapping
+/// @param[in]     configData   (--) Reference to Link Config Data.
+/// @param[in]     inputData    (--) Reference to Link Input Data.
+/// @param[in,out] networkLinks (--) Reference to the Network Link Vector.
+/// @param[in]     port0        (--) Port 0 Mapping.
+/// @param[in]     port1        (--) Port 1 Mapping.
+///
 /// @throws   TsInitializationException
-/// @details  Initializes the Basic Constant Load Object
+///
+/// @details  Initializes the constant power load link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void EpsConstantPowerLoad::initialize(const EpsConstantPowerLoadConfigData& configData,
-                                        const EpsConstantPowerLoadInputData&  inputData,
-                                        std::vector<GunnsBasicLink*>&           networkLinks,
-                                        const int                               port0,
-                                        const int                               port1) {
+                                      const EpsConstantPowerLoadInputData&  inputData,
+                                      std::vector<GunnsBasicLink*>&         networkLinks,
+                                      const int                             port0,
+                                      const int                             port1)
+{
     /// - Initialize the parent class.
     GunnsBasicConductor::initialize(configData, inputData, networkLinks, port0, port1);
 
@@ -146,9 +151,11 @@ void EpsConstantPowerLoad::initialize(const EpsConstantPowerLoadConfigData& conf
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @throws   TsInitializationException
-/// @details  Validates the Basic Constant Load Object
+///
+/// @details  Validates the constant power load link initialization.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::validate() {
+void EpsConstantPowerLoad::validate()
+{
     /// - Issue an error on power being less than zero.
     if (mDesiredPower < 0.0) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
@@ -171,32 +178,26 @@ void EpsConstantPowerLoad::restartModel()
     GunnsBasicConductor::restartModel();
 
     /// - Reset non-config & non-checkpointed attributes.
+    mPowerDraw = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Updates the link's effective conductivity during the time step
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::updateState(const double) {
+void EpsConstantPowerLoad::updateState(const double)
+{
     double deltaPotential = getDeltaPotential();
-
-    if (deltaPotential > mMinimumVoltageLimit) {
-        if (deltaPotential > 0.0) {
-            mEffectiveConductivity = (mDesiredPower + mBiasPowerLoadValue) / (deltaPotential * deltaPotential);
-        }
-    } else {
-        mEffectiveConductivity = 0.0;
-    }
-
-    mEffectiveConductivity = MsMath::limitRange
-            (1.0/mConductanceLimit, mEffectiveConductivity, mConductanceLimit);
+    updateEffectiveConductivity(deltaPotential);
     mPowerDraw = -1.0 * mPower;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] dt        (s)  Link time step
+///
 /// @details  Updates the link during the minor time step
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::minorStep(const double dt, const int) {
+void EpsConstantPowerLoad::minorStep(const double dt, const int)
+{
     computeFlows(dt);
     step(dt);
 }
@@ -204,15 +205,38 @@ void EpsConstantPowerLoad::minorStep(const double dt, const int) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] power     (--) Link desired power
 /// @param[in] potential (--) Supply potential for desired power
+///
 /// @details  This method can be used to configure the object with one call, rather than calling
 ///           both setPowerConsumption and setStartingConductivity separately.  This method sets
 ///           the StartingConductivity based on the power demand and expected nominal potential
 ///           of the system.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::setPowerAndNominalPotential(double power, double potential) {
+void EpsConstantPowerLoad::setPowerAndNominalPotential(double power, double potential)
+{
     mDesiredPower = power;
-    if (potential > mMinimumVoltageLimit) {
-        mEffectiveConductivity = (mDesiredPower + mBiasPowerLoadValue) / (potential * potential);
+    updateEffectiveConductivity(potential);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] potential (V) Voltage across the conductor
+///
+/// @details  Updates the conductor base class effective conductivity to dissipate the desired
+///           power at the given potential.  Effective conductivity G is calculated as G = P/V^2.
+///           A user bias to the desired power is applied to this P.  The voltage V uses is limited
+///           to above zero, to avoid divide-by-zero, and the higher of the given potential and 99%
+///           of the constant power load's minimum voltage limit.  This 99% helps the network
+///           converge when the upstream supply is unable to meet the desired power demand at the
+///           minimum voltage.  This this 99% limit is occurring, the actual power will be less
+///           than desired.  For any given potential negative value, this sets the effective
+///           conductivity to zero, so that this link only draws constant power in the forward
+///           direction from port 0 to 1.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void EpsConstantPowerLoad::updateEffectiveConductivity(const double potential)
+{
+    if (potential >= 0.0) {
+        const double limitedPotential = std::max(potential, std::max(0.99 * mMinimumVoltageLimit, DBL_EPSILON));
+        mEffectiveConductivity = (mDesiredPower + mBiasPowerLoadValue) / (limitedPotential * limitedPotential);
+        mEffectiveConductivity = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
     } else {
         mEffectiveConductivity = 0.0;
     }

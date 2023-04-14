@@ -4,7 +4,6 @@
 */
 #include "software/exceptions/TsInitializationException.hh"
 #include "strings/UtResult.hh"
-//#include "math/MsMath.hh"
 #include "UtGunnsElectDistributedIf.hh"
 
 /// @details  Test identification number.
@@ -329,6 +328,7 @@ void UtGunnsElectDistributedIf::testStep()
     tSupply.mOutputConductance    = 100.0;
     tSupply.mOutputPowerAvailable = true;
     tSupply.mSetpoint             = 125.0;
+    tSupply.mSourceVoltage        = 125.0;
 
     /// - Drive the article's node's network capacitance delta-potential array as if from a previous
     ///   capacitance request, and indicating conductance to the supply link.
@@ -499,11 +499,12 @@ void UtGunnsElectDistributedIf::testComputeFlows()
     tArticle->mPotentialVector[0]       = 99.0;
     tVoltageSource->mPotentialVector[0] = 99.0;
     tPowerLoad->mPotentialVector[0]     = 99.0;
+    tSupply.mSourceVoltage              = 99.0;
 
     /// @test    computeFlows updates the interface and calls the child links.
     tArticle->computeFlows(0.0);
-    CPPUNIT_ASSERT(99.0  == tInterface->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(43    == tInterface->mOutData.mFrameCount);
+    CPPUNIT_ASSERT( 99.0 == tInterface->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT( 43   == tInterface->mOutData.mFrameCount);
     CPPUNIT_ASSERT(-99.0 == tVoltageSource->mPotentialDrop);
     CPPUNIT_ASSERT( 99.0 == tPowerLoad->mPotentialDrop);
 

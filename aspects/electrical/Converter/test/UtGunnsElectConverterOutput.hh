@@ -56,6 +56,8 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         void testAccessors();
         /// @brief  Tests the confirmSolutionAcceptable method.
         void testConfirmSolutionAcceptable();
+        /// @brief  Tests the confirmSolutionAcceptable method for current sources.
+        void testConfirmSolutionCurrentSource();
         /// @brief  Tests the computeFlows method.
         void testComputeFlows();
         /// @brief  Tests the getControlVoltage method.
@@ -75,6 +77,7 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         CPPUNIT_TEST(testComputeInputPower);
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST(testConfirmSolutionAcceptable);
+        CPPUNIT_TEST(testConfirmSolutionCurrentSource);
         CPPUNIT_TEST(testComputeFlows);
         CPPUNIT_TEST(testControlVoltage);
         CPPUNIT_TEST_SUITE_END();

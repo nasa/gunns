@@ -482,9 +482,6 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
             if (mInputPower > 0.0 and mPotentialVector[0] <= 0.0) {
                 mOverloadedState = true;
                 result           = REJECT;
-                if (not mLastOverloadedState) {
-                    GUNNS_WARNING("entered overloaded state.");
-                }
             }
         }
         mLastOverloadedState = mOverloadedState;

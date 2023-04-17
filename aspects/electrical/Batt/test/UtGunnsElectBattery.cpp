@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -197,6 +197,7 @@ void UtGunnsElectBattery::testDefaultConstruction()
     CPPUNIT_ASSERT(0.0   == tArticle->mInterconnectResistance);
     CPPUNIT_ASSERT(0     == tArticle->mSocVocTable);
     CPPUNIT_ASSERT(0.0   == tArticle->mSoc);
+    CPPUNIT_ASSERT(0.0   == tArticle->mCapacity);
     CPPUNIT_ASSERT(0.0   == tArticle->mCurrent);
     CPPUNIT_ASSERT(0.0   == tArticle->mVoltage);
     CPPUNIT_ASSERT(0.0   == tArticle->mHeat);
@@ -238,7 +239,8 @@ void UtGunnsElectBattery::testNominalInitialization()
         CPPUNIT_ASSERT(tSoc                 == tArticle->mCells[i].getEffectiveSoc());
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc, tArticle->mSoc, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,         tArticle->mSoc,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMaxCapacity, tArticle->mCapacity, FLT_EPSILON);
     CPPUNIT_ASSERT(tNodes[1].getPotential() == tArticle->mVoltage);
     CPPUNIT_ASSERT(0.0                      == tArticle->mCurrent);
     CPPUNIT_ASSERT(true                     == tArticle->mInitFlag);
@@ -295,10 +297,11 @@ void UtGunnsElectBattery::testRestart()
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
-    /// - Set non-config and non-checkpointed bas class and article class attributes.
+    /// - Set non-config and non-checkpointed base class and article class attributes.
     tArticle->mEffectiveConductivity = 999.0;
     tArticle->mSystemConductance     = 999.0;
     tArticle->mSoc                   = 999.0;
+    tArticle->mCapacity              = 999.0;
     tArticle->mCurrent               = 999.0;
     tArticle->mVoltage               = 999.0;
 
@@ -309,7 +312,8 @@ void UtGunnsElectBattery::testRestart()
     CPPUNIT_ASSERT(0.0 == tArticle->mSystemConductance);
 
     /// @test Non-config and non-checkpointed class attributes are reset.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc, tArticle->mSoc, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,         tArticle->mSoc,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMaxCapacity, tArticle->mCapacity, FLT_EPSILON);
     CPPUNIT_ASSERT(tNodes[1].getPotential() == tArticle->mVoltage);
     CPPUNIT_ASSERT(0.0                      == tArticle->mCurrent);
 
@@ -418,25 +422,30 @@ void UtGunnsElectBattery::testUpdateFlux()
     tArticle->step(dt);
     tArticle->computeFlows(dt);
 
-    double current         = tArticle->mFlux;
-    double expectedCellSoc = tSoc - current * dt * tNumCells / tMaxCapacity / 3600.0;
-    double expectedHeat    = current * current / tArticle->mAdmittanceMatrix[0];
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCellSoc, tArticle->mSoc,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->getHeat(),    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,            tArticle->getVoltage(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux, tArticle->mCurrent,     DBL_EPSILON);
+    double current          = tArticle->mFlux;
+    double expectedCellSoc  = tSoc - current * dt * tNumCells / tMaxCapacity / 3600.0;
+    double expectedCapacity = tMaxCapacity;
+    double expectedHeat     = current * current / tArticle->mAdmittanceMatrix[0];
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCellSoc,  tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCapacity, tArticle->mCapacity,    FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,     tArticle->getHeat(),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSoc,             tArticle->getVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux,  tArticle->mCurrent,     DBL_EPSILON);
 
-    /// @test battery SOC drops due to a failed cell.
+    /// @test battery SOC & capacity drop due to a failed cell.
     tArticle->mCells[0].setMalfOpenCircuit(true);
     tArticle->computeFlows(dt);
     expectedCellSoc -= tArticle->mFlux * dt * (tNumCells - 1) / tMaxCapacity / 3600.0;
+    expectedCapacity = tMaxCapacity * (tNumCells - 1) / tNumCells;
     double expectedSoc = expectedCellSoc * (tNumCells - 1) / tNumCells;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc,     tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc,      tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCapacity, tArticle->mCapacity,    FLT_EPSILON);
 
     /// @test method can handle number of cells being zeroed.
     tArticle->mNumCells = 0;
     tArticle->computeFlows(dt);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSoc,         DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mCapacity,    DBL_EPSILON);
 
     UT_PASS;
 }
@@ -556,6 +565,9 @@ void UtGunnsElectBattery::testAccessors()
 
     tArticle->mSoc = 0.5;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tArticle->getSoc(),     DBL_EPSILON);
+
+    tArticle->mCapacity = tMaxCapacity;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMaxCapacity, tArticle->getCapacity(), DBL_EPSILON);
 
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);

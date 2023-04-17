@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -432,11 +432,22 @@ void UtGunnsElectBatteryCell::testUpdateMalfCapacity()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveSoc(),                 DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR,   tArticle->getEffectiveResistance(),          DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSoc, tArticle->getEffectiveVoltage(tSocVocTable), DBL_EPSILON);
+    CPPUNIT_ASSERT(16.0 == tArticle->getEffectiveCapacity());
 
     /// @test resetting the malfunction.
     tArticle->setMalfCapacity();
-    CPPUNIT_ASSERT(false == tArticle->mMalfCapacityFlag);
-    CPPUNIT_ASSERT(0.0   == tArticle->mMalfCapacityValue);
+    CPPUNIT_ASSERT(false        == tArticle->mMalfCapacityFlag);
+    CPPUNIT_ASSERT(0.0          == tArticle->mMalfCapacityValue);
+    CPPUNIT_ASSERT(tMaxCapacity == tArticle->getEffectiveCapacity());
+
+    /// @test capacity affected by short and open malfunctions.
+    tArticle->setMalfOpenCircuit(true);
+    CPPUNIT_ASSERT(0.0 == tArticle->getEffectiveCapacity());
+    tArticle->setMalfOpenCircuit();
+
+    tArticle->setMalfShortCircuit(true);
+    CPPUNIT_ASSERT(0.0 == tArticle->getEffectiveCapacity());
+    tArticle->setMalfShortCircuit();
 
     UT_PASS;
 }

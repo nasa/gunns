@@ -8,7 +8,7 @@
 @defgroup GUNNS_ELECTRICAL_BATTERY_CELL    GUNNS Electrical Battery Cell Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -131,6 +131,8 @@ class GunnsElectBatteryCell
         void   updateSoc(const double current, const double timeStep, TsLinearInterpolator* socVocTable);
         /// @brief   Gets the cell effective State of Charge.
         double getEffectiveSoc() const;
+        /// @brief   Gets the cell effective capacity.
+        double getEffectiveCapacity() const;
         /// @brief   Gets the cell effective resistance.
         double getEffectiveResistance() const;
         /// @brief   Gets the cell effective open-circuit voltage.

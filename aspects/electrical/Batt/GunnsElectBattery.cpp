@@ -2,7 +2,7 @@
 @file     GunnsElectBattery.cpp
 @brief    GUNNS Electrical Battery implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -106,6 +106,7 @@ GunnsElectBattery::GunnsElectBattery()
     mInterconnectResistance(0.0),
     mSocVocTable(0),
     mSoc(0.0),
+    mCapacity(0.0),
     mCurrent(0.0),
     mVoltage(0.0),
     mHeat(0.0),
@@ -400,14 +401,17 @@ void GunnsElectBattery::updateOutputs()
     mCurrent = mFlux;
     mVoltage = mPotentialVector[1];
     double soc  = 0.0;
+    double cap  = 0.0;
     double heat = 0.0;
     if (mNumCells > 0) {
         for (unsigned int i = 0; i < mNumCells; i++) {
             soc  += mCells[i].getEffectiveSoc();
+            cap  += mCells[i].getEffectiveCapacity();
             heat += mCells[i].getRunawayPower();
         }
         soc /= mNumCells;
     }
-    mSoc  = soc;
-    mHeat = heat + mFlux * mFlux / std::max(mSystemConductance, DBL_EPSILON);
+    mSoc      = soc;
+    mCapacity = cap;
+    mHeat     = heat + mFlux * mFlux / std::max(mSystemConductance, DBL_EPSILON);
 }

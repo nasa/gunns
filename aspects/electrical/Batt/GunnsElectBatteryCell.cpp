@@ -2,7 +2,7 @@
 @file     GunnsElectBatteryCell.cpp
 @brief    GUNNS Electrical Battery Cell implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -257,6 +257,23 @@ double GunnsElectBatteryCell::getEffectiveSoc() const
         return 0.0;
     } else {
         return mSoc;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (amp*hr) Effective capacity of the cell.
+///
+/// @details  Returns the effective capacity of the cell based on the maximum capacity and the
+///           failure malfunctions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double GunnsElectBatteryCell::getEffectiveCapacity() const
+{
+    if (mMalfOpenCircuit or mMalfShortCircuit) {
+        return 0.0;
+    } else if (mMalfCapacityFlag) {
+        return mMalfCapacityValue;
+    } else {
+        return mMaxCapacity;
     }
 }
 

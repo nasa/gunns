@@ -8,7 +8,7 @@
 @defgroup GUNNS_ELECTRICAL_BATTERY_LINK    GUNNS Electrical Battery Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -149,6 +149,8 @@ class GunnsElectBattery: public GunnsBasicPotential
         virtual double getVoltage() const;
         /// @brief   Returns the state of charge.
         virtual double getSoc() const;
+        /// @brief   Returns the capacity.
+        virtual double getCapacity() const;
         /// @brief   Returns the heat output.
         double         getHeat() const;
         /// @brief   Returns the effective voltage of the given cell number.
@@ -158,16 +160,17 @@ class GunnsElectBattery: public GunnsBasicPotential
                                              const double interval = 0.0);
 
     protected:
-        unsigned int          mNumCells;               /**< (1)   trick_chkpnt_io(**) Number of battery cells. */
-        bool                  mCellsInParallel;        /**< (1)   trick_chkpnt_io(**) Whether the cells are in parallel (True) or series (False). */
-        double                mInterconnectResistance; /**< (ohm) trick_chkpnt_io(**) Total interconnect resistance between all cells. */
-        TsLinearInterpolator* mSocVocTable;            /**< (1)   trick_chkpnt_io(**) Pointer to open-circuit voltage vs. State of Charge table. */
-        double                mSoc;                    /**< (1)   trick_chkpnt_io(**) Battery average State Of Charge (0-1) of active cells. */
-        double                mCurrent;                /**< (amp) trick_chkpnt_io(**) Battery current. */
-        double                mVoltage;                /**< (V)   trick_chkpnt_io(**) Output closed-circuit voltage under load. */
-        double                mHeat;                   /**< (W)   trick_chkpnt_io(**) Heat created by the battery. */
-        unsigned int          mThermalRunawayCell;     /**< (1)                       Current cell index for the thermal runaway cascade. */
-        double                mThermalRunawayTimer;    /**< (s)                       Elapsed time of the thermal runaway malfunction. */
+        unsigned int          mNumCells;               /**< (1)      trick_chkpnt_io(**) Number of battery cells. */
+        bool                  mCellsInParallel;        /**< (1)      trick_chkpnt_io(**) Whether the cells are in parallel (True) or series (False). */
+        double                mInterconnectResistance; /**< (ohm)    trick_chkpnt_io(**) Total interconnect resistance between all cells. */
+        TsLinearInterpolator* mSocVocTable;            /**< (1)      trick_chkpnt_io(**) Pointer to open-circuit voltage vs. State of Charge table. */
+        double                mSoc;                    /**< (1)      trick_chkpnt_io(**) Battery average State Of Charge (0-1) of active cells. */
+        double                mCapacity;               /**< (amp*hr) trick_chkpnt_io(**) Battery effective capacity of active cells. */
+        double                mCurrent;                /**< (amp)    trick_chkpnt_io(**) Battery current. */
+        double                mVoltage;                /**< (V)      trick_chkpnt_io(**) Output closed-circuit voltage under load. */
+        double                mHeat;                   /**< (W)      trick_chkpnt_io(**) Heat created by the battery. */
+        unsigned int          mThermalRunawayCell;     /**< (1)                          Current cell index for the thermal runaway cascade. */
+        double                mThermalRunawayTimer;    /**< (s)                          Elapsed time of the thermal runaway malfunction. */
         /// @brief   Validates the link's configuration and input data.
         void         validate(GunnsElectBatteryConfigData& configData,
                               GunnsElectBatteryInputData&  inputData);
@@ -217,6 +220,16 @@ inline double GunnsElectBattery::getVoltage() const
 inline double GunnsElectBattery::getSoc() const
 {
     return mSoc;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns double (amp*hr) Output sum of capacities of active cells.
+///
+/// @details Returns the battery's total effective capacity of active cells.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBattery::getCapacity() const
+{
+    return mCapacity;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

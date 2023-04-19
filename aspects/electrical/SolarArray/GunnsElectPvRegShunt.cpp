@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Photovoltaic Array Shunting Regulator Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -543,114 +543,113 @@ GunnsBasicLink::SolutionResult GunnsElectPvRegShunt::confirmSolutionAcceptable(
 {
     GunnsBasicLink::SolutionResult result = CONFIRM;
 
-    /// - Always confirm and return immediately if the regulator isn't powered and enabled, or is
-    ///   already tripped.  The state should already be OFF, but we'll leave it alone as it should
-    ///   be updated to OFF next major frame if these conditions still exist.
-    if (mTrips.isTripped() or not (mPowered and mEnabled)) {
-        return result;
+    /// - Process state changes if the regulator is operating.
+    if (isOperating()) {
+
+        /// - On any network minor step, immediately transition to OFF state and reject the network
+        ///   solution if there is back voltage on the output.  This is similar to reverse bias on a
+        ///   diode or output power converter, and the solution is invalid.
+        if ( (REG == mState) and (mPotentialVector[1] > mRegulatedVoltage) ) {
+            mState = OFF;
+            result = REJECT;
+        }
+        /// - We only check for solution rejection and state change after the network has converged.
+        /// - Further mode changes wait for the network to converge.  This is to avoid oscillations in
+        ///   states between this and other regulators in a network.
+        if (convergedStep > 0) {
+            switch (mState) {
+                case REG: {
+                    /// - In REG mode, find and load the array strings with the total power demanded by
+                    ///   the downstream circuit and the output channel resistive loss.  If the load
+                    ///   exceeds what the array can supply, then delay until our trip priority, then
+                    ///   transition to OFF mode and reject the solution.  This delay allows downstream
+                    ///   elements to possibly shut off and reduce our load before triggering our
+                    ///   shutdown.
+                    const double powerDemand = mRegulatedVoltage * mAdmittanceMatrix[3] *
+                            (mRegulatedVoltage - mPotentialVector[1]);
+                    loadArray(powerDemand);
+                    if (mInputPower < powerDemand and mPvBulkPowerAvail < powerDemand) {
+                        if (convergedStep < static_cast<int>(mTripPriority)) {
+                            result = DELAY;
+                        } else {
+                            mState = OFF;
+                            result = REJECT;
+                        }
+                    }
+                } break;
+                case SAG: {
+                    ; // do nothing, SAG no longer modeled
+                } break;
+                default: {      // OFF or invalid
+                    /// - In OFF mode, if the array can make sufficient power to restart, then delay
+                    ///   the network until our trip priority, then reject the solution and transition
+                    ///   to REG state.  To avoid oscillating between OFF->REG->OFF indefinitely when
+                    ///   powerDemand > mPvBulkPowerAvailable > mMinOperatePower, we limit this
+                    ///   transition to once per major step.
+                    if (mPvBulkPowerAvail >= mMinOperatePower and not mOffToRegOccurred) {
+                        if (convergedStep < static_cast<int>(mTripPriority)) {
+                            result = DELAY;
+                        } else {
+                            mState = REG;
+                            result = REJECT;
+                            mOffToRegOccurred = true;
+                        }
+                    } else {
+                        /// - Shunt all strings when OFF.
+                        loadArray(-1.0);
+                    }
+                } break;
+            }
+        }
     }
 
-    /// - On any network minor step, immediately transition to OFF state and reject the network
-    ///   solution if there is back voltage on the output.  This is similar to reverse bias on a
-    ///   diode or output power converter, and the solution is invalid.
-    if ( (REG == mState) and (mPotentialVector[1] > mRegulatedVoltage) ) {
-        mState = OFF;
-        result = REJECT;
-    }
-    /// - We only check for solution rejection and state change after the network has converged.
-    /// - Further mode changes wait for the network to converge.  This is to avoid oscillations in
-    ///   states between this and other regulators in a network.
-    if (convergedStep > 0) {
-        switch (mState) {
-            case REG: {
-                /// - In REG mode, find and load the array strings with the total power demanded by
-                ///   the downstream circuit and the output channel resistive loss.  If the load
-                ///   exceeds what the array can supply, then delay until our trip priority, then
-                ///   transition to OFF mode and reject the solution.  This delay allows downstream
-                ///   elements to possibly shut off and reduce our load before triggering our
-                ///   shutdown.
-                const double powerDemand = mRegulatedVoltage * mAdmittanceMatrix[3] *
-                        (mRegulatedVoltage - mPotentialVector[1]);
-                loadArray(powerDemand);
-                if (mInputPower < powerDemand and mPvBulkPowerAvail < powerDemand) {
-                    if (convergedStep < static_cast<int>(mTripPriority)) {
-                        result = DELAY;
-                    } else {
-                        mState = OFF;
-                        result = REJECT;
-                    }
-                }
-            } break;
-            case SAG: {
-                ; // do nothing, SAG no longer modeled
-            } break;
-            default: {      // OFF or invalid
-                /// - In OFF mode, if the array can make sufficient power to restart, then delay
-                ///   the network until our trip priority, then reject the solution and transition
-                ///   to REG state.  To avoid oscillating between OFF->REG->OFF indefinitely when
-                ///   powerDemand > mPvBulkPowerAvailable > mMinOperatePower, we limit this
-                ///   transition to once per major step.
-                if (mPvBulkPowerAvail >= mMinOperatePower and not mOffToRegOccurred) {
-                    if (convergedStep < static_cast<int>(mTripPriority)) {
-                        result = DELAY;
-                    } else {
-                        mState = REG;
-                        result = REJECT;
-                        mOffToRegOccurred = true;
-                    }
-                } else {
-                    /// - Shunt all strings when OFF.
-                    loadArray(-1.0);
-                }
-            } break;
+    /// - Only continue with trip checks if we haven't already rejected due to state changes.
+    if (convergedStep > 0 and REJECT != result) {
+        computeFlux();
+
+        /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
+        ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
+        const unsigned int section = mStringLoadOrder[0].mSection;
+        const unsigned int string  = mStringLoadOrder[0].mString;
+        float sensedVin  = mArray->mSections[section].mStrings[string].getTerminal().mVoltage;
+        float sensedIin  = mArray->mSections[section].mStrings[string].getTerminal().mCurrent;
+        float sensedVout = mPotentialVector[1];
+        float sensedIout = mFlux;
+
+        /// - Note that since we step the sensors without a time-step, its drift malfunction
+        ///   isn't integrated.  This is because we don't have the time-step in this function,
+        ///   and we must update the sensor multiple times per major network step, which would
+        ///   repeat the drift integration too many times.  The result of all this is that drift
+        ///   lags behind by one major step for causing trips.
+        if (mSensors.mInVoltage) {
+            sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, sensedVin);
+        }
+        if (mSensors.mInCurrent) {
+            sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, sensedIin);
+        }
+        if (mSensors.mOutVoltage) {
+            sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, sensedVout);
+        }
+        if (mSensors.mOutCurrent) {
+            sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, sensedIout);
         }
 
-        /// - Only continue with trip checks if we haven't alreadu rejected due to state changes.
-        if (REJECT != result) {
-            computeFlux();
-
-            /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
-            ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
-            const unsigned int section = mStringLoadOrder[0].mSection;
-            const unsigned int string  = mStringLoadOrder[0].mString;
-            float sensedVin  = mArray->mSections[section].mStrings[string].getTerminal().mVoltage;
-            float sensedIin  = mArray->mSections[section].mStrings[string].getTerminal().mCurrent;
-            float sensedVout = mPotentialVector[1];
-            float sensedIout = mFlux;
-
-            /// - Note that since we step the sensors without a time-step, its drift malfunction
-            ///   isn't integrated.  This is because we don't have the time-step in this function,
-            ///   and we must update the sensor multiple times per major network step, which would
-            ///   repeat the drift integration too many times.  The result of all this is that drift
-            ///   lags behind by one major step for causing trips.
-            if (mSensors.mInVoltage) {
-                sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, sensedVin);
-            }
-            if (mSensors.mInCurrent) {
-                sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, sensedIin);
-            }
-            if (mSensors.mOutVoltage) {
-                sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, sensedVout);
-            }
-            if (mSensors.mOutCurrent) {
-                sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, sensedIout);
-            }
-
-            /// - Check all trip logics for trips. If any trip, reject the solution and mode to OFF.
-            if (mPowered and mEnabled) {
-                if (mTrips.mInOverVoltage  .checkForTrip(result, sensedVin,  convergedStep)) mState = OFF;
-                if (mTrips.mInOverCurrent  .checkForTrip(result, sensedIin,  convergedStep)) mState = OFF;
-                if (mTrips.mOutOverVoltage .checkForTrip(result, sensedVout, convergedStep)) mState = OFF;
-                if (mTrips.mOutOverCurrent .checkForTrip(result, sensedIout, convergedStep)) mState = OFF;
-                if (mTrips.mOutUnderVoltage.checkForTrip(result, sensedVout, convergedStep)) mState = OFF;
-            }
+        /// - Check all trip logics for trips. If any trip, reject the solution and mode to OFF.
+        if (isOperating()) {
+            if (mTrips.mInOverVoltage  .checkForTrip(result, sensedVin,  convergedStep)) mState = OFF;
+            if (mTrips.mInOverCurrent  .checkForTrip(result, sensedIin,  convergedStep)) mState = OFF;
+            if (mTrips.mOutOverVoltage .checkForTrip(result, sensedVout, convergedStep)) mState = OFF;
+            if (mTrips.mOutOverCurrent .checkForTrip(result, sensedIout, convergedStep)) mState = OFF;
+            if (mTrips.mOutUnderVoltage.checkForTrip(result, sensedVout, convergedStep)) mState = OFF;
         }
     }
 
     /// - We only set the array's common strings output flag to false when in REG state because
     ///   that's the only state where array strings are individually shunted.  In OFF state, we keep
     ///   all array arrays strings tied to the node to avoid chatter.
-    mArray->setCommonStringsOutput(REG != mState);
+    if (isOperating()) {
+        mArray->setCommonStringsOutput(REG != mState);
+    }
 
     return result;
 }

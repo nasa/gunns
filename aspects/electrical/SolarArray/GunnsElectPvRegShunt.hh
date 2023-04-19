@@ -8,7 +8,7 @@
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_REG_SHUNT    Photovoltaic Array Shunting Regulator Model
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -289,6 +289,8 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
         void computeFlux();
         /// @brief Loads the PV array strings with demanded power.
         void loadArray(const double power);
+        /// @brief Returns whether the regulator is operating.
+        bool isOperating() const;
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link
@@ -430,6 +432,16 @@ inline void GunnsElectPvRegShunt::computeFlux()
             mFlux = 0.0;
         } break;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns bool (--) True if the regulator is operating.
+///
+/// @details  The regulator is operating if it is powered, enabled, and not tripped.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectPvRegShunt::isOperating() const
+{
+    return (mPowered and mEnabled and not mTrips.isTripped());
 }
 
 #endif

@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -885,7 +885,9 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT    == tArticle->confirmSolutionAcceptable(2, 3));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
 
-    /// @test    Doesn't trip when not enabled.
+    /// @test    Updates sensors but doesn't trip when not enabled.
+    outputVolts = 10.0;
+    tArticle->mPotentialVector[1] = outputVolts;
     tArticle->mTrips.resetTrips();
     tArticle->mState = GunnsElectPvRegShunt::OFF;
     tArticle->mEnabled = false;
@@ -894,6 +896,9 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(1, 2));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
+    expectedSensedVout = outputVolts;
+    actualSensedVout   = tArticle->mSensors.mOutVoltage->getSensedOutput();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, FLT_EPSILON * expectedSensedVout);
 
     UT_PASS;
 }

@@ -1,14 +1,9 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 #=============================================================================
 # Sim Bus ICD setup section
 #=============================================================================
-
-# This assumes that the Mac developer has installed termcolor-py27 using fink
-ifeq (${TRICK_HOST_TYPE},Darwin)
-PYTHONPATH  += ":/sw/lib/python2.7/site_packages"
-endif
 
 PYTHONPATH  += ":${SIMBUS_HOME}:${SIMBUS_HOME}/lib:${SIMBUS_HOME}/src"
 simname = $(shell basename ${PWD} )

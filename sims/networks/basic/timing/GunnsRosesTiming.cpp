@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -11,6 +11,9 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+
+// Trick includes
+#include "sim_services/Executive/include/exec_proto.h" // for exec_terminate
 
 GunnsRosesTiming::GunnsRosesTiming()
     :
@@ -154,10 +157,7 @@ void GunnsRosesTiming::update(const double timestep)
             printf("----------------------------------------------\n");
         }
         printf("\nTerminating sim:\n");
-        // kill the sim ungracefully
-        if (network) delete network;
-        step = 0;
-        N /= step;
+        exec_terminate("", "");  // from Trick's exec_proto.h, tell Trick to kill the sim
     }
 }
 

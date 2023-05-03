@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 # List of all GunnsDraw network drawings that are to be exported at build time:
@@ -22,4 +22,4 @@ S_define: $(GUNNSDRAW_HEADERS)
 # TODO add the -g option once I have that working.  This will skip the drawing maintenance and error
 # checks, should be a little faster...
 $(GUNNSDRAW_HEADERS) : %.hh : %.xml
-	@ echo $(shell python $(GUNNS_HOME)/draw/netexport.py $<)
+	@ echo $(shell python3 $(GUNNS_HOME)/draw/netexport.py $<)

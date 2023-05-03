@@ -1,4 +1,4 @@
-# @copyright Copyright 2021 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 #trick setup
@@ -76,5 +76,6 @@ vehicle.powerElect.loadSwitch9.addUserLoad(vehicle.powerElect.gasSelectValve)
 # Setup Data Logging:
 #####################
 # This causes the sim to record data into a .csv file in this RUN_ folder.
-execfile("data_log_setup/log_setup.py")
+f = "data_log_setup/log_setup.py"
+exec(compile(open(f, 'rb').read(), f, 'exec'), globals(), locals())
 log_setup(0.1)

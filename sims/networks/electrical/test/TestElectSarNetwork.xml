@@ -102,7 +102,7 @@
         <mxGeometry as="geometry" height="40" width="80" x="590" y="400" />
       </mxCell>
     </object>
-    <object About="Battery" Ports="0=in, 1=out" c00.numCells="8" c01.cellsInParallel="false" c02.cellResistance="0.1" c03.interconnectResistance="0.2" c04.maxCapacity="32.0" c05.socVocTable="&amp;network-&gt;BattSocVocTable" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.soc="0.9" id="4OKKQLS62C6WRCZLFT8U-17" label="battery">
+    <object About="Battery" Ports="0=in, 1=out" c00.numCells="8" c01.cellsInParallel="false" c02.cellResistance="0.1" c03.interconnectResistance="0.2" c04.maxCapacity="32.0" c05.socVocTable="&amp;network-&gt;BattSocVocTable" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.soc="0.9" id="4OKKQLS62C6WRCZLFT8U-17" label="battery" i03.malfThermalRunawayFlag="false" i04.malfThermalRunawayDuration="0.0" i05.malfThermalRunawayInterval="0.0">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/Batt/GunnsElectBattery" type="Link" />
       <mxCell parent="4OKKQLS62C6WRCZLFT8U-2" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#000000;strokeColor=#000000;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.miscellaneous.monocell_battery;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" vertex="1">
         <mxGeometry as="geometry" height="40" width="40" x="360" y="580" />

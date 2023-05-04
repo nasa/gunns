@@ -1062,7 +1062,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
         double segP          = mPotentialVector[sourcePort];
 
         if (mFlowRate >= 0.0) {
-            for (unsigned int i=0; i<static_cast<int>(mNSegments); ++i) {
+            for (unsigned int i=0; i<mNSegments; ++i) {
                 const double nextSegP = segP - dPoverV * mSegments[i].mVolume;
                 /// - Update segments in order of flow direction.
                 mSegments[i].update(exitFlow, segP, nextSegP, dt);

@@ -2,12 +2,13 @@
 @file
 @brief    GUNNS Fluid Distributed Interface Link implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
    (
     (GunnsFluidCapacitor.o)
+    (GunnsFluidDistributed2WayBus.o)
    )
 */
 
@@ -17,202 +18,6 @@ LIBRARY DEPENDENCY:
 #include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Default constructs this Fluid Distributed Interface data.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedIfData::GunnsFluidDistributedIfData()
-    :
-    mFrameCount(0),
-    mFrameLoopback(0),
-    mDemandMode(false),
-    mCapacitance(0.0),
-    mSource(0.0),
-    mEnergy(0.0),
-    mMoleFractions(0),
-    mTcMoleFractions(0),
-    mNumFluid(0),
-    mNumTc(0),
-    mNumFluidIf(0),
-    mNumTcIf(0),
-    mNumFluidCommon(0),
-    mNumTcCommon(0)
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Default destructs this Fluid Distributed Interface data.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedIfData::~GunnsFluidDistributedIfData()
-{
-    TS_DELETE_ARRAY(mTcMoleFractions);
-    TS_DELETE_ARRAY(mMoleFractions);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  that  (--)  Object to be copied.
-///
-/// @details  Assigns values of this object's attributes to the given object's values.  The
-///           mNumFluid and similar terms are not changed, and we assume that the two objects were
-///           initialized identically; the array sizes and mNum* terms are the same.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedIfData& GunnsFluidDistributedIfData::operator =(const GunnsFluidDistributedIfData& that)
-{
-    if (this != &that) {
-        mFrameCount    = that.mFrameCount;
-        mFrameLoopback = that.mFrameLoopback;
-        mDemandMode    = that.mDemandMode;
-        mCapacitance   = that.mCapacitance;
-        mSource        = that.mSource;
-        mEnergy        = that.mEnergy;
-        for (unsigned int i=0; i<mNumFluid; ++i) {
-            mMoleFractions[i] = that.mMoleFractions[i];
-        }
-        for (unsigned int i=0; i<mNumTc; ++i) {
-            mTcMoleFractions[i] = that.mTcMoleFractions[i];
-        }
-    }
-    return *this;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name               (--) Name of the instance for dynamic memory names for Trick MM.
-/// @param[in] nFluids            (--) Number of fluid constituents.
-/// @param[in] nTc                (--) Number of trace compounds.
-/// @param[in] fluidSizesOverride (--) Override the interface fluid mixture sizes.
-/// @param[in] nIfFluids          (--) Number of primary fluid compounds override value.
-/// @param[in] nIfTc              (--) Number of trace compounds override value.
-///
-/// @details  Allocates dynamic arrays for mass and mole fractions.  By default, the mixture array
-///           sizes will match the sizes in the GUNNS fluid network.  However, if the fluid sizes
-///           override flag is set then the mixture array sizes are set to the given override sizes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfData::initialize(const std::string& name,
-                                             const unsigned int nFluids,
-                                             const unsigned int nTc,
-                                             const bool         fluidSizesOverride,
-                                             const unsigned int nIfFluids,
-                                             const unsigned int nIfTc)
-{
-    mNumFluid = nFluids;
-    mNumTc    = nTc;
-    if (fluidSizesOverride) {
-        mNumFluidIf = nIfFluids;
-        mNumTcIf    = nIfTc;
-    } else {
-        mNumFluidIf = mNumFluid;
-        mNumTcIf    = mNumTc;
-    }
-    mNumFluidCommon = std::min(mNumFluid, mNumFluidIf);
-    mNumTcCommon    = std::min(mNumTc,    mNumTcIf);
-    if (mNumFluidIf > 0) {
-        TS_DELETE_ARRAY(mMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, mNumFluidIf, double, name + ".mMoleFractions");
-        for (unsigned int i=0; i<mNumFluidIf; ++i) {
-            mMoleFractions[i] = 0.0;
-        }
-    }
-    if (mNumTcIf > 0) {
-        TS_DELETE_ARRAY(mTcMoleFractions);
-        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, mNumTcIf, double, name + ".mTcMoleFractions");
-        for (unsigned int i=0; i<mNumTcIf; ++i) {
-            mTcMoleFractions[i] = 0.0;
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  (--)  True if all data validation checks passed.
-///
-/// @details  Checks for all of the following conditions to be met:  Frame count > 0, energy > 0,
-///           capacitance >= 0, pressure >= 0 (only in Supply mode), and all mixture fractions >= 0.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidDistributedIfData::hasValidData()
-{
-    if (mFrameCount < 1 or mEnergy <= 0.0 or mCapacitance < 0.0 or (mSource < 0.0 and not mDemandMode)) {
-        return false;
-    }
-    for (unsigned int i=0; i<mNumFluid; ++i) {
-        if (mMoleFractions[i] < 0.0) {
-            return false;
-        }
-    }
-    for (unsigned int i=0; i<mNumTc; ++i) {
-        if (mTcMoleFractions[i] < 0.0) {
-            return false;
-        }
-    }
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] fractions (--) Array of bulk fluid mole fraction values to copy to the interface.
-///
-/// @details  Sets this interface's bulk fluid mole fractions to the given values.  If the
-///           interface array is larger than the given array, then the remaining values in the
-///           interface array are filled with zeroes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfData::setMoleFractions(const double* fractions)
-{
-    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
-        mMoleFractions[i] = fractions[i];
-    }
-    for (unsigned int i=mNumFluidCommon; i<mNumFluidIf; ++i) {
-        mMoleFractions[i] = 0.0;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] fractions (--) Array of trace compound mole fractions to copy to the interface.
-///
-/// @details  Sets this interface's trace compound mole fractions to the given values.  If the
-///           interface array is larger than the given array, then the remaining values in the
-///           interface array are filled with zeroes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfData::setTcMoleFractions(const double* fractions)
-{
-    for (unsigned int i=0; i<mNumTcCommon; ++i) {
-        mTcMoleFractions[i] = fractions[i];
-    }
-    for (unsigned int i=mNumTcCommon; i<mNumTcIf; ++i) {
-        mTcMoleFractions[i] = 0.0;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] fractions (--) Array of bulk fluid mole fractions to copy from the interface.
-///
-/// @details  Sets the given builk fluid mole fractions to this interface's values.  If the given
-///           array is larger than the interface array, then the remaining values in the given array
-///           are filled with zeroes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfData::getMoleFractions(double* fractions)
-{
-    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
-        fractions[i] = mMoleFractions[i];
-    }
-    for (unsigned int i=mNumFluidCommon; i<mNumFluid; ++i) {
-        fractions[i] = 0.0;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] fractions (--) Array of trace compound mole fractions to copy from the interface.
-///
-/// @details  Sets the given builk trace compound fractions to this interface's values.  If the
-///           given array is larger than the interface array, then the remaining values in the given
-///           array are filled with zeroes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfData::getTcMoleFractions(double* fractions)
-{
-    for (unsigned int i=0; i<mNumTcCommon; ++i) {
-        fractions[i] = mTcMoleFractions[i];
-    }
-    for (unsigned int i=mNumTcCommon; i<mNumTc; ++i) {
-        fractions[i] = 0.0;
-    }
-}
 
 /// @details  This value is chosen to get reliable network capacitance calculations from the solver
 ///           for liquid and gas nodes.
@@ -309,30 +114,22 @@ GunnsFluidDistributedIfInputData::~GunnsFluidDistributedIfInputData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     :
-    GunnsFluidLink(NPORTS),
-    mInData                (),
-    mOutData               (),
-    mIsPairMaster          (false),
+    GunnsFluidLink         (NPORTS),
+    mInterface             (),
     mUseEnthalpy           (false),
     mDemandOption          (false),
-    mCapacitorLink         (0),
-    mModingCapacitanceRatio(0.0),
-    mDemandFilterConstA    (0.0),
-    mDemandFilterConstB    (0.0),
-    mForceDemandMode       (false),
-    mForceSupplyMode       (false),
-    mInDataLastDemandMode  (false),
-    mFramesSinceFlip       (0),
     mSupplyVolume          (0.0),
+    mCapacitorLink         (0),
     mEffectiveConductivity (0.0),
     mSourcePressure        (0.0),
     mDemandFlux            (0.0),
-    mLoopLatency           (0),
     mDemandFluxGain        (0.0),
     mSuppliedCapacitance   (0.0),
     mTempMassFractions     (0),
     mTempMoleFractions     (0),
     mTempTcMoleFractions   (0),
+    mWorkFluidState        (),
+    mWorkFlowState         (),
     mOtherIfs              (),
     mFluidState            ()
 {
@@ -344,14 +141,12 @@ GunnsFluidDistributedIf::GunnsFluidDistributedIf()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedIf::~GunnsFluidDistributedIf()
 {
-    {
-        delete [] mTempTcMoleFractions;
-        mTempTcMoleFractions = 0;
-        delete [] mTempMoleFractions;
-        mTempMoleFractions = 0;
-        delete [] mTempMassFractions;
-        mTempMassFractions = 0;
-    }
+    delete [] mTempTcMoleFractions;
+    mTempTcMoleFractions = 0;
+    delete [] mTempMoleFractions;
+    mTempMoleFractions = 0;
+    delete [] mTempMassFractions;
+    mTempMassFractions = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,24 +172,22 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     mInitFlag = false;
 
     /// - Initialize from config data.
-    mIsPairMaster           = configData.mIsPairMaster;
     mUseEnthalpy            = configData.mUseEnthalpy;
     mDemandOption           = configData.mDemandOption;
     mCapacitorLink          = configData.mCapacitorLink;
-    mModingCapacitanceRatio = configData.mModingCapacitanceRatio;
-    mDemandFilterConstA     = configData.mDemandFilterConstA;
-    mDemandFilterConstB     = configData.mDemandFilterConstB;
 
     /// - Initialize from input data.
-    mForceDemandMode = inputData.mForceDemandMode;
-    mForceSupplyMode = inputData.mForceSupplyMode;
+    if (inputData.mForceDemandMode) {
+        mInterface.forceDemandRole();
+    } else if (inputData.mForceSupplyMode) {
+        mInterface.forceSupplyRole();
+    } else {
+        mInterface.resetForceRole();
+    }
 
     /// - Create the internal link fluid, allocate and load the fluid config map to translate the
     ///   external network's fluid to match our local network's config.
     createInternalFluid();
-
-    /// - Both sides start out in Supply mode by default.
-    mOutData.mDemandMode = false;
 
     /// - Allocate memory and build the temporary mass and mole fractions arrays.  We allocate
     ///   persistent arrays now to save allocation time during run.
@@ -421,15 +214,21 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     }
 
     /// - Initialize the interface data objects so they can allocate memory.
-    mInData .initialize(mName + ".mInData",  nTypes, nTc, configData.mFluidSizesOverride, configData.mNumFluidOverride, configData.mNumTcOverride);
-    mOutData.initialize(mName + ".mOutData", nTypes, nTc, configData.mFluidSizesOverride, configData.mNumFluidOverride, configData.mNumTcOverride);
+    if (configData.mFluidSizesOverride) {
+        mInterface.initialize(configData.mIsPairMaster, nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
+        mWorkFluidState.initialize(nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
+        mWorkFlowState.initialize(nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
+    } else {
+        mInterface.initialize(configData.mIsPairMaster, nTypes, nTc, nTypes, nTc);
+        mWorkFluidState.initialize(nTypes, nTc, nTypes, nTc);
+        mWorkFlowState.initialize(nTypes, nTc, nTypes, nTc);
+    }
 
     /// - Initialize remaining state variables.
     mSupplyVolume          = 0.0;
     mEffectiveConductivity = 0.0;
     mSourcePressure        = 0.0;
     mDemandFlux            = 0.0;
-    mLoopLatency           = 0;
     mDemandFluxGain        = 1.0;
     mSuppliedCapacitance   = 0.0;
 
@@ -450,18 +249,20 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     }
 
     /// - Validate initialization.
-    validate();
+    validate(inputData);
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  inputData (--) Reference to link Input Data.
+///
 /// @throws   TsInitializationException
 ///
 /// @details  Validates this GUNNS Fluid Distributed Interface initial state.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::validate() const
+void GunnsFluidDistributedIf::validate(const GunnsFluidDistributedIfInputData& inputData) const
 {
     /// - Throw on null pointer to the node capacitor link.
     if (not mCapacitorLink) {
@@ -469,14 +270,8 @@ void GunnsFluidDistributedIf::validate() const
                     "Missing pointer to the node capacitor link.");
     }
 
-    /// - Throw on invalid moding capacitance ratio range.
-    if (mModingCapacitanceRatio <= 1.0) {
-        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
-                    "moding capacitance ration <= 1.");
-    }
-
     /// - Throw if conflicting mode force flags.
-    if (mForceDemandMode and mForceSupplyMode) {
+    if (inputData.mForceDemandMode and inputData.mForceSupplyMode) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "both mode force flags are set.");
     }
@@ -514,7 +309,6 @@ void GunnsFluidDistributedIf::restartModel()
     mEffectiveConductivity = 0.0;
     mSourcePressure        = 0.0;
     mDemandFlux            = 0.0;
-    mLoopLatency           = 0;
     mDemandFluxGain        = 1.0;
     mSuppliedCapacitance   = 0.0;
     for (int i = 0; i < mNodes[0]->getFluidConfig()->mNTypes; ++i) {
@@ -528,22 +322,28 @@ void GunnsFluidDistributedIf::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processInputs()
 {
-    /// - Mode changes and associated node volume update in response to incoming data.
-    flipModesOnInput();
+    /// - Interface mode changes and node volume update in response.
+    bool previousDemandMode = mInterface.isInDemandRole();
+    mInterface.processInputs();
+    bool demandMode = mInterface.isInDemandRole();
+    if (demandMode and not previousDemandMode) {
+        mSupplyVolume = mNodes[0]->getVolume();
+        mCapacitorLink->editVolume(true, 0.0);
+    } else if (previousDemandMode and not demandMode) {
+        mCapacitorLink->editVolume(true, mSupplyVolume);
+        mSupplyVolume = 0.0;
+    }
 
     /// - More processing of incoming data for resulting pairing mode.
     processInputsDemand();
     processInputsSupply();
-
-    /// - Update frame counters and loop latency measurement.
-    mOutData.mFrameCount   += 1;
-    mLoopLatency            = mOutData.mFrameCount - mInData.mFrameLoopback;
-    mOutData.mFrameLoopback = mInData.mFrameCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]      pressure  (kPa)  Pressure to set the fluid to.
 /// @param[in,out]  fluid     (--)   Pointer to the PolyFluid object to be set.
+///
+/// @throws   TsOutOfBoundsException
 ///
 /// @returns  double (--) Sum of input bulk compound mole fractions, <= 1.
 ///
@@ -552,11 +352,17 @@ void GunnsFluidDistributedIf::processInputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* fluid)
 {
+    /// - Point to the working interface fluid state object based on interface role.
+    GunnsFluidDistributedMixtureData* workingState = &mWorkFlowState;
+    if (mInterface.isInDemandRole()) {
+        workingState = &mWorkFluidState;
+    }
+
     /// - Normalize the incoming bulk mole fractions to sum to 1.  Internally, GUNNS sums the bulk
     ///   mole fractions to 1, and this doesn't include the trace compounds.  But the interface
     ///   data includes the TC's in the sum to 1.  Adjustment to the TC's is handled below.
     double inBulkFractionSum = 0.0;
-    mInData.getMoleFractions(mTempMoleFractions);
+    workingState->getMoleFractions(mTempMoleFractions);
     const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         inBulkFractionSum += mTempMoleFractions[i];
@@ -578,19 +384,19 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
     fluid->setPressure(pressure);
 
     if (mUseEnthalpy) {
-        fluid->setTemperature(fluid->computeTemperature(mInData.mEnergy));
+        fluid->setTemperature(fluid->computeTemperature(mWorkFluidState.mEnergy));
     } else {
-        fluid->setTemperature(mInData.mEnergy);
+        fluid->setTemperature(mWorkFluidState.mEnergy);
     }
 
-    if (mInData.mTcMoleFractions) {
+    if (mWorkFluidState.mTcMoleFractions) {
         GunnsFluidTraceCompounds* tc = fluid->getTraceCompounds();
         if (tc) {
             /// - As above, adjust the TC mole fractions to be relative to the internal GUNNS bulk
             ///   fluid.
             const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
             if (tcConfig) {
-                mInData.getTcMoleFractions(mTempTcMoleFractions);
+                workingState->getTcMoleFractions(mTempTcMoleFractions);
                 for (int i = 0; i < tcConfig->mNTypes; ++i) {
                     mTempTcMoleFractions[i] /= inBulkFractionSum;
                 }
@@ -611,14 +417,14 @@ void GunnsFluidDistributedIf::processInputsSupply()
     /// - When in Demand mode, zero the demand flux.
     /// - When in Supply mode, zero the source pressure.
     mDemandFlux = 0.0;
-    if (not mOutData.mDemandMode) {
+    if (not mInterface.isInDemandRole()) {
         mSourcePressure = 0.0;
-        if (mInData.hasValidData() and mInData.mDemandMode) {
+        if (mInterface.getFlowState(mWorkFlowState)) {
             /// - Convert (mol/s) to (kmol/s), and external mole rate to internal GUNNS rate.  The
             ///   internal GUNNS rate does not include the mole rate of the trace compounds.  The
             ///   inputFluid function returns the fraction of the bulk fluid compunds in the total,
             ///   which is our adjustment.
-            mDemandFlux = -mInData.mSource * UnitConversion::KILO_PER_UNIT
+            mDemandFlux = -mInterface.mInData.mSource * UnitConversion::KILO_PER_UNIT
                         * inputFluid(1.0, mInternalFluid);
         }
     }
@@ -629,10 +435,10 @@ void GunnsFluidDistributedIf::processInputsSupply()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processInputsDemand()
 {
-    if (mOutData.mDemandMode) {
-        if (mInData.hasValidData() and not mInData.mDemandMode) {
+    if (mInterface.isInDemandRole()) {
+        if (mInterface.getFluidState(mWorkFluidState)) {
             /// - Convert (Pa) to (kPa).
-            mSourcePressure = mInData.mSource * UnitConversion::KILO_PER_UNIT;
+            mSourcePressure = mWorkFluidState.mPressure * UnitConversion::KILO_PER_UNIT;
             inputFluid(mSourcePressure, mNodes[0]->getContent());
             mFluidState.setState(mNodes[0]->getContent());
         } else {
@@ -644,99 +450,34 @@ void GunnsFluidDistributedIf::processInputsDemand()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Handles mode flips in response to incoming data, and the initial mode flip at run
-///           start.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::flipModesOnInput()
-{
-    /// - Force mode swap based on the mode force flags.
-    if (mForceDemandMode and not mOutData.mDemandMode) {
-        flipToDemandMode();
-    } else if (mForceSupplyMode and mOutData.mDemandMode) {
-        flipToSupplyMode();
-    } else if (mInData.hasValidData()) {
-        /// - If in demand mode and the incoming data is also demand, then the other side has
-        ///   initialized the demand/supply swap, so we flip to supply.
-        if (mOutData.mDemandMode and mInData.mDemandMode and not mInDataLastDemandMode) {
-            flipToSupplyMode();
-        } else if (not mInData.mDemandMode and not mOutData.mDemandMode) {
-            if ( (mOutData.mCapacitance < mInData.mCapacitance) or
-                    (mIsPairMaster and mOutData.mCapacitance == mInData.mCapacitance) ) {
-                /// - If in supply mode and the incoming data is also supply, then this is the start
-                ///   of the run and the side with the smaller capacitance switches to demand mode,
-                ///   and the master side is the tie-breaker.
-                flipToDemandMode();
-            }
-        }
-        mInDataLastDemandMode = mInData.mDemandMode;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Flips from supply to demand mode whenever the supply network capacitance drops below
-///           some fraction of the demand side's capacitance.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::flipModesOnCapacitance()
-{
-    /// - We do not check until we've been in supply mode for at least one full lag cycle.  This
-    ///   prevents unwanted extra mode flips during large transients.
-    if (mFramesSinceFlip > mLoopLatency and
-            mOutData.mCapacitance * mModingCapacitanceRatio < mInData.mCapacitance) {
-        flipToDemandMode();
-        /// - Zero the output pressure/flow source term so the other side doesn't interpret our old
-        ///   pressure value as a demand flux.  This will be set to a demand flux on the next full
-        ///   pass in demand mode.
-        mOutData.mSource = 0.0;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Processes flipping to Demand mode.  Since in Demand mode the node must have no
-///           capacitance on its own, we zero it with the node's capacitor link's edit controls, and
-///           save the volume value for restoration later.  This way the interfacing volume follows
-///           the supply side during the flip.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::flipToDemandMode()
-{
-    if (not mForceSupplyMode) {
-        mOutData.mDemandMode = true;
-        mSupplyVolume = mNodes[0]->getVolume();
-        mCapacitorLink->editVolume(true, 0.0);
-        mFramesSinceFlip = 0;
-        GUNNS_INFO("switched to Demand mode.")
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Processes flipping to Supply mode.  Since in Demand mode the node's volume is zeroed,
-///           we restore the node's original volume when entering Supply mode via the node's
-///           capacitor link's edit controls.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::flipToSupplyMode()
-{
-    if (not mForceDemandMode) {
-        mOutData.mDemandMode = false;
-        mCapacitorLink->editVolume(true, mSupplyVolume);
-        mSupplyVolume = 0.0;
-        mFramesSinceFlip = 0;
-        GUNNS_INFO("switched to Supply mode.")
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  End-of-network calculations.  Sets outputs data based on our current mode.  Calls to
 ///           check if its time to flip to Demand node from Supply mode based on relative
 ///           capacitance, and updates the count of frames since the last mode flip.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processOutputs()
 {
-    if (mOutData.mDemandMode) {
-        processOutputsDemand();
+    // update work fluid/flow mixture & energy (implemented in outputFluid())
+    // based on i/f mode, update work fluid pressure or work flow rate, send state to the i/f
+    if (mInterface.isInDemandRole()) {
+        mWorkFlowState.mFlowRate = processOutputsDemand();
+        mInterface.setFlowState(mWorkFlowState);
     } else {
-        processOutputsSupply();
-        flipModesOnCapacitance();
+        mWorkFluidState.mPressure = processOutputsSupply();
+        mInterface.setFluidState(mWorkFluidState);
     }
-    mFramesSinceFlip++;
+
+    // find capacitance
+    const double capacitance = outputCapacitance();
+    // call i/f output function with capacitance
+    // - i/f output function checks for role flip on capacitance, updates output frame counts
+    bool previousDemandMode = mInterface.isInDemandRole();
+    mInterface.processOutputs(capacitance);
+    bool demandMode = mInterface.isInDemandRole();
+    // handle mode flip on capacitance
+    if (demandMode and not previousDemandMode) {
+        mSupplyVolume = mNodes[0]->getVolume();
+        mCapacitorLink->editVolume(true, 0.0);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -746,13 +487,13 @@ void GunnsFluidDistributedIf::processOutputs()
 ///
 /// @details  Copies the given fluid state for output to the other side of the interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
+double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid, GunnsFluidDistributedMixtureData* work)
 {
     /// - Output energy as either temperature or specific enthalpy as configured.
     if (mUseEnthalpy) {
-        mOutData.mEnergy = fluid->getSpecificEnthalpy();
+        work->mEnergy = fluid->getSpecificEnthalpy();
     } else {
-        mOutData.mEnergy = fluid->getTemperature();
+        work->mEnergy = fluid->getTemperature();
     }
 
     /// - Convert outgoing mass fractions to mole fractions.
@@ -792,8 +533,8 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
     for (unsigned int i = 0; i < nTc; ++i) {
         mTempTcMoleFractions[i] = tc->getMoleFractions()[i] / moleFractionSum;
     }
-    mOutData.setMoleFractions(mTempMoleFractions);
-    mOutData.setTcMoleFractions(mTempTcMoleFractions);
+    work->setMoleFractions(mTempMoleFractions);
+    work->setTcMoleFractions(mTempTcMoleFractions);
     return moleFractionSum;
 }
 
@@ -801,24 +542,21 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid)
 /// @details  End-of-network calculation of outputs to the other side of the interface when this
 ///           side is in Supply mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::processOutputsSupply()
+double GunnsFluidDistributedIf::processOutputsSupply()
 {
-    outputCapacitance();
-
     /// - Convert (kPa) to (Pa).
-    mOutData.mSource = mNodes[0]->getPotential() * UnitConversion::UNIT_PER_KILO;
-    outputFluid(mNodes[0]->getContent());
+    const double pressure = mNodes[0]->getPotential() * UnitConversion::UNIT_PER_KILO;
+    outputFluid(mNodes[0]->getContent(), &mWorkFluidState);
     mFluidState.setState(mNodes[0]->getContent());
+    return pressure;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  End-of-network calculation of outputs to the other side of the interface when this
 ///           side is in Demand mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::processOutputsDemand()
+double GunnsFluidDistributedIf::processOutputsDemand()
 {
-    outputCapacitance();
-
     /// - If there is no inflow to the node then its inflow fluid has a reset state so we can't use
     ///   it.  Instead, use the node's contents.  Convert (kmol/s) to (mol/s).  Adjust mole flow
     ///   rate (mFlux only includes bulk compounds) to also include the trace compounds for total
@@ -834,7 +572,8 @@ void GunnsFluidDistributedIf::processOutputsDemand()
     } else {
         useFluid = mNodes[0]->getContent();
     }
-    mOutData.mSource = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(useFluid);
+    const double flow = mFlux * UnitConversion::UNIT_PER_KILO * outputFluid(useFluid, &mWorkFlowState);
+    return flow;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -843,7 +582,7 @@ void GunnsFluidDistributedIf::processOutputsDemand()
 ///           mSuppliedCapacitance), and minus the effective capacitance at our node added by other
 ///           links in Demand mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::outputCapacitance()
+double GunnsFluidDistributedIf::outputCapacitance()
 {
     /// - Subtract the capacitance we supply in Demand mode.
     double capacitance = mNodes[0]->getNetworkCapacitance() - mSuppliedCapacitance;
@@ -869,7 +608,7 @@ void GunnsFluidDistributedIf::outputCapacitance()
 
     /// - Limit the outgoing capacitance to positive values, just in case something goes wrong
     ///   in our calculation.
-    mOutData.mCapacitance = std::max(0.0, capacitance);
+    return std::max(0.0, capacitance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -881,29 +620,34 @@ void GunnsFluidDistributedIf::step(const double dt)
 {
     /// - In Demand mode, conductance mirrors the Supply network capacitance: G = C/dt.  In Supply
     ///   mode, zero conductance blocks the Demand mode potential source effect.
-    if (mOutData.mDemandMode and dt > DBL_EPSILON) {
-        /// - Comparison to FLT_EPSILON avoids chatter caused by mSuppliedCapacitance not exactly
-        ///   equaling network capacitance.
-        if (mOutData.mCapacitance > FLT_EPSILON and mInData.mCapacitance > FLT_EPSILON) {
-            /// - In Demand mode, update demand flux gain as a function of Cs/Cd.  For Cs/Cd < 1,
-            ///   lower gain based on latency.  For > 1, approach gain of 1.
-            const double csOverCd  = MsMath::limitRange(1.0, mInData.mCapacitance / mOutData.mCapacitance, mModingCapacitanceRatio);
-            const int    exponent  = MsMath::limitRange(1, mLoopLatency, 100);
-            const double gainLimit = std::min(1.0, mDemandFilterConstA * powf(mDemandFilterConstB, exponent));
-            mDemandFluxGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
-            const double conductance = mDemandFluxGain * mInData.mCapacitance / dt;
+    if (mInterface.isInDemandRole() and dt > DBL_EPSILON) {
+        /// - The interface computes the limited flow rate as a function of demand-side pressure,
+        ///   which is the pressure across the conductor to our interface node.  We don't know this
+        ///   pressure because this link doesn't know about those conductors, and we don't use the
+        ///   limited flow rate anyway - rather we use the interface's limit gain, which doesn't
+        ///   need that pressure.  So we send zero pressure to the interface function.  This means
+        ///   that the generic interface's calculation of the demand flow rate limit, in our case,
+        ///   is incorrect and can't be used.  You can manually calculate the correct flow limit,
+        ///   limit_correct, from the interface's incorrect value, limit_wrong, the relative
+        ///   capacitances of both sides, Cs & Cd, the interface gain, and the actual demand
+        ///   pressure across the conductor to this demand node, Pd, as:
+        ///     limit_correct = fabs(Pd*gain/(dt*(1/Cs + 1/Cd)) - limit_wrong)
+        mInterface.computeDemandLimit(dt, 0.0);
+        mDemandFluxGain = mInterface.getDemandLimitGain();
+        if (mInterface.mOutData.mCapacitance > FLT_EPSILON and mInterface.mInData.mCapacitance) {
+            const double conductance = mDemandFluxGain * mInterface.mInData.mCapacitance / dt;
             /// - The default for this option = false follows the interface design standard, but our
             ///   GUNNS implementation sometimes restricts the resulting flow rate too much.  Use
             ///   this option = true to relax the stability in favor of increased flow rate.  You
             ///   can safely use this when Cs/Cd >> 1 and for small lags <= 4.
-            if (mDemandOption) {
+            if (mDemandOption or conductance < FLT_EPSILON) {
                 mEffectiveConductivity = conductance;
             } else {
-                mEffectiveConductivity = 1.0 / std::max(1.0/conductance + dt/mOutData.mCapacitance, DBL_EPSILON);
+                mEffectiveConductivity = 1.0 / std::max(1.0/conductance + dt/mInterface.mOutData.mCapacitance, DBL_EPSILON);
             }
         } else {
             mDemandFluxGain = 1.0;
-            mEffectiveConductivity = mDemandFluxGain * mInData.mCapacitance / dt;
+            mEffectiveConductivity = mDemandFluxGain * mInterface.mInData.mCapacitance / dt;
         }
         /// - Reduce the effective conductance from the blockage malfunction.
         if (mMalfBlockageFlag) {
@@ -920,7 +664,7 @@ void GunnsFluidDistributedIf::step(const double dt)
         mAdmittanceUpdate    = true;
     }
 
-    if (mOutData.mDemandMode) {
+    if (mInterface.mOutData.mDemandMode) {
         mSuppliedCapacitance = mAdmittanceMatrix[0] * dt;
     } else {
         mSuppliedCapacitance = 0.0;
@@ -949,7 +693,7 @@ void GunnsFluidDistributedIf::computeFlows(const double dt __attribute__((unused
     if (mFlux > DBL_EPSILON) {
         mPortDirections[0] = SINK;
     } else if (mFlux < -DBL_EPSILON) {
-        if (mOutData.mDemandMode) {
+        if (mInterface.mOutData.mDemandMode) {
             mPortDirections[0] = SOURCE;
             mNodes[0]->scheduleOutflux(-mFlux);
         } else {
@@ -968,7 +712,7 @@ void GunnsFluidDistributedIf::computeFlows(const double dt __attribute__((unused
 void GunnsFluidDistributedIf::transportFlows(const double dt __attribute__((unused)))
 {
     /// - Calculate mass flow rate (mFlowRate) from molar rate (mFlux).
-    if (mOutData.mDemandMode) {
+    if (mInterface.mOutData.mDemandMode) {
         /// - In Demand mode, we use the node's MW because the node's fluid contents have already
         ///   taken the properties of the Supply fluid (from mInData).  This is true for both flow
         ///   directions for the fluid transport to/from the node.  However for negative flow (out
@@ -982,7 +726,7 @@ void GunnsFluidDistributedIf::transportFlows(const double dt __attribute__((unus
     }
 
     /// - Transport fluid:
-    if (mOutData.mDemandMode) {
+    if (mInterface.mOutData.mDemandMode) {
         if (mFlowRate > m100EpsilonLimit) {
             mNodes[0]->collectInflux(mFlowRate, mNodes[0]->getContent());
         } else if (mFlowRate < -m100EpsilonLimit) {

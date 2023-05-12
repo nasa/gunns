@@ -2,7 +2,7 @@
 #define GunnsFluidDistributedIfLagBuffer_EXISTS
 
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE: (This is a ring buffer of GunnsFluidDistributedIfData for both data directions between a
@@ -46,10 +46,10 @@ class GunnsFluidDistributedIfLagBuffer
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIfLagBuffer);
     public:
         unsigned int                 mDelayFrames; /**< (--) Number of frames to delay in each direction */
-        GunnsFluidDistributedIfData* mHead1;       /**< (--) Head of buffer 1 for writing by the interface. */
-        GunnsFluidDistributedIfData* mHead2;       /**< (--) Head of buffer 2 for writing by the interface. */
-        GunnsFluidDistributedIfData* mTail1;       /**< (--) Tail of buffer 1 for reading by the interface. */
-        GunnsFluidDistributedIfData* mTail2;       /**< (--) Tail of buffer 2 for reading by the interface. */
+        GunnsFluidDistributed2WayBusInterfaceData* mHead1;       /**< (--) Head of buffer 1 for writing by the interface. */
+        GunnsFluidDistributed2WayBusInterfaceData* mHead2;       /**< (--) Head of buffer 2 for writing by the interface. */
+        GunnsFluidDistributed2WayBusInterfaceData* mTail1;       /**< (--) Tail of buffer 1 for reading by the interface. */
+        GunnsFluidDistributed2WayBusInterfaceData* mTail2;       /**< (--) Tail of buffer 2 for reading by the interface. */
         /// @brief  Default constructs this GunnsFluidDistributedIfLagBuffer.
         GunnsFluidDistributedIfLagBuffer();
         /// @brief  Default destructs this GunnsFluidDistributedIfLagBuffer.
@@ -60,8 +60,8 @@ class GunnsFluidDistributedIfLagBuffer
         void step();
 
     private:
-        GunnsFluidDistributedIfData mBuffer1[10]; /**< (--) Buffer for direction 1. */
-        GunnsFluidDistributedIfData mBuffer2[10]; /**< (--) Buffer for direction 2. */
+        GunnsFluidDistributed2WayBusInterfaceData mBuffer1[10]; /**< (--) Buffer for direction 1. */
+        GunnsFluidDistributed2WayBusInterfaceData mBuffer2[10]; /**< (--) Buffer for direction 2. */
         unsigned int                mHeadIndex;   /**< (--) Index of the head of the buffers. */
         unsigned int                mTailIndex;   /**< (--) Index of the tail of the buffers. */
         /// @brief  Sets the interface Head & Tail data pointers to the correct buffer locations.

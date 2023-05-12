@@ -176,7 +176,7 @@ void GunnsElectBattery::initialize(GunnsElectBatteryConfigData&  configData,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectBattery::allocateArrays()
 {
-    TS_NEW_CLASS_ARRAY_EXT(mCells, static_cast<int>(mNumCells), GunnsElectBatteryCell, (), std::string(mName) + ".mCell");
+    TS_NEW_CLASS_ARRAY_EXT(mCells, static_cast<int>(mNumCells), GunnsElectBatteryCell, (), std::string(mName) + ".mCells");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

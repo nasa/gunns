@@ -2,13 +2,13 @@
 #define UtGunnsFluidDistributedIf_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup UT_FLUID_DISTRIBUTED_IF    Gunns Fluid Distributed Interface Unit Test
+/// @defgroup UT_FLUID_DISTRIBUTED_IF    GUNNS Fluid Distributed Interface Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
-/// @details  Unit Tests for the Gunns Fluid Distributed Interface
+/// @details  Unit Tests for the GUNNS Fluid Distributed Interface
 /// @{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,13 +38,31 @@ inline FriendlyGunnsFluidDistributedIf::FriendlyGunnsFluidDistributedIf()
 inline FriendlyGunnsFluidDistributedIf::~FriendlyGunnsFluidDistributedIf() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from GunnsFluidDistributed2WayBus and befriend UtGunnsFluidDistributedIf.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyGunnsFluidDistributed2WayBus : public GunnsFluidDistributed2WayBus
+{
+    public:
+        FriendlyGunnsFluidDistributed2WayBus();
+        virtual ~FriendlyGunnsFluidDistributed2WayBus();
+        friend class UtGunnsFluidDistributedIf;
+};
+inline FriendlyGunnsFluidDistributed2WayBus::FriendlyGunnsFluidDistributed2WayBus()
+    : GunnsFluidDistributed2WayBus() {};
+inline FriendlyGunnsFluidDistributed2WayBus::~FriendlyGunnsFluidDistributed2WayBus() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsFluidDistributedIfData and befriend UtGunnsFluidDistributedIf.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributedIfData
+class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributed2WayBusInterfaceData
 {
     public:
         FriendlyGunnsFluidDistributedIfData();
@@ -52,7 +70,7 @@ class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributedIfData
         friend class UtGunnsFluidDistributedIf;
 };
 inline FriendlyGunnsFluidDistributedIfData::FriendlyGunnsFluidDistributedIfData()
-    : GunnsFluidDistributedIfData() {};
+    : GunnsFluidDistributed2WayBusInterfaceData() {};
 inline FriendlyGunnsFluidDistributedIfData::~FriendlyGunnsFluidDistributedIfData() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,27 +104,28 @@ class UtGunnsFluidDistributedIf: public CppUnit::TestFixture
         CPPUNIT_TEST(testForceModes);
         CPPUNIT_TEST_SUITE_END();
 
-        GunnsFluidDistributedIfConfigData*  tConfigData;            /**< (--)   Nominal config data */
-        GunnsFluidDistributedIfInputData*   tInputData;             /**< (--)   Nominal input data */
-        FriendlyGunnsFluidDistributedIf*    tArticle;               /**< (--)   Article under test */
-        std::string                         tLinkName;              /**< (--)   Nominal config data */
-        bool                                tIsPairMaster;          /**< (--)   Nominal config data */
-        bool                                tUseEnthalpy;           /**< (--)   Nominal config data */
-        bool                                tDemandOption;          /**< (--)   Nominal config data */
-        bool                                tMalfBlockageFlag;      /**< (--)   Nominal input data */
-        double                              tMalfBlockageValue;     /**< (--)   Nominal input data */
-        GunnsFluidNode                      tNodes[2];              /**< (--)   Test nodes */
-        GunnsNodeList                       tNodeList;              /**< (--)   Test node list */
-        std::vector<GunnsBasicLink*>        tLinks;                 /**< (--)   Test links vector */
-        int                                 tPort0;                 /**< (--)   Nominal init data */
-        double                              tTimeStep;              /**< (s)    Test time step */
-        DefinedFluidProperties*             tFluidProperties;       /**< (--)   Test fluid properties */
-        DefinedChemicalCompounds*           tTcProperties;          /**< (--)   Pointer to predefined chemical compounds properties. */
-        ChemicalCompound::Type              tTcTypes[4];            /**< (--)   Array of trace compound types. */
-        GunnsFluidTraceCompoundsConfigData* tFluidTcConfig;         /**< (--)   Pointer to fluid trace compounds config data. */
-        PolyFluidConfigData*                tLocalConfig;           /**< (--)   Test local fluid config */
-        PolyFluidInputData*                 tFluidInput1;           /**< (--)   Test fluid input */
-        FriendlyGunnsFluidCapacitor         tCapacitorLink;         /**< (--)   Capacitor link */
+        GunnsFluidDistributedIfConfigData*    tConfigData;            /**< (--)   Nominal config data */
+        GunnsFluidDistributedIfInputData*     tInputData;             /**< (--)   Nominal input data */
+        FriendlyGunnsFluidDistributedIf*      tArticle;               /**< (--)   Article under test */
+        FriendlyGunnsFluidDistributed2WayBus* tArticleInterface;      /**< (--)   Interface logic article under test */
+        std::string                           tLinkName;              /**< (--)   Nominal config data */
+        bool                                  tIsPairMaster;          /**< (--)   Nominal config data */
+        bool                                  tUseEnthalpy;           /**< (--)   Nominal config data */
+        bool                                  tDemandOption;          /**< (--)   Nominal config data */
+        bool                                  tMalfBlockageFlag;      /**< (--)   Nominal input data */
+        double                                tMalfBlockageValue;     /**< (--)   Nominal input data */
+        GunnsFluidNode                        tNodes[2];              /**< (--)   Test nodes */
+        GunnsNodeList                         tNodeList;              /**< (--)   Test node list */
+        std::vector<GunnsBasicLink*>          tLinks;                 /**< (--)   Test links vector */
+        int                                   tPort0;                 /**< (--)   Nominal init data */
+        double                                tTimeStep;              /**< (s)    Test time step */
+        DefinedFluidProperties*               tFluidProperties;       /**< (--)   Test fluid properties */
+        DefinedChemicalCompounds*             tTcProperties;          /**< (--)   Pointer to predefined chemical compounds properties. */
+        ChemicalCompound::Type                tTcTypes[4];            /**< (--)   Array of trace compound types. */
+        GunnsFluidTraceCompoundsConfigData*   tFluidTcConfig;         /**< (--)   Pointer to fluid trace compounds config data. */
+        PolyFluidConfigData*                  tLocalConfig;           /**< (--)   Test local fluid config */
+        PolyFluidInputData*                   tFluidInput1;           /**< (--)   Test fluid input */
+        FriendlyGunnsFluidCapacitor           tCapacitorLink;         /**< (--)   Capacitor link */
 
     public:
         UtGunnsFluidDistributedIf();

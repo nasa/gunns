@@ -122,12 +122,20 @@ class GunnsElectDistributed2WayBusNotification
 class GunnsElectDistributed2WayBus
 {
     public:
+        /// @brief  Enumeration of interface roles. */
+        typedef enum {
+            NONE   = 0, /**< No role. */
+            SUPPLY = 1, /**< Supply role. */
+            DEMAND = 2  /**< Demand role. */
+        } Roles;
+        /// @ this is the HLA-like interface, not the model, etc.
         GunnsElectDistributed2WayBusInterfaceData mInData;  /**< (1) Input data received from the remote side. */
         GunnsElectDistributed2WayBusInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
         /// @brief  Default constructor.
         GunnsElectDistributed2WayBus();
         /// @brief  Default destructor.
         virtual ~GunnsElectDistributed2WayBus();
+        //MODEL INTERFACE:
         /// @brief  Creates an interface for a voltage supply in the local model.
         GunnsElectDistributed2WayBusSupplyData* createSupplyData();
         /// @brief  Initializes this Distributed 2-Way Bus Interface.
@@ -152,11 +160,6 @@ class GunnsElectDistributed2WayBus
         unsigned int popNotification(GunnsElectDistributed2WayBusNotification& notification);
 
     protected:
-        typedef enum {
-            NONE   = 0, /**< No role. */
-            SUPPLY = 1, /**< Supply role. */
-            DEMAND = 2  /**< Demand role. */
-        } Roles;
         bool                                                  mIsPrimarySide;   /**<    (1) trick_chkpnt_io(**) This is the primary side of the interface if true. */
         Roles                                                 mForcedRole;      /**<    (1)                     The role this interface is forced to be in, if any. */
         std::vector<GunnsElectDistributed2WayBusSupplyData*>  mSupplyDatas;     /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */

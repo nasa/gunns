@@ -30,17 +30,18 @@ PROGRAMMERS:
 @{
 */
 
-#include "GunnsFluidLink.hh"
-#include "software/SimCompatibility/TsSimCompatibility.hh"
-#include <vector>
+#include "GunnsDistributed2WayBusBase.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Distributed Fluid Mixture Data
 ///
 /// @details  This describes the intrinsic properties (energy & mixture) of a fluid for
 ///           communication across a distributed modeling interface.
+///
+/// @note     This must remain a base class, since it it used in multiple inheritance below, to
+///           avoid the diamond inheritance problem.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributedMixtureData
+class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class, see above !!!
 {
     public:
         double  mEnergy;          /**< (1)                     Fluid temperature (K) or specific enthalpy (J/kg). */
@@ -86,12 +87,9 @@ class GunnsFluidDistributedMixtureData
 ///           GunnsFluidDistributed2WayBus across the sim-sim interface (HLA, etc.)  The class
 ///           variables, including the base class variables, map to the HLA FOM.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMixtureData
+class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMixtureData, public GunnsDistributed2WayBusBaseInterfaceData
 {
     public:
-        unsigned int mFrameCount;      /**< (1)      Frame count driven by this side. */
-        unsigned int mFrameLoopback;   /**< (1)      Frame count driven by other side, echoed back. */
-        bool         mDemandMode;      /**< (1)      Demand mode flag. */
         double       mCapacitance;     /**< (mol/Pa) Model capacitance. */
         double       mSource;          /**< (1)      Fluid pressure (Pa) or molar flow (mol/s). */
         /// @brief  Default constructs this Fluid Distributed 2-Way Bus interface data.
@@ -99,7 +97,7 @@ class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMi
         /// @brief  Default destructs this Fluid Distributed 2-Way Bus interface data.
         virtual ~GunnsFluidDistributed2WayBusInterfaceData();
         /// @brief  Returns whether this object has received valid data.
-        bool hasValidData() const;
+        virtual bool hasValidData() const;
         /// @brief Assignment operator for this Fluid Distributed 2-Way Bus interface data.
         GunnsFluidDistributed2WayBusInterfaceData& operator =(const GunnsFluidDistributed2WayBusInterfaceData& that);
 
@@ -153,33 +151,6 @@ class GunnsFluidDistributed2WayBusFlowState : public GunnsFluidDistributedMixtur
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Fluid Distributed 2-Way Bus notification message.
-///
-/// @details  This describes a notification message from the GunnsFluidDistributed2WayBus to the
-///           outside, including severity level and message string.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBusNotification
-{
-    public:
-        typedef enum {
-            INFO = 0, ///< Information.
-            WARN = 1, ///< Warning.
-            ERR  = 2, ///< Error.
-            NONE = 3, ///< No notification, empty queue.
-        } NotificationLevel;
-        NotificationLevel mLevel;   /**< (1) The severity level of the notification. */
-        std::string       mMessage; /**< (1) the notification message. */
-        /// @brief  Default constructor.
-        GunnsFluidDistributed2WayBusNotification(const NotificationLevel level = NONE, const std::string& message = "");
-        /// @brief  Default destructor.
-        virtual ~GunnsFluidDistributed2WayBusNotification();
-        /// @brief  Copy constructor.
-        GunnsFluidDistributed2WayBusNotification(const GunnsFluidDistributed2WayBusNotification& that);
-        /// @brief  Assignment operator.
-        GunnsFluidDistributed2WayBusNotification& operator =(const GunnsFluidDistributed2WayBusNotification& that);
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Fluid Distributed 2-Way Bus Interface.
 ///
 /// @details  See the GUNNS Wiki link in REFERENCE above.  Main features:
@@ -226,15 +197,9 @@ class GunnsFluidDistributed2WayBusNotification
 ///               transfers notification to the sim's messaging system as desired.
 ///           13. this->mOutData transmitted across the interface data network to the other side.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBus
+class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
 {
     public:
-        /// @brief  Enumeration of interface roles. */
-        typedef enum {
-            NONE   = 0, /**< No role. */
-            SUPPLY = 1, /**< Supply role. */
-            DEMAND = 2  /**< Demand role. */
-        } Roles;
         GunnsFluidDistributed2WayBusInterfaceData mInData;  /**< (1) Input data received from the remote side. */
         GunnsFluidDistributed2WayBusInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
         /// @brief Default Constructor.
@@ -248,21 +213,13 @@ class GunnsFluidDistributed2WayBus
                         const unsigned int nIfBulk,
                         const unsigned int nIfTc);
         /// @brief Process received data prior to the model update.
-        virtual void processInputs();
+        void processInputs();
         /// @brief Returns the limit on max flow between the Demand-side model and the interface volume.
         double computeDemandLimit(const double timestep, const double demandSidePressure);
         /// @brief Returns the stability filter gain used in the Demand-side flow rate limit.
         double getDemandLimitGain() const;
         /// @brief Special processing of data outputs from the model after the network update.
-        virtual void processOutputs(const double capacitance);
-        /// @brief Forces this interface to remain in Demand role.
-        void forceDemandRole();
-        /// @brief Forces this interface to remain in Supply role.
-        void forceSupplyRole();
-        /// @brief Resets the forced role and lets the interface logic determine role normally.
-        void resetForceRole();
-        /// @brief Returns whether this Distributed 2-Way Bus Interface is in the Demand role.
-        bool isInDemandRole() const;
+        void processOutputs(const double capacitance);
         /// @brief Sets the outgoing fluid state of the interface volume when in the Supply role.
         void setFluidState(const GunnsFluidDistributed2WayBusFluidState& fluid);
         /// @brief Gets the incoming fluid state of the interface volume when in the Demand role.
@@ -271,21 +228,13 @@ class GunnsFluidDistributed2WayBus
         void setFlowState(const GunnsFluidDistributed2WayBusFlowState& flow);
         /// @brief Gets the incoming state of flows to/from the interface volume when in the Supply role.
         bool getFlowState(GunnsFluidDistributed2WayBusFlowState& flow) const;
-        /// @brief Pops a notification message off of the queue and returns the remaining queue size.
-        unsigned int popNotification(GunnsFluidDistributed2WayBusNotification& notification);
 
     protected:
-        bool                                                  mIsPairMaster;           /**<    (1)     trick_chkpnt_io(**) This is the master side of the interface. */
-        bool                                                  mInDataLastDemandMode;   /**<    (1)                         Last-pass demand mode from the other paired link. */
-        int                                                   mFramesSinceFlip;        /**<    (1)                         Number of frames since the last mode flip. */
-        int                                                   mLoopLatency;            /**<    (1)                         Round-trip loop data lag measurement. */
-        double                                                mDemandLimitGain;        /**<    (1)                         The current Demand-side flow rate limit filter gain. */
-        double                                                mDemandLimitFlowRate;    /**<    (mol/s)                     The current Demand-side flow rate limit. */
-        Roles                                                 mForcedRole;             /**<    (1)                         The role this interface is forced to be in, if any. */
-        std::vector<GunnsFluidDistributed2WayBusNotification> mNotifications;          /**< ** (1)     trick_chkpnt_io(**) Notifications queue. */
-        static const double                                   mModingCapacitanceRatio; /**<    (1)     trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
-        static const double                                   mDemandFilterConstA;     /**< ** (1)     trick_chkpnt_io(**) Demand filter gain constant A. */
-        static const double                                   mDemandFilterConstB;     /**< ** (1)     trick_chkpnt_io(**) Demand filter gain constant B. */
+        double              mDemandLimitGain;        /**<    (1)                         The current Demand-side flow rate limit filter gain. */
+        double              mDemandLimitFlowRate;    /**<    (mol/s)                     The current Demand-side flow rate limit. */
+        static const double mModingCapacitanceRatio; /**<    (1)     trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
+        static const double mDemandFilterConstA;     /**< ** (1)     trick_chkpnt_io(**) Demand filter gain constant A. */
+        static const double mDemandFilterConstB;     /**< ** (1)     trick_chkpnt_io(**) Demand filter gain constant B. */
         /// @brief Handles several mode flip cases based on input data.
         void flipModesOnInput();
         /// @brief Flips to the Demand mode.
@@ -294,9 +243,6 @@ class GunnsFluidDistributed2WayBus
         void flipToSupplyMode();
         /// @brief Flips to the Demand mode based on capacitances.
         void flipModesOnCapacitance();
-        /// @brief  Adds a notification message to the queue.
-        void pushNotification(const GunnsFluidDistributed2WayBusNotification::NotificationLevel level,
-                              const std::string&                                                message);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -308,58 +254,11 @@ class GunnsFluidDistributed2WayBus
 /// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to DEMAND.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidDistributed2WayBus::forceDemandRole()
-{
-    mForcedRole = DEMAND;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to SUPPLY.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidDistributed2WayBus::forceSupplyRole()
-{
-    mForcedRole = SUPPLY;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to NONE.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidDistributed2WayBus::resetForceRole()
-{
-    mForcedRole = NONE;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool (1) True if this interface is currently in the Demand role.
-///
-/// @details  Returns the value of mOutData.mDemandMode.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsFluidDistributed2WayBus::isInDemandRole() const
-{
-    return mOutData.mDemandMode;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mDemandLimitGain.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsFluidDistributed2WayBus::getDemandLimitGain() const
 {
     return mDemandLimitGain;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] level   (--) Severity level of the message.
-/// @param[in] message (--) Detailed message string.
-///
-/// @details  Adds a new notification message object to the message queue.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidDistributed2WayBus::pushNotification(
-        const GunnsFluidDistributed2WayBusNotification::NotificationLevel level,
-        const std::string&                                                message)
-{
-    mNotifications.push_back(GunnsFluidDistributed2WayBusNotification(level, message));
 }
 
 #endif

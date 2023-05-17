@@ -205,7 +205,7 @@ void GunnsElectDistributedIf::step(const double dt)
 {
     updateSupplyMonitor();
 
-    mInterface.updateFrameCounts();
+    mInterface.processInputs();
     updateInterface();
 
     /// - The voltage supplied to this side from the remote side only needs to be updated once, here
@@ -366,22 +366,22 @@ bool GunnsElectDistributedIf::checkSpecificPortRules(const int port, const int n
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectDistributedIf::processIfNotifications(const bool isInit)
 {
-    GunnsElectDistributed2WayBusNotification notification;
+    GunnsDistributed2WayBusNotification notification;
     unsigned int numNotifs = 0;
     do {
         numNotifs = mInterface.popNotification(notification);
-        if (GunnsElectDistributed2WayBusNotification::NONE != notification.mLevel) {
+        if (GunnsDistributed2WayBusNotification::NONE != notification.mLevel) {
             std::ostringstream msg;
             msg << "from mInterface: " << notification.mMessage;
             switch (notification.mLevel) {
-                case GunnsElectDistributed2WayBusNotification::INFO:
+                case GunnsDistributed2WayBusNotification::INFO:
                     GUNNS_INFO(msg.str());
                     break;
 // The interface currently has no WARN or ERR outputs, so these are untestable:
-//                case GunnsElectDistributed2WayBusNotification::WARN:
+//                case GunnsDistributed2WayBusNotification::WARN:
 //                    GUNNS_WARNING(msg.str());
 //                    break;
-//                case GunnsElectDistributed2WayBusNotification::ERR:
+//                case GunnsDistributed2WayBusNotification::ERR:
 //                    if (isInit) {
 //                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
 //                    } else {

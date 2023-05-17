@@ -211,7 +211,7 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
 
     /// @test    Nominal config data.
-    CPPUNIT_ASSERT(tIsPairPrimary == tInterface->mIsPrimarySide);
+    CPPUNIT_ASSERT(tIsPairPrimary == tInterface->mIsPairMaster);
     CPPUNIT_ASSERT(tConductance   == tVoltageSource->mOutputConductance);
 
     /// @test    Nominal input data.

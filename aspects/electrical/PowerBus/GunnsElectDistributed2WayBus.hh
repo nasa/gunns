@@ -33,8 +33,7 @@ PROGRAMMERS:
 @{
 */
 
-#include <vector>
-#include <string>
+#include "core/GunnsDistributed2WayBusBase.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Electrical Distributed 2-Way Bus voltage supply data.
@@ -53,44 +52,26 @@ struct GunnsElectDistributed2WayBusSupplyData
 /// @brief    Electrical Distributed 2-Way Bus voltage interface data.
 ///
 /// @details  This holds the data that is transferred between instances of
-///           GunnsElectDistributed2WayBus across the sim-sim interface.  These terms map to the
-///           HLA FOM.
+///           GunnsElectDistributed2WayBus across the sim-sim interface.  The class variables,
+///           including the base class variables, map to the HLA FOM.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-struct GunnsElectDistributed2WayBusInterfaceData
+class GunnsElectDistributed2WayBusInterfaceData : public GunnsDistributed2WayBusBaseInterfaceData
 {
     public:
-        unsigned int mFrameCount;    /**< (1) Frame count driven by this side. */
-        unsigned int mFrameLoopback; /**< (1) Frame count driven by other side, echoed back. */
-        bool         mDemandMode;    /**< (1) Demand mode flag. */
-        float        mDemandPower;   /**< (W) Demanded power load. */
-        float        mSupplyVoltage; /**< (V) Supplied voltage. */
-};
+        float mDemandPower;   /**< (W) Demanded power load. */
+        float mSupplyVoltage; /**< (V) Supplied voltage. */
+        /// @brief  Default constructs this Electrical Distributed 2-Way Bus interface data.
+        GunnsElectDistributed2WayBusInterfaceData();
+        /// @brief  Default destructs this Electrical Distributed 2-Way Bus interface data.
+        virtual ~GunnsElectDistributed2WayBusInterfaceData();
+        /// @brief  Returns whether this object has received valid data.
+        virtual bool hasValidData() const;
+        /// @brief Assignment operator for this Electrical Distributed 2-Way Bus interface data.
+        GunnsElectDistributed2WayBusInterfaceData& operator =(const GunnsElectDistributed2WayBusInterfaceData& that);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Electrical Distributed 2-Way Bus notification message.
-///
-/// @details  This describes a notification message from the GunnsElectDistributed2WayBus to the
-///           outside, including severity level and message string.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsElectDistributed2WayBusNotification
-{
-    public:
-        typedef enum {
-            INFO = 0, ///< Information.
-            WARN = 1, ///< Warning.
-            ERR  = 2, ///< Error.
-            NONE = 3, ///< No notification, empty queue.
-        } NotificationLevel;
-        NotificationLevel mLevel;   /**< (1) The severity level of the notification. */
-        std::string       mMessage; /**< (1) the notification message. */
-        /// @brief  Default constructor.
-        GunnsElectDistributed2WayBusNotification(const NotificationLevel level = NONE, const std::string& message = "");
-        /// @brief  Default destructor.
-        virtual ~GunnsElectDistributed2WayBusNotification();
-        /// @brief  Copy constructor.
-        GunnsElectDistributed2WayBusNotification(const GunnsElectDistributed2WayBusNotification& that);
-        /// @brief  Assignment operator.
-        GunnsElectDistributed2WayBusNotification& operator =(const GunnsElectDistributed2WayBusNotification& that);
+    private:
+        /// @brief Copy constructor unavailable since declared private and not implemented.
+        GunnsElectDistributed2WayBusInterfaceData(const GunnsElectDistributed2WayBusInterfaceData&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,56 +100,30 @@ class GunnsElectDistributed2WayBusNotification
 ///             - The local model drives these during runtime from the current state of each
 ///               respective voltage regulator model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsElectDistributed2WayBus
+class GunnsElectDistributed2WayBus : public GunnsDistributed2WayBusBase
 {
     public:
-        /// @brief  Enumeration of interface roles. */
-        typedef enum {
-            NONE   = 0, /**< No role. */
-            SUPPLY = 1, /**< Supply role. */
-            DEMAND = 2  /**< Demand role. */
-        } Roles;
-        /// @ this is the HLA-like interface, not the model, etc.
         GunnsElectDistributed2WayBusInterfaceData mInData;  /**< (1) Input data received from the remote side. */
         GunnsElectDistributed2WayBusInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
         /// @brief  Default constructor.
         GunnsElectDistributed2WayBus();
         /// @brief  Default destructor.
         virtual ~GunnsElectDistributed2WayBus();
-        //MODEL INTERFACE:
         /// @brief  Creates an interface for a voltage supply in the local model.
         GunnsElectDistributed2WayBusSupplyData* createSupplyData();
         /// @brief  Initializes this Distributed 2-Way Bus Interface.
         void initialize(const bool isPrimarySide = false, const float voltage = 0.0);
         /// @brief  Updates frame counters, should be called once per main model step.
-        void updateFrameCounts();
+        void processInputs();
         /// @brief  Updates the interface logic.
         void update(const float localVoltage, const float localPowerDemand);
-        /// @brief  Forces this interface to remain in Demand role.
-        void forceDemandRole();
-        /// @brief  Forces this interface to remain in Supply role.
-        void forceSupplyRole();
-        /// @brief  Resets the forced role and lets the interface logic determine role normally.
-        void resetForceRole();
-        /// @brief  Returns whether this Distributed 2-Way Bus Interface is in the Demand role.
-        bool isInDemandRole() const;
         /// @brief  Returns the power demand from the remote model to apply to the local model.
         float getRemoteLoad() const;
         /// @brief  Returns the voltage supply from the remote model to apply to the local model.
         float getRemoteSupply() const;
-        /// @brief  Pops a notification message off of the queue and returns the remaining queue size.
-        unsigned int popNotification(GunnsElectDistributed2WayBusNotification& notification);
 
     protected:
-        bool                                                  mIsPrimarySide;   /**<    (1) trick_chkpnt_io(**) This is the primary side of the interface if true. */
-        Roles                                                 mForcedRole;      /**<    (1)                     The role this interface is forced to be in, if any. */
-        std::vector<GunnsElectDistributed2WayBusSupplyData*>  mSupplyDatas;     /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */
-        int                                                   mLoopLatency;     /**<    (1)                     Measured round-trip data loop latency, in number of model update steps. */
-        int                                                   mFramesSinceFlip; /**< (1) Count of main model frames since our last mode flip. */
-        std::vector<GunnsElectDistributed2WayBusNotification> mNotifications;   /**< ** (1) trick_chkpnt_io(**) Notifications queue. */
-        /// @brief  Adds a notification message to the queue.
-        void pushNotification(const GunnsElectDistributed2WayBusNotification::NotificationLevel level,
-                              const std::string&                                                message);
+        std::vector<GunnsElectDistributed2WayBusSupplyData*> mSupplyDatas; /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
@@ -178,6 +133,16 @@ class GunnsElectDistributed2WayBus
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  (--)  True if all data validation checks passed.
+///
+/// @details  Checks for all of the following conditions to be met:  Frame count > 0.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectDistributed2WayBusInterfaceData::hasValidData() const
+{
+    return (mFrameCount > 1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  GunnsElectDistributed2WayBusSupplyData* (--) Address of the created supply data object.
@@ -192,44 +157,6 @@ inline GunnsElectDistributed2WayBusSupplyData* GunnsElectDistributed2WayBus::cre
     GunnsElectDistributed2WayBusSupplyData* newSupplyData = new GunnsElectDistributed2WayBusSupplyData();
     mSupplyDatas.push_back(newSupplyData);
     return newSupplyData;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to DEMAND.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectDistributed2WayBus::forceDemandRole()
-{
-    mForcedRole = DEMAND;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to SUPPLY.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectDistributed2WayBus::forceSupplyRole()
-{
-    mForcedRole = SUPPLY;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Sets the mForcedRole attribute to NONE.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectDistributed2WayBus::resetForceRole()
-{
-    mForcedRole = NONE;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool (1) True if this is currently in the Demand role.
-///
-/// @details  Returns the value of mOutData.mDemandMode.  When in Demand role (returned value = 1),
-///           this side of the interface acts as a constant-power load on the local model, and the
-///           local model should call getRemoteLoad() for the load amount.  When in Supply role,
-///           this side of the interface acts as a voltage supply to the local model, which can be
-///           characterized by calling getRemoteSupply().
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectDistributed2WayBus::isInDemandRole() const
-{
-    return mOutData.mDemandMode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,19 +181,6 @@ inline float GunnsElectDistributed2WayBus::getRemoteLoad() const
 inline float GunnsElectDistributed2WayBus::getRemoteSupply() const
 {
     return mInData.mSupplyVoltage;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] level   (--) Severity level of the message.
-/// @param[in] message (--) Detailed message string.
-///
-/// @details  Adds a new notification message object to the message queue.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectDistributed2WayBus::pushNotification(
-        const GunnsElectDistributed2WayBusNotification::NotificationLevel level,
-        const std::string&                                                message)
-{
-    mNotifications.push_back(GunnsElectDistributed2WayBusNotification(level, message));
 }
 
 #endif

@@ -788,3 +788,38 @@ bool GunnsFluidDistributedIf::checkNegativeFluidFractions(const PolyFluid* fluid
 
     return false;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Pops all notifications from the interface utility's queue and translates them to H&S
+///           messages.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIf::processIfNotifications(const bool isInit)
+{
+    GunnsDistributed2WayBusNotification notification;
+    unsigned int numNotifs = 0;
+    do {
+        numNotifs = mInterface.popNotification(notification);
+        if (GunnsDistributed2WayBusNotification::NONE != notification.mLevel) {
+            std::ostringstream msg;
+            msg << "from mInterface: " << notification.mMessage;
+            switch (notification.mLevel) {
+                case GunnsDistributed2WayBusNotification::INFO:
+                    GUNNS_INFO(msg.str());
+                    break;
+                case GunnsDistributed2WayBusNotification::WARN:
+                    GUNNS_WARNING(msg.str());
+                    break;
+// The interface currently has no ERR outputs, so these are untestable:
+//                case GunnsDistributed2WayBusNotification::ERR:
+//                    if (isInit) {
+//                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
+//                    } else {
+//                        GUNNS_ERROR(TsOutOfBoundsException, "Catch and re-throw", msg.str());
+//                    }
+//                    break;
+                default: // this won't happen, checked by the if statement
+                    break;
+            }
+        }
+    } while (numNotifs > 0);
+}

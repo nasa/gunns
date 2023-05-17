@@ -235,6 +235,8 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         double outputCapacitance();
         /// @brief Checks if any of the given fluid's mixture fractions are negative.
         bool checkNegativeFluidFractions(const PolyFluid* fluid) const;
+        /// @brief Relays notifications from the interface to H&S.
+        void processIfNotifications(const bool isInit);
 
     private:
         /// @details Define the number of ports this link class has.  All objects of the same link

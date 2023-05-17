@@ -6,55 +6,43 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-   ()
+  ((core/GunnsDistributed2WayBusBase.o))
 */
 
 #include "GunnsElectDistributed2WayBus.hh"
 #include <sstream>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] level   (--) Severity level of the message.
-/// @param[in] message (--) Detailed message string.
+/// @details  Default constructs this Electrical Distributed 2-Way Bus interface data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectDistributed2WayBusInterfaceData::GunnsElectDistributed2WayBusInterfaceData()
+    :
+    GunnsDistributed2WayBusBaseInterfaceData(),
+    mDemandPower(0.0),
+    mSupplyVoltage(0.0)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Electrical Distributed 2-Way Bus interface data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectDistributed2WayBusInterfaceData::~GunnsElectDistributed2WayBusInterfaceData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  that  (--)  Object that this is to be assigned equal to.
 ///
-/// @details  Electrical Distributed 2-Way Bus notification message default constructor.
+/// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusNotification::GunnsElectDistributed2WayBusNotification(
-        const NotificationLevel level,
-        const std::string& message)
-    :
-    mLevel(level),
-    mMessage(message)
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Electrical Distributed 2-Way Bus notification message default destructor.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusNotification::~GunnsElectDistributed2WayBusNotification()
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Electrical Distributed 2-Way Bus notification message copy constructor.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusNotification::GunnsElectDistributed2WayBusNotification(const GunnsElectDistributed2WayBusNotification& that)
-    :
-    mLevel(that.mLevel),
-    mMessage(that.mMessage)
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Electrical Distributed 2-Way Bus notification message assignment operator.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusNotification& GunnsElectDistributed2WayBusNotification::operator =(const GunnsElectDistributed2WayBusNotification& that)
+GunnsElectDistributed2WayBusInterfaceData& GunnsElectDistributed2WayBusInterfaceData::operator =(const GunnsElectDistributed2WayBusInterfaceData& that)
 {
     if (this != &that) {
-        this->mLevel   = that.mLevel;
-        this->mMessage = that.mMessage;
+        GunnsDistributed2WayBusBaseInterfaceData::operator = (that);
+        mDemandPower   = that.mDemandPower;
+        mSupplyVoltage = that.mSupplyVoltage;
     }
     return *this;
 }
@@ -64,13 +52,10 @@ GunnsElectDistributed2WayBusNotification& GunnsElectDistributed2WayBusNotificati
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectDistributed2WayBus::GunnsElectDistributed2WayBus()
     :
+    GunnsDistributed2WayBusBase(&mInData, &mOutData),
     mInData(),
     mOutData(),
-    mIsPrimarySide(false),
-    mForcedRole(NONE),
-    mSupplyDatas(),
-    mLoopLatency(0),
-    mFramesSinceFlip(0)
+    mSupplyDatas()
 {
     // nothing to do
 }
@@ -98,13 +83,13 @@ GunnsElectDistributed2WayBus::~GunnsElectDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectDistributed2WayBus::initialize(const bool isPrimarySide, const float voltage)
 {
-    mIsPrimarySide = isPrimarySide;
+    GunnsDistributed2WayBusBase::initialize(isPrimarySide);
 
-    mInData.mDemandMode    = mIsPrimarySide;
+    mInData.mDemandMode    = isPrimarySide;
     mInData.mDemandPower   = 0.0;
     mInData.mSupplyVoltage = voltage;
 
-    mOutData.mDemandMode    = not mIsPrimarySide;
+    mOutData.mDemandMode    = not isPrimarySide;
     mOutData.mDemandPower   = 0.0;
     mOutData.mSupplyVoltage = voltage;
 }
@@ -115,12 +100,9 @@ void GunnsElectDistributed2WayBus::initialize(const bool isPrimarySide, const fl
 ///
 /// @note  This should be called exactly once per main model step, and before any calls to update.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributed2WayBus::updateFrameCounts()
+void GunnsElectDistributed2WayBus::processInputs()
 {
-    mOutData.mFrameCount++;
-    mFramesSinceFlip++;
-    mLoopLatency            = mOutData.mFrameCount - mInData.mFrameLoopback;
-    mOutData.mFrameLoopback = mInData.mFrameCount;
+    updateFrameCounts();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +146,7 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
                     if (mInData.mDemandMode and (mFramesSinceFlip > mLoopLatency)) {
                         mOutData.mDemandMode = false;
                         mFramesSinceFlip     = 0;
-                        pushNotification(GunnsElectDistributed2WayBusNotification::INFO,
+                        pushNotification(GunnsDistributed2WayBusNotification::INFO,
                                 "flipping to Supply role in response to remote's takeover of Demand role.");
                     }
                 } else {
@@ -173,7 +155,7 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
                         mFramesSinceFlip     = 0;
                         std::ostringstream msg;
                         msg << "flipping to Demand role with available V: " << availV << " < remote V: " << mInData.mSupplyVoltage << ".";
-                        pushNotification(GunnsElectDistributed2WayBusNotification::INFO, msg.str());
+                        pushNotification(GunnsDistributed2WayBusNotification::INFO, msg.str());
                     }
                 }
             }
@@ -194,25 +176,4 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
         mOutData.mSupplyVoltage = localVoltage;
         mOutData.mDemandPower   = 0.0;
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] GunnsElectDistributed2WayBusNotification (--) Reference to the caller's message object to copy the message into.
-///
-/// @returns  unsigned int (--) Number of notifications remaining in the queue.
-///
-/// @details  Set the caller's supplied notification object equal to the tail of the queue and pops
-///           that message off of the queue, reducing the queue size by one.  If the queue size is
-///           already zero, then returns an empty message.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned int GunnsElectDistributed2WayBus::popNotification(GunnsElectDistributed2WayBusNotification& notification)
-{
-    if (mNotifications.size() > 0) {
-        notification = mNotifications.back();
-        mNotifications.pop_back();
-    } else {
-        notification.mLevel   = GunnsElectDistributed2WayBusNotification::NONE;
-        notification.mMessage = "";
-    }
-    return mNotifications.size();
 }

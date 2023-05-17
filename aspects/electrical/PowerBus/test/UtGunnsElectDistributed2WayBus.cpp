@@ -57,24 +57,24 @@ void UtGunnsElectDistributed2WayBus::testNotificationConstruction()
     UT_RESULT_FIRST;
 
     /// @test Default construction.
-    GunnsElectDistributed2WayBusNotification defaultNotif;
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBusNotification::NONE == defaultNotif.mLevel);
-    CPPUNIT_ASSERT(""                                             == defaultNotif.mMessage);
+    GunnsDistributed2WayBusNotification defaultNotif;
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::NONE == defaultNotif.mLevel);
+    CPPUNIT_ASSERT(""                                        == defaultNotif.mMessage);
 
     /// @test Nominal construction.
-    GunnsElectDistributed2WayBusNotification nominalNotif(GunnsElectDistributed2WayBusNotification::ERR, "Error!");
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBusNotification::ERR == nominalNotif.mLevel);
-    CPPUNIT_ASSERT("Error!"                                      == nominalNotif.mMessage);
+    GunnsDistributed2WayBusNotification nominalNotif(GunnsDistributed2WayBusNotification::ERR, "Error!");
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == nominalNotif.mLevel);
+    CPPUNIT_ASSERT("Error!"                                 == nominalNotif.mMessage);
 
     /// @test Copy construction.
-    GunnsElectDistributed2WayBusNotification copyNotif(nominalNotif);
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBusNotification::ERR == copyNotif.mLevel);
-    CPPUNIT_ASSERT("Error!"                                      == copyNotif.mMessage);
+    GunnsDistributed2WayBusNotification copyNotif(nominalNotif);
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == copyNotif.mLevel);
+    CPPUNIT_ASSERT("Error!"                                 == copyNotif.mMessage);
 
     /// @test Assignment operator.
     defaultNotif = copyNotif;
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBusNotification::ERR == defaultNotif.mLevel);
-    CPPUNIT_ASSERT("Error!"                                      == defaultNotif.mMessage);
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == defaultNotif.mLevel);
+    CPPUNIT_ASSERT("Error!"                                 == defaultNotif.mMessage);
 
     UT_PASS;
 }
@@ -97,7 +97,7 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
     CPPUNIT_ASSERT(false                              == tArticle->mOutData.mDemandMode);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(false                              == tArticle->mIsPrimarySide);
+    CPPUNIT_ASSERT(false                              == tArticle->mIsPairMaster);
     CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tArticle->mForcedRole);
     CPPUNIT_ASSERT(0                                  == tArticle->mSupplyDatas.size());
     CPPUNIT_ASSERT(0                                  == tArticle->mLoopLatency);
@@ -132,7 +132,7 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
     const float voltage = 120.0;
     tArticle->initialize(true, voltage);
 
-    CPPUNIT_ASSERT(true    == tArticle->mIsPrimarySide);
+    CPPUNIT_ASSERT(true    == tArticle->mIsPairMaster);
     CPPUNIT_ASSERT(true    == tArticle->mInData.mDemandMode);
     CPPUNIT_ASSERT(0.0     == tArticle->mInData.mDemandPower);
     CPPUNIT_ASSERT(voltage == tArticle->mInData.mSupplyVoltage);
@@ -144,7 +144,7 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
     FriendlyGunnsElectDistributed2WayBus article2;
     article2.initialize(false, voltage);
 
-    CPPUNIT_ASSERT(false   == article2.mIsPrimarySide);
+    CPPUNIT_ASSERT(false   == article2.mIsPairMaster);
     CPPUNIT_ASSERT(false   == article2.mInData.mDemandMode);
     CPPUNIT_ASSERT(0.0     == article2.mInData.mDemandPower);
     CPPUNIT_ASSERT(voltage == article2.mInData.mSupplyVoltage);
@@ -205,11 +205,11 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
     tArticle->initialize(true, 120.0);
     tArticle->mOutData.mFrameCount = 43;
 
-    GunnsElectDistributed2WayBusNotification notif;
-    GunnsElectDistributed2WayBusNotification::NotificationLevel NONE =
-            GunnsElectDistributed2WayBusNotification::NONE;
-    GunnsElectDistributed2WayBusNotification::NotificationLevel INFO =
-            GunnsElectDistributed2WayBusNotification::INFO;
+    GunnsDistributed2WayBusNotification notif;
+    GunnsDistributed2WayBusNotification::NotificationLevel NONE =
+            GunnsDistributed2WayBusNotification::NONE;
+    GunnsDistributed2WayBusNotification::NotificationLevel INFO =
+            GunnsDistributed2WayBusNotification::INFO;
 
     /// @test    Remain in Supply mode.
     supply1->mAvailable              = true;
@@ -297,11 +297,11 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
     tArticle->initialize(true, 120.0);
     tArticle->mOutData.mFrameCount = 43;
 
-    GunnsElectDistributed2WayBusNotification notif;
-    GunnsElectDistributed2WayBusNotification::NotificationLevel NONE =
-            GunnsElectDistributed2WayBusNotification::NONE;
-    GunnsElectDistributed2WayBusNotification::NotificationLevel INFO =
-            GunnsElectDistributed2WayBusNotification::INFO;
+    GunnsDistributed2WayBusNotification notif;
+    GunnsDistributed2WayBusNotification::NotificationLevel NONE =
+            GunnsDistributed2WayBusNotification::NONE;
+    GunnsDistributed2WayBusNotification::NotificationLevel INFO =
+            GunnsDistributed2WayBusNotification::INFO;
 
     /// @test    Remains in Supply when forced.
     tArticle->mInData.mDemandMode    = true;

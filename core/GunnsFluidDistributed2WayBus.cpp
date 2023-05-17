@@ -10,6 +10,8 @@ LIBRARY DEPENDENCY:
 */
 
 #include "GunnsFluidDistributed2WayBus.hh"
+#include <cfloat>
+#include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this distributed fluid mixture data.
@@ -185,65 +187,12 @@ GunnsFluidDistributed2WayBusFlowState::~GunnsFluidDistributed2WayBusFlowState()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] level   (--) Severity level of the message.
-/// @param[in] message (--) Detailed message string.
-///
-/// @details  Constructs this notification message with the given values.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusNotification::GunnsFluidDistributed2WayBusNotification(
-        const NotificationLevel level,
-        const std::string& message)
-    :
-    mLevel(level),
-    mMessage(message)
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Notification message default destructor.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusNotification::~GunnsFluidDistributed2WayBusNotification()
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  that  (--)  Object to be copied.
-///
-/// @details  Notification message copy constructor.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusNotification::GunnsFluidDistributed2WayBusNotification(const GunnsFluidDistributed2WayBusNotification& that)
-    :
-    mLevel(that.mLevel),
-    mMessage(that.mMessage)
-{
-    // nothing to do
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  that  (--)  Object that this is to be assigned equal to.
-///
-/// @details  Notification message assignment operator.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusNotification& GunnsFluidDistributed2WayBusNotification::operator =(const GunnsFluidDistributed2WayBusNotification& that)
-{
-    if (this != &that) {
-        this->mLevel   = that.mLevel;
-        this->mMessage = that.mMessage;
-    }
-    return *this;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Fluid Distributed 2-Way Bus interface data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributed2WayBusInterfaceData::GunnsFluidDistributed2WayBusInterfaceData()
     :
     GunnsFluidDistributedMixtureData(),
-    mFrameCount(0),
-    mFrameLoopback(0),
-    mDemandMode(false),
+    GunnsDistributed2WayBusBaseInterfaceData(),
     mCapacitance(0.0),
     mSource(0.0)
 {
@@ -268,12 +217,10 @@ GunnsFluidDistributed2WayBusInterfaceData::~GunnsFluidDistributed2WayBusInterfac
 GunnsFluidDistributed2WayBusInterfaceData& GunnsFluidDistributed2WayBusInterfaceData::operator =(const GunnsFluidDistributed2WayBusInterfaceData& that)
 {
     if (this != &that) {
-        mFrameCount    = that.mFrameCount;
-        mFrameLoopback = that.mFrameLoopback;
-        mDemandMode    = that.mDemandMode;
-        mCapacitance   = that.mCapacitance;
-        mSource        = that.mSource;
-        mEnergy        = that.mEnergy;
+        GunnsDistributed2WayBusBaseInterfaceData::operator = (that);
+        mCapacitance = that.mCapacitance;
+        mSource      = that.mSource;
+        mEnergy      = that.mEnergy;
         for (unsigned int i=0; i<mNumFluid; ++i) {
             mMoleFractions[i] = that.mMoleFractions[i];
         }
@@ -321,16 +268,11 @@ const double GunnsFluidDistributed2WayBus::mDemandFilterConstB = 0.75;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributed2WayBus::GunnsFluidDistributed2WayBus()
     :
+    GunnsDistributed2WayBusBase(&mInData, &mOutData),
     mInData                (),
     mOutData               (),
-    mIsPairMaster          (false),
-    mInDataLastDemandMode  (false),
-    mFramesSinceFlip       (0),
-    mLoopLatency           (0),
     mDemandLimitGain       (0.0),
-    mDemandLimitFlowRate   (0.0),
-    mForcedRole            (NONE),
-    mNotifications         ()
+    mDemandLimitFlowRate   (0.0)
 {
     // nothing to do
 }
@@ -362,19 +304,10 @@ void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
     mInData .initialize(nBulk, nTc, nIfBulk, nIfTc);
     mOutData.initialize(nBulk, nTc, nIfBulk, nIfTc);
 
-    /// - Initialize remaining state variables.  mForcedRole is not initialized, assuming the user
-    ///   may have already set it.
-    mIsPairMaster         = isPairMaster;
-    mInDataLastDemandMode = false;
-    mFramesSinceFlip      = 0;
-    mLoopLatency          = 0;
-    mDemandLimitGain      = 0.0;
-    mDemandLimitFlowRate  = 0.0;
-
-    /// - Both sides start out in Supply mode by default.  Upon going to run and transmitting their
-    ///   capacitances, the side with the smaller capacitance will transition to Demand mode, with
-    ///   the Master side determining a tie-breaker.
-    mOutData.mDemandMode = false;
+    /// - Initialize remaining state variables.
+    GunnsDistributed2WayBusBase::initialize(isPairMaster);
+    mDemandLimitGain     = 0.0;
+    mDemandLimitFlowRate = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -390,7 +323,7 @@ void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
 void GunnsFluidDistributed2WayBus::setFluidState(const GunnsFluidDistributed2WayBusFluidState& fluid)
 {
     if (isInDemandRole()) {
-        pushNotification(GunnsFluidDistributed2WayBusNotification::WARN,
+        pushNotification(GunnsDistributed2WayBusNotification::WARN,
                 "setFluidState was called when in the Demand role.");
     } else {
         mOutData.mSource = fluid.mPressure;
@@ -442,8 +375,8 @@ bool GunnsFluidDistributed2WayBus::getFluidState(GunnsFluidDistributed2WayBusFlu
 void GunnsFluidDistributed2WayBus::setFlowState(const GunnsFluidDistributed2WayBusFlowState& flow)
 {
     if (not isInDemandRole()) {
-        pushNotification(GunnsFluidDistributed2WayBusNotification::WARN,
-                "setFloowState was called when in the Supply role.");
+        pushNotification(GunnsDistributed2WayBusNotification::WARN,
+                "setFlowState was called when in the Supply role.");
     } else {
         mOutData.mSource = flow.mFlowRate;
         mOutData.mEnergy = flow.mEnergy;
@@ -488,13 +421,11 @@ bool GunnsFluidDistributed2WayBus::getFlowState(GunnsFluidDistributed2WayBusFlow
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributed2WayBus::processInputs()
 {
+    /// - Update frame counters and loop latency measurement.
+    updateFrameCounts();
+
     /// - Mode changes and associated node volume update in response to incoming data.
     flipModesOnInput();
-
-    /// - Update frame counters and loop latency measurement.
-    mOutData.mFrameCount   += 1;
-    mLoopLatency            = mOutData.mFrameCount - mInData.mFrameLoopback;
-    mOutData.mFrameLoopback = mInData.mFrameCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -588,7 +519,7 @@ void GunnsFluidDistributed2WayBus::flipToDemandMode()
     if (SUPPLY != mForcedRole) {
         mOutData.mDemandMode = true;
         mFramesSinceFlip = 0;
-        pushNotification(GunnsFluidDistributed2WayBusNotification::INFO, "switched to Demand mode.");
+        pushNotification(GunnsDistributed2WayBusNotification::INFO, "switched to Demand mode.");
     }
 }
 
@@ -600,7 +531,7 @@ void GunnsFluidDistributed2WayBus::flipToSupplyMode()
     if (DEMAND != mForcedRole) {
         mOutData.mDemandMode = false;
         mFramesSinceFlip = 0;
-        pushNotification(GunnsFluidDistributed2WayBusNotification::INFO, "switched to Supply mode.");
+        pushNotification(GunnsDistributed2WayBusNotification::INFO, "switched to Supply mode.");
     }
 }
 
@@ -615,26 +546,4 @@ void GunnsFluidDistributed2WayBus::processOutputs(const double capacitance)
     if (not isInDemandRole()) {
         flipModesOnCapacitance();
     }
-    mFramesSinceFlip++;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] GunnsElectDistributed2WayBusNotification (--) Reference to the caller's message object to copy the message into.
-///
-/// @returns  unsigned int (--) Number of notifications remaining in the queue.
-///
-/// @details  Set the caller's supplied notification object equal to the tail of the queue and pops
-///           that message off of the queue, reducing the queue size by one.  If the queue size is
-///           already zero, then returns an empty message.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned int GunnsFluidDistributed2WayBus::popNotification(GunnsFluidDistributed2WayBusNotification& notification)
-{
-    if (mNotifications.size() > 0) {
-        notification = mNotifications.back();
-        mNotifications.pop_back();
-    } else {
-        notification.mLevel   = GunnsFluidDistributed2WayBusNotification::NONE;
-        notification.mMessage = "";
-    }
-    return mNotifications.size();
 }

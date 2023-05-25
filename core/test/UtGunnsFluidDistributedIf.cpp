@@ -175,13 +175,18 @@ void UtGunnsFluidDistributedIf::testInput()
     std::cout << "\n UtGunnsFluidDistributedIf 02: testInput ............................";
 
     /// - Check nominal input construction
-    CPPUNIT_ASSERT(tMalfBlockageFlag  == tInputData->mMalfBlockageFlag);
-    CPPUNIT_ASSERT(tMalfBlockageValue == tInputData->mMalfBlockageValue);
+    GunnsFluidDistributedIfInputData nominalInput(true, 1.0, true, true);
+    CPPUNIT_ASSERT(true  == nominalInput.mMalfBlockageFlag);
+    CPPUNIT_ASSERT(1.0   == nominalInput.mMalfBlockageValue);
+    CPPUNIT_ASSERT(true  == nominalInput.mForceDemandMode);
+    CPPUNIT_ASSERT(true  == nominalInput.mForceSupplyMode);
 
     /// - Check default input construction
     GunnsFluidDistributedIfInputData defaultInput;
-    CPPUNIT_ASSERT(false              == defaultInput.mMalfBlockageFlag);
-    CPPUNIT_ASSERT(0.0                == defaultInput.mMalfBlockageValue);
+    CPPUNIT_ASSERT(false == defaultInput.mMalfBlockageFlag);
+    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfBlockageValue);
+    CPPUNIT_ASSERT(false == defaultInput.mForceDemandMode);
+    CPPUNIT_ASSERT(false == defaultInput.mForceSupplyMode);
 
     std::cout << "... Pass";
 }
@@ -330,20 +335,39 @@ void UtGunnsFluidDistributedIf::testNominalInitialization()
     /// @test init flag.
     CPPUNIT_ASSERT(tArticle->mInitFlag);
 
-    /// @test init with zero number of trace compounds.
+    /// @test init with zero number of trace compounds, and force supply role.
     FriendlyGunnsFluidDistributedIf article;
+    FriendlyGunnsFluidDistributed2WayBus* articleInterface = static_cast<FriendlyGunnsFluidDistributed2WayBus*>(&article.mInterface);
     tLocalConfig->mTraceCompounds = 0;
+    tInputData->mForceSupplyMode  = true;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
     CPPUNIT_ASSERT(article.mInterface.mInData.mMoleFractions);
-    CPPUNIT_ASSERT(0.0 == article.mInterface.mInData.mMoleFractions[1]);
-    CPPUNIT_ASSERT(0   == article.mInterface.mInData.mTcMoleFractions);
+    CPPUNIT_ASSERT(0.0   == article.mInterface.mInData.mMoleFractions[1]);
+    CPPUNIT_ASSERT(0     == article.mInterface.mInData.mTcMoleFractions);
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::SUPPLY == articleInterface->mForcedRole);
+
+    /// @test init with the fluid sizes override, and force demand role.
+    tConfigData->mFluidSizesOverride = true;
+    tConfigData->mNumFluidOverride   = 12;
+    tConfigData->mNumTcOverride      = 8;
+    tInputData->mForceSupplyMode     = false;
+    tInputData->mForceDemandMode     = true;
+    CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
+    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::DEMAND == articleInterface->mForcedRole);
+    CPPUNIT_ASSERT(12 == articleInterface->mInData.getNumFluid());
+    CPPUNIT_ASSERT(8  == articleInterface->mInData.getNumTc());
 
     /// @test init of GunnsFluidDistributed2WayBusInterfaceData with zero number of fluids.
     GunnsFluidDistributed2WayBusInterfaceData data;
-    data.initialize(0, 4, 0, 4);
+    data.initialize(0, 4);
     CPPUNIT_ASSERT(0 == data.mMoleFractions);
     CPPUNIT_ASSERT(data.mTcMoleFractions);
     CPPUNIT_ASSERT(0.0 == data.mTcMoleFractions[3]);
+
+    /// - Call getNetCapDeltaPotential for code coverage
+    GunnsFluidDistributedIf article2;
+    CPPUNIT_ASSERT_NO_THROW(article2.initialize(*tConfigData, *tInputData, tLinks, tPort0));
+    article2.getNetCapDeltaPotential();
 
     std::cout << "... Pass";
 }
@@ -535,8 +559,10 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     tArticle->processInputs();
     CPPUNIT_ASSERT(true == tArticleInterface->mOutData.mDemandMode);
 
-    /// @test Input of fluid temperature.
-    tArticle->mUseEnthalpy        = false;
+    /// @test Input of fluid temperature.  Also do an improper call of setFluidState while in
+    ///       Demand mode to make the interface output a warning message, for code coverage.
+    tArticleInterface->setFluidState(tArticle->mWorkFluidState);
+    tArticle->mUseEnthalpy                 = false;
     tArticleInterface->mInData.mDemandMode = false;
     tArticleInterface->mInData.mEnergy     = 300.0;
     tArticle->processInputs();
@@ -837,7 +863,7 @@ void UtGunnsFluidDistributedIf::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
     CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
-    /// @test supply mode.
+    /// @test switching to supply mode.
     tArticleInterface->mOutData.mDemandMode = false;
     tArticle->step(timestep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->mDemandFluxGain,        DBL_EPSILON);
@@ -1030,13 +1056,9 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0     == data.mTcMoleFractions);
     CPPUNIT_ASSERT(0     == data.mNumFluid);
     CPPUNIT_ASSERT(0     == data.mNumTc);
-    CPPUNIT_ASSERT(0     == data.mNumFluidIf);
-    CPPUNIT_ASSERT(0     == data.mNumTcIf);
-    CPPUNIT_ASSERT(0     == data.mNumFluidCommon);
-    CPPUNIT_ASSERT(0     == data.mNumTcCommon);
 
     /// @test initialize method.
-    CPPUNIT_ASSERT_NO_THROW(data.initialize(3, 2, 3, 2));
+    CPPUNIT_ASSERT_NO_THROW(data.initialize(3, 2));
     CPPUNIT_ASSERT(0     == data.mFrameCount);
     CPPUNIT_ASSERT(0     == data.mFrameLoopback);
     CPPUNIT_ASSERT(false == data.mDemandMode);
@@ -1052,10 +1074,6 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.0   == data.mTcMoleFractions[1]);
     CPPUNIT_ASSERT(3     == data.mNumFluid);
     CPPUNIT_ASSERT(2     == data.mNumTc);
-    CPPUNIT_ASSERT(3     == data.mNumFluidIf);
-    CPPUNIT_ASSERT(2     == data.mNumTcIf);
-    CPPUNIT_ASSERT(3     == data.mNumFluidCommon);
-    CPPUNIT_ASSERT(2     == data.mNumTcCommon);
 
     /// @test hasValidData method.
     data.mFrameCount  = 1;
@@ -1108,14 +1126,10 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0    == data2.mTcMoleFractions);
     CPPUNIT_ASSERT(0    == data2.mNumFluid);
     CPPUNIT_ASSERT(0    == data2.mNumTc);
-    CPPUNIT_ASSERT(0    == data2.mNumFluidIf);
-    CPPUNIT_ASSERT(0    == data2.mNumTcIf);
-    CPPUNIT_ASSERT(0    == data2.mNumFluidCommon);
-    CPPUNIT_ASSERT(0    == data2.mNumTcCommon);
 
     /// @test Assignment operator after initialization.
     FriendlyGunnsFluidDistributedIfData data3;
-    CPPUNIT_ASSERT_NO_THROW(data3.initialize(3, 2, 3, 2));
+    CPPUNIT_ASSERT_NO_THROW(data3.initialize(3, 2));
     data3 = data;
     CPPUNIT_ASSERT(3     == data3.mFrameCount);
     CPPUNIT_ASSERT(2     == data3.mFrameLoopback);
@@ -1130,15 +1144,11 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.001 == data3.mTcMoleFractions[1]);
     CPPUNIT_ASSERT(3     == data3.mNumFluid);
     CPPUNIT_ASSERT(2     == data3.mNumTc);
-    CPPUNIT_ASSERT(3     == data3.mNumFluidIf);
-    CPPUNIT_ASSERT(2     == data3.mNumTcIf);
-    CPPUNIT_ASSERT(3     == data3.mNumFluidCommon);
-    CPPUNIT_ASSERT(2     == data3.mNumTcCommon);
 
-    /// @test initialization with mixture array size overrides.
+    /// @test initialization with different mixture array sizes.
     FriendlyGunnsFluidDistributedIfData data4, data5;
-    CPPUNIT_ASSERT_NO_THROW(data4.initialize(3, 2, 2, 1));
-    CPPUNIT_ASSERT_NO_THROW(data5.initialize(2, 1, 3, 2));
+    CPPUNIT_ASSERT_NO_THROW(data4.initialize(3, 2));
+    CPPUNIT_ASSERT_NO_THROW(data5.initialize(2, 1));
 
     CPPUNIT_ASSERT(0     != data4.mMoleFractions);
     CPPUNIT_ASSERT(0.0   == data4.mMoleFractions[0]);
@@ -1147,90 +1157,78 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.0   == data4.mTcMoleFractions[0]);
     CPPUNIT_ASSERT(3     == data4.mNumFluid);
     CPPUNIT_ASSERT(2     == data4.mNumTc);
-    CPPUNIT_ASSERT(2     == data4.mNumFluidIf);
-    CPPUNIT_ASSERT(1     == data4.mNumTcIf);
-    CPPUNIT_ASSERT(2     == data4.mNumFluidCommon);
-    CPPUNIT_ASSERT(1     == data4.mNumTcCommon);
 
     CPPUNIT_ASSERT(0     != data5.mMoleFractions);
     CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[0]);
     CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[1]);
-    CPPUNIT_ASSERT(0.0   == data5.mMoleFractions[2]);
     CPPUNIT_ASSERT(0     != data5.mTcMoleFractions);
     CPPUNIT_ASSERT(0.0   == data5.mTcMoleFractions[0]);
-    CPPUNIT_ASSERT(0.0   == data5.mTcMoleFractions[1]);
     CPPUNIT_ASSERT(2     == data5.mNumFluid);
     CPPUNIT_ASSERT(1     == data5.mNumTc);
-    CPPUNIT_ASSERT(3     == data5.mNumFluidIf);
-    CPPUNIT_ASSERT(2     == data5.mNumTcIf);
-    CPPUNIT_ASSERT(2     == data5.mNumFluidCommon);
-    CPPUNIT_ASSERT(1     == data5.mNumTcCommon);
 
     /// @test setMoleFractions function, interface size = model size.
     double fractions3[3] = {0.2, 0.3, 0.5};
-    data.setMoleFractions(fractions3);
+    data.setMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data.mMoleFractions[0]);
     CPPUNIT_ASSERT(fractions3[1] == data.mMoleFractions[1]);
     CPPUNIT_ASSERT(fractions3[2] == data.mMoleFractions[2]);
 
     /// @test setMoleFractions function, interface size < model size.
-    data4.setMoleFractions(fractions3);
+    data4.setMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data4.mMoleFractions[0]);
     CPPUNIT_ASSERT(fractions3[1] == data4.mMoleFractions[1]);
 
     /// @test setMoleFractions function, interface size > model size.
-    data5.setMoleFractions(fractions3);
+    data5.setMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data5.mMoleFractions[0]);
     CPPUNIT_ASSERT(fractions3[1] == data5.mMoleFractions[1]);
-    CPPUNIT_ASSERT(0.0           == data5.mMoleFractions[2]);
 
     /// @test setTcMoleFractions function, interface size = model size.
-    data.setTcMoleFractions(fractions3);
+    data.setTcMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data.mTcMoleFractions[0]);
     CPPUNIT_ASSERT(fractions3[1] == data.mTcMoleFractions[1]);
 
     /// @test setTcMoleFractions function, interface size < model size.
-    data4.setTcMoleFractions(fractions3);
+    data4.setTcMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data4.mTcMoleFractions[0]);
 
     /// @test setTcMoleFractions function, interface size > model size.
-    data5.setTcMoleFractions(fractions3);
+    data5.setTcMoleFractions(fractions3, 3);
     CPPUNIT_ASSERT(fractions3[0] == data5.mTcMoleFractions[0]);
-    CPPUNIT_ASSERT(0.0           == data5.mTcMoleFractions[1]);
 
     /// @test getMoleFractions function, interface size = model size.
     double fractions4[3] = {0.0, 0.0, 0.0};
-    data.getMoleFractions(fractions4);
+    data.getMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data.mMoleFractions[0] == fractions4[0]);
     CPPUNIT_ASSERT(data.mMoleFractions[1] == fractions4[1]);
     CPPUNIT_ASSERT(data.mMoleFractions[2] == fractions4[2]);
 
     /// @test getMoleFractions function, interface size < model size.
-    data4.getMoleFractions(fractions4);
+    data4.getMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data4.mMoleFractions[0] == fractions4[0]);
     CPPUNIT_ASSERT(data4.mMoleFractions[1] == fractions4[1]);
-    CPPUNIT_ASSERT(0.0                     == fractions4[2]);
+    CPPUNIT_ASSERT(data4.mMoleFractions[2] == fractions4[2]);
 
     /// @test getMoleFractions function, interface size > model size.
-    data5.getMoleFractions(fractions4);
+    data5.getMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data5.mMoleFractions[0] == fractions4[0]);
     CPPUNIT_ASSERT(data5.mMoleFractions[1] == fractions4[1]);
     CPPUNIT_ASSERT(0.0                     == fractions4[2]);
 
     /// @test getTcMoleFractions function, interface size = model size.
-    data.getTcMoleFractions(fractions4);
+    data.getTcMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data.mTcMoleFractions[0] == fractions4[0]);
     CPPUNIT_ASSERT(data.mTcMoleFractions[1] == fractions4[1]);
     CPPUNIT_ASSERT(0.0                      == fractions4[2]);
 
     /// @test getTcMoleFractions function, interface size < model size.
-    data4.getTcMoleFractions(fractions4);
+    data4.getTcMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data4.mTcMoleFractions[0] == fractions4[0]);
-    CPPUNIT_ASSERT(0.0                       == fractions4[1]);
+    CPPUNIT_ASSERT(data4.mTcMoleFractions[1] == fractions4[1]);
     CPPUNIT_ASSERT(0.0                       == fractions4[2]);
 
     /// @test getTcMoleFractions function, interface size > model size.
-    data5.getTcMoleFractions(fractions4);
+    data5.getTcMoleFractions(fractions4, 3);
     CPPUNIT_ASSERT(data5.mTcMoleFractions[0] == fractions4[0]);
     CPPUNIT_ASSERT(0.0                       == fractions4[1]);
     CPPUNIT_ASSERT(0.0                       == fractions4[2]);

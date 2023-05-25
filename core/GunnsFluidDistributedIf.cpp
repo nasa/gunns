@@ -213,16 +213,18 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
         }
     }
 
-    /// - Initialize the interface data objects so they can allocate memory.
+    /// - Initialize the interface data objects so they can allocate memory.  The fluid sizes
+    ///   overrides sizes the interface for different-sized mixture arrays than the fluid config
+    ///   in this network.  This is for when the reusable HLA FOM arrays are larger than our model.
+    ///   Otherwise, the interface is sized to match our fluid config.  The working fluid and flow
+    ///   states are always sized to match our fluid config.
     if (configData.mFluidSizesOverride) {
-        mInterface.initialize(configData.mIsPairMaster, nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
-        mWorkFluidState.initialize(nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
-        mWorkFlowState.initialize(nTypes, nTc, configData.mNumFluidOverride, configData.mNumTcOverride);
+        mInterface.initialize(configData.mIsPairMaster, configData.mNumFluidOverride, configData.mNumTcOverride);
     } else {
-        mInterface.initialize(configData.mIsPairMaster, nTypes, nTc, nTypes, nTc);
-        mWorkFluidState.initialize(nTypes, nTc, nTypes, nTc);
-        mWorkFlowState.initialize(nTypes, nTc, nTypes, nTc);
+        mInterface.initialize(configData.mIsPairMaster, nTypes, nTc);
     }
+    mWorkFluidState.initialize(nTypes, nTc);
+    mWorkFlowState.initialize(nTypes, nTc);
 
     /// - Initialize remaining state variables.
     mSupplyVolume          = 0.0;
@@ -250,6 +252,9 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
 
     /// - Validate initialization.
     validate(inputData);
+
+    /// - Pass notifications from the interface model to H&S.
+    processIfNotifications(true);
 
     /// - Set init flag on successful validation.
     mInitFlag = true;
@@ -337,6 +342,9 @@ void GunnsFluidDistributedIf::processInputs()
     /// - More processing of incoming data for resulting pairing mode.
     processInputsDemand();
     processInputsSupply();
+
+    /// - Pass notifications from the interface model to H&S.
+    processIfNotifications(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,8 +370,8 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
     ///   mole fractions to 1, and this doesn't include the trace compounds.  But the interface
     ///   data includes the TC's in the sum to 1.  Adjustment to the TC's is handled below.
     double inBulkFractionSum = 0.0;
-    workingState->getMoleFractions(mTempMoleFractions);
     const PolyFluidConfigData* fluidConfig = mNodes[0]->getFluidConfig();
+    workingState->getMoleFractions(mTempMoleFractions, fluidConfig->mNTypes);
     for (int i = 0; i < fluidConfig->mNTypes; ++i) {
         inBulkFractionSum += mTempMoleFractions[i];
     }
@@ -396,7 +404,7 @@ double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* flu
             ///   fluid.
             const GunnsFluidTraceCompoundsConfigData* tcConfig = tc->getConfig();
             if (tcConfig) {
-                workingState->getTcMoleFractions(mTempTcMoleFractions);
+                workingState->getTcMoleFractions(mTempTcMoleFractions, tcConfig->mNTypes);
                 for (int i = 0; i < tcConfig->mNTypes; ++i) {
                     mTempTcMoleFractions[i] /= inBulkFractionSum;
                 }
@@ -533,8 +541,8 @@ double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid, GunnsFluidDistribu
     for (unsigned int i = 0; i < nTc; ++i) {
         mTempTcMoleFractions[i] = tc->getMoleFractions()[i] / moleFractionSum;
     }
-    work->setMoleFractions(mTempMoleFractions);
-    work->setTcMoleFractions(mTempTcMoleFractions);
+    work->setMoleFractions(mTempMoleFractions, fluidConfig->mNTypes);
+    work->setTcMoleFractions(mTempTcMoleFractions, nTc);
     return moleFractionSum;
 }
 
@@ -664,7 +672,7 @@ void GunnsFluidDistributedIf::step(const double dt)
         mAdmittanceUpdate    = true;
     }
 
-    if (mInterface.mOutData.mDemandMode) {
+    if (mInterface.isInDemandRole()) {
         mSuppliedCapacitance = mAdmittanceMatrix[0] * dt;
     } else {
         mSuppliedCapacitance = 0.0;
@@ -693,7 +701,7 @@ void GunnsFluidDistributedIf::computeFlows(const double dt __attribute__((unused
     if (mFlux > DBL_EPSILON) {
         mPortDirections[0] = SINK;
     } else if (mFlux < -DBL_EPSILON) {
-        if (mInterface.mOutData.mDemandMode) {
+        if (mInterface.isInDemandRole()) {
             mPortDirections[0] = SOURCE;
             mNodes[0]->scheduleOutflux(-mFlux);
         } else {
@@ -712,7 +720,7 @@ void GunnsFluidDistributedIf::computeFlows(const double dt __attribute__((unused
 void GunnsFluidDistributedIf::transportFlows(const double dt __attribute__((unused)))
 {
     /// - Calculate mass flow rate (mFlowRate) from molar rate (mFlux).
-    if (mInterface.mOutData.mDemandMode) {
+    if (mInterface.isInDemandRole()) {
         /// - In Demand mode, we use the node's MW because the node's fluid contents have already
         ///   taken the properties of the Supply fluid (from mInData).  This is true for both flow
         ///   directions for the fluid transport to/from the node.  However for negative flow (out
@@ -726,7 +734,7 @@ void GunnsFluidDistributedIf::transportFlows(const double dt __attribute__((unus
     }
 
     /// - Transport fluid:
-    if (mInterface.mOutData.mDemandMode) {
+    if (mInterface.isInDemandRole()) {
         if (mFlowRate > m100EpsilonLimit) {
             mNodes[0]->collectInflux(mFlowRate, mNodes[0]->getContent());
         } else if (mFlowRate < -m100EpsilonLimit) {
@@ -790,10 +798,12 @@ bool GunnsFluidDistributedIf::checkNegativeFluidFractions(const PolyFluid* fluid
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] isInit (--) If this should throw initialization errors, currently not used.
+///
 /// @details  Pops all notifications from the interface utility's queue and translates them to H&S
 ///           messages.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIf::processIfNotifications(const bool isInit)
+void GunnsFluidDistributedIf::processIfNotifications(const bool isInit __attribute__((unused)))
 {
     GunnsDistributed2WayBusNotification notification;
     unsigned int numNotifs = 0;

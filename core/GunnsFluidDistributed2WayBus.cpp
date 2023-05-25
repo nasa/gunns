@@ -22,11 +22,7 @@ GunnsFluidDistributedMixtureData::GunnsFluidDistributedMixtureData()
     mMoleFractions(0),
     mTcMoleFractions(0),
     mNumFluid(0),
-    mNumTc(0),
-    mNumFluidIf(0),
-    mNumTcIf(0),
-    mNumFluidCommon(0),
-    mNumTcCommon(0)
+    mNumTc(0)
 {
     // nothing to do
 }
@@ -40,110 +36,140 @@ GunnsFluidDistributedMixtureData::~GunnsFluidDistributedMixtureData()
     delete [] mMoleFractions;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] nBulk   (--) Number of bulk fluid constituents in the model.
-/// @param[in] nTc     (--) Number of trace compounds in the model.
-/// @param[in] nIfBulk (--) Number of bulk fluid constituents in the interface data.
-/// @param[in] nIfTc   (--) Number of trace compounds in the interface data.
+/// @param[in]  that  (--)  Object that this is to be assigned equal to.
 ///
-/// @details  Allocates arrays for bulk fluid and trace compounds mole fractions.  The sizes of the
-///           model's mixture arrays can be smaller than the interface data arrays, because the
-///           interface arrays may be sized to handle other models as well.  Our interface arrays
-///           are sized to match the interface data size, but we also store the model's array sizes
-///           so we know not to overstep them when reading & writing between them and the interface
-///           data.
+/// @details  Assigns values of this object's attributes to the given object's values.  This is a
+///           'deep' copy, as this object's mixture arrays remain separate from that's.  We do not
+///           assume the objects have the same sized mixture arrays, so we only assign up to the
+///           index of the smaller array.  If this object's array is larger than that's, we do not
+///           assign the indexes in this for which that doesn't have indexes.  Since this is a deep
+///           copy, the mNum array size variables are not assigned because they must reflect our
+///           arrays, which are not resized.  This doesn't assume the objects have been initialized,
+///           so we avoid setting or referencing mixture arrays that haven't been allocated.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributedMixtureData& GunnsFluidDistributedMixtureData::operator =(const GunnsFluidDistributedMixtureData& that)
+{
+    if (this != &that) {
+        mEnergy = that.mEnergy;
+        for (unsigned int i=0; i<std::min(mNumFluid, that.mNumFluid); ++i) {
+            mMoleFractions[i] = that.mMoleFractions[i];
+        }
+        for (unsigned int i=0; i<std::min(mNumTc, that.mNumTc); ++i) {
+            mTcMoleFractions[i] = that.mTcMoleFractions[i];
+        }
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] nBulk   (--) Number of bulk fluid constituents.
+/// @param[in] nTc     (--) Number of trace compounds.
+///
+/// @details  Allocates arrays for bulk fluid and trace compounds mole fractions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedMixtureData::initialize(const unsigned int nBulk,
-                                                  const unsigned int nTc,
-                                                  const unsigned int nIfBulk,
-                                                  const unsigned int nIfTc)
+                                                  const unsigned int nTc)
 {
     mNumFluid       = nBulk;
     mNumTc          = nTc;
-    mNumFluidIf     = nIfBulk;
-    mNumTcIf        = nIfTc;
-    mNumFluidCommon = std::min(mNumFluid, mNumFluidIf);
-    mNumTcCommon    = std::min(mNumTc,    mNumTcIf);
-    if (nIfBulk > 0) {
+
+    /// - Delete & re-allocate fractions arrays in case of repeated calls to this function.
+    if (mMoleFractions) {
         delete [] mMoleFractions;
-        mMoleFractions = new double[nIfBulk];
-        for (unsigned int i=0; i<nIfBulk; ++i) {
+        mMoleFractions = 0;
+    }
+    if (nBulk > 0) {
+        mMoleFractions = new double[nBulk];
+        for (unsigned int i=0; i<nBulk; ++i) {
             mMoleFractions[i] = 0.0;
         }
     }
-    if (nIfTc > 0) {
+    if (mTcMoleFractions) {
         delete [] mTcMoleFractions;
-        mTcMoleFractions = new double[nIfTc];
-        for (unsigned int i=0; i<nIfTc; ++i) {
+        mTcMoleFractions = 0;
+    }
+    if (nTc > 0) {
+        mTcMoleFractions = new double[nTc];
+        for (unsigned int i=0; i<nTc; ++i) {
             mTcMoleFractions[i] = 0.0;
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] fractions (--) Array of bulk fluid mole fraction values to copy to the interface.
+/// @param[in] fractions (--) Array of bulk fluid mole fraction values to read from.
+/// @param[in] size      (--) Size of the given fractions array.
 ///
-/// @details  Sets this interface's bulk fluid mole fractions to the given values.  If the
-///           interface array is larger than the given array, then the remaining values in the
-///           interface array are filled with zeroes.
+/// @details  Sets this object's bulk fluid mole fractions equal to the given values.  The given
+///           array can be larger or smaller than our internal array.  If our array is larger, then
+///           the remaining values in the our array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::setMoleFractions(const double* fractions)
+void GunnsFluidDistributedMixtureData::setMoleFractions(const double* fractions, const unsigned int size)
 {
-    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
+    const unsigned int smallerSize = std::min(mNumFluid, size);
+    for (unsigned int i=0; i<smallerSize; ++i) {
         mMoleFractions[i] = fractions[i];
     }
-    for (unsigned int i=mNumFluidCommon; i<mNumFluidIf; ++i) {
+    for (unsigned int i=smallerSize; i<mNumFluid; ++i) {
         mMoleFractions[i] = 0.0;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] fractions (--) Array of trace compound mole fractions to copy to the interface.
+/// @param[in] fractions (--) Array of trace compound mole fractions to read from.
+/// @param[in] size      (--) Size of the given fractions array.
 ///
-/// @details  Sets this interface's trace compound mole fractions to the given values.  If the
-///           interface array is larger than the given array, then the remaining values in the
-///           interface array are filled with zeroes.
+/// @details  Sets this object's trace compound mole fractions equal to the given values.  The given
+///           array can be larger or smaller than our internal array.  If our array is larger, then
+///           the remaining values in the our array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::setTcMoleFractions(const double* fractions)
+void GunnsFluidDistributedMixtureData::setTcMoleFractions(const double* fractions, const unsigned int size)
 {
-    for (unsigned int i=0; i<mNumTcCommon; ++i) {
+    const unsigned int smallerSize = std::min(mNumTc, size);
+    for (unsigned int i=0; i<smallerSize; ++i) {
         mTcMoleFractions[i] = fractions[i];
     }
-    for (unsigned int i=mNumTcCommon; i<mNumTcIf; ++i) {
+    for (unsigned int i=smallerSize; i<mNumTc; ++i) {
         mTcMoleFractions[i] = 0.0;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] fractions (--) Array of bulk fluid mole fractions to copy from the interface.
+/// @param[out] fractions (--) Array of bulk fluid mole fractions to write to.
+/// @param[in]  size      (--) Size of the given fractions array.
 ///
-/// @details  Sets the given builk fluid mole fractions to this interface's values.  If the given
-///           array is larger than the interface array, then the remaining values in the given array
-///           are filled with zeroes.
+/// @details  Sets the given bulk fluid mole fractions equal to this object's values.  The given
+///           array can be larger or smaller than our internal array.  If our array is smaller, then
+///           the remaining values in the given array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::getMoleFractions(double* fractions) const
+void GunnsFluidDistributedMixtureData::getMoleFractions(double* fractions, const unsigned int size) const
 {
-    for (unsigned int i=0; i<mNumFluidCommon; ++i) {
+    const unsigned int smallerSize = std::min(mNumFluid, size);
+    for (unsigned int i=0; i<smallerSize; ++i) {
         fractions[i] = mMoleFractions[i];
     }
-    for (unsigned int i=mNumFluidCommon; i<mNumFluid; ++i) {
+    for (unsigned int i=smallerSize; i<size; ++i) {
         fractions[i] = 0.0;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[out] fractions (--) Array of trace compound mole fractions to copy from the interface.
+/// @param[out] fractions (--) Array of trace compound mole fractions to write to.
+/// @param[in]  size      (--) Size of the given fractions array.
 ///
-/// @details  Sets the given builk trace compound fractions to this interface's values.  If the
-///           given array is larger than the interface array, then the remaining values in the given
-///           array are filled with zeroes.
+/// @details  Sets the given builk trace compound fractions to this interface's values.  The given
+///           array can be larger or smaller than our internal array.  If our array is smaller, then
+///           the remaining values in the given array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::getTcMoleFractions(double* fractions) const
+void GunnsFluidDistributedMixtureData::getTcMoleFractions(double* fractions, const unsigned int size) const
 {
-    for (unsigned int i=0; i<mNumTcCommon; ++i) {
+    const unsigned int smallerSize = std::min(mNumTc, size);
+    for (unsigned int i=0; i<smallerSize; ++i) {
         fractions[i] = mTcMoleFractions[i];
     }
-    for (unsigned int i=mNumTcCommon; i<mNumTc; ++i) {
+    for (unsigned int i=smallerSize; i<size; ++i) {
         fractions[i] = 0.0;
     }
 }
@@ -168,6 +194,20 @@ GunnsFluidDistributed2WayBusFluidState::~GunnsFluidDistributed2WayBusFluidState(
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  that  (--)  Object that this is to be assigned equal to.
+///
+/// @details  Assigns values of this object's attributes to the given object's values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributed2WayBusFluidState& GunnsFluidDistributed2WayBusFluidState::operator =(const GunnsFluidDistributed2WayBusFluidState& that)
+{
+    if (this != &that) {
+        GunnsFluidDistributedMixtureData::operator = (that);
+        mPressure = that.mPressure;
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this distributed flow state data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributed2WayBusFlowState::GunnsFluidDistributed2WayBusFlowState()
@@ -184,6 +224,20 @@ GunnsFluidDistributed2WayBusFlowState::GunnsFluidDistributed2WayBusFlowState()
 GunnsFluidDistributed2WayBusFlowState::~GunnsFluidDistributed2WayBusFlowState()
 {
     // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  that  (--)  Object that this is to be assigned equal to.
+///
+/// @details  Assigns values of this object's attributes to the given object's values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributed2WayBusFlowState& GunnsFluidDistributed2WayBusFlowState::operator =(const GunnsFluidDistributed2WayBusFlowState& that)
+{
+    if (this != &that) {
+        GunnsFluidDistributedMixtureData::operator = (that);
+        mFlowRate = that.mFlowRate;
+    }
+    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,23 +264,15 @@ GunnsFluidDistributed2WayBusInterfaceData::~GunnsFluidDistributed2WayBusInterfac
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  that  (--)  Object that this is to be assigned equal to.
 ///
-/// @details  Assigns values of this object's attributes to the given object's values.  The
-///           mNumFluid and similar terms are not changed, and we assume that the two objects were
-///           initialized identically; the array sizes and mNum* terms are the same.
+/// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributed2WayBusInterfaceData& GunnsFluidDistributed2WayBusInterfaceData::operator =(const GunnsFluidDistributed2WayBusInterfaceData& that)
 {
     if (this != &that) {
         GunnsDistributed2WayBusBaseInterfaceData::operator = (that);
+        GunnsFluidDistributedMixtureData::operator = (that);
         mCapacitance = that.mCapacitance;
         mSource      = that.mSource;
-        mEnergy      = that.mEnergy;
-        for (unsigned int i=0; i<mNumFluid; ++i) {
-            mMoleFractions[i] = that.mMoleFractions[i];
-        }
-        for (unsigned int i=0; i<mNumTc; ++i) {
-            mTcMoleFractions[i] = that.mTcMoleFractions[i];
-        }
     }
     return *this;
 }
@@ -287,22 +333,18 @@ GunnsFluidDistributed2WayBus::~GunnsFluidDistributed2WayBus()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] isPairMaster (--) True if this is the master side of the interface, for tie-breaking.
-/// @param[in] nBulk        (--) Number of bulk fluid constituents in the model.
-/// @param[in] nTc          (--) Number of trace compounds in the model.
 /// @param[in] nIfBulk      (--) Number of bulk fluid constituents in the interface data.
 /// @param[in] nIfTc        (--) Number of trace compounds in the interface data.
 ///
 /// @details  Initializes this Fluid Distributed 2-Way Bus Interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
-                                              const unsigned int nBulk,
-                                              const unsigned int nTc,
                                               const unsigned int nIfBulk,
                                               const unsigned int nIfTc)
 {
     /// - Initialize the interface data objects so they can allocate memory.
-    mInData .initialize(nBulk, nTc, nIfBulk, nIfTc);
-    mOutData.initialize(nBulk, nTc, nIfBulk, nIfTc);
+    mInData .initialize(nIfBulk, nIfTc);
+    mOutData.initialize(nIfBulk, nIfTc);
 
     /// - Initialize remaining state variables.
     GunnsDistributed2WayBusBase::initialize(isPairMaster);
@@ -328,8 +370,8 @@ void GunnsFluidDistributed2WayBus::setFluidState(const GunnsFluidDistributed2Way
     } else {
         mOutData.mSource = fluid.mPressure;
         mOutData.mEnergy = fluid.mEnergy;
-        mOutData.setMoleFractions(fluid.mMoleFractions);
-        mOutData.setTcMoleFractions(fluid.mTcMoleFractions);
+        mOutData.setMoleFractions(fluid.mMoleFractions, fluid.getNumFluid());
+        mOutData.setTcMoleFractions(fluid.mTcMoleFractions, fluid.getNumTc());
     }
 }
 
@@ -352,8 +394,8 @@ bool GunnsFluidDistributed2WayBus::getFluidState(GunnsFluidDistributed2WayBusFlu
     if (isInDemandRole() and mInData.hasValidData() and not mInData.mDemandMode) {
         fluid.mPressure = mInData.mSource;
         fluid.mEnergy = mInData.mEnergy;
-        mInData.getMoleFractions(fluid.mMoleFractions);
-        mInData.getTcMoleFractions(fluid.mTcMoleFractions);
+        mInData.getMoleFractions(fluid.mMoleFractions, fluid.getNumFluid());
+        mInData.getTcMoleFractions(fluid.mTcMoleFractions, fluid.getNumTc());
         return true;
     }
     return false;
@@ -380,8 +422,8 @@ void GunnsFluidDistributed2WayBus::setFlowState(const GunnsFluidDistributed2WayB
     } else {
         mOutData.mSource = flow.mFlowRate;
         mOutData.mEnergy = flow.mEnergy;
-        mOutData.setMoleFractions(flow.mMoleFractions);
-        mOutData.setTcMoleFractions(flow.mTcMoleFractions);
+        mOutData.setMoleFractions(flow.mMoleFractions, flow.getNumFluid());
+        mOutData.setTcMoleFractions(flow.mTcMoleFractions, flow.getNumTc());
     }
 }
 
@@ -408,8 +450,8 @@ bool GunnsFluidDistributed2WayBus::getFlowState(GunnsFluidDistributed2WayBusFlow
     if (not isInDemandRole() and mInData.hasValidData() and mInData.mDemandMode) {
         flow.mFlowRate = mInData.mSource;
         flow.mEnergy   = mInData.mEnergy;
-        mInData.getMoleFractions(flow.mMoleFractions);
-        mInData.getTcMoleFractions(flow.mTcMoleFractions);
+        mInData.getMoleFractions(flow.mMoleFractions, flow.getNumFluid());
+        mInData.getTcMoleFractions(flow.mTcMoleFractions, flow.getNumTc());
         return true;
     }
     return false;
@@ -471,9 +513,9 @@ double GunnsFluidDistributed2WayBus::computeDemandLimit(const double timestep,
 void GunnsFluidDistributed2WayBus::flipModesOnInput()
 {
     /// - Force mode swap based on the mode force flags.
-    if (DEMAND == mForcedRole and not mOutData.mDemandMode) {
+    if (DEMAND == mForcedRole and not isInDemandRole()) {
         flipToDemandMode();
-    } else if (SUPPLY == mForcedRole and mOutData.mDemandMode) {
+    } else if (SUPPLY == mForcedRole and isInDemandRole()) {
         flipToSupplyMode();
     } else if (mInData.hasValidData()) {
         /// - If in demand mode and the incoming data is also demand, then the other side has

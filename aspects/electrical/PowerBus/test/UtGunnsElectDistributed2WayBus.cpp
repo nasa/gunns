@@ -108,6 +108,24 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
     GunnsElectDistributed2WayBus* testArticle = new GunnsElectDistributed2WayBus();
     delete testArticle;
 
+    /// @test    Interface data functions.
+    GunnsElectDistributed2WayBusInterfaceData* ifData1 = new GunnsElectDistributed2WayBusInterfaceData();
+    GunnsElectDistributed2WayBusInterfaceData* ifData2 = new GunnsElectDistributed2WayBusInterfaceData();
+    ifData1->mDemandMode    = true;
+    ifData1->mDemandPower   = 1.0;
+    ifData1->mFrameCount    = 42;
+    ifData1->mFrameLoopback = 12;
+    ifData1->mSupplyVoltage = 120.0;
+    *ifData2 = *ifData1;
+    CPPUNIT_ASSERT(ifData2->mDemandMode    == ifData1->mDemandMode);
+    CPPUNIT_ASSERT(ifData2->mDemandPower   == ifData1->mDemandPower);
+    CPPUNIT_ASSERT(ifData2->mFrameCount    == ifData1->mFrameCount);
+    CPPUNIT_ASSERT(ifData2->mFrameLoopback == ifData1->mFrameLoopback);
+    CPPUNIT_ASSERT(ifData2->mSupplyVoltage == ifData1->mSupplyVoltage);
+    CPPUNIT_ASSERT(true                    == ifData2->hasValidData());
+    delete ifData2;
+    delete ifData1;
+
     UT_PASS;
 }
 

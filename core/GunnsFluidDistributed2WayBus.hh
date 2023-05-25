@@ -51,31 +51,29 @@ class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class
         GunnsFluidDistributedMixtureData();
         /// @brief  Default destructs this Fluid Distributed mixture data.
         virtual ~GunnsFluidDistributedMixtureData();
+        /// @brief  Assignment operator for this Fluid Distributed mixture data.
+        GunnsFluidDistributedMixtureData& operator =(const GunnsFluidDistributedMixtureData& that);
         /// @brief  Allocates dynamic arrays for bulk fluid and trace compounds and mole fractions.
         void initialize(const unsigned int nBulk,
-                        const unsigned int nTc,
-                        const unsigned int nIfBulk,
-                        const unsigned int nIfTc);
+                        const unsigned int nTc);
         /// @brief  Sets the bulk fluid mole fractions to the given values.
-        void setMoleFractions(const double* fractions);
+        void setMoleFractions(const double* fractions, const unsigned int size);
         /// @brief  Sets the trace compound mole fractions to the given values.
-        void setTcMoleFractions(const double* fractions);
+        void setTcMoleFractions(const double* fractions, const unsigned int size);
         /// @brief  Sets the given array to the bulk fluid mole fraction values.
-        void getMoleFractions(double* fractions) const;
+        void getMoleFractions(double* fractions, const unsigned int size) const;
         /// @brief  Sets the given array to the trace compound mole fraction values.
-        void getTcMoleFractions(double* fractions) const;
+        void getTcMoleFractions(double* fractions, const unsigned int size) const;
+        /// @brief  Returns the size of this mixture data bulk fluid mole fractions array.
+        const unsigned int getNumFluid() const;
+        /// @brief  Returns the size of this mixture data trace compounds mole fractions array.
+        const unsigned int getNumTc() const;
 
     protected:
-        unsigned int mNumFluid;       /**< *o (1) trick_chkpnt_io(**) Number of primary fluid compounds in model. */
-        unsigned int mNumTc;          /**< *o (1) trick_chkpnt_io(**) Number of trace compounds in model. */
-        unsigned int mNumFluidIf;     /**< *o (1) trick_chkpnt_io(**) Number of primary fluid compounds in interface. */
-        unsigned int mNumTcIf;        /**< *o (1) trick_chkpnt_io(**) Number of trace compounds in interface. */
-        unsigned int mNumFluidCommon; /**< *o (1) trick_chkpnt_io(**) Number of primary fluid compounds in common between model and interface. */
-        unsigned int mNumTcCommon;    /**< *o (1) trick_chkpnt_io(**) Number of trace compounds in common between model and interface. */
+        unsigned int mNumFluid;       /**< *o (1) trick_chkpnt_io(**) Number of primary fluid compounds in this mixture. */
+        unsigned int mNumTc;          /**< *o (1) trick_chkpnt_io(**) Number of trace compounds in this mixture. */
 
     private:
-        /// @brief Assignment operator unavailable since declared private and not implemented.
-        GunnsFluidDistributedMixtureData& operator =(const GunnsFluidDistributedMixtureData& that);
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsFluidDistributedMixtureData(const GunnsFluidDistributedMixtureData&);
 };
@@ -90,8 +88,8 @@ class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class
 class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMixtureData, public GunnsDistributed2WayBusBaseInterfaceData
 {
     public:
-        double       mCapacitance;     /**< (mol/Pa) Model capacitance. */
-        double       mSource;          /**< (1)      Fluid pressure (Pa) or molar flow (mol/s). */
+        double mCapacitance; /**< (mol/Pa) Model capacitance. */
+        double mSource;      /**< (1)      Fluid pressure (Pa) or molar flow (mol/s). */
         /// @brief  Default constructs this Fluid Distributed 2-Way Bus interface data.
         GunnsFluidDistributed2WayBusInterfaceData();
         /// @brief  Default destructs this Fluid Distributed 2-Way Bus interface data.
@@ -118,12 +116,12 @@ class GunnsFluidDistributed2WayBusFluidState : public GunnsFluidDistributedMixtu
         double mPressure; /**< (Pa) Fluid pressure. */
         /// @brief Default constructor.
         GunnsFluidDistributed2WayBusFluidState();
-        /// @brief  Default destructor.
+        /// @brief Default destructor.
         virtual ~GunnsFluidDistributed2WayBusFluidState();
+        /// @brief Assignment operator.
+        GunnsFluidDistributed2WayBusFluidState& operator =(const GunnsFluidDistributed2WayBusFluidState& that);
 
     private:
-        /// @brief Assignment operator unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBusFluidState& operator =(const GunnsFluidDistributed2WayBusFluidState& that);
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsFluidDistributed2WayBusFluidState(const GunnsFluidDistributed2WayBusFluidState&);
 };
@@ -140,12 +138,12 @@ class GunnsFluidDistributed2WayBusFlowState : public GunnsFluidDistributedMixtur
         double  mFlowRate; /**< (mol/s) Fluid molar flow rate. */
         /// @brief Default constructor.
         GunnsFluidDistributed2WayBusFlowState();
-        /// @brief  Default destructor.
+        /// @brief Default destructor.
         virtual ~GunnsFluidDistributed2WayBusFlowState();
+        /// @brief Assignment operator.
+        GunnsFluidDistributed2WayBusFlowState& operator =(const GunnsFluidDistributed2WayBusFlowState& that);
 
     private:
-        /// @brief Assignment operator unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBusFlowState& operator =(const GunnsFluidDistributed2WayBusFlowState& that);
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsFluidDistributed2WayBusFlowState(const GunnsFluidDistributed2WayBusFlowState&);
 };
@@ -208,8 +206,6 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
         virtual ~GunnsFluidDistributed2WayBus();
         /// @brief Initializes this Distributed 2-Way Bus Interface.
         void initialize(const bool         isPairMaster,
-                        const unsigned int nBulk,
-                        const unsigned int nTc,
                         const unsigned int nIfBulk,
                         const unsigned int nIfTc);
         /// @brief Process received data prior to the model update.
@@ -252,6 +248,22 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Returns the value of mNumFluid.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline const unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
+{
+    return mNumFluid;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Returns the value of mNumTc.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline const unsigned int GunnsFluidDistributedMixtureData::getNumTc() const
+{
+    return mNumTc;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mDemandLimitGain.

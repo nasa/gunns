@@ -2,7 +2,7 @@
 @defgroup  UT_GUNNS   GUNNS Unit Tests
 @ingroup   UT_TS_MODELS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details   This is the unit test main for the General-Use Nodal Network Solver (GUNNS) system.
@@ -32,6 +32,7 @@ LIBRARY DEPENDENCY:
 #include "UtGunnsBasicExternalDemand.hh"
 #include "UtGunnsBasicFlowController.hh"
 #include "UtGunnsBasicIslandAnalyzer.hh"
+#include "UtGunnsDistributed2WayBusBase.hh"
 #include "UtGunnsFluidUtils.hh"
 #include "UtGunnsFluidNode.hh"
 #include "UtGunnsFluidLink.hh"
@@ -46,6 +47,7 @@ LIBRARY DEPENDENCY:
 #include "UtGunnsFluidExternalSupply.hh"
 #include "UtGunnsFluidExternalDemand.hh"
 #include "UtGunnsFluidDistributedIf.hh"
+#include "UtGunnsFluidDistributed2WayBus.hh"
 #include "UtGunnsFluidShadow.hh"
 #include "UtGunnsFluidFlowController.hh"
 #include "UtGunnsFluidIslandAnalyzer.hh"
@@ -81,6 +83,7 @@ int main(int argc, char** argv) {
     runner.addTest( UtGunnsBasicExternalDemand::suite() );
     runner.addTest( UtGunnsBasicFlowController::suite());
     runner.addTest( UtGunnsBasicIslandAnalyzer::suite() );
+    runner.addTest( UtGunnsDistributed2WayBusBase::suite() );
     runner.addTest( UtGunnsFluidUtils::suite() );
     runner.addTest( UtGunnsFluidNode::suite() );
     runner.addTest( UtGunnsFluidLink::suite() );
@@ -94,6 +97,7 @@ int main(int argc, char** argv) {
     runner.addTest( UtGunnsFluidJumperPlug::suite() );
     runner.addTest( UtGunnsFluidExternalSupply::suite() );
     runner.addTest( UtGunnsFluidExternalDemand::suite() );
+    runner.addTest( UtGunnsFluidDistributed2WayBus::suite() );
     runner.addTest( UtGunnsFluidDistributedIf::suite() );
     runner.addTest( UtGunnsFluidShadow::suite() );
     runner.addTest( UtGunnsFluidFlowController::suite());

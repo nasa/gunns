@@ -361,10 +361,12 @@ bool GunnsElectDistributedIf::checkSpecificPortRules(const int port, const int n
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] isInit (--) If this should throw initialization errors, currently not used.
+///
 /// @details  Pops all notifications from the interface utility's queue and translates them to H&S
 ///           messages.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributedIf::processIfNotifications(const bool isInit)
+void GunnsElectDistributedIf::processIfNotifications(const bool isInit __attribute__((unused)))
 {
     GunnsDistributed2WayBusNotification notification;
     unsigned int numNotifs = 0;

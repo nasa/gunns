@@ -42,8 +42,8 @@ void GunnsFluidDistributedIfLagBuffer::initialize()
     for (unsigned int i=0; i<10; ++i) {
         //TODO this creates a lot of duplicate named dynamic array warnings from Trick
         //TODO numfluids and num tc's are hard-coded
-        mBuffer1[i].initialize(6, 0, 6, 0);
-        mBuffer2[i].initialize(6, 0, 6, 0);
+        mBuffer1[i].initialize(6, 0);
+        mBuffer2[i].initialize(6, 0);
     }
     if (mDelayFrames > 9) mDelayFrames = 9;
     mHeadIndex = mDelayFrames;

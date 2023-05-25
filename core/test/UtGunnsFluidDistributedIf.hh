@@ -18,6 +18,7 @@
 
 #include "core/GunnsFluidDistributedIf.hh"
 #include "core/test/UtGunnsFluidCapacitor.hh"
+#include "core/test/UtGunnsFluidDistributed2WayBus.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsFluidDistributedIf and befriend UtGunnsFluidDistributedIf.
@@ -44,16 +45,16 @@ inline FriendlyGunnsFluidDistributedIf::~FriendlyGunnsFluidDistributedIf() {}
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsFluidDistributed2WayBus : public GunnsFluidDistributed2WayBus
-{
-    public:
-        FriendlyGunnsFluidDistributed2WayBus();
-        virtual ~FriendlyGunnsFluidDistributed2WayBus();
-        friend class UtGunnsFluidDistributedIf;
-};
-inline FriendlyGunnsFluidDistributed2WayBus::FriendlyGunnsFluidDistributed2WayBus()
-    : GunnsFluidDistributed2WayBus() {};
-inline FriendlyGunnsFluidDistributed2WayBus::~FriendlyGunnsFluidDistributed2WayBus() {}
+//class FriendlyGunnsFluidDistributed2WayBus : public GunnsFluidDistributed2WayBus
+//{
+//    public:
+//        FriendlyGunnsFluidDistributed2WayBus();
+//        virtual ~FriendlyGunnsFluidDistributed2WayBus();
+//        friend class UtGunnsFluidDistributedIf;
+//};
+//inline FriendlyGunnsFluidDistributed2WayBus::FriendlyGunnsFluidDistributed2WayBus()
+//    : GunnsFluidDistributed2WayBus() {};
+//inline FriendlyGunnsFluidDistributed2WayBus::~FriendlyGunnsFluidDistributed2WayBus() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsFluidDistributedIfData and befriend UtGunnsFluidDistributedIf.

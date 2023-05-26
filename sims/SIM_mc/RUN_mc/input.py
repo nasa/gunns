@@ -19,25 +19,36 @@ output_vars = [
     # doing all 4 conductances instead of 2 press, 2 G didn't work very well
 #    ['mc.model.valve1.FlowRate',                  0.05474700689532216, 5.0],
 #    ['mc.model.valve2.mFlowRate',                 0.05474700689532223, 5.0],
-    ['mc.model.conductor1.mFlowRate',             0.01824900229844743, 5.0],
-    ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 5.0],
+    ['mc.model.conductor1.mFlowRate',             0.01824900229844743, 1.0],
+    ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 1.0],
     ]
 
-#mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 5
-#mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 2
+# Add a PSO optimizer to the MC manager.
+mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
+
+# Create a PSO configuration data object and set the values.
+thePsoConfig = trick.GunnsOptimPsoConfigData()
+
+#thePsoConfig.mNumParticles     = 5
+#thePsoConfig.mMaxEpoch         = 2
 # Chip's recommendation:
-mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 30
-mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 100
+thePsoConfig.mNumParticles     = 30
+thePsoConfig.mMaxEpoch         = 100
 # These seem to work best:
-mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeight    = 0.5
-mc.monteCarlo.mOptimizer.mConfigData.mInertiaWeightEnd = 0.5
-mc.monteCarlo.mOptimizer.mConfigData.mCognitiveCoeff   = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mSocialCoeff      = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 0.5
-mc.monteCarlo.mOptimizer.mConfigData.mRandomSeed       = 42
-mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.MIN_MAX_CORNERS
-#mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.FILE
-#mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPsoConfigData.FILE_CONTINUOUS
+thePsoConfig.mInertiaWeight    = 0.5
+thePsoConfig.mInertiaWeightEnd = 0.5
+thePsoConfig.mCognitiveCoeff   = 2.0
+thePsoConfig.mSocialCoeff      = 2.0
+thePsoConfig.mMaxVelocity      = 0.5
+thePsoConfig.mRandomSeed       = 42
+thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.MIN_MAX_CORNERS
+#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE
+#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE_CONTINUOUS
+
+# Give the configuration to the optimizer.
+mc.monteCarlo.mOptimizer.setConfigData(thePsoConfig)
+
+mc.monteCarlo.setVerbosityLevel(1)
 
 # Max vel = 1
 # Result for 30x400 swarm, random dist, cost: .00708
@@ -70,7 +81,7 @@ mc.monteCarlo.mOptimizer.mConfigData.mInitDistribution = trick.GunnsMonteCarloPs
 # Add the Slave input variables (currently only doubles are supported).
 for var in input_vars:
     # Register MC variable with the Master/Optimizer
-    mc.monteCarlo.addInDouble(trick.get_address(var[0]), var[2], var[3], var[0])
+    mc.monteCarlo.addInput(var[0], trick.get_address(var[0]), var[2], var[3])
     # Create a calculated variable and add it to Monte Carlo.
     mcvar = trick.MonteVarCalculated(var[0], var[1])
     trick_mc.mc.add_variable(mcvar)
@@ -81,7 +92,7 @@ trick_mc.mc.add_variable(mcvar)
 
 # Add the Slave output variables (currently only doubles are supported).
 for var in output_vars:
-    mc.monteCarlo.addOutDouble(var[0], trick.get_address(var[0]), var[1], var[2])
+    mc.monteCarlo.addOutput(var[0], trick.get_address(var[0]), var[1], var[2])
 
 # Add the scripted input driver data to the model
 try:
@@ -89,7 +100,7 @@ try:
         lines = f.readlines()
         var_list = lines[0].strip().split(',')
         for var in var_list[1:]:
-            mc.monteCarlo.addDriverDouble(trick.get_address(var))
+            mc.monteCarlo.addDriver(trick.get_address(var))
         for line in lines[1:]:
             mc.monteCarlo.addDriverDataRow(line.strip())
         f.close()
@@ -101,10 +112,10 @@ try:
     with open('output_target_data.csv', 'r') as f:
         lines = f.readlines()
         var_list = lines[0].strip().split(',')
-        for var in var_list[1:]:
-            mc.monteCarlo.addOutTargetDouble(var, trick.get_address(var))
+#        for var in var_list[1:]:
+#            mc.monteCarlo.addOutTargetDouble(var, trick.get_address(var))
         for line in lines[1:]:
-            mc.monteCarlo.addOutTargetDataRow(line.strip())
+            mc.monteCarlo.addOutputDataRow(line.strip())
         f.close()
 except:
     pass

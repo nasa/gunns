@@ -7,13 +7,13 @@
 // Default system classes
 #include "sim_objects/default_trick_sys.sm"
 
-##include "model/GunnsMonteCarlo.hh"
+##include "core/optimization/GunnsOptimMonteCarlo.hh"
 ##include "model/GunnsMcModelFluid.hh"
 
 class GunnsMcSimObject : public Trick::SimObject
 {
     public:
-        GunnsMonteCarlo monteCarlo;
+        GunnsOptimMonteCarlo monteCarlo;
         GunnsMcModelFluid model;
 
         GunnsMcSimObject()

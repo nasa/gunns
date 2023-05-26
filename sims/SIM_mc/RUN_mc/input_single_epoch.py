@@ -4,6 +4,9 @@
 #trick setup
 trick.sim_services.exec_set_trap_sigfpe(1)
 
+# Create a PSO configuration data object.
+thePsoConfig = trick.GunnsOptimPsoConfigData()
+
 # Load the configuration for this epoch
 f = "RUN_mc/epoch_configuration.py"
 exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
@@ -24,18 +27,23 @@ output_vars = [
     ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 5.0],
     ]
 
-# Run the sim for a single epoch, as the Python wrapper is handling the multiple
-# epochs.
-mc.monteCarlo.mOptimizer.mConfigData.mNumParticles     = 30
-mc.monteCarlo.mOptimizer.mConfigData.mMaxEpoch         = 1
-mc.monteCarlo.mOptimizer.mConfigData.mCognitiveCoeff   = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mSocialCoeff      = 2.0
-mc.monteCarlo.mOptimizer.mConfigData.mMaxVelocity      = 0.5
+# Add a PSO optimizer to the MC manager.
+mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
+
+# Configure the sim for a single epoch, as the Python wrapper is handling the multiple epochs.
+thePsoConfig.mNumParticles     = 30
+thePsoConfig.mMaxEpoch         = 1
+thePsoConfig.mCognitiveCoeff   = 2.0
+thePsoConfig.mSocialCoeff      = 2.0
+thePsoConfig.mMaxVelocity      = 0.5
+
+# Give the configuration to the optimizer.
+mc.monteCarlo.mOptimizer.setConfigData(thePsoConfig)
 
 # Add the Slave input variables (currently only doubles are supported).
 for var in input_vars:
     # Register MC variable with the Master/Optimizer
-    mc.monteCarlo.addInDouble(trick.get_address(var[0]), var[2], var[3], var[0])
+    mc.monteCarlo.addInput(trick.get_address(var[0]), var[2], var[3], var[0])
     # Create a calculated variable and add it to Monte Carlo.
     mcvar = trick.MonteVarCalculated(var[0], var[1])
     trick_mc.mc.add_variable(mcvar)
@@ -46,14 +54,16 @@ trick_mc.mc.add_variable(mcvar)
 
 # Add the Slave output variables (currently only doubles are supported).
 for var in output_vars:
-    mc.monteCarlo.addOutDouble(trick.get_address(var[0]), var[1], var[2])
+    mc.monteCarlo.addOutput(var[0], trick.get_address(var[0]), var[1], var[2])
+
+#TODO need to add the output trajectory data rows!
 
 # Enable Monte Carlo.
 trick.mc_set_enabled(1)
 
 # Add a Monte Carlo slave for each core, or the number of particles, whichever is less.
 import multiprocessing
-for i in range(min(multiprocessing.cpu_count(), mc.monteCarlo.mOptimizer.mConfigData.mNumParticles)):
+for i in range(min(multiprocessing.cpu_count(), thePsoConfig.mNumParticles)):
     trick.mc_add_slave("localhost")
     
 # Sets the total number of Slave runs to perform.

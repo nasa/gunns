@@ -243,6 +243,9 @@ void UtGunnsFluidDistributedIf::testDefaultConstruction()
     GunnsFluidDistributed2WayBusInterfaceData* data = new GunnsFluidDistributed2WayBusInterfaceData();
     delete data;
 
+    GunnsFluidDistributedIfData* data2 = new GunnsFluidDistributedIfData();
+    delete data2;
+
     std::cout << "... Pass";
 }
 
@@ -431,20 +434,20 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
 
     /// @test with incoming data, flip to demand mode due to equal capacitances and we are the pair
     ///       master.
-    tArticleInterface->mInData.mFrameCount         = 1;
-    tArticleInterface->mInData.mDemandMode         = false;
-    tArticleInterface->mInData.mCapacitance        = 1.0;
-    tArticleInterface->mInData.mSource             = 1.0e5;
-    tArticleInterface->mInData.mEnergy             = 3.0e5;
-    tArticleInterface->mInData.mMoleFractions[0]   = 0.7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mMoleFractions[1]   = 0.3 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mTcMoleFractions[0] = 1.0e-7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mTcMoleFractions[1] = 2.0e-7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mTcMoleFractions[2] = 3.0e-7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mTcMoleFractions[3] = 4.0e-7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mOutData.mCapacitance       = 1.0;
-    tArticleInterface->mInDataLastDemandMode       = false;
-    tArticleInterface->mFramesSinceFlip            = 2;
+    tArticle->mInData.mFrameCount            = 1;
+    tArticle->mInData.mDemandMode            = false;
+    tArticle->mInData.mCapacitance           = 1.0;
+    tArticle->mInData.mSource                = 1.0e5;
+    tArticle->mInData.mEnergy                = 3.0e5;
+    tArticle->mInData.mMoleFractions[0]      = 0.7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mMoleFractions[1]      = 0.3 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[0]    = 1.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[1]    = 2.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[2]    = 3.0e-7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mTcMoleFractions[3]    = 4.0e-7 / (1.0 + inTcFractionSum);
+    tArticleInterface->mOutData.mCapacitance = 1.0;
+    tArticleInterface->mInDataLastDemandMode = false;
+    tArticleInterface->mFramesSinceFlip      = 2;
     tNodes[0].setVolume(1.0);
     tArticle->processInputs();
     CPPUNIT_ASSERT(false == tArticleInterface->mInDataLastDemandMode);
@@ -483,13 +486,13 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7, tArticle->mFluidState.getTraceCompounds()->getMoleFractions()[3], DBL_EPSILON);
 
     /// @test flip to supply mode when incoming data takes over demand.
-    tArticleInterface->mInData.mFrameCount  = 2;
-    tArticleInterface->mInData.mDemandMode  = true;
-    tArticleInterface->mInData.mCapacitance = 1.0;
-    tArticleInterface->mInData.mSource      = -1.0;
-    tArticleInterface->mFramesSinceFlip     = 999;
+    tArticle->mInData.mFrameCount       = 2;
+    tArticle->mInData.mDemandMode       = true;
+    tArticle->mInData.mCapacitance      = 1.0;
+    tArticle->mInData.mSource           = -1.0;
+    tArticleInterface->mFramesSinceFlip = 999;
     tCapacitorLink.editVolume(false, 0.0);
-    double expectedFlux = -tArticleInterface->mInData.mSource * (1.0 - inTcFractionSum) / 1000.0;
+    double expectedFlux = -tArticle->mInData.mSource * (1.0 - inTcFractionSum) / 1000.0;
     tArticle->processInputs();
     CPPUNIT_ASSERT(true   == tArticleInterface->mInDataLastDemandMode);
     CPPUNIT_ASSERT(false  == tArticleInterface->mOutData.mDemandMode);
@@ -514,17 +517,17 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0e-7, tArticle->mInternalFluid->getTraceCompounds()->getMoleFractions()[3], DBL_EPSILON);
 
     /// @test handles zero incoming bulk fluid mole fractions.
-    tArticleInterface->mInData.mMoleFractions[0] = 0.0;
-    tArticleInterface->mInData.mMoleFractions[1] = 0.0;
+    tArticle->mInData.mMoleFractions[0] = 0.0;
+    tArticle->mInData.mMoleFractions[1] = 0.0;
     CPPUNIT_ASSERT_THROW(tArticle->processInputs(), TsOutOfBoundsException);
-    tArticleInterface->mInData.mMoleFractions[0] = 0.7 / (1.0 + inTcFractionSum);
-    tArticleInterface->mInData.mMoleFractions[1] = 0.3 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mMoleFractions[0] = 0.7 / (1.0 + inTcFractionSum);
+    tArticle->mInData.mMoleFractions[1] = 0.3 / (1.0 + inTcFractionSum);
 
     /// @test with both sides in supply mode, remain in supply mode due to equal capacitances and we
     ///       are not the pair master.
-    tArticleInterface->mInData.mDemandMode = false;
-    tArticleInterface->mInData.mSource     = 1.0e5;
-    tArticleInterface->mIsPairMaster       = false;
+    tArticle->mInData.mDemandMode    = false;
+    tArticle->mInData.mSource        = 1.0e5;
+    tArticleInterface->mIsPairMaster = false;
     tArticle->processInputs();
     CPPUNIT_ASSERT(false == tArticleInterface->mInDataLastDemandMode);
     CPPUNIT_ASSERT(false == tArticleInterface->mOutData.mDemandMode);
@@ -554,7 +557,7 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     /// @test remain in demand mode when both sides are in demand mode and other side has not
     ///       recently flipped to demand mode -- this allows time for the other side to relinquish
     ///       demand mode after we took it, in the presence of data lag.
-    tArticleInterface->mInData.mDemandMode   = true;
+    tArticle->mInData.mDemandMode            = true;
     tArticleInterface->mInDataLastDemandMode = true;
     tArticle->processInputs();
     CPPUNIT_ASSERT(true == tArticleInterface->mOutData.mDemandMode);
@@ -562,9 +565,9 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     /// @test Input of fluid temperature.  Also do an improper call of setFluidState while in
     ///       Demand mode to make the interface output a warning message, for code coverage.
     tArticleInterface->setFluidState(tArticle->mWorkFluidState);
-    tArticle->mUseEnthalpy                 = false;
-    tArticleInterface->mInData.mDemandMode = false;
-    tArticleInterface->mInData.mEnergy     = 300.0;
+    tArticle->mUseEnthalpy        = false;
+    tArticle->mInData.mDemandMode = false;
+    tArticle->mInData.mEnergy     = 300.0;
     tArticle->processInputs();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(300.0, tNodes[0].getContent()->getTemperature(), FLT_EPSILON);
 
@@ -1233,12 +1236,6 @@ void UtGunnsFluidDistributedIf::testData()
     CPPUNIT_ASSERT(0.0                       == fractions4[1]);
     CPPUNIT_ASSERT(0.0                       == fractions4[2]);
 
-    /// @test Data objects are public in GunnsFluidDistributedIf.
-    GunnsFluidDistributedIf article;
-    article.initialize(*tConfigData, *tInputData, tLinks, tPort0);
-    CPPUNIT_ASSERT(false == article.mInterface.mInData.hasValidData());
-    CPPUNIT_ASSERT(false == article.mInterface.mOutData.hasValidData());
-
     std::cout << "... Pass";
 }
 
@@ -1256,8 +1253,8 @@ void UtGunnsFluidDistributedIf::testForceModes()
 
     /// @test Flips to Demand mode on input regardless of Demand mode in incoming data.
     tNodes[0].setVolume(1.0);
-    tArticleInterface->mInData.mDemandMode = true;
-    tArticleInterface->mInData.mFrameCount = 1;
+    tArticle->mInData.mDemandMode = true;
+    tArticle->mInData.mFrameCount = 1;
     tArticle->processInputs();
     CPPUNIT_ASSERT(1.0   == tArticle->mSupplyVolume);
     CPPUNIT_ASSERT(true  == tCapacitorLink.mEditVolumeFlag);
@@ -1267,8 +1264,8 @@ void UtGunnsFluidDistributedIf::testForceModes()
     CPPUNIT_ASSERT(true  == tArticleInterface->mOutData.mDemandMode);
 
     /// @test Flips to Supply mode on input regardless of capacitance.
-    tArticleInterface->mInData.mDemandMode = false;
-    tArticleInterface->mInData.mFrameCount = 2;
+    tArticle->mInData.mDemandMode = false;
+    tArticle->mInData.mFrameCount = 2;
     tArticleInterface->forceSupplyRole();
     tArticle->processInputs();
     CPPUNIT_ASSERT(0.0   == tArticle->mSupplyVolume);
@@ -1279,9 +1276,9 @@ void UtGunnsFluidDistributedIf::testForceModes()
     CPPUNIT_ASSERT(false == tArticleInterface->mOutData.mDemandMode);
 
     /// @test Stays in Supply mode on output regardless of new local capacitance.
-    tArticleInterface->mLoopLatency          = 2;
-    tArticleInterface->mFramesSinceFlip      = 3;
-    tArticleInterface->mInData.mCapacitance  = 1.0;
+    tArticleInterface->mLoopLatency     = 2;
+    tArticleInterface->mFramesSinceFlip = 3;
+    tArticle->mInData.mCapacitance      = 1.0;
     tArticleInterface->processOutputs(0.0);
     CPPUNIT_ASSERT(false == tArticleInterface->mOutData.mDemandMode);
 

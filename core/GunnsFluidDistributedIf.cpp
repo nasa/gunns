@@ -19,7 +19,62 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
-/// @details  This value is chosen to get reliable network capacitance calculations from the solver
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Fluid Distributed Interface data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributedIfData::GunnsFluidDistributedIfData()
+    :
+    GunnsFluidDistributed2WayBusInterfaceData()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Fluid Distributed Interface data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsFluidDistributedIfData::~GunnsFluidDistributedIfData()
+{
+    if (mTcMoleFractions) {
+        TS_DELETE_ARRAY(mTcMoleFractions);
+    }
+    if (mMoleFractions) {
+        TS_DELETE_ARRAY(mMoleFractions);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] nIfFluids (--) Number of fluid constituents.
+/// @param[in] nIfTc     (--) Number of trace compounds.
+/// @param[in] name      (--) Name of the instance for dynamic memory names for Trick MM.
+///
+/// @details  Allocates dynamic arrays for mole fractions.  TrickHLA is unable to move data between
+///           arrays that are new'd, so this method overrides the base class to allocate using TMM.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidDistributedIfData::initialize(const unsigned int nIfFluids,
+                                             const unsigned int nIfTc,
+                                             const std::string& name)
+{
+    mNumFluid = nIfFluids;
+    mNumTc    = nIfTc;
+
+    /// - Delete & re-allocate fractions arrays in case of repeated calls to this function.
+    if (mNumFluid > 0) {
+        TS_DELETE_ARRAY(mMoleFractions);
+        TS_NEW_PRIM_ARRAY_EXT(mMoleFractions, mNumFluid, double, name + ".mMoleFractions");
+        for (unsigned int i=0; i<mNumFluid; ++i) {
+            mMoleFractions[i] = 0.0;
+        }
+    }
+    if (mNumTc > 0) {
+        TS_DELETE_ARRAY(mTcMoleFractions);
+        TS_NEW_PRIM_ARRAY_EXT(mTcMoleFractions, mNumTc, double, name + ".mTcMoleFractions");
+        for (unsigned int i=0; i<mNumTc; ++i) {
+            mTcMoleFractions[i] = 0.0;
+        }
+    }
+}
+
+//// @details  This value is chosen to get reliable network capacitance calculations from the solver
 ///           for liquid and gas nodes.
 const double GunnsFluidDistributedIf::mNetworkCapacitanceFlux = 1.0E-6;
 
@@ -115,6 +170,8 @@ GunnsFluidDistributedIfInputData::~GunnsFluidDistributedIfInputData()
 GunnsFluidDistributedIf::GunnsFluidDistributedIf()
     :
     GunnsFluidLink         (NPORTS),
+    mInData                (),
+    mOutData               (),
     mInterface             (),
     mUseEnthalpy           (false),
     mDemandOption          (false),
@@ -219,8 +276,12 @@ void GunnsFluidDistributedIf::initialize(const GunnsFluidDistributedIfConfigData
     ///   Otherwise, the interface is sized to match our fluid config.  The working fluid and flow
     ///   states are always sized to match our fluid config.
     if (configData.mFluidSizesOverride) {
+        mInData   .initialize(configData.mNumFluidOverride, configData.mNumTcOverride, mName + ".mInData");
+        mOutData  .initialize(configData.mNumFluidOverride, configData.mNumTcOverride, mName + ".mOutData");
         mInterface.initialize(configData.mIsPairMaster, configData.mNumFluidOverride, configData.mNumTcOverride);
     } else {
+        mInData   .initialize(nTypes, nTc, mName + ".mInData");
+        mOutData  .initialize(nTypes, nTc, mName + ".mOutData");
         mInterface.initialize(configData.mIsPairMaster, nTypes, nTc);
     }
     mWorkFluidState.initialize(nTypes, nTc);
@@ -327,6 +388,9 @@ void GunnsFluidDistributedIf::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processInputs()
 {
+    /// - Copy data received from the data network (HLA, etc.) into the interface logic's input.
+    mInterface.mInData = mInData;
+
     /// - Interface mode changes and node volume update in response.
     bool previousDemandMode = mInterface.isInDemandRole();
     mInterface.processInputs();
@@ -464,8 +528,8 @@ void GunnsFluidDistributedIf::processInputsDemand()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processOutputs()
 {
-    // update work fluid/flow mixture & energy (implemented in outputFluid())
-    // based on i/f mode, update work fluid pressure or work flow rate, send state to the i/f
+    /// - Based on interface mode, update the working fluid state or flow state with pressure or
+    ///   flow rate, respectively.
     if (mInterface.isInDemandRole()) {
         mWorkFlowState.mFlowRate = processOutputsDemand();
         mInterface.setFlowState(mWorkFlowState);
@@ -474,18 +538,21 @@ void GunnsFluidDistributedIf::processOutputs()
         mInterface.setFluidState(mWorkFluidState);
     }
 
-    // find capacitance
+    /// - Update the interface logic to compute its outputs based on our latest network capacitance
+    ///   and handle any mode flip.
     const double capacitance = outputCapacitance();
-    // call i/f output function with capacitance
-    // - i/f output function checks for role flip on capacitance, updates output frame counts
     bool previousDemandMode = mInterface.isInDemandRole();
     mInterface.processOutputs(capacitance);
-    bool demandMode = mInterface.isInDemandRole();
-    // handle mode flip on capacitance
-    if (demandMode and not previousDemandMode) {
+    bool newDemandMode = mInterface.isInDemandRole();
+    if (newDemandMode and not previousDemandMode) {
         mSupplyVolume = mNodes[0]->getVolume();
         mCapacitorLink->editVolume(true, 0.0);
     }
+
+    /// - Copy the interface logic's output to our data object for output on data network (HLA).
+    ///   We use the base class assignment operator to assign base = base.  There is no data lost
+    ///   to slicing since the derived class adds no attributes.
+    mOutData.GunnsFluidDistributed2WayBusInterfaceData::operator=(mInterface.mOutData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

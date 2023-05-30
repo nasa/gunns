@@ -54,8 +54,9 @@ class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class
         /// @brief  Assignment operator for this Fluid Distributed mixture data.
         GunnsFluidDistributedMixtureData& operator =(const GunnsFluidDistributedMixtureData& that);
         /// @brief  Allocates dynamic arrays for bulk fluid and trace compounds and mole fractions.
-        void initialize(const unsigned int nBulk,
-                        const unsigned int nTc);
+        virtual void initialize(const unsigned int nBulk,
+                                const unsigned int nTc,
+                                const std::string& name = "");
         /// @brief  Sets the bulk fluid mole fractions to the given values.
         void setMoleFractions(const double* fractions, const unsigned int size);
         /// @brief  Sets the trace compound mole fractions to the given values.

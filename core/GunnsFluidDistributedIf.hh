@@ -35,6 +35,35 @@ PROGRAMMERS:
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include <vector>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Fluid Distributed Interface Data
+///
+/// @details  This class provides a data structure for the data shared between a pair of Fluid
+///           Distributed Interface links that allows flow between separate fluid networks.  This
+///           extends the non-Trick-specific GunnsFluidDistributed2WayBusInterfaceData to override
+///           the initialize method.  This allocates the fluid mixture arrays using the Trick Memory
+///           Manager instead of normal C++ new/delete, since TrickHLA works better with TMM arrays.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class GunnsFluidDistributedIfData : public GunnsFluidDistributed2WayBusInterfaceData
+{
+    TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIfData);
+    public:
+        /// @brief Default constructs this Fluid Distributed Interface interface data.
+        GunnsFluidDistributedIfData();
+        /// @brief Default destructs this Fluid Distributed Interface interface data.
+        virtual ~GunnsFluidDistributedIfData();
+        /// @brief Allocates dynamic arrays for fluid mole fractions.
+        virtual void initialize(const unsigned int nIfFluids,
+                                const unsigned int nIfTc,
+                                const std::string& name);
+
+    private:
+        /// @brief Copy constructor unavailable since declared private and not implemented.
+        GunnsFluidDistributedIfData(const GunnsFluidDistributedIfData&);
+        /// @brief Assignment operator unavailable since declared private and not implemented.
+        GunnsFluidDistributedIfData& operator =(const GunnsFluidDistributedIfData&);
+};
+
 // Forward declarations for pointer types
 class GunnsFluidCapacitor;
 
@@ -47,16 +76,16 @@ class GunnsFluidCapacitor;
 class GunnsFluidDistributedIfConfigData : public GunnsFluidLinkConfigData
 {
     public:
-        bool                 mIsPairMaster;           /**< (--) trick_chkpnt_io(**) This is the master of the pair. */
-        bool                 mUseEnthalpy;            /**< (--) trick_chkpnt_io(**) Transport energy as specific enthalpy instead of temperature. */
-        bool                 mDemandOption;           /**< (--) trick_chkpnt_io(**) Demand mode option to trade stability for less restriction on flow rate. */
-        GunnsFluidCapacitor* mCapacitorLink;          /**< (--) trick_chkpnt_io(**) Pointer to the node capacitor link. */
-        double               mModingCapacitanceRatio; /**< (--) trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
-        double               mDemandFilterConstA;     /**< (--) trick_chkpnt_io(**) Demand filter gain constant A. */
-        double               mDemandFilterConstB;     /**< (--) trick_chkpnt_io(**) Demand filter gain constant B. */
-        bool                 mFluidSizesOverride;     /**< (--) trick_chkpnt_io(**) Override of fluid mixture sizes is active. */
-        unsigned int         mNumFluidOverride;       /**< (--) trick_chkpnt_io(**) Number of primary fluid compounds override value. */
-        unsigned int         mNumTcOverride;          /**< (--) trick_chkpnt_io(**) Number of trace compounds override value. */
+        bool                 mIsPairMaster;           /**< (1) trick_chkpnt_io(**) This is the master of the pair. */
+        bool                 mUseEnthalpy;            /**< (1) trick_chkpnt_io(**) Transport energy as specific enthalpy instead of temperature. */
+        bool                 mDemandOption;           /**< (1) trick_chkpnt_io(**) Demand mode option to trade stability for less restriction on flow rate. */
+        GunnsFluidCapacitor* mCapacitorLink;          /**< (1) trick_chkpnt_io(**) Pointer to the node capacitor link. */
+        double               mModingCapacitanceRatio; /**< (1) trick_chkpnt_io(**) Supply over Demand capacitance ratio for triggering mode flip. */
+        double               mDemandFilterConstA;     /**< (1) trick_chkpnt_io(**) Demand filter gain constant A. */
+        double               mDemandFilterConstB;     /**< (1) trick_chkpnt_io(**) Demand filter gain constant B. */
+        bool                 mFluidSizesOverride;     /**< (1) trick_chkpnt_io(**) Override of fluid mixture sizes is active. */
+        unsigned int         mNumFluidOverride;       /**< (1) trick_chkpnt_io(**) Number of primary fluid compounds override value. */
+        unsigned int         mNumTcOverride;          /**< (1) trick_chkpnt_io(**) Number of trace compounds override value. */
         /// @brief Default constructs this Fluid Distributed Interface configuration data.
         GunnsFluidDistributedIfConfigData(
                 const std::string&   name           = "",
@@ -86,8 +115,8 @@ class GunnsFluidDistributedIfConfigData : public GunnsFluidLinkConfigData
 class GunnsFluidDistributedIfInputData : public GunnsFluidLinkInputData
 {
     public:
-        bool mForceDemandMode; /**< (--) trick_chkpnt_io(**) Forces the link to always be in Demand mode. */
-        bool mForceSupplyMode; /**< (--) trick_chkpnt_io(**) Forces the link to always be in Supply mode. */
+        bool mForceDemandMode; /**< (1) trick_chkpnt_io(**) Forces the link to always be in Demand mode. */
+        bool mForceSupplyMode; /**< (1) trick_chkpnt_io(**) Forces the link to always be in Supply mode. */
         /// @brief Default constructs this Fluid Distributed Interface input data.
         GunnsFluidDistributedIfInputData(const bool   malfBlockageFlag  = false,
                                          const double malfBlockageValue = 0.0,
@@ -161,11 +190,11 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIf);
     public:
-        /// @name    Public objects and malfunction terms.
+        /// @name    Public objects.
         /// @{
-        /// @details The interface logic object and malfunction targets are public to allow access
-        ///          from the Trick events processor.
-        GunnsFluidDistributed2WayBus mInterface;         /**< (1) The interface logic. */
+        /// @details The interface data objects are public to allow access from the Trick input processor.
+        GunnsFluidDistributedIfData mInData;  /**< (1) Data from the other paired link input from the data interface. */
+        GunnsFluidDistributedIfData mOutData; /**< (1) Data to the other paired link output to the data interface. */
         /// @}
         /// @brief Default Constructor.
         GunnsFluidDistributedIf();
@@ -194,6 +223,7 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         const double* getNetCapDeltaPotential() const;
 
     protected:
+        GunnsFluidDistributed2WayBus           mInterface;              /**<    (1)                            The interface logic. */
         bool                                   mUseEnthalpy;            /**<    (1)        trick_chkpnt_io(**) Transport energy as specific enthalpy instead of temperature. */
         bool                                   mDemandOption;           /**<    (1)        trick_chkpnt_io(**) Demand mode option to trade stability for less restriction on flow rate. */
         double                                 mSupplyVolume;           /**<    (m3)                           Stored volume of the node when in Demand mode. */

@@ -32,8 +32,12 @@ GunnsFluidDistributedMixtureData::GunnsFluidDistributedMixtureData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedMixtureData::~GunnsFluidDistributedMixtureData()
 {
-    delete [] mTcMoleFractions;
-    delete [] mMoleFractions;
+    if (mTcMoleFractions) {
+        delete [] mTcMoleFractions;
+    }
+    if (mMoleFractions) {
+        delete [] mMoleFractions;
+    }
 }
 
 
@@ -66,11 +70,15 @@ GunnsFluidDistributedMixtureData& GunnsFluidDistributedMixtureData::operator =(c
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] nBulk   (--) Number of bulk fluid constituents.
 /// @param[in] nTc     (--) Number of trace compounds.
+/// @param[in] name    (--) Not used.
 ///
-/// @details  Allocates arrays for bulk fluid and trace compounds mole fractions.
+/// @details  Allocates arrays for bulk fluid and trace compounds mole fractions.  This function is
+///           virtual and the name argument exists to support derived types needing to allocate the
+///           mixture arrays using a specific sim memory manager.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedMixtureData::initialize(const unsigned int nBulk,
-                                                  const unsigned int nTc)
+                                                  const unsigned int nTc,
+                                                  const std::string& name __attribute__((unused)))
 {
     mNumFluid       = nBulk;
     mNumTc          = nTc;

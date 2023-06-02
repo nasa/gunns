@@ -111,12 +111,12 @@ class GunnsOptimMonteCarlo
         std::vector<GunnsOptimMonteCarloOutput> mOutputs;          /**< ** (1) trick_chkpnt_io(**) Model output variables and target scalar or trajectory data. */
         GunnsOptimFactory                       mOptimizerFactory; /**< *o (1) trick_chkpnt_io(**) The optimizer factory. */
         /// @brief Returns the initialization status.
-        bool        isInitialized() const;
-        //TODO
+        bool isInitialized() const;
+        /// @brief Computes and returns the cost function for a value compared to its target.
         virtual double computeCostFunction(const double value, const double target) const;
         /// @brief Computes the cost function for the scalar targets.
         void computeScalarCosts();
-        ///TODO
+        /// @brief Parses the given string of values into the given vector.
         void parseDataRow(std::vector<double>& data, const std::string& values) const;
 
     private:

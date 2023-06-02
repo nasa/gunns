@@ -6,21 +6,59 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-    ()
+    ((core/optimization/GunnsOptimPso.o))
 */
 
-/// - GUNNS inlcudes:
+/// - GUNNS includes:
+#include "GunnsOptimPso.hh"
+#include "core/GunnsMacros.hh"
 #include "math/MsMath.hh"
 #include "strings/Strings.hh"
 
 /// - System includes:
 #include <cfloat>
-#include <iostream> //TODO testing
+#include <iostream>
 #include <sstream>
 #include <fstream>
-#include "GunnsOptimPso.hh"
+#include <stdexcept>
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) The object to be assigned equal to.
+///
+/// @returns  GunnsOptimPsoState& (--) Reference to this object.
+///
+/// @details  Assigns this GUNNS Particle Swarm Optimizer particle state to the values of the given
+///           particle state object.  We don't copy the velocity and acceleration.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsOptimPsoState& GunnsOptimPsoState::operator =(const GunnsOptimPsoState& that)
+{
+    if (this != &that) {
+        this->mState = that.mState;
+        this->mCost  = that.mCost;
+        this->mRunId = that.mRunId;
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] stateSize (--) Number of dimensions in the state space.
+///
+/// @details  Initializes this PSO particle.  Sizes the current and best states to the number of
+///           dimensions of the state space, and zeroes them.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimPsoParticle::initialize(const unsigned int stateSize)
+{
+    for (unsigned int j=0; j<stateSize; ++j) {
+        mCurrentState.mState.push_back(0.0);
+        mCurrentState.mVelocity.push_back(0.0);
+        mCurrentState.mAcceleration.push_back(0.0);
+        mBestState.mState.push_back(0.0);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this GUNNS Particle Swarm Optimizer configuration data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsOptimPsoConfigData::GunnsOptimPsoConfigData()
     :
     mNumParticles(0),
@@ -36,13 +74,22 @@ GunnsOptimPsoConfigData::GunnsOptimPsoConfigData()
     // nothing to do
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this GUNNS Particle Swarm Optimizer configuration data.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsOptimPsoConfigData::~GunnsOptimPsoConfigData()
 {
     // nothing to do
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] that (--) The object to be assigned equal to.
+///
+/// @returns  GunnsOptimPsoConfigData& (--) Reference to this object.
+///
+/// @details  Assigns this GUNNS Particle Swarm Optimizer configuration data to the values of the
+///           given configuration data object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsOptimPsoConfigData& GunnsOptimPsoConfigData::operator =(const GunnsOptimPsoConfigData& that)
 {
     if (this != &that) {
@@ -59,73 +106,81 @@ GunnsOptimPsoConfigData& GunnsOptimPsoConfigData::operator =(const GunnsOptimPso
     return *this;
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this GUNNS Particle Swarm Optimizer.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsOptimPso::GunnsOptimPso()
     :
     GunnsOptimBase(),
     mConfigData(),
-//    mInStatesMaster(0),
-//    mGlobalRunCounter(0),
-//    mRunCounter(0),
-//    mEpoch(0),
     mParticles(),
     mActiveParticle(0),
     mGlobalBestState(),
-    mAnnealingCoeff(0.0),
     mMaxVelocity()
 {
-    // nothing to do
+    mName = "GunnsOptimPso";
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this GUNNS Particle Swarm Optimizer.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsOptimPso::~GunnsOptimPso()
 {
     // nothing to do
 }
 
-//TODO inline
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] configData (--) Pointer to the source configuration data object to copy.
+///
+/// @throws   std::runtime_error
+///
+/// @details  Checks the given configuration data is the correct type, then copies its values into
+///           our internal config data object.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::setConfigData(const GunnsOptimBaseConfigData* configData)
 {
     const GunnsOptimPsoConfigData* config = dynamic_cast<const GunnsOptimPsoConfigData*>(configData);
     if (config) {
         mConfigData = *config;
+    } else {
+        throw std::runtime_error(mName + " bad config data type.");
     }
 }
 
-//TODO
-void GunnsOptimPso::initialize(
-        const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] inStatesMaster (--) Pointer to the MC input variables description.
+///
+/// @throws   std::range_error, std::runtime_error
+///
+/// @details  Initializes this PSO.  Validates the configuration, initializes the swarm states,
+///           establishes maximum velocity for each state parameter, writes header rows to the
+///           output files.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimPso::initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster)
 {
-    //TODO validate config and bail:
-    // # particles > 0
-    // # max epoch > 0
-    // # init state > 0
-
+    /// - Store the pointer to the MC input variables, validate, and seed the RNG.
     mInStatesMaster = inStatesMaster;
+    validate();
     std::srand(mConfigData.mRandomSeed);
 
+    /// - Create and initialize the swarm particles.
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
         mParticles.push_back(GunnsOptimPsoParticle());
-        //TODO extract to Particle::initialize
-        for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
-            mParticles.at(i).mCurrentState.mState.push_back(0.0);
-            mParticles.at(i).mCurrentState.mVelocity.push_back(0.0);
-            mParticles.at(i).mCurrentState.mAcceleration.push_back(0.0);
-            mParticles.at(i).mBestState.mState.push_back(0.0);
-            mParticles.at(i).mBestState.mCost = DBL_MAX;
-        }
+        mParticles.at(i).initialize(mInStatesMaster->size());
     }
     mActiveParticle = &mParticles.at(0);
 
+    /// - Initialize the global best state and compute the max velocity for each state parameter.
+    ///   mConfigData.mMaxVelocity is a scale factor on the range between min & max values of the
+    ///   state parameter.  So mConfigData.mMaxVelocity = 1 limits maximum velocity to +/- range
+    ///   per epoch.
     for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
         mGlobalBestState.mState.push_back(0.0);
-        /// mConfigData.mMaxVelocity is a scale factor on the range between min & max values of the
-        /// states parameter.  So mConfigData.mMaxVelocity = 1 limits maximum velocity to +/- range
         mMaxVelocity.push_back(mConfigData.mMaxVelocity
                 * (mInStatesMaster->at(i).mMaximum - mInStatesMaster->at(i).mMinimum));
     }
-    mGlobalBestState.mCost = DBL_MAX;
 
+    /// - Initialize the particle states and run counters.
     initSwarm();
     mGlobalRunCounter = -1;
     mRunCounter       = -1;
@@ -133,10 +188,10 @@ void GunnsOptimPso::initialize(
 
     /// - Start the global cost/epoch history file
     {
-        std::string pathFile = "pso_cost_history.csv"; //TODO prepend path, etc.
+        std::string pathFile = "pso_cost_history.csv";
         std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
         if (file.fail()) {
-            //        GUNNS_WARNING("error opening file: " << pathFile);
+            throw std::runtime_error(mName + " error opening file: " + pathFile);
         } else {
             /// - Write the header row.
             file << "Epoch,Global_Best_Cost " << std::endl;
@@ -146,10 +201,10 @@ void GunnsOptimPso::initialize(
 
     /// - Start the swarm state history file
     {
-        std::string pathFile = "pso_swarm_history.csv"; //TODO prepend path, etc.
+        std::string pathFile = "pso_swarm_history.csv";
         std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
         if (file.fail()) {
-            //        GUNNS_WARNING("error opening file: " << pathFile);
+            throw std::runtime_error(mName + " error opening file: " + pathFile);
         } else {
             /// - Write the header row: Epoch,Pos_0_0,Pos_0_1,Cost_0,Pos_1_0,Pos_1_1,Cost_1, ... ,Pos_Best_0, ...
             file << "Epoch";
@@ -172,7 +227,57 @@ void GunnsOptimPso::initialize(
     printGlobalBest();
 }
 
-//TODO have user option to select between random & uniform
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::range_error
+///
+/// @details  Unlike the rest of GUNNS, here we don't use the H&S system or TsException types and
+///           opt to just throw standard exceptions.  Because this MC stuff could be used to
+///           optimize non-GUNNS models, the user might not want to bother setting up the H&S.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimPso::validate()
+{
+    GunnsOptimBase::validate();
+
+    /// - Throw if swarm size is zero.
+    if (mConfigData.mNumParticles < 1) {
+        throw std::range_error(mName + " config data # particles < 1.");
+    }
+
+    /// - Throw if number of epochs is zero.
+    if (mConfigData.mMaxEpoch < 1) {
+        throw std::range_error(mName + " config data max epoch < 1.");
+    }
+
+    /// - Throw if inertia weights <= 0.
+    if (mConfigData.mInertiaWeight < DBL_EPSILON) {
+        throw std::range_error(mName + " config data inertia weight <= 0.");
+    }
+    if (mConfigData.mInertiaWeightEnd < DBL_EPSILON) {
+        throw std::range_error(mName + " config data ending inertia weight <= 0.");
+    }
+
+    /// - Throw if coefficients <= 0.
+    if (mConfigData.mCognitiveCoeff < DBL_EPSILON) {
+        throw std::range_error(mName + " config data cognitive coefficient <= 0.");
+    }
+    if (mConfigData.mSocialCoeff < DBL_EPSILON) {
+        throw std::range_error(mName + " config data social coefficient <= 0.");
+    }
+
+    /// - Throw if max velocity out of range.
+    if (mConfigData.mMaxVelocity < DBL_EPSILON) {
+        throw std::range_error(mName + " config data max velocity <= 0.");
+    }
+    if (mConfigData.mMaxVelocity > 1.0) {
+        throw std::range_error(mName + " config data max velocity > 1.");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
+/// @details  Initializes the particle states to the desired distribution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::initSwarm()
 {
     switch (mConfigData.mInitDistribution) {
@@ -205,33 +310,37 @@ void GunnsOptimPso::initSwarm()
     };
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Initializes the global best state cost and all particle's best state cost to a high
+///           number for improvement during the optimization.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::initBestCosts()
 {
-    /// - Initialize the global best state cost and all particle's best state cost to a high number
-    ///   for improvement.
     mGlobalBestState.mCost = DBL_MAX;
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
         mParticles.at(i).mBestState.mCost = DBL_MAX;
     }
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets each dimension of each particle's current state position to a random value
+///           within the state's min & max range.  This is a uniform random distribution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::randomizeSwarmState()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        // reference to the particle's current state object
         GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
-
         for (unsigned int j=0; j<state.mState.size(); ++j) {
             const double range = mInStatesMaster->at(j).mMaximum - mInStatesMaster->at(j).mMinimum;
-            state.mState.at(j) = mInStatesMaster->at(j).mMinimum + range * rand() / RAND_MAX;
+            state.mState.at(j) = mInStatesMaster->at(j).mMinimum + range * uniformRand();
         }
     }
 }
 
-//TODO
-// Initializes half of the swarm state to (min, min, ...) and have to (max, max, ...).
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets the current state of the first half of the swarm particles to (min, min, ...),
+///           and the second half to (max, max, ...).
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::minMaxSwarmState()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
@@ -246,24 +355,39 @@ void GunnsOptimPso::minMaxSwarmState()
     }
 }
 
-//TODO
-/// @param[in] continuous (--) If true, also inits velocity and best state.
-// initializes just the swarm from file
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] continuous (--) If true, also reads velocity and best state.
+///
+/// @throws   std::runtime_error
+///
+/// @details  Sets the global best state and particle current states to values read from the swarm
+///           state file.  The continuous argument, if set, causes us to also read the particle
+///           velocities and particle personal best state.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::readFileSwarmState(const bool continuous)
 {
-    std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
+    std::string pathFile = "pso_state.csv";
     std::ifstream file (pathFile.c_str(), (std::ifstream::in));
     if (file.fail()) {
-//        GUNNS_WARNING("error opening file: " << pathFile);
+        throw std::runtime_error(mName + " error opening file: " + pathFile);
     } else {
         /// - Read the whole file into a stream.
         std::stringstream fString;
         fString << file.rdbuf();
 
-        //TODO check file for correct columns/rows for our swarm
-
         /// - Split the stream by separate lines.
         std::vector<std::string> fLines = Strings::split(fString.str(), "\n");
+
+        /// - Check the file for correct sizes.
+        const unsigned int expectedRows = 2 + mConfigData.mNumParticles;
+        const unsigned int expectedCols = 3 + 3 * mInStatesMaster->size();
+
+        if (expectedRows != fLines.size()) {
+            throw std::runtime_error(mName + " file has wrong number of rows: " + pathFile);
+        }
+        if (expectedCols != Strings::split(fLines.at(0), " ").size()) {
+            throw std::runtime_error(mName + " file has wrong number of columns: " + pathFile);
+        }
 
         for (unsigned int line=1; line<fLines.size(); ++line) {
             std::istringstream in(fLines.at(line));
@@ -297,57 +421,40 @@ void GunnsOptimPso::readFileSwarmState(const bool continuous)
     file.close();
 }
 
-//TODO
-/// Initializes velocity with a uniform random distribution between +/- max velocity.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Sets each dimension of each particle's current state velocity to a random value within
+///           the +/- maximum velocity for that state..  This is a uniform random distribution.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::randomizeSwarmVelocity()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
         GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
         for (unsigned int j=0; j<state.mVelocity.size(); ++j) {
-            state.mVelocity.at(j) = mMaxVelocity.at(j) * (1.0 - 2.0 * rand() / RAND_MAX);
+            state.mVelocity.at(j) = mMaxVelocity.at(j) * (1.0 - 2.0 * uniformRand());
         }
     }
 }
 
-//TODO DEAD CODE
-//TODO attempt to set swarm to a uniform distribution over the state space
-void GunnsOptimPso::uniformSwarm()
-{
-    // for each state variable we want to evenly distribute the particles
-    // how many values?  it depends on how many particles we have vs. the state size
-    // if we want 2 values for each state varialbe (say at 33%, 66%), then
-    // to fully populate all combinations, we need # particles = 2^state_vars...
-    // for 4 state vars: 2^4 = 16... so what do we do with more or less particles?
-    // Compute the # of values from the # states and # particles:
-    // values^state = particles
-    // values = particles^(1/state)
-    // 16^(1/4) = 2
-    // round down to int:
-    // 10^(1/4) = 1.8 ==> 1
-    // this example leads to all particles starting at the median of each state range,
-    //   and multiple particles with same starting state
-    // but if we round up, then we'll run out of particles and can't cover all combo's
-    //... so just round down, and alert the user
-    //TODO init validates that # state > 0
-    const int spread = std::floor(powf(mConfigData.mNumParticles, 1.0 / mInStatesMaster->size()));
-
-    for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
-        const double range = mInStatesMaster->at(i).mMaximum - mInStatesMaster->at(i).mMinimum;
-    }
-}
-
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
+/// @details  Updates the swarm between each particle run.  Each epoch runs each particle once.
+///           We update the active particle pointer so that when the MC manager calls getState, we
+///           return the state for the particle that's next up to run.  At the start of a new epoch,
+///           the entire swarm is propagated to its next state, and the results of the previous
+///           epoch are written to the output files.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::update()
 {
-    // update the run count & epoch.  each epoch runs each particle once.
     mGlobalRunCounter++;
     mRunCounter++;
+
+    /// - Updates for the next epoch.
     if (mRunCounter >= mConfigData.mNumParticles) {
         mRunCounter = 0;
         mEpoch++;
 
-        // update inertia weight for new epoch
-        // for annealing, ramp from mInertiaWeight to mInertiaWeightEnd as approach max epoch
+        /// - Ramp the global particle inertia weight towards its ending value.
         double inertiaWeight = mConfigData.mInertiaWeight
                              + (mConfigData.mInertiaWeightEnd - mConfigData.mInertiaWeight)
                              * mEpoch / mConfigData.mMaxEpoch;
@@ -359,10 +466,10 @@ void GunnsOptimPso::update()
 
         /// - Append to the global cost/epoch history file
         {
-            std::string pathFile = "pso_cost_history.csv"; //TODO prepend path, etc.
+            std::string pathFile = "pso_cost_history.csv";
             std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::app));
             if (file.fail()) {
-                //        GUNNS_WARNING("error opening file: " << pathFile);
+                throw std::runtime_error(mName + " error opening file: " + pathFile);
             } else {
                 /// - Write the data row for this epoch.
                 file << mEpoch << "," << mGlobalBestState.mCost << std::endl;
@@ -372,10 +479,10 @@ void GunnsOptimPso::update()
 
         /// - Append to the swarm state history file
         {
-            std::string pathFile = "pso_swarm_history.csv"; //TODO prepend path, etc.
+            std::string pathFile = "pso_swarm_history.csv";
             std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::app));
             if (file.fail()) {
-                //        GUNNS_WARNING("error opening file: " << pathFile);
+                throw std::runtime_error(mName + " error opening file: " + pathFile);
             } else {
                 /// - Write the data row for this epoch.
                 file << mEpoch;
@@ -394,10 +501,14 @@ void GunnsOptimPso::update()
         }
     }
 
-    // point hte active particle to the particle that's up next
+    /// - Point the active particle to the particle that's up next.
     mActiveParticle = &mParticles.at(mRunCounter);
     mActiveParticle->mCurrentState.mRunId = mGlobalRunCounter;
-    std::cout << "PSO update Epoch " << mEpoch << ", run " << mRunCounter << ", best cost: " << mGlobalBestState.mCost << std::endl;
+
+    if (mVerbosityLevel > 0) {
+        std::cout << "PSO update Epoch " << mEpoch << ", run " << mRunCounter << ", best cost: "
+                  << mGlobalBestState.mCost << std::endl;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,23 +532,23 @@ void GunnsOptimPso::updateBestStates()
     }
 }
 
-//TODO updates the swarm state between iterations
-//https://en.wikipedia.org/wiki/Particle_swarm_optimization
-//TODO see Chip Birge's matlab implementation pso_new.m,
-// - use the Common PSO propagation and 'wraparound' at boundaries
-// - redo our annealing to match Chip's, start & end inertia, etc.
-//TODO this is never getting called when runnign from pso.py...
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] inertiaWeight (--) The current swarm inertia weight.
+///
+/// @details  Propagates the swarm particle states.  Acceleration vector in the state space is set
+///           to a new mix of the error vectors between the current state position and the personal
+///           and global best positions, weighted and given random magnitudes.  Acceleration is
+///           integrated into velocity and velocity into position, as you would in physics.
+///           However, velocity in each state component is limited to its maximum range.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
 {
-//    randomizeSwarmState(); TODO for testing
-    std::cout << "PSO propagateSwarm" << std::endl;
     updateBestStates();
 
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        // reference to the particle's current state object
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
 
         /// - Deltas from particle's current state to global best and personal best states.
+        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
         std::vector<double> globalStateDelta;
         std::vector<double> personalStateDelta;
         globalStateDelta.clear();
@@ -447,14 +558,11 @@ void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
             personalStateDelta.push_back(mParticles.at(i).mBestState.mState.at(j) - state.mState.at(j));
         }
 
-        /// - Update particle state.
+        /// - Update particle state, limiting velocity before integrating into position.
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
-            const double cognitiveRand = 1.0 * rand() / RAND_MAX;
-            const double socialRand    = 1.0 * rand() / RAND_MAX;
-            state.mAcceleration.at(j) = mConfigData.mCognitiveCoeff * cognitiveRand * personalStateDelta.at(j)
-                                      + mConfigData.mSocialCoeff    * socialRand    * globalStateDelta.at(j);
+            state.mAcceleration.at(j) = mConfigData.mCognitiveCoeff * uniformRand() * personalStateDelta.at(j)
+                                      + mConfigData.mSocialCoeff    * uniformRand() * globalStateDelta.at(j);
             state.mVelocity.at(j) = inertiaWeight * state.mVelocity.at(j) + state.mAcceleration.at(j);
-            // limit velocity before adding to state
             if (state.mVelocity.at(j) > mMaxVelocity.at(j)) {
                 state.mVelocity.at(j) = mMaxVelocity.at(j);
             } else if (state.mVelocity.at(j) < -mMaxVelocity.at(j)) {
@@ -463,18 +571,11 @@ void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
             state.mState.at(j) += state.mVelocity.at(j);
         }
 
-        /// - State space boundary check & correction.
+        /// - State space boundary check & correction.  We implement reflection since it seems to
+        ///   work better than wrap-around.  For reflection, when we cross a state boundary, we set
+        ///   the state position to the boundary and reverse its velocity.  This is done
+        ///   independently for each state component.
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
-
-            // for wraparound, leave velocity alone and place position on the other side
-//            if (state.mState.at(j) < mInStatesMaster->at(j).mMinimum) {
-//                state.mState.at(j) = mInStatesMaster->at(j).mMaximum;
-//            } else if (state.mState.at(j) > mInStatesMaster->at(j).mMaximum) {
-//                state.mState.at(j) = mInStatesMaster->at(j).mMinimum;
-//            }
-
-            // TODO reflection seems to work better.
-            // for reflection, place position on this side and reverse the velocity.
             if (state.mState.at(j) < mInStatesMaster->at(j).mMinimum) {
                 state.mState.at(j) = mInStatesMaster->at(j).mMinimum;
                 state.mVelocity.at(j) *= -1.0;
@@ -486,75 +587,95 @@ void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
     }
 }
 
-//TODO
-const std::vector<double>* GunnsOptimPso::getState() const
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] cost          (--) The cost value to assign to the particle.
+/// @param[in] runId         (--) Not used.
+/// @param[in] runIdReturned (--) The run ID associated with this cost value.
+///
+/// @throws   std::runtime_error
+///
+/// @details  Sets the cost function value result from the MC Slave run to the particle state that
+///           was the input to that run.  The results come back from the Slave runs in a different
+///           order than they are launched, because of variability in timing of the Slave runs on
+///           their cores.  So we have to actively correlate the returned value with the run ID and
+///           particle it corresponds to.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimPso::assignCost(const double cost, const double runId __attribute__((unused)), const double runIdReturned)
 {
-    return &mActiveParticle->mCurrentState.mState;
-}
-
-//TODO
-void GunnsOptimPso::assignCost(const double cost, const double runId, const double runIdReturned)
-{
-    // find the particle whose state run id matches the returned runIf, and assign this cost to it
+    /// - Find the particle whose latest run ID matches the returned ID, and assign this cost to it.
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
         if (runIdReturned == mParticles.at(i).mCurrentState.mRunId) {
             mParticles.at(i).mCurrentState.mCost = cost;
             return;
         }
     }
-    // if there was no match, we've done something wrong
-    std::cout << "ERROR, RUN ID NO MATCH" << std::endl;
-//    mActiveParticle->mCurrentState.mCost = cost;
+
+    /// - If there was no match, something has gone very wrong.
+    std::ostringstream msg;
+    msg << mName << " run ID: " << runIdReturned << ", no match to any particle.";
+    throw std::runtime_error(msg.str());
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Outputs the current particle states to the console.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::printStates() const
 {
-    std::cout << "PSO particle states: ";
-    for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        // reference to the particle's current state object
-        const GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+    if (mVerbosityLevel > 0) {
+        std::cout << "PSO particle states: ";
+        for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+            const GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
 
-        std::cout << std::endl << "  " << i << " P";
-        for (unsigned int j=0; j<state.mState.size(); ++j) {
-            std::cout << ", " << state.mState.at(j);
+            std::cout << std::endl << "  " << i << " P";
+            for (unsigned int j=0; j<state.mState.size(); ++j) {
+                std::cout << ", " << state.mState.at(j);
+            }
+            std::cout << std::endl << "  " << i << " V";
+            for (unsigned int j=0; j<state.mState.size(); ++j) {
+                std::cout << ", " << state.mVelocity.at(j);
+            }
+            std::cout << std::endl << "  " << i << " A";
+            for (unsigned int j=0; j<state.mState.size(); ++j) {
+                /// - Format the acceleration as scientific for now, but we might need this on the
+                ///   others as well, depending on the state space size.  The default cout tends to
+                ///   truncate too much.
+                printf(", %e", state.mAcceleration.at(j));
+            }
         }
-        std::cout << std::endl << "  " << i << " V";
-        for (unsigned int j=0; j<state.mState.size(); ++j) {
-            std::cout << ", " << state.mVelocity.at(j);
-        }
-        std::cout << std::endl << "  " << i << " A";
-        for (unsigned int j=0; j<state.mState.size(); ++j) {
-//            std::cout << ", " << state.mAcceleration.at(j);
-            printf(", %e", state.mAcceleration.at(j));
-        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Outputs the current global best state to the console.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::printGlobalBest() const
 {
-    std::cout << "PSO global best state: ";
-    for (unsigned int i=0; i<mGlobalBestState.mState.size(); ++i) {
-        std::cout << mGlobalBestState.mState.at(i) << ", ";
+    if (mVerbosityLevel > 0) {
+        std::cout << "PSO global best state: ";
+        for (unsigned int i=0; i<mGlobalBestState.mState.size(); ++i) {
+            std::cout << mGlobalBestState.mState.at(i) << ", ";
+        }
+        std::cout << " cost: " << mGlobalBestState.mCost << std::endl;
     }
-    std::cout << " cost: " << mGlobalBestState.mCost << std::endl;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
+/// @details  Writes the final states to the output files.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimPso::shutdown() const
 {
-    std::cout << "PSO shutdown" << std::endl;
     printGlobalBest();
+
     /// - Write the swarm state to an output file.
-    std::string pathFile = "pso_state.csv"; //TODO prepend path, etc.
+    std::string pathFile = "pso_state.csv";
     std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
     if (file.fail()) {
-//        GUNNS_WARNING("error opening file: " << pathFile);
+        throw std::runtime_error(mName + " error opening file: " + pathFile);
     } else {
         /// - Write the header row.
-        //TODO do we need particle velocity?
-        //TODO do we need particle personal best state?
         file << "Particle cost";
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
             file << " pos_" << j;
@@ -574,7 +695,7 @@ void GunnsOptimPso::shutdown() const
             file << " " << mGlobalBestState.mState.at(j);
         }
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
-            file << " 0.0"; // zero velocity
+            file << " 0.0"; // global best state is position only
         }
         file << " " << mGlobalBestState.mCost;
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {

@@ -34,41 +34,44 @@ PROGRAMMERS:
 #include "GunnsOptimMonteCarloTypes.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 
-//TODO PROBLEMS:
-// - running in parallel with pso.py, all the run costs remain zero
-//   and no useful state is found.  pso_state.csv results in all zero costs.
-//   it's like the cost function is never being called
-//   But it works just fine in serial mode from RUN_mc/input.py
-//
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Particle Swarm Optimizer Particle State
+///
+/// @details  This describes the state of a PSO particle, including its position, velocity and
+///           acceleration in the state space as well as the associated MC Slave run ID and cost.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimPsoState
 {
     public:
-        std::vector<double> mState; /**< (1) TODO */
-        std::vector<double> mVelocity; /**< (1) TODO */
-        std::vector<double> mAcceleration; /**< (1) TODO */
-        double              mCost;  /**< (1) TODO */
-        double              mRunId; /**< (1) TODO */
-        /// @brief Assignment operator for this PSO particle state.
-        GunnsOptimPsoState& operator =(const GunnsOptimPsoState& that) {
-            if (this != &that) {
-                this->mState = that.mState;
-                this->mCost  = that.mCost;
-                this->mRunId = that.mRunId;
-            }
-            return *this;
-        }
+        std::vector<double> mState;        /**< (1) Position state. */
+        std::vector<double> mVelocity;     /**< (1) Velocity state. */
+        std::vector<double> mAcceleration; /**< (1) Acceleration state. */
+        double              mCost;         /**< (1) Cost function result. */
+        double              mRunId;        /**< (1) MC Slave run ID. */
+        /// @brief Custom assignment operator for this PSO particle state.
+        GunnsOptimPsoState& operator =(const GunnsOptimPsoState& that);
 };
 
-//TODO factor optimization stuff out to separate optimization class
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Particle Swarm Optimizer Particle
+///
+/// @details  This describes a PSO particle, which has a current state and a personal best state
+///           that is updated and remembered as the optimization progresses.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimPsoParticle
 {
     public:
         GunnsOptimPsoState mCurrentState; /**< (1) Current state of this particle. */
         GunnsOptimPsoState mBestState;    /**< (1) Personal best state of this particle. */
+        /// @brief Sizes and zeroes this particle's states.
+        void initialize(const unsigned int stateSize);
 };
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Particle Swarm Optimizer Configuration Data
+///
+/// @details  This provides the configuration data for the GUNNS PSO.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
 {
     public:
@@ -78,15 +81,15 @@ class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
             FILE            = 2, ///< Read from file position, use new random velocity and empty best state
             FILE_CONTINUOUS = 3, ///< Read from file position, velocity and best state.
         };
-        unsigned int      mNumParticles;     /**< *o (1) trick_chkpnt_io(**) Number of particles in the PSO swarm. */
-        unsigned int      mMaxEpoch;         /**< *o (1) trick_chkpnt_io(**) Maximum number of epochs, or iterations, in the total run. */
-        double            mInertiaWeight;    // TODO < 1 initial particle inertia weight
-        double            mInertiaWeightEnd; // TODO for annealing
-        double            mCognitiveCoeff;   //TODO typicallly between 1-3
-        double            mSocialCoeff;      //TODO typicallly between 1-3
-        double            mMaxVelocity;      /**< *o (1) trick_chkpnt_io(**) Maximum magnitude of particle state velocity. */
-        unsigned int      mRandomSeed;       /**< *o (1) trick_chkpnt_io(**) the seed value for RNJesus */
-        SwarmDistribution mInitDistribution; /**< *o (1) trick_chkpnt_io(**) Distribution of initial swarm particle states. */
+        unsigned int      mNumParticles;     /**< (1) Number of particles in the PSO swarm. */
+        unsigned int      mMaxEpoch;         /**< (1) Maximum number of epochs, or iterations, in the total run. */
+        double            mInertiaWeight;    /**< (1) Initial (at first epoch) particle inertia weight. */
+        double            mInertiaWeightEnd; /**< (1) Ending (at final epoch) particle inertia weight. */
+        double            mCognitiveCoeff;   /**< (1) Swarm cognitive coefficient, or weight towards personal best state. */
+        double            mSocialCoeff;      /**< (1) Swarm social coefficient, or weight towards global best state. */
+        double            mMaxVelocity;      /**< (1) Maximum magnitude of particle state velocity. */
+        unsigned int      mRandomSeed;       /**< (1) Seed for the random number generator. */
+        SwarmDistribution mInitDistribution; /**< (1) Distribution of initial swarm particle states. */
         /// @brief Default constructor.
         GunnsOptimPsoConfigData();
         /// @brief Default destructor.
@@ -99,63 +102,71 @@ class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
         GunnsOptimPsoConfigData(const GunnsOptimPsoConfigData&);
 };
 
-//TODO Particle Swarm Optimization
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Particle Swarm Optimizer
+///
+/// @details  This implements a Particle Swarm Optimization (PSO) scheme for use with Trick Monte
+///           Carlo and the GUNNS Monte Carlo Manager.  Each particle in the swarm represents a
+///           state of the Monte Carlo input variables that are being optimized.  The particles
+///           states start with some initial distribution and velocity in the state space.  As the
+///           swarm propagates, each particle moves along a trajectory in the state space,
+///           pulled towards the swarm's global best state and the particle's personal best state.
+///           PSO is good at getting close to the global minimum in a large multi-variate search.
+///
+///           This PSO writes the swarm state and cost function histories to output files in the
+///           Trick sim folder.  The swarm state can be initialized from the saved states from
+///           previous runs, or it can be set to one of several default distributions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsOptimPso : public GunnsOptimBase
 {
     public:
-        GunnsOptimPsoConfigData             mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
-//        const std::vector<GunnsOptimMonteCarloInput>* mInStatesMaster;  /**< ** (1) trick_chkpnt_io(**) Pointer to the Master state space description. */
-//        int                                      mGlobalRunCounter; /**< *o (1) trick_chkpnt_io(**) Count of the total elapsed runs from all epochs. */
-//        int                                      mRunCounter;      /**< *o (1) trick_chkpnt_io(**) Count of the elapsed runs in the current epoch. */
-//        int                                      mEpoch;           /**< *o (1) trick_chkpnt_io(**) The current epoch number. */
-        std::vector<GunnsOptimPsoParticle>  mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
-        GunnsOptimPsoParticle*              mActiveParticle;  /**< *o (1) trick_chkpnt_io(**) The PSO particle currently being run. */
-        GunnsOptimPsoState                  mGlobalBestState; /**< *o (1) trick_chkpnt_io(**) Best state from all particles. */
-        double                                   mAnnealingCoeff;  /**< *o (1) trick_chkpnt_io(**) TODO change this to start/end inertia weights */
-        std::vector<double>                      mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum velocity of state parameters. */
+        GunnsOptimPsoConfigData            mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
+        std::vector<GunnsOptimPsoParticle> mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
+        GunnsOptimPsoParticle*             mActiveParticle;  /**< *o (1) trick_chkpnt_io(**) The PSO particle currently being run. */
+        GunnsOptimPsoState                 mGlobalBestState; /**< *o (1) trick_chkpnt_io(**) Best state from all particles. */
+        std::vector<double>                mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum velocity of state parameters. */
         /// @brief Constructs the GUNNS Monte Carlo Particle Swarm Optimization object.
         GunnsOptimPso();
         /// @brief Destructs the GUNNS Monte Carlo Particle Swarm Optimization object.
         virtual ~GunnsOptimPso();
-        //TODO
+        /// @brief Copies the given PSO config data into internal storage.
         virtual void setConfigData(const GunnsOptimBaseConfigData* configData);
-        /// @brief TODO replace args with polymorphic config data, similar to solver-links.
+        /// @brief Initializes this PSO with a pointer to the Monte Carlo input variables.
         virtual void initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster);
-        /// @brief TODO this will become pure virtual, generic i/f with MC
-        /// TODO maybe instead of getState() the master passes its vector into here as an in/out and we update it for them
-        //   with our active state
-        //TODO
-        void initSwarm();
-        //TODO
-        void initBestCosts();
-        //TODO
-        void randomizeSwarmState();
-        //TODO
-        void randomizeSwarmVelocity();
-        //TODO
-        void minMaxSwarmState();
-        //TODO
-        void readFileSwarmState(const bool continuous);
-        //TODO
-        void uniformSwarm();
-        //TODO
+        /// @brief Main update of this PSO; propagates the swarm state.
         virtual void update();
-        //TODO
-        void updateBestStates();
-        /// @brief TODO
-        void propagateSwarm(const double inertiaWeight);
-        /// @brief TODO this can be called from input file before init
-        virtual unsigned int getNumRuns() const {return mConfigData.mNumParticles * mConfigData.mMaxEpoch;}
-        /// @brief TODO returns the MC var states from the active particle to teh MC manager to send to teh slave
+        /// @brief Returns the number of individual MC Slave runs this PSO needs.
+        virtual unsigned int getNumRuns() const;
+        /// @brief Returns the MC input variable state of the active swarm particle to the MC manager.
         virtual const std::vector<double>* getState() const;
-        //TODO
-        void printStates() const;
-        //TODO
-        void printGlobalBest() const;
-        //TODO
+        /// @brief Stores the given cost to the swarm particle associated with the given Slave run.
         virtual void assignCost(const double cost, double runID, double runIdReturned);
-        //TODO
+        /// @brief Writes final outputs.
         virtual void shutdown() const;
+
+    protected:
+        /// @brief Validates the configuration and input data for this PSO.
+        virtual void validate();
+        /// @brief Initializes the particle states with the configured distribution setting.
+        void initSwarm();
+        /// @brief Initializes the stored best costs for the swarm global and each particle.
+        void initBestCosts();
+        /// @brief Randomizes the initial particle state positions.
+        void randomizeSwarmState();
+        /// @brief Randomizes the initial particle state velocities.
+        void randomizeSwarmVelocity();
+        /// @brief Initializes the particle states at the minimum and maximum corners of the state space.
+        void minMaxSwarmState();
+        /// @brief Reads the particles states from a file.
+        void readFileSwarmState(const bool continuous);
+        /// @brief Updates the global swarm best state and each particle's personal best state.
+        void updateBestStates();
+        /// @brief Propagates the particle states to the next iteration.
+        void propagateSwarm(const double inertiaWeight);
+        /// @brief Outputs the swarm particle states to the console.
+        void printStates() const;
+        /// @brief Outputs the global best state to the console.
+        void printGlobalBest() const;
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -165,5 +176,27 @@ class GunnsOptimPso : public GunnsOptimBase
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  unsigned int (--) The total number of Monte Carlo Slave runs this PSO will run.
+///
+/// @details  Returns the number of Slave runs as the configured swarm size (number of particles)
+///           times the configured number of swarm iterations (epochs).
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline unsigned int GunnsOptimPso::getNumRuns() const
+{
+    return (mConfigData.mNumParticles * mConfigData.mMaxEpoch);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  std::vector<double>* (--) Pointer to the vector of the active particle's current state.
+///
+/// @details  Returns a pointer to the active particles current position state.  These values go
+///           into the MC input variables for the next Slave run.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline const std::vector<double>* GunnsOptimPso::getState() const
+{
+    return &mActiveParticle->mCurrentState.mState;
+}
 
 #endif

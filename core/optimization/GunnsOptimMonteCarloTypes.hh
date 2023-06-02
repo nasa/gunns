@@ -33,7 +33,11 @@ PROGRAMMERS:
 #include <string>
 #include <vector>
 
-//TODO currently only supports double. templatize to support double, float, int, etc.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Optimization Monte Carlo Input Variable
+///
+/// @details  Describes a Monte Carlo input variable, a variable that is to be optimized.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimMonteCarloInput
 {
     public:
@@ -43,25 +47,35 @@ struct GunnsOptimMonteCarloInput
         double      mMaximum; /**< (1) Maximum state value. */
 };
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Optimization Monte Carlo Output Variable
+///
+/// @details  Describes a Monte Carlo output variable, a model output variable and its target scalar
+///           or trajectory that are to be compared in the optimization cost function.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimMonteCarloOutput
 {
     public:
-        std::string         mName;       /**< (1) Model variable name. */
-        double*             mAddress;    /**< (1) Model variable address. */
-        double              mCost;       /**< (1) Output value from Slave run. */
+        std::string         mName;           /**< (1) Model variable name. */
+        double*             mAddress;        /**< (1) Pointer to the model output variable. */
+        double              mCost;           /**< (1) Output value from Slave run. */
         bool                mIsScalarTarget; /**< (1) True if the target value is a scalar and not a trajectory. */
-        double              mTargetScalar; /**< (1) The scalar target value to achieve. */
-        std::vector<double> mTargetTraj; /**< (1) Target trajectory values to achieve. */
-        double              mCostWeight; /**< (1) Weight for the cost function. */
+        double              mTargetScalar;   /**< (1) The scalar target value to achieve. */
+        std::vector<double> mTargetTraj;     /**< (1) Target trajectory values to achieve. */
+        double              mCostWeight;     /**< (1) Weight for the cost function. */
 };
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Optimization Monte Carlo Driver Variable
+///
+/// @details  Describes a Monte Carlo driver variable, a model input variable with its trajectory
+///           values that will drive the model along the desired path.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimMonteCarloDriver
 {
     public:
-        double*             mAddress;    /**< *o (1) trick_chkpnt_io(**) Address of the model driver variable. */
-        std::vector<double> mTrajectory; /**< *o (1) trick_chkpnt_io(**) Trajectory of values for the model driver. */
+        double*             mAddress;    /**< (1) Pointer to the model driver variable. */
+        std::vector<double> mTrajectory; /**< (1) Trajectory of values for the model driver. */
 };
 
 #endif

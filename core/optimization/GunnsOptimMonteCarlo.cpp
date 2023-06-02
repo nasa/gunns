@@ -64,7 +64,7 @@ GunnsOptimMonteCarlo::~GunnsOptimMonteCarlo()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initMaster()
 {
-    mIsSlave  = mc_is_slave();
+    mIsSlave  = mc_is_slave(); // Trick MC function
     mIsMaster = not mIsSlave;
     if (mIsMaster) {
         mSlaveId = -1; // indicates this is not a slave
@@ -75,8 +75,9 @@ void GunnsOptimMonteCarlo::initMaster()
 
     mRunId = -1; // so actual run id's start counting from zero in updateMasterPre()
 
-    /// - Initialize the optimizer.
+    /// - Initialize the optimizer and sync its output verbosity setting with this manager.
     if (mOptimizer) {
+        mOptimizer->setVerbosityLevel(mVerbosityLevel);
         mOptimizer->initialize(&mInputs);
     }
 
@@ -164,9 +165,15 @@ void GunnsOptimMonteCarlo::updateMasterPost()
     }
 }
 
-//TODO
-///           This cost function is:
-///             cost = sum{ (result_i - target_i)^2 }, for all targets i
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] value  (--) The value for which to return the cost function.
+/// @param[in] target (--) The target value to compare the given value against.
+///
+/// @returns  double (--) The computed cost function result.
+///
+/// @details  Computes the cost as (value - target)^2.  This virtual function can be overriden as
+///           needed to implement other functions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsOptimMonteCarlo::computeCostFunction(const double value, const double target) const
 {
     const double error = value - target;

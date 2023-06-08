@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2022 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -85,13 +85,13 @@ class SubNet:
         self.buildInterfaces(objects_and_cells)
         return
         
-    # Find all subnetwork interface box elements in the super-drawing that are children of this sub-network,
-    # create SubNetIf objects for them and add them to our list of SubNetIf objects.
+    # Find all subnetwork interface box elements in the super-drawing that are children of this sub-network
+    # and that are not duplicates, create SubNetIf objects for them and add them to our list of SubNetIf objects.
     def buildInterfaces(self, objects_and_cells):
         for obj in objects_and_cells:
             gunns = obj.find('./gunns')
             if gunns is not None:
-                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype']:
+                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and obj.find('./gunnsSubnetIfDuplicate') is None:
                     if isDescendant(obj, self.element, objects_and_cells):
                         nodeCountElem = obj.find('./gunnsSubnetIfNodeCount')
                         if nodeCountElem is None:

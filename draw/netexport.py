@@ -534,6 +534,31 @@ def keyContainedNodes(container, numberedNodes, gndNodes, allObjects):
             childNodes.append(node)
     return childNodes, updated
 
+# Returns a bool whether the given subnet interface containers and their contained nodes
+# are duplicates.  This assumes subNetIf and otherSubNetIf are not the same object, and
+# will return True if they are.  The containers are duplicates if they have the same name,
+# and their contained nodes all have the same label, key, and node subtype, but this
+# ignores any connected links.
+def isDuplicateSubNetIf(subNetIf, ifNodes, otherSubnetIf, otherIfNodes):
+    if otherSubNetIf.attrib['label'] != subNetIf.attrib['label']:
+        return False # difference container label
+    if len(ifNodes) != len(otherIfNodes):
+        return False # difference number of contained nodes
+    # loop over nodes and find a match in the other nodes
+    for node in ifNodes:
+        matchFound         = False
+        node_gunns_attribs = node.find('./gunns').attrib
+        node_type          = node_gunns_attribs['subtype']
+        for otherNode in otherIfNodes:
+            otherNode_gunns_attribs = otherNode.find('./gunns').attrib
+            otherNode_type          = otherNode_gunns_attribs['subtype']
+            if node_type == otherNode_type and node.attrib['label'] == otherNode.attrib['label'] and node.attrib['Key'] == otherNode.attrib['Key']:
+                matchFound = True
+                break
+        if not matchFound:
+            return False # at least one node has no match
+    return True
+
 #####################
 # BEGIN MAIN SCRIPT #
 #####################
@@ -1033,13 +1058,59 @@ for link in links:
     port_maps.append(port_map)
 
 # Update the sub-network interface containers with link connections to Ground nodes and nuber of sub-network nodes.
-# In the super-network, the only ports that will be moved are those that connect to Ground nods in the sub-network interface.
+# In the super-network, the only ports that will be moved are those that connect to Ground nodes in the sub-network interface.
 updatedSubNetIfsNodeCount = False
+updatedSubNetIfLabels     = []
+updatedSubNetIfKeys       = []
 for subNetIf in subNetIfs:
     subNetUpdated = False
     ifKeysUpdated = False
+    isDuplicateOf = None
     ifNodes, ifKeysUpdated = keyContainedNodes(subNetIf, numberedNodes, gndNodes, objects_and_cells)
-    # List all ports in the network connecting to interface Ground nodes.
+    
+    # Determine if this interface box is an identical duplicate of another.
+    for otherSubNetIf in subNetIfs:
+        if otherSubNetIf is subNetIf:
+            break
+        # This shouldn't rekey the nodes because the other subnetIf has already been processed by the outer loop
+        otherIfNodes, otherIfKeysUpdate = keyContainedNodes(otherSubNetIf, numberedNodes, gndNodes, objects_and_cells)
+        if isDuplicateSubNetIf(subNetIf, ifNodes, otherSubNetIf, otherIfNodes):
+            isDuplicateOf = otherSubNetIf
+            break
+    
+    duplicateElems = subNetIf.findall('./gunnsSubnetIfDuplicate')
+    if isDuplicateOf is None and duplicateElems is not None:
+        # If this is not a duplicate, then clean out any old duplicates information.
+        for duplicateElem in duplicateElems:
+            subNetIf.remove(duplicateElem)
+            subNetUpdated = True
+    else:
+        if duplicateElems is None:
+            # Add a new duplicate of element if there isn't already one.
+            newElement = ET.SubElement(subNetIf, 'gunnsSubnetIfDuplicate')
+            newElement.attrib['OfId'] = isDuplicateOf.attrib['id']
+            subNetUpdated = True
+        elif duplicateElems[0].attrib['OfId'] != isDuplicateOf.attrib['id']:
+            # Modify the existing duplicate of element and delete any others.
+            duplicateElems[0].attrib['OfId'] != isDuplicateOf.attrib['id']
+            for duplicateElem in duplicateElems[1:]:
+                subNetIf.remove(duplicateElem)
+            subNetUpdated = True
+            
+        # In duplicates, we delete any old connection information.
+        oldConnections = subNetIf.findall('./gunnsSubnetIfConnection')
+        for oldConnection in oldConnections:
+            subNetIf.remove(oldConnection)
+            subNetUpdated = True
+    
+    if subNetUpdated:
+        updatedSubNetIfLabels.append(subNetIf.attrib['label'])
+        subNetUpdated = False
+        print('DEBUG 0')
+    if ifKeysUpdated:
+        updatedSubNetIfKeys.append(subNetIf.attrib['label'])
+        
+    # List all ports in the network connecting to Ground nodes in this interface or any duplicates of this interface.
     ifPorts = []
     for port in ports:
         # Return value of None shouldn't be possible because we've aborted above if any ports aren't connected to a node.
@@ -1058,45 +1129,53 @@ for subNetIf in subNetIfs:
                 break
 
     # Add any new drawing connection missing from the sub-network's interface box, and flag update.
-    oldConnections = subNetIf.findall('./gunnsSubnetIfConnection')
+    # If this is a duplicate box, we add the connections to the box it duplicates, not this one.
+    if isDuplicateOf is not None:
+        usingSubNetIf = isDuplicateOf
+    else:
+        usingSubNetIf = subNetIf
+    connections = usingSubNetIf.findall('./gunnsSubnetIfConnection')
     for ifPort in ifPorts:
         isFound = False
-        for oldConnection in oldConnections:
-            if ifPort[0] == oldConnection.attrib['Link'] and \
-               ifPort[1] == oldConnection.attrib['Map'] and \
-               ifPort[2] == oldConnection.attrib['Port'] and \
-               ifPort[3] == oldConnection.attrib['Key']:
+        for connection in connections:
+            if ifPort[0] == connection.attrib['Link'] and \
+               ifPort[1] == connection.attrib['Map'] and \
+               ifPort[2] == connection.attrib['Port'] and \
+               ifPort[3] == connection.attrib['Key']:
                 isFound = True
                 break
         if not isFound:
-            newElement = ET.SubElement(subNetIf, 'gunnsSubnetIfConnection')
+            newElement = ET.SubElement(usingSubNetIf, 'gunnsSubnetIfConnection')
             newElement.attrib['Link'] = ifPort[0]
             newElement.attrib['Map']  = ifPort[1]
             newElement.attrib['Port'] = ifPort[2]
             newElement.attrib['Key']  = ifPort[3]
             subNetUpdated = True
             
-    # Prune old connections from the sub-network interface box xml that aren't in the drawing anymore, and flag update.
-    for oldConnections in oldConnections:
-        isFound = False
-        for ifPort in ifPorts:
-            if ifPort[0] == oldConnections.attrib['Link'] and \
-               ifPort[1] == oldConnections.attrib['Map'] and \
-               ifPort[2] == oldConnections.attrib['Port'] and \
-               ifPort[3] == oldConnections.attrib['Key']:
-                isFound = True
-                continue
-        if not isFound:
-            subNetIf.remove(oldConnections)
-            subNetUpdated = True
+    # For a sub-network interface box that isn't a duplicate, prune old connections from its xml
+    # that aren't in the drawing anymore, and flag update.  We don't need to to this for duplicate
+    # interface boxes since all their connections have already been remove above.
+    if isDuplicateOf is None:
+        connections = subNetIf.findall('./gunnsSubnetIfConnection')
+        for connection in connections:
+            isFound = False
+            for ifPort in ifPorts:
+                if ifPort[0] == connection.attrib['Link'] and \
+                   ifPort[1] == connection.attrib['Map'] and \
+                   ifPort[2] == connection.attrib['Port'] and \
+                   ifPort[3] == connection.attrib['Key']:
+                    isFound = True
+                    continue
+            if not isFound:
+                # TODO this falsely deletes a connection if the link connects to a duplicate interface box in the drawing,
+                # and it gets added back by the duplicate later, creating an extra drawing update message to the user that
+                # is a nuisance (technically the etree has been updated but ends up being identical).  But fixing this is
+                # going to be really tricky without a lot more code refactoring.
+                subNetIf.remove(connection)
+                subNetUpdated = True
 
     if subNetUpdated:
-        print('    ' + console.note('updated connections to sub-network interface: ' + subNetIf.attrib['label'] + '.'))
-        contentsUpdated = True
-    
-    if ifKeysUpdated:
-        print('    ' + console.note('updated interface node keys in sub-network interface: ' + subNetIf.attrib['label'] + '.'))
-        contentsUpdated = True
+        updatedSubNetIfLabels.append(usingSubNetIf.attrib['label'])
         
     # Update the node count element or add one if it is missing.
     oldNodeCount = subNetIf.find('./gunnsSubnetIfNodeCount')
@@ -1108,8 +1187,18 @@ for subNetIf in subNetIfs:
         oldNodeCount.text = str(nodeCount)
         updatedSubNetIfsNodeCount = True
         
+# Output notifications about updated drawing contents in the subnet interfaces.
 if updatedSubNetIfsNodeCount:
     print('    ' + console.note('updated network node count in the sub-network interfaces.'))
+    contentsUpdated = True
+    
+# Loop over the list (ignoring duplicates) of interface labels.
+for label in set(updatedSubNetIfLabels):
+    print('    ' + console.note('updated connections to sub-network interface: ' + label + '.'))
+    contentsUpdated = True
+    
+for label in set(updatedSubNetIfKeys):
+    print('    ' + console.note('updated interface node keys in sub-network interface: ' + label + '.'))
     contentsUpdated = True
 
 # Update the input file with the readable formatted tree.

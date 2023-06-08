@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2022 United States Government as represented by the Administrator of the
+# @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -399,23 +399,22 @@ for drawing in drawings:
         if netConfig is None:
             sys.exit(console.abort('a network config wasn\'t found.'))
 
-        # Error check any sub-network interface containers.
+        # Error check any sub-network interface containers that are not duplicates.
         subnetIfsPresent = False
         for an_object in objects:
             gunns = an_object.find('./gunns')
             if gunns is not None:
-                if 'Network' == gunns.attrib['type']:
-                    if 'Subnet Interface' == gunns.attrib['subtype']:
-                        subnetIfsPresent = True
-                        # Check for missing information in the subnet interface.
-                        subnetIfNodeCountElem = an_object.find('./gunnsSubnetIfNodeCount')
-                        if subnetIfNodeCountElem is None:
-                            sys.exit(console.abort('a sub-network interface container in network type: ' + netConfig.attrib['label'] + ' is missing the network node count.  Make sure to export the sub-network drawing first.'))
-                        else:
-                            sub_nodes_count = int(subnetIfNodeCountElem.text)
-                        # TODO: this will be a nuisance if there are no connections (all reference nodes) by design. Skip this message if so. 
-                        if 0 == len(an_object.findall('./gunnsSubnetIfConnection')):
-                            print('    ' + console.warn('sub-network inteface container: ' + an_object.attrib['label'] + ' in network type: ' + netConfig.attrib['label'] + ' has no link connections.  Make sure to export the sub-network drawing first.'))
+                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and an_object.findall('./gunnsSubnetIfDuplicate') is None:
+                    subnetIfsPresent = True
+                    # Check for missing information in the subnet interface.
+                    subnetIfNodeCountElem = an_object.find('./gunnsSubnetIfNodeCount')
+                    if subnetIfNodeCountElem is None:
+                        sys.exit(console.abort('a sub-network interface container in network type: ' + netConfig.attrib['label'] + ' is missing the network node count.  Make sure to export the sub-network drawing first.'))
+                    else:
+                        sub_nodes_count = int(subnetIfNodeCountElem.text)
+                    # This is a nuisance if there are no connections (all reference nodes) by design.  So commenting out for now.
+                    #if 0 == len(an_object.findall('./gunnsSubnetIfConnection')):
+                    #    print('    ' + console.warn('sub-network inteface container: ' + an_object.attrib['label'] + ' in network type: ' + netConfig.attrib['label'] + ' has no link connections.  Make sure to export the sub-network drawing first.'))
         
         # Make changes to the config before appending:
         # - Add sim variable, super nodes offset, and project-relative source drawing attributes to the visible shape data
@@ -453,14 +452,13 @@ for drawing in drawings:
                 gunns = an_object.find('gunns')
                 if subnetIfsPresent:
                     # When sub-network interface containers are present, they and their children
-                    # are the only thing we import.
+                    # are the only thing we import.  But we don't import duplicate interface containers.
                     if gunns is not None:
-                        if 'Network' == gunns.attrib['type']:
-                            if 'Subnet Interface' == gunns.attrib['subtype']:
-                                addElemToSuper(an_object)
-                                for child_object in objects_and_cells:
-                                    if isDescendant(child_object, an_object, objects_and_cells):
-                                        addElemToSuper(child_object)
+                        if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and an_object.findall('./gunnsSubnetIfDuplicate') is None:
+                            addElemToSuper(an_object)
+                            for child_object in objects_and_cells:
+                                if isDescendant(child_object, an_object, objects_and_cells):
+                                    addElemToSuper(child_object)
                 else:
                     if gunns is not None:
                         if 'Node' == gunns.attrib['type']:

@@ -1079,13 +1079,13 @@ for subNetIf in subNetIfs:
             break
     
     duplicateElems = subNetIf.findall('./gunnsSubnetIfDuplicate')
-    if isDuplicateOf is None and duplicateElems is not None:
+    if isDuplicateOf is None:
         # If this is not a duplicate, then clean out any old duplicates information.
         for duplicateElem in duplicateElems:
             subNetIf.remove(duplicateElem)
             subNetUpdated = True
     else:
-        if duplicateElems is None:
+        if not duplicateElems:
             # Add a new duplicate of element if there isn't already one.
             newElement = ET.SubElement(subNetIf, 'gunnsSubnetIfDuplicate')
             newElement.attrib['OfId'] = isDuplicateOf.attrib['id']
@@ -1106,7 +1106,6 @@ for subNetIf in subNetIfs:
     if subNetUpdated:
         updatedSubNetIfLabels.append(subNetIf.attrib['label'])
         subNetUpdated = False
-        print('DEBUG 0')
     if ifKeysUpdated:
         updatedSubNetIfKeys.append(subNetIf.attrib['label'])
         

@@ -404,7 +404,7 @@ for drawing in drawings:
         for an_object in objects:
             gunns = an_object.find('./gunns')
             if gunns is not None:
-                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and an_object.findall('./gunnsSubnetIfDuplicate') is None:
+                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and not an_object.findall('./gunnsSubnetIfDuplicate'):
                     subnetIfsPresent = True
                     # Check for missing information in the subnet interface.
                     subnetIfNodeCountElem = an_object.find('./gunnsSubnetIfNodeCount')
@@ -454,7 +454,7 @@ for drawing in drawings:
                     # When sub-network interface containers are present, they and their children
                     # are the only thing we import.  But we don't import duplicate interface containers.
                     if gunns is not None:
-                        if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and an_object.findall('./gunnsSubnetIfDuplicate') is None:
+                        if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and not an_object.findall('./gunnsSubnetIfDuplicate'):
                             addElemToSuper(an_object)
                             for child_object in objects_and_cells:
                                 if isDescendant(child_object, an_object, objects_and_cells):

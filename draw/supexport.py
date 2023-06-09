@@ -91,7 +91,7 @@ class SubNet:
         for obj in objects_and_cells:
             gunns = obj.find('./gunns')
             if gunns is not None:
-                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and obj.find('./gunnsSubnetIfDuplicate') is None:
+                if 'Network' == gunns.attrib['type'] and 'Subnet Interface' == gunns.attrib['subtype'] and not obj.findall('./gunnsSubnetIfDuplicate'):
                     if isDescendant(obj, self.element, objects_and_cells):
                         nodeCountElem = obj.find('./gunnsSubnetIfNodeCount')
                         if nodeCountElem is None:

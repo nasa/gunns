@@ -6,7 +6,8 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((GunnsOptimPso.o))
+  ((GunnsOptimPso.o)
+   (GunnsOptimGradientDescent.o))
 */
 
 #include <iostream>
@@ -49,6 +50,12 @@ GunnsOptimBase* GunnsOptimFactory::createOptimizer(const OptimizerType type)
     switch (type) {
         case PSO : {
             GunnsOptimPso* newOptimizer = new GunnsOptimPso();
+            mOptimizers.push_back(newOptimizer);
+            return newOptimizer;
+            break;
+        }
+        case GRADIENT_DESCENT : {
+            GunnsOptimGradientDescent* newOptimizer = new GunnsOptimGradientDescent();
             mOptimizers.push_back(newOptimizer);
             return newOptimizer;
             break;

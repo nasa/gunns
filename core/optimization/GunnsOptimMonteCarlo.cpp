@@ -168,26 +168,30 @@ void GunnsOptimMonteCarlo::updateMasterPost()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] value  (--) The value for which to return the cost function.
 /// @param[in] target (--) The target value to compare the given value against.
+/// @param[in] weight (--) The weight scalar applied to the error for this cost.
 ///
 /// @returns  double (--) The computed cost function result.
 ///
-/// @details  Computes the cost as (value - target)^2.  This virtual function can be overriden as
-///           needed to implement other functions.
+/// @details  Computes the cost as the square of weighted error,
+///           where weighted error = weight * (value - target).
+///           This virtual function can be overriden as needed to implement other functions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsOptimMonteCarlo::computeCostFunction(const double value, const double target) const
+double GunnsOptimMonteCarlo::computeCostFunction(const double value, const double target, const double weight) const
 {
-    const double error = value - target;
-    return (error * error);
+    const double weightedError = weight * (value - target);
+    return (weightedError * weightedError);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Computes and stores the unweighted cost function result for each scalar target.
+/// @details  Computes and stores the cost function result for each scalar target.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::computeScalarCosts()
 {
     for (unsigned int i=0; i<mOutputs.size(); ++i) {
         if (mOutputs.at(i).mIsScalarTarget) {
-            mOutputs.at(i).mCost = computeCostFunction(*mOutputs.at(i).mAddress, mOutputs.at(i).mTargetScalar);
+            mOutputs.at(i).mCost = computeCostFunction(*mOutputs.at(i).mAddress,
+                                                        mOutputs.at(i).mTargetScalar,
+                                                        mOutputs.at(i).mCostWeight);
         }
     }
 }
@@ -234,7 +238,7 @@ void GunnsOptimMonteCarlo::updateSlavePost()
     computeScalarCosts();
     double cost = 0.0;
     for (unsigned int i=0; i<mOutputs.size(); ++i) {
-        cost += mOutputs.at(i).mCost * mOutputs.at(i).mCostWeight;
+        cost += mOutputs.at(i).mCost;
     }
 
     /// - Write the total cost result for this run to the MC Master/Slave buffer.
@@ -273,9 +277,23 @@ void GunnsOptimMonteCarlo::updateSlaveInputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateSlaveOutputs()
 {
+    //TODO debugging the frame offset issue...
+    //big cost jump at mModelStepCount 79, 80!
+    // - looking at log data, starting at time 4.9, the input driver valve positions get offset by 1 frame!
+    // - input driver data was missing the row at time 4.4
+    // ! Fixed!  log data diff is now identical and cost is ~e-16
+    // - OK SO, the lesson here is that user should test their input driver data, and by extension their output target data,
+    //   by guessing at a test input MC var state, setting their 'real' model and the MC model to that state, and testing
+    //   that the non-MC run and the MC run (driven by the input driver data and output target data) give the same output
+    //   and zero optimizer cost
+    int stepCount = mModelStepCount + 0;
+    if (stepCount < 0) stepCount = 0;
+
     for (unsigned int i=0; i<mOutputs.size(); ++i) {
-        if (mModelStepCount < mOutputs.at(i).mTargetTraj.size() and not mOutputs.at(i).mIsScalarTarget) {
-            mOutputs.at(i).mCost += computeCostFunction(*mOutputs.at(i).mAddress, mOutputs.at(i).mTargetTraj.at(mModelStepCount));
+        if (stepCount > 79 and stepCount < mOutputs.at(i).mTargetTraj.size() and not mOutputs.at(i).mIsScalarTarget) {
+            mOutputs.at(i).mCost += computeCostFunction(*mOutputs.at(i).mAddress,
+                                                         mOutputs.at(i).mTargetTraj.at(stepCount),
+                                                         mOutputs.at(i).mCostWeight);
         }
     }
 

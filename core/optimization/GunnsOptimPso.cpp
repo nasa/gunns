@@ -379,7 +379,7 @@ void GunnsOptimPso::readFileSwarmState(const bool continuous)
         std::vector<std::string> fLines = Strings::split(fString.str(), "\n");
 
         /// - Check the file for correct sizes.
-        const unsigned int expectedRows = 2 + mConfigData.mNumParticles;
+        const unsigned int expectedRows = 3 + mConfigData.mNumParticles;
         const unsigned int expectedCols = 3 + 3 * mInStatesMaster->size();
 
         if (expectedRows != fLines.size()) {

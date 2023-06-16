@@ -113,7 +113,7 @@ class GunnsOptimMonteCarlo
         /// @brief Returns the initialization status.
         bool isInitialized() const;
         /// @brief Computes and returns the cost function for a value compared to its target.
-        virtual double computeCostFunction(const double value, const double target) const;
+        virtual double computeCostFunction(const double value, const double target, const double weight) const;
         /// @brief Computes the cost function for the scalar targets.
         void computeScalarCosts();
         /// @brief Parses the given string of values into the given vector.

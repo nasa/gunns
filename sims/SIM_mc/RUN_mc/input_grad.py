@@ -20,31 +20,20 @@ output_vars = [
     ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 1.0],
     ]
 
-# Add a PSO optimizer to the MC manager.
-mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
+# Add a Gradient Descent optimizer to the MC manager.
+mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.GRADIENT_DESCENT)
 
-# Create a PSO configuration data object and set the values.
-thePsoConfig = trick.GunnsOptimPsoConfigData()
+# Create a Gradient Descent configuration data object and set the values.
+theGradConfig = trick.GunnsOptimGradientDescentConfigData()
 
-# Chip's recommendation:
-thePsoConfig.mNumParticles     = 30
-thePsoConfig.mMaxEpoch         = 100
-# These seem to work best:
-thePsoConfig.mInertiaWeight    = 0.5
-thePsoConfig.mInertiaWeightEnd = 0.5
-thePsoConfig.mCognitiveCoeff   = 2.0
-thePsoConfig.mSocialCoeff      = 2.0
-thePsoConfig.mMaxVelocity      = 0.5
-thePsoConfig.mRandomSeed       = 42
-thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.MIN_MAX_CORNERS
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE
-# After the above default run from MON_MAX_CORNERS, max vel 0.5, 30x100 run,
-# do another run with max vel = 0.1 using FILE_CONTINUOUS (picking up from the
-# end of the previous run), this will converge to almost exact truth tuning:
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE_CONTINUOUS
+theGradConfig.mNumVars         = len(input_vars)
+theGradConfig.mMaxEpoch        = 50
+theGradConfig.mPropagationGain = 0.1
+theGradConfig.mRandomSeed      = 42
+theGradConfig.mInitState       = trick.GunnsOptimGradientDescentConfigData.FILE
 
 # Give the configuration to the optimizer.
-mc.monteCarlo.mOptimizer.setConfigData(thePsoConfig)
+mc.monteCarlo.mOptimizer.setConfigData(theGradConfig)
 
 mc.monteCarlo.setVerbosityLevel(1)
 

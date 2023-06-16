@@ -31,6 +31,7 @@ PROGRAMMERS:
 
 // Optimizer type includes
 #include "GunnsOptimPso.hh"
+#include "GunnsOptimGradientDescent.hh"
 
 // System includes
 #include <vector>
@@ -48,8 +49,9 @@ class GunnsOptimFactory
     public:
         /// @brief Enumeration of available optimizer types.
         enum OptimizerType{
-            PSO     = 0,  ///< Particle Swarm Optimization
-            NONE    = 1,  ///< No optimizer, and number of options
+            PSO              = 0,  ///< Particle Swarm Optimization
+            GRADIENT_DESCENT = 1,  ///< Gradient Descent Optimization
+            NONE             = 2,  ///< No optimizer, and number of options
         };
         /// @brief Default constructor.
         GunnsOptimFactory();

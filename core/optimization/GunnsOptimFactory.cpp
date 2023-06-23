@@ -6,7 +6,7 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((GunnsOptimPso.o)
+  ((GunnsOptimParticleSwarm.o)
    (GunnsOptimGradientDescent.o))
 */
 
@@ -49,7 +49,7 @@ GunnsOptimBase* GunnsOptimFactory::createOptimizer(const OptimizerType type)
 {
     switch (type) {
         case PSO : {
-            GunnsOptimPso* newOptimizer = new GunnsOptimPso();
+            GunnsOptimParticleSwarm* newOptimizer = new GunnsOptimParticleSwarm();
             mOptimizers.push_back(newOptimizer);
             return newOptimizer;
             break;

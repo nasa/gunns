@@ -24,7 +24,7 @@ output_vars = [
 mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
 
 # Create a PSO configuration data object and set the values.
-thePsoConfig = trick.GunnsOptimPsoConfigData()
+thePsoConfig = trick.GunnsOptimParticleSwarmConfigData()
 
 # Chip's recommendation:
 thePsoConfig.mNumParticles     = 30
@@ -36,12 +36,13 @@ thePsoConfig.mCognitiveCoeff   = 2.0
 thePsoConfig.mSocialCoeff      = 2.0
 thePsoConfig.mMaxVelocity      = 0.5
 thePsoConfig.mRandomSeed       = 42
-thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.MIN_MAX_CORNERS
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE
-# After the above default run from MON_MAX_CORNERS, max vel 0.5, 30x100 run,
+thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.MIN_MAX_CORNERS
+#thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.FILE
+# After the above default run from MIN_MAX_CORNERS, max vel 0.5, 30x100 run,
 # do another run with max vel = 0.1 using FILE_CONTINUOUS (picking up from the
 # end of the previous run), this will converge to almost exact truth tuning:
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE_CONTINUOUS
+#thePsoConfig.mMaxVelocity      = 0.1
+#thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.FILE_CONTINUOUS
 
 # Give the configuration to the optimizer.
 mc.monteCarlo.mOptimizer.setConfigData(thePsoConfig)

@@ -10,14 +10,12 @@ LIBRARY DEPENDENCY:
    (software/exceptions/TsInitializationException.o))
 */
 
-/// - GUNNS inlcudes:
+/// - GUNNS includes:
 #include "GunnsOptimMonteCarlo.hh"
+#include "core/GunnsInfraMacros.hh"
 #include "core/GunnsMacros.hh"
 #include "math/MsMath.hh"
 #include "strings/Strings.hh"
-
-/// - Trick includes:
-#include "sim_services/MonteCarlo/include/montecarlo_c_intf.h"
 
 /// - System includes:
 #include <cfloat>
@@ -64,7 +62,7 @@ GunnsOptimMonteCarlo::~GunnsOptimMonteCarlo()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initMaster()
 {
-    mIsSlave  = mc_is_slave(); // Trick MC function
+    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
     mIsMaster = not mIsSlave;
     if (mIsMaster) {
         mSlaveId = -1; // indicates this is not a slave
@@ -103,10 +101,10 @@ void GunnsOptimMonteCarlo::initMaster()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initSlave()
 {
-    mIsSlave  = mc_is_slave(); // Trick MC function
+    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
     mIsMaster = not mIsSlave;
     if (mIsSlave) {
-        mSlaveId = mc_get_slave_id(); // Trick MC function
+        mSlaveId = MC_GET_SLAVE_ID; // from GunnsInfraMacros
     } else {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                     "initSlave called from non-Slave role.");
@@ -154,8 +152,8 @@ void GunnsOptimMonteCarlo::updateMasterPost()
 
     /// - Read the Slave cost result and run ID from the MC Master/Slave buffer.
     double cost = 0.0;
-    mc_read((char*) &cost,           sizeof(double)); // Trick MC function
-    mc_read((char*) &mRunIdReturned, sizeof(double));
+    MC_READ(cost); // from GunnsInfraMacros
+    MC_READ(mRunIdReturned);
 
     std::cout << " cost: " << cost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
 
@@ -242,14 +240,14 @@ void GunnsOptimMonteCarlo::updateSlavePost()
     }
 
     /// - Write the total cost result for this run to the MC Master/Slave buffer.
-    mc_write((char*) &cost, sizeof(double)); // Trick MC function
+    MC_WRITE(cost); // from GunnsInfraMacros
 
     /// - Write the run ID to the MC Master/Slave buffer.  We use a double for the run ID, because
     ///   when we tried to use int during development, the int values were getting garbled by the
     ///   time they made it back to the Master role.  If we could figure out why and fix that, then
     ///   it would be better to switch back to integers.
     mRunIdReturned = mRunId;
-    mc_write((char*) &mRunIdReturned, sizeof(double));
+    MC_WRITE(mRunIdReturned);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -313,7 +311,7 @@ void GunnsOptimMonteCarlo::updateSlaveOutputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min, const double max)
 {
-    if (not mc_is_slave()) { // Trick MC function
+    if (not MC_IS_SLAVE) { // from GunnsInfraMacros
         GunnsOptimMonteCarloInput newInput;
         newInput.mName     = varName;
         newInput.mAddress  = address;

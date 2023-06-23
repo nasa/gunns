@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # All source folders containing run-time code to be compiled in libraries
@@ -30,6 +30,7 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/aspects/thermal/network/*.cpp) \
  $(wildcard $(GUNNS_HOME)/core/*.cpp) \
  $(wildcard $(GUNNS_HOME)/core/network/*.cpp) \
+ $(wildcard $(GUNNS_HOME)/core/optimization/*.cpp) \
  $(wildcard $(GUNNS_HOME)/gunns-ts-models/aspects/signal/effectors/thermostat/*.cpp) \
  $(wildcard $(GUNNS_HOME)/gunns-ts-models/common/controllers/fluid/*.cpp) \
  $(wildcard $(GUNNS_HOME)/gunns-ts-models/common/controllers/generic/*.cpp) \

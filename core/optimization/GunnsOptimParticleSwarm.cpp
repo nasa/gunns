@@ -308,6 +308,7 @@ void GunnsOptimParticleSwarm::initSwarm()
             initBestCosts();
             break;
     };
+    applyStateConstraints();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -584,6 +585,19 @@ void GunnsOptimParticleSwarm::propagateSwarm(const double inertiaWeight)
                 state.mVelocity.at(j) *= -1.0;
             }
         }
+    }
+
+    applyStateConstraints();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Applies the MC input variable constraints to all particle state positions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimParticleSwarm::applyStateConstraints()
+{
+    for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
+        constrainInputs(state.mState);
     }
 }
 

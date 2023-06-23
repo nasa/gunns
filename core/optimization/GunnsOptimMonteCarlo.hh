@@ -52,6 +52,13 @@ PROGRAMMERS:
 ///           The optimizers have a generic interface with the models and this manager, for easy
 ///           plug & play of different optimizers, configured by the input file.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//TODO #78
+// implement constraints of variables relative to each other:
+// - support add (subtract) and multiply (divide), as a line function for both together
+// - only support MC input vars, becuase it seems really unlikely they would be used for drivers and
+//   target outputs
+// - constraints should be applied by each optimizer, not by the MC manager, because the optimizer
+//   drives (optimizes) the input states directly
 class GunnsOptimMonteCarlo
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsOptimMonteCarlo);
@@ -66,7 +73,7 @@ class GunnsOptimMonteCarlo
         /// @brief Creates an optimizer of the given type that this Monte Carlo Manager will use.
         void addOptimizer(const GunnsOptimFactory::OptimizerType type);
         /// @brief Adds a MC model input variable, a variable that is to be optimized.
-        void addInput(const std::string& varName, double* address, const double min, const double max);
+        void addInput(const std::string& varName, double* address, const double min, const double max, GunnsOptimMonteCarloConstraint* constraint = 0);
         /// @brief Adds a model output variable that is compared against a target scalar value for the optimization cost function.
         void addOutput(const std::string& varName, double* address, const double targetValue = 0.0, const double costWeight = 1.0);
         /// @brief Adds the set of values of the model output variables for the next time step of the target trajectory.

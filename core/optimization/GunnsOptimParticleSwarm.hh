@@ -163,6 +163,8 @@ class GunnsOptimParticleSwarm : public GunnsOptimBase
         void updateBestStates();
         /// @brief Propagates the particle states to the next iteration.
         void propagateSwarm(const double inertiaWeight);
+        /// @brief Applies the MC input variable constraints to all particle states.
+        void applyStateConstraints();
         /// @brief Outputs the swarm particle states to the console.
         void printStates() const;
         /// @brief Outputs the global best state to the console.

@@ -127,3 +127,21 @@ void GunnsOptimBase::normalizeVector(std::vector<double>& vec, const double magn
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] vec (--) Vector of doubles to be constrained by the MC input constraints.
+///
+/// @throws   std::range_error
+///
+/// @details  Applies the MC input variable constraints to the given vector.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimBase::constrainInputs(std::vector<double>& vec)
+{
+    /// - Throw if the given vector size doens't match the number of MC inputs.
+    if (vec.size() != mInStatesMaster->size()) {
+        throw std::range_error(mName + " constrainInputs vec argument size mismatch with number of MC inputs.");
+    }
+    for (unsigned int i=0; i<vec.size(); ++i) {
+        mInStatesMaster->at(i).applyConstraints(&vec.at(i));
+    }
+}

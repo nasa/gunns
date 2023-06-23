@@ -6,8 +6,7 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((GunnsOptimBase.o)
-   (software/exceptions/TsInitializationException.o))
+  ((GunnsOptimBase.o))
 */
 
 /// - GUNNS includes:
@@ -57,6 +56,8 @@ GunnsOptimMonteCarlo::~GunnsOptimMonteCarlo()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
 /// @details  Initializes the Trick MC Master role.  Should be called by a "monte_master_init" Trick
 ///           job.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +68,10 @@ void GunnsOptimMonteCarlo::initMaster()
     if (mIsMaster) {
         mSlaveId = -1; // indicates this is not a slave
     } else {
-        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
-                    "initMaster called from non-Master role.");
+        /// - Unlike the rest of GUNNS, here we don't use the H&S system or TsException types and
+        ///   opt to just throw standard exceptions.  Because this MC stuff could be used to
+        ///   optimize non-GUNNS models, the user might not want to bother setting up the H&S.
+        throw std::runtime_error(mName + " initMaster called from non-Master role.");
     }
 
     mRunId = -1; // so actual run id's start counting from zero in updateMasterPre()
@@ -96,6 +99,8 @@ void GunnsOptimMonteCarlo::initMaster()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
 /// @details  Initializes the Trick MC Slave role.  Should be called by a "monte_slave_init" Trick
 ///           job.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,8 +111,7 @@ void GunnsOptimMonteCarlo::initSlave()
     if (mIsSlave) {
         mSlaveId = MC_GET_SLAVE_ID; // from GunnsInfraMacros
     } else {
-        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
-                    "initSlave called from non-Slave role.");
+        throw std::runtime_error(mName + " initSlave called from non-Slave role.");
     }
 }
 
@@ -275,15 +279,6 @@ void GunnsOptimMonteCarlo::updateSlaveInputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateSlaveOutputs()
 {
-    //TODO debugging the frame offset issue...
-    //big cost jump at mModelStepCount 79, 80!
-    // - looking at log data, starting at time 4.9, the input driver valve positions get offset by 1 frame!
-    // - input driver data was missing the row at time 4.4
-    // ! Fixed!  log data diff is now identical and cost is ~e-16
-    // - OK SO, the lesson here is that user should test their input driver data, and by extension their output target data,
-    //   by guessing at a test input MC var state, setting their 'real' model and the MC model to that state, and testing
-    //   that the non-MC run and the MC run (driven by the input driver data and output target data) give the same output
-    //   and zero optimizer cost
     int stepCount = mModelStepCount + 0;
     if (stepCount < 0) stepCount = 0;
 
@@ -301,15 +296,17 @@ void GunnsOptimMonteCarlo::updateSlaveOutputs()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] varName (--) The variable name, as a string, for reporting.
-/// @param[in] address (--) Memory address of the input variable.
-/// @param[in] min     (--) Minimum value of the search range for this variable.
-/// @param[in] max     (--) Maximum value of the search range for this variable.
+/// @param[in] varName    (--) The variable name, as a string, for reporting.
+/// @param[in] address    (--) Memory address of the input variable.
+/// @param[in] min        (--) Minimum value of the search range for this variable.
+/// @param[in] max        (--) Maximum value of the search range for this variable.
+/// @param[in] constraint (--) Optional constraint on this input.
 ///
 /// @details  This adds a Monte Carlo input variable, one that we are trying to optimize.  These
 ///           define the state space of the optimization search.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min, const double max)
+void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min,
+                                    const double max, GunnsOptimMonteCarloConstraint* constraint)
 {
     if (not MC_IS_SLAVE) { // from GunnsInfraMacros
         GunnsOptimMonteCarloInput newInput;
@@ -317,6 +314,9 @@ void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address,
         newInput.mAddress  = address;
         newInput.mMinimum  = min;
         newInput.mMaximum  = max;
+        if (constraint) {
+            newInput.addNewConstraint(constraint);
+        }
         mInputs.push_back(newInput);
     }
 }

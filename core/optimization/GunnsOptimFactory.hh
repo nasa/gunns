@@ -30,7 +30,7 @@ PROGRAMMERS:
  */
 
 // Optimizer type includes
-#include "GunnsOptimPso.hh"
+#include "GunnsOptimParticleSwarm.hh"
 #include "GunnsOptimGradientDescent.hh"
 
 // System includes

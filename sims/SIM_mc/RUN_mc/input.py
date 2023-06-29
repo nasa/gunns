@@ -4,12 +4,19 @@
 #trick setup
 trick.sim_services.exec_set_trap_sigfpe(1)
 
-# List of tuples of [name, units, min range, max range]
+# Apply constraints between input variables.  In this case we somehow know that
+# conductor2's conductivity is exactly 2 times conductor1, so we implement that
+# constraint using the LinearFit TsApproximation.
+constraint = trick.GunnsOptimMonteCarloConstraint(trick.LinearFit(0.0, 2.0, 0.0, 0.01),
+                                                  trick.get_address('mc.model.netConfig.conductor1.mMaxConductivity'))
+
+# List of tuples of [name, units, min range, max range, constraint]
 input_vars = [
-    ['mc.model.netConfig.conductor1.mMaxConductivity', '1', 0.0, 0.01],
-    ['mc.model.netConfig.conductor2.mMaxConductivity', '1', 0.0, 0.02],
-    ['mc.model.netConfig.valve1.mMaxConductivity',     '1', 0.0, 0.005],
-    ['mc.model.netConfig.valve2.mMaxConductivity',     '1', 0.0, 0.0025],
+    ['mc.model.netConfig.conductor1.mMaxConductivity', '1', 0.0, 0.01,   0],
+    ['mc.model.netConfig.conductor2.mMaxConductivity', '1', 0.0, 0.02,   0],
+    #['mc.model.netConfig.conductor2.mMaxConductivity', '1', 0.0, 0.02,   constraint],
+    ['mc.model.netConfig.valve1.mMaxConductivity',     '1', 0.0, 0.005,  0],
+    ['mc.model.netConfig.valve2.mMaxConductivity',     '1', 0.0, 0.0025, 0],
     ]
 
 # List of tuples of [name, target value, cost weight]
@@ -24,7 +31,7 @@ output_vars = [
 mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
 
 # Create a PSO configuration data object and set the values.
-thePsoConfig = trick.GunnsOptimPsoConfigData()
+thePsoConfig = trick.GunnsOptimParticleSwarmConfigData()
 
 # Chip's recommendation:
 thePsoConfig.mNumParticles     = 30
@@ -36,12 +43,13 @@ thePsoConfig.mCognitiveCoeff   = 2.0
 thePsoConfig.mSocialCoeff      = 2.0
 thePsoConfig.mMaxVelocity      = 0.5
 thePsoConfig.mRandomSeed       = 42
-thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.MIN_MAX_CORNERS
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE
-# After the above default run from MON_MAX_CORNERS, max vel 0.5, 30x100 run,
+thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.MIN_MAX_CORNERS
+#thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.FILE
+# After the above default run from MIN_MAX_CORNERS, max vel 0.5, 30x100 run,
 # do another run with max vel = 0.1 using FILE_CONTINUOUS (picking up from the
 # end of the previous run), this will converge to almost exact truth tuning:
-#thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData.FILE_CONTINUOUS
+#thePsoConfig.mMaxVelocity      = 0.1
+#thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData.FILE_CONTINUOUS
 
 # Give the configuration to the optimizer.
 mc.monteCarlo.mOptimizer.setConfigData(thePsoConfig)
@@ -51,7 +59,7 @@ mc.monteCarlo.setVerbosityLevel(1)
 # Add the Slave input variables (currently only doubles are supported).
 for var in input_vars:
     # Register MC variable with the Master/Optimizer
-    mc.monteCarlo.addInput(var[0], trick.get_address(var[0]), var[2], var[3])
+    mc.monteCarlo.addInput(var[0], trick.get_address(var[0]), var[2], var[3], var[4])
     # Create a calculated variable and add it to Monte Carlo.
     mcvar = trick.MonteVarCalculated(var[0], var[1])
     trick_mc.mc.add_variable(mcvar)

@@ -1,16 +1,16 @@
 /**
-@file     GunnsOptimPso.cpp
+@file     GunnsOptimParticleSwarm.cpp
 @brief    GUNNS Particle Swarm Optimization implementation
 
 @copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-    ((core/optimization/GunnsOptimPso.o))
+    ((core/optimization/GunnsOptimParticleSwarm.o))
 */
 
 /// - GUNNS includes:
-#include "GunnsOptimPso.hh"
+#include "GunnsOptimParticleSwarm.hh"
 #include "core/GunnsMacros.hh"
 #include "math/MsMath.hh"
 #include "strings/Strings.hh"
@@ -25,12 +25,12 @@ LIBRARY DEPENDENCY:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] that (--) The object to be assigned equal to.
 ///
-/// @returns  GunnsOptimPsoState& (--) Reference to this object.
+/// @returns  GunnsOptimParticleSwarmState& (--) Reference to this object.
 ///
 /// @details  Assigns this GUNNS Particle Swarm Optimizer particle state to the values of the given
 ///           particle state object.  We don't copy the velocity and acceleration.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPsoState& GunnsOptimPsoState::operator =(const GunnsOptimPsoState& that)
+GunnsOptimParticleSwarmState& GunnsOptimParticleSwarmState::operator =(const GunnsOptimParticleSwarmState& that)
 {
     if (this != &that) {
         this->mState = that.mState;
@@ -46,7 +46,7 @@ GunnsOptimPsoState& GunnsOptimPsoState::operator =(const GunnsOptimPsoState& tha
 /// @details  Initializes this PSO particle.  Sizes the current and best states to the number of
 ///           dimensions of the state space, and zeroes them.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPsoParticle::initialize(const unsigned int stateSize)
+void GunnsOptimParticleSwarmParticle::initialize(const unsigned int stateSize)
 {
     for (unsigned int j=0; j<stateSize; ++j) {
         mCurrentState.mState.push_back(0.0);
@@ -59,7 +59,7 @@ void GunnsOptimPsoParticle::initialize(const unsigned int stateSize)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this GUNNS Particle Swarm Optimizer configuration data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPsoConfigData::GunnsOptimPsoConfigData()
+GunnsOptimParticleSwarmConfigData::GunnsOptimParticleSwarmConfigData()
     :
     mNumParticles(0),
     mMaxEpoch(0),
@@ -77,7 +77,7 @@ GunnsOptimPsoConfigData::GunnsOptimPsoConfigData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this GUNNS Particle Swarm Optimizer configuration data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPsoConfigData::~GunnsOptimPsoConfigData()
+GunnsOptimParticleSwarmConfigData::~GunnsOptimParticleSwarmConfigData()
 {
     // nothing to do
 }
@@ -85,12 +85,12 @@ GunnsOptimPsoConfigData::~GunnsOptimPsoConfigData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] that (--) The object to be assigned equal to.
 ///
-/// @returns  GunnsOptimPsoConfigData& (--) Reference to this object.
+/// @returns  GunnsOptimParticleSwarmConfigData& (--) Reference to this object.
 ///
 /// @details  Assigns this GUNNS Particle Swarm Optimizer configuration data to the values of the
 ///           given configuration data object.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPsoConfigData& GunnsOptimPsoConfigData::operator =(const GunnsOptimPsoConfigData& that)
+GunnsOptimParticleSwarmConfigData& GunnsOptimParticleSwarmConfigData::operator =(const GunnsOptimParticleSwarmConfigData& that)
 {
     if (this != &that) {
         mNumParticles     = that.mNumParticles;
@@ -109,7 +109,7 @@ GunnsOptimPsoConfigData& GunnsOptimPsoConfigData::operator =(const GunnsOptimPso
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this GUNNS Particle Swarm Optimizer.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPso::GunnsOptimPso()
+GunnsOptimParticleSwarm::GunnsOptimParticleSwarm()
     :
     GunnsOptimBase(),
     mConfigData(),
@@ -118,13 +118,13 @@ GunnsOptimPso::GunnsOptimPso()
     mGlobalBestState(),
     mMaxVelocity()
 {
-    mName = "GunnsOptimPso";
+    mName = "GunnsOptimParticleSwarm";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this GUNNS Particle Swarm Optimizer.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsOptimPso::~GunnsOptimPso()
+GunnsOptimParticleSwarm::~GunnsOptimParticleSwarm()
 {
     // nothing to do
 }
@@ -137,9 +137,9 @@ GunnsOptimPso::~GunnsOptimPso()
 /// @details  Checks the given configuration data is the correct type, then copies its values into
 ///           our internal config data object.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::setConfigData(const GunnsOptimBaseConfigData* configData)
+void GunnsOptimParticleSwarm::setConfigData(const GunnsOptimBaseConfigData* configData)
 {
-    const GunnsOptimPsoConfigData* config = dynamic_cast<const GunnsOptimPsoConfigData*>(configData);
+    const GunnsOptimParticleSwarmConfigData* config = dynamic_cast<const GunnsOptimParticleSwarmConfigData*>(configData);
     if (config) {
         mConfigData = *config;
     } else {
@@ -156,7 +156,7 @@ void GunnsOptimPso::setConfigData(const GunnsOptimBaseConfigData* configData)
 ///           establishes maximum velocity for each state parameter, writes header rows to the
 ///           output files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster)
+void GunnsOptimParticleSwarm::initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster)
 {
     /// - Store the pointer to the MC input variables, validate, and seed the RNG.
     mInStatesMaster = inStatesMaster;
@@ -165,7 +165,7 @@ void GunnsOptimPso::initialize(const std::vector<GunnsOptimMonteCarloInput>* inS
 
     /// - Create and initialize the swarm particles.
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        mParticles.push_back(GunnsOptimPsoParticle());
+        mParticles.push_back(GunnsOptimParticleSwarmParticle());
         mParticles.at(i).initialize(mInStatesMaster->size());
     }
     mActiveParticle = &mParticles.at(0);
@@ -234,7 +234,7 @@ void GunnsOptimPso::initialize(const std::vector<GunnsOptimMonteCarloInput>* inS
 ///           opt to just throw standard exceptions.  Because this MC stuff could be used to
 ///           optimize non-GUNNS models, the user might not want to bother setting up the H&S.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::validate()
+void GunnsOptimParticleSwarm::validate()
 {
     GunnsOptimBase::validate();
 
@@ -278,26 +278,26 @@ void GunnsOptimPso::validate()
 ///
 /// @details  Initializes the particle states to the desired distribution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::initSwarm()
+void GunnsOptimParticleSwarm::initSwarm()
 {
     switch (mConfigData.mInitDistribution) {
-        case (GunnsOptimPsoConfigData::RANDOM) :
+        case (GunnsOptimParticleSwarmConfigData::RANDOM) :
             randomizeSwarmState();
             randomizeSwarmVelocity();
             initBestCosts();
             break;
-        case (GunnsOptimPsoConfigData::MIN_MAX_CORNERS) :
+        case (GunnsOptimParticleSwarmConfigData::MIN_MAX_CORNERS) :
             std::cout << "init MIN_MAX_CORNERS\n";
             minMaxSwarmState();
             randomizeSwarmVelocity();
             initBestCosts();
             break;
-        case (GunnsOptimPsoConfigData::FILE) :
+        case (GunnsOptimParticleSwarmConfigData::FILE) :
             readFileSwarmState(false);
             randomizeSwarmVelocity();
             initBestCosts();
             break;
-        case (GunnsOptimPsoConfigData::FILE_CONTINUOUS) :
+        case (GunnsOptimParticleSwarmConfigData::FILE_CONTINUOUS) :
             std::cout << "init FILE_CONTINUOUS\n";
             readFileSwarmState(true);
             printStates();
@@ -308,13 +308,14 @@ void GunnsOptimPso::initSwarm()
             initBestCosts();
             break;
     };
+    applyStateConstraints();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Initializes the global best state cost and all particle's best state cost to a high
 ///           number for improvement during the optimization.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::initBestCosts()
+void GunnsOptimParticleSwarm::initBestCosts()
 {
     mGlobalBestState.mCost = DBL_MAX;
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
@@ -326,10 +327,10 @@ void GunnsOptimPso::initBestCosts()
 /// @details  Sets each dimension of each particle's current state position to a random value
 ///           within the state's min & max range.  This is a uniform random distribution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::randomizeSwarmState()
+void GunnsOptimParticleSwarm::randomizeSwarmState()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
         for (unsigned int j=0; j<state.mState.size(); ++j) {
             const double range = mInStatesMaster->at(j).mMaximum - mInStatesMaster->at(j).mMinimum;
             state.mState.at(j) = mInStatesMaster->at(j).mMinimum + range * uniformRand();
@@ -341,10 +342,10 @@ void GunnsOptimPso::randomizeSwarmState()
 /// @details  Sets the current state of the first half of the swarm particles to (min, min, ...),
 ///           and the second half to (max, max, ...).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::minMaxSwarmState()
+void GunnsOptimParticleSwarm::minMaxSwarmState()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
         for (unsigned int j=0; j<state.mState.size(); ++j) {
             if (i < mConfigData.mNumParticles / 2) {
                 state.mState.at(j) = mInStatesMaster->at(j).mMinimum;
@@ -364,7 +365,7 @@ void GunnsOptimPso::minMaxSwarmState()
 ///           state file.  The continuous argument, if set, causes us to also read the particle
 ///           velocities and particle personal best state.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::readFileSwarmState(const bool continuous)
+void GunnsOptimParticleSwarm::readFileSwarmState(const bool continuous)
 {
     std::string pathFile = "pso_state.csv";
     std::ifstream file (pathFile.c_str(), (std::ifstream::in));
@@ -425,10 +426,10 @@ void GunnsOptimPso::readFileSwarmState(const bool continuous)
 /// @details  Sets each dimension of each particle's current state velocity to a random value within
 ///           the +/- maximum velocity for that state..  This is a uniform random distribution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::randomizeSwarmVelocity()
+void GunnsOptimParticleSwarm::randomizeSwarmVelocity()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
         for (unsigned int j=0; j<state.mVelocity.size(); ++j) {
             state.mVelocity.at(j) = mMaxVelocity.at(j) * (1.0 - 2.0 * uniformRand());
         }
@@ -444,7 +445,7 @@ void GunnsOptimPso::randomizeSwarmVelocity()
 ///           the entire swarm is propagated to its next state, and the results of the previous
 ///           epoch are written to the output files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::update()
+void GunnsOptimParticleSwarm::update()
 {
     mGlobalRunCounter++;
     mRunCounter++;
@@ -514,11 +515,11 @@ void GunnsOptimPso::update()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Updates the personal best state of each particle, and updates the global best state.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::updateBestStates()
+void GunnsOptimParticleSwarm::updateBestStates()
 {
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
         // reference to the particle's current state object
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
 
         // find & update the global best state
         if (state.mCost < mGlobalBestState.mCost) {
@@ -541,14 +542,14 @@ void GunnsOptimPso::updateBestStates()
 ///           integrated into velocity and velocity into position, as you would in physics.
 ///           However, velocity in each state component is limited to its maximum range.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
+void GunnsOptimParticleSwarm::propagateSwarm(const double inertiaWeight)
 {
     updateBestStates();
 
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
 
         /// - Deltas from particle's current state to global best and personal best states.
-        GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
         std::vector<double> globalStateDelta;
         std::vector<double> personalStateDelta;
         globalStateDelta.clear();
@@ -585,6 +586,19 @@ void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
             }
         }
     }
+
+    applyStateConstraints();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Applies the MC input variable constraints to all particle state positions.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsOptimParticleSwarm::applyStateConstraints()
+{
+    for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
+        GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
+        constrainInputs(state.mState);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -600,7 +614,7 @@ void GunnsOptimPso::propagateSwarm(const double inertiaWeight)
 ///           their cores.  So we have to actively correlate the returned value with the run ID and
 ///           particle it corresponds to.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::assignCost(const double cost, const double runId __attribute__((unused)), const double runIdReturned)
+void GunnsOptimParticleSwarm::assignCost(const double cost, const double runId __attribute__((unused)), const double runIdReturned)
 {
     /// - Find the particle whose latest run ID matches the returned ID, and assign this cost to it.
     for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
@@ -619,12 +633,12 @@ void GunnsOptimPso::assignCost(const double cost, const double runId __attribute
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Outputs the current particle states to the console.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::printStates() const
+void GunnsOptimParticleSwarm::printStates() const
 {
     if (mVerbosityLevel > 0) {
         std::cout << "PSO particle states: ";
         for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-            const GunnsOptimPsoState& state = mParticles.at(i).mCurrentState;
+            const GunnsOptimParticleSwarmState& state = mParticles.at(i).mCurrentState;
 
             std::cout << std::endl << "  " << i << " P";
             for (unsigned int j=0; j<state.mState.size(); ++j) {
@@ -649,7 +663,7 @@ void GunnsOptimPso::printStates() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Outputs the current global best state to the console.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::printGlobalBest() const
+void GunnsOptimParticleSwarm::printGlobalBest() const
 {
     if (mVerbosityLevel > 0) {
         std::cout << "PSO global best state: ";
@@ -665,7 +679,7 @@ void GunnsOptimPso::printGlobalBest() const
 ///
 /// @details  Writes the final states to the output files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimPso::shutdown() const
+void GunnsOptimParticleSwarm::shutdown() const
 {
     printGlobalBest();
 

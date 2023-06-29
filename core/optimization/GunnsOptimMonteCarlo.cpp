@@ -6,18 +6,15 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((GunnsOptimBase.o)
-   (software/exceptions/TsInitializationException.o))
+  ((GunnsOptimBase.o))
 */
 
-/// - GUNNS inlcudes:
+/// - GUNNS includes:
 #include "GunnsOptimMonteCarlo.hh"
+#include "core/GunnsInfraMacros.hh"
 #include "core/GunnsMacros.hh"
 #include "math/MsMath.hh"
 #include "strings/Strings.hh"
-
-/// - Trick includes:
-#include "sim_services/MonteCarlo/include/montecarlo_c_intf.h"
 
 /// - System includes:
 #include <cfloat>
@@ -59,18 +56,22 @@ GunnsOptimMonteCarlo::~GunnsOptimMonteCarlo()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
 /// @details  Initializes the Trick MC Master role.  Should be called by a "monte_master_init" Trick
 ///           job.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initMaster()
 {
-    mIsSlave  = mc_is_slave(); // Trick MC function
+    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
     mIsMaster = not mIsSlave;
     if (mIsMaster) {
         mSlaveId = -1; // indicates this is not a slave
     } else {
-        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
-                    "initMaster called from non-Master role.");
+        /// - Unlike the rest of GUNNS, here we don't use the H&S system or TsException types and
+        ///   opt to just throw standard exceptions.  Because this MC stuff could be used to
+        ///   optimize non-GUNNS models, the user might not want to bother setting up the H&S.
+        throw std::runtime_error(mName + " initMaster called from non-Master role.");
     }
 
     mRunId = -1; // so actual run id's start counting from zero in updateMasterPre()
@@ -98,18 +99,19 @@ void GunnsOptimMonteCarlo::initMaster()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   std::runtime_error
+///
 /// @details  Initializes the Trick MC Slave role.  Should be called by a "monte_slave_init" Trick
 ///           job.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initSlave()
 {
-    mIsSlave  = mc_is_slave(); // Trick MC function
+    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
     mIsMaster = not mIsSlave;
     if (mIsSlave) {
-        mSlaveId = mc_get_slave_id(); // Trick MC function
+        mSlaveId = MC_GET_SLAVE_ID; // from GunnsInfraMacros
     } else {
-        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
-                    "initSlave called from non-Slave role.");
+        throw std::runtime_error(mName + " initSlave called from non-Slave role.");
     }
 }
 
@@ -154,8 +156,8 @@ void GunnsOptimMonteCarlo::updateMasterPost()
 
     /// - Read the Slave cost result and run ID from the MC Master/Slave buffer.
     double cost = 0.0;
-    mc_read((char*) &cost,           sizeof(double)); // Trick MC function
-    mc_read((char*) &mRunIdReturned, sizeof(double));
+    MC_READ(cost); // from GunnsInfraMacros
+    MC_READ(mRunIdReturned);
 
     std::cout << " cost: " << cost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
 
@@ -242,14 +244,14 @@ void GunnsOptimMonteCarlo::updateSlavePost()
     }
 
     /// - Write the total cost result for this run to the MC Master/Slave buffer.
-    mc_write((char*) &cost, sizeof(double)); // Trick MC function
+    MC_WRITE(cost); // from GunnsInfraMacros
 
     /// - Write the run ID to the MC Master/Slave buffer.  We use a double for the run ID, because
     ///   when we tried to use int during development, the int values were getting garbled by the
     ///   time they made it back to the Master role.  If we could figure out why and fix that, then
     ///   it would be better to switch back to integers.
     mRunIdReturned = mRunId;
-    mc_write((char*) &mRunIdReturned, sizeof(double));
+    MC_WRITE(mRunIdReturned);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,15 +279,6 @@ void GunnsOptimMonteCarlo::updateSlaveInputs()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateSlaveOutputs()
 {
-    //TODO debugging the frame offset issue...
-    //big cost jump at mModelStepCount 79, 80!
-    // - looking at log data, starting at time 4.9, the input driver valve positions get offset by 1 frame!
-    // - input driver data was missing the row at time 4.4
-    // ! Fixed!  log data diff is now identical and cost is ~e-16
-    // - OK SO, the lesson here is that user should test their input driver data, and by extension their output target data,
-    //   by guessing at a test input MC var state, setting their 'real' model and the MC model to that state, and testing
-    //   that the non-MC run and the MC run (driven by the input driver data and output target data) give the same output
-    //   and zero optimizer cost
     int stepCount = mModelStepCount + 0;
     if (stepCount < 0) stepCount = 0;
 
@@ -303,22 +296,27 @@ void GunnsOptimMonteCarlo::updateSlaveOutputs()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] varName (--) The variable name, as a string, for reporting.
-/// @param[in] address (--) Memory address of the input variable.
-/// @param[in] min     (--) Minimum value of the search range for this variable.
-/// @param[in] max     (--) Maximum value of the search range for this variable.
+/// @param[in] varName    (--) The variable name, as a string, for reporting.
+/// @param[in] address    (--) Memory address of the input variable.
+/// @param[in] min        (--) Minimum value of the search range for this variable.
+/// @param[in] max        (--) Maximum value of the search range for this variable.
+/// @param[in] constraint (--) Optional constraint on this input.
 ///
 /// @details  This adds a Monte Carlo input variable, one that we are trying to optimize.  These
 ///           define the state space of the optimization search.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min, const double max)
+void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min,
+                                    const double max, GunnsOptimMonteCarloConstraint* constraint)
 {
-    if (not mc_is_slave()) { // Trick MC function
+    if (not MC_IS_SLAVE) { // from GunnsInfraMacros
         GunnsOptimMonteCarloInput newInput;
         newInput.mName     = varName;
         newInput.mAddress  = address;
         newInput.mMinimum  = min;
         newInput.mMaximum  = max;
+        if (constraint) {
+            newInput.addNewConstraint(constraint);
+        }
         mInputs.push_back(newInput);
     }
 }

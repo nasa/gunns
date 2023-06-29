@@ -1,8 +1,8 @@
-#ifndef GunnsOptimPso_EXISTS
-#define GunnsOptimPso_EXISTS
+#ifndef GunnsOptimParticleSwarm_EXISTS
+#define GunnsOptimParticleSwarm_EXISTS
 
 /**
-@file     GunnsOptimPso.hh
+@file     GunnsOptimParticleSwarm.hh
 @brief    GUNNS Particle Swarm Optimization declarations
 
 @defgroup  TSM_GUNNS_CORE_OPTIM_PSO    GUNNS Particle Swarm Optimization
@@ -22,7 +22,7 @@ ASSUMPTIONS AND LIMITATIONS:
 - (TBD)
 
 LIBRARY_DEPENDENCY:
-- ((GunnsOptimPso.o))
+- ((GunnsOptimParticleSwarm.o))
 
 PROGRAMMERS:
 - ((Jason Harvey) (CACI) (2023-05) (Initial))
@@ -40,7 +40,7 @@ PROGRAMMERS:
 /// @details  This describes the state of a PSO particle, including its position, velocity and
 ///           acceleration in the state space as well as the associated MC Slave run ID and cost.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-struct GunnsOptimPsoState
+struct GunnsOptimParticleSwarmState
 {
     public:
         std::vector<double> mState;        /**< (1) Position state. */
@@ -49,7 +49,7 @@ struct GunnsOptimPsoState
         double              mCost;         /**< (1) Cost function result. */
         double              mRunId;        /**< (1) MC Slave run ID. */
         /// @brief Custom assignment operator for this PSO particle state.
-        GunnsOptimPsoState& operator =(const GunnsOptimPsoState& that);
+        GunnsOptimParticleSwarmState& operator =(const GunnsOptimParticleSwarmState& that);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,11 +58,11 @@ struct GunnsOptimPsoState
 /// @details  This describes a PSO particle, which has a current state and a personal best state
 ///           that is updated and remembered as the optimization progresses.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-struct GunnsOptimPsoParticle
+struct GunnsOptimParticleSwarmParticle
 {
     public:
-        GunnsOptimPsoState mCurrentState; /**< (1) Current state of this particle. */
-        GunnsOptimPsoState mBestState;    /**< (1) Personal best state of this particle. */
+        GunnsOptimParticleSwarmState mCurrentState; /**< (1) Current state of this particle. */
+        GunnsOptimParticleSwarmState mBestState;    /**< (1) Personal best state of this particle. */
         /// @brief Sizes and zeroes this particle's states.
         void initialize(const unsigned int stateSize);
 };
@@ -72,7 +72,7 @@ struct GunnsOptimPsoParticle
 ///
 /// @details  This provides the configuration data for the GUNNS PSO.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
+class GunnsOptimParticleSwarmConfigData : public GunnsOptimBaseConfigData
 {
     public:
         enum SwarmDistribution {
@@ -91,15 +91,15 @@ class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
         unsigned int      mRandomSeed;       /**< (1) Seed for the random number generator. */
         SwarmDistribution mInitDistribution; /**< (1) Distribution of initial swarm particle states. */
         /// @brief Default constructor.
-        GunnsOptimPsoConfigData();
+        GunnsOptimParticleSwarmConfigData();
         /// @brief Default destructor.
-        virtual ~GunnsOptimPsoConfigData();
+        virtual ~GunnsOptimParticleSwarmConfigData();
         /// @brief Assignment operator.
-        GunnsOptimPsoConfigData& operator =(const GunnsOptimPsoConfigData& that);
+        GunnsOptimParticleSwarmConfigData& operator =(const GunnsOptimParticleSwarmConfigData& that);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsOptimPsoConfigData(const GunnsOptimPsoConfigData&);
+        GunnsOptimParticleSwarmConfigData(const GunnsOptimParticleSwarmConfigData&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,18 +117,18 @@ class GunnsOptimPsoConfigData : public GunnsOptimBaseConfigData
 ///           Trick sim folder.  The swarm state can be initialized from the saved states from
 ///           previous runs, or it can be set to one of several default distributions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsOptimPso : public GunnsOptimBase
+class GunnsOptimParticleSwarm : public GunnsOptimBase
 {
     public:
-        GunnsOptimPsoConfigData            mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
-        std::vector<GunnsOptimPsoParticle> mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
-        GunnsOptimPsoParticle*             mActiveParticle;  /**< *o (1) trick_chkpnt_io(**) The PSO particle currently being run. */
-        GunnsOptimPsoState                 mGlobalBestState; /**< *o (1) trick_chkpnt_io(**) Best state from all particles. */
-        std::vector<double>                mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum velocity of state parameters. */
+        GunnsOptimParticleSwarmConfigData            mConfigData;      /**< *o (1) trick_chkpnt_io(**) The configuration data. */
+        std::vector<GunnsOptimParticleSwarmParticle> mParticles;       /**< ** (1) trick_chkpnt_io(**) The PSO particle swarm. */
+        GunnsOptimParticleSwarmParticle*             mActiveParticle;  /**< *o (1) trick_chkpnt_io(**) The PSO particle currently being run. */
+        GunnsOptimParticleSwarmState                 mGlobalBestState; /**< *o (1) trick_chkpnt_io(**) Best state from all particles. */
+        std::vector<double>                          mMaxVelocity;     /**< *o (1) trick_chkpnt_io(**) Maximum velocity of state parameters. */
         /// @brief Constructs the GUNNS Monte Carlo Particle Swarm Optimization object.
-        GunnsOptimPso();
+        GunnsOptimParticleSwarm();
         /// @brief Destructs the GUNNS Monte Carlo Particle Swarm Optimization object.
-        virtual ~GunnsOptimPso();
+        virtual ~GunnsOptimParticleSwarm();
         /// @brief Copies the given PSO config data into internal storage.
         virtual void setConfigData(const GunnsOptimBaseConfigData* configData);
         /// @brief Initializes this PSO with a pointer to the Monte Carlo input variables.
@@ -163,6 +163,8 @@ class GunnsOptimPso : public GunnsOptimBase
         void updateBestStates();
         /// @brief Propagates the particle states to the next iteration.
         void propagateSwarm(const double inertiaWeight);
+        /// @brief Applies the MC input variable constraints to all particle states.
+        void applyStateConstraints();
         /// @brief Outputs the swarm particle states to the console.
         void printStates() const;
         /// @brief Outputs the global best state to the console.
@@ -170,9 +172,9 @@ class GunnsOptimPso : public GunnsOptimBase
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsOptimPso(const GunnsOptimPso&);
+        GunnsOptimParticleSwarm(const GunnsOptimParticleSwarm&);
         /// @brief Assignment operator unavailable since declared private and not implemented.
-        GunnsOptimPso& operator =(const GunnsOptimPso&);
+        GunnsOptimParticleSwarm& operator =(const GunnsOptimParticleSwarm&);
 };
 
 /// @}
@@ -183,7 +185,7 @@ class GunnsOptimPso : public GunnsOptimBase
 /// @details  Returns the number of Slave runs as the configured swarm size (number of particles)
 ///           times the configured number of swarm iterations (epochs).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline unsigned int GunnsOptimPso::getNumRuns() const
+inline unsigned int GunnsOptimParticleSwarm::getNumRuns() const
 {
     return (mConfigData.mNumParticles * mConfigData.mMaxEpoch);
 }
@@ -194,7 +196,7 @@ inline unsigned int GunnsOptimPso::getNumRuns() const
 /// @details  Returns a pointer to the active particles current position state.  These values go
 ///           into the MC input variables for the next Slave run.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline const std::vector<double>* GunnsOptimPso::getState() const
+inline const std::vector<double>* GunnsOptimParticleSwarm::getState() const
 {
     return &mActiveParticle->mCurrentState.mState;
 }

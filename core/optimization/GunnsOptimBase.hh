@@ -107,6 +107,8 @@ class GunnsOptimBase
         double computeVectorMagnitude(const std::vector<double>& vec) const;
         /// @brief Normalizes the given vector to the given magnitude.
         void normalizeVector(std::vector<double>& vec, const double magnitude = 1.0) const;
+        /// @brief Applies the MC input variable constraints to the given vector.
+        void constrainInputs(std::vector<double>& vec);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

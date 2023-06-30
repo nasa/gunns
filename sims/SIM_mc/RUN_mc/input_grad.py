@@ -20,6 +20,12 @@ output_vars = [
     ['mc.model.conductor2.mFlowRate',             0.03649800459689486, 1.0],
     ]
 
+# Set the initial state.
+initialState = trick.alloc_type(len(input_vars), "double")
+# In this example, we're starting 2 of the parameters at +10% of truth, and the
+# others exactly at truth:
+initialState = [0.0011, 0.0022, 0.0005, 0.00025]
+
 # Add a Gradient Descent optimizer to the MC manager.
 mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.GRADIENT_DESCENT)
 
@@ -29,8 +35,7 @@ theGradConfig = trick.GunnsOptimGradientDescentConfigData()
 theGradConfig.mNumVars         = len(input_vars)
 theGradConfig.mMaxEpoch        = 50
 theGradConfig.mPropagationGain = 0.1
-theGradConfig.mRandomSeed      = 42
-theGradConfig.mInitState       = trick.GunnsOptimGradientDescentConfigData.FILE
+theGradConfig.mInitialState    = initialState
 
 # Give the configuration to the optimizer.
 mc.monteCarlo.mOptimizer.setConfigData(theGradConfig)

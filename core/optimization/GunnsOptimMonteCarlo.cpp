@@ -121,7 +121,9 @@ void GunnsOptimMonteCarlo::initSlave()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateMasterPre()
 {
-    std::cout << mName << " updateMasterPre" << std::endl;
+    if (mVerbosityLevel > 0) {
+        std::cout << mName << " updateMasterPre" << std::endl;
+    }
 
     mRunId += 1.0;
 
@@ -137,8 +139,10 @@ void GunnsOptimMonteCarlo::updateMasterPre()
                 const double value = state->at(i);
                 *mInputs.at(i).mAddress = value;
             }
-            std::cout << " " << mInputs.at(i).mName
-                      << " " << *mInputs.at(i).mAddress << std::endl;
+            if (mVerbosityLevel > 0) {
+                std::cout << " " << mInputs.at(i).mName
+                          << " " << *mInputs.at(i).mAddress << std::endl;
+            }
         }
     }
 }
@@ -152,14 +156,15 @@ void GunnsOptimMonteCarlo::updateMasterPre()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateMasterPost()
 {
-    std::cout << "updateMasterPost " << std::endl;
-
     /// - Read the Slave cost result and run ID from the MC Master/Slave buffer.
     double cost = 0.0;
     MC_READ(cost); // from GunnsInfraMacros
     MC_READ(mRunIdReturned);
 
-    std::cout << " cost: " << cost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
+    if (mVerbosityLevel > 0) {
+        std::cout << "updateMasterPost " << std::endl;
+        std::cout << " cost: " << cost << " runId: " << mRunId << "/" << mRunIdReturned << std::endl;
+    }
 
     /// - Pass the cost result and run ID to the optimizer.
     if (mOptimizer) {
@@ -205,7 +210,9 @@ void GunnsOptimMonteCarlo::computeScalarCosts()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateMasterShutdown()
 {
-    std::cout << "updateMasterShutdown" << std::endl;
+    if (mVerbosityLevel > 0) {
+        std::cout << "updateMasterShutdown" << std::endl;
+    }
     if (mOptimizer) {
         mOptimizer->update();
         mOptimizer->shutdown();

@@ -37,7 +37,7 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Gradient Descent Optimizer State
 ///
-/// @details  This describes TODO
+/// @details  This provides the data describing a state in the GUNNS Gradient Descent Optimizer.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 struct GunnsOptimGradientDescentState
 {
@@ -62,18 +62,10 @@ struct GunnsOptimGradientDescentState
 class GunnsOptimGradientDescentConfigData : public GunnsOptimBaseConfigData
 {
     public:
-        enum StateDefinition {
-            RANDOM     = 0, ///< Random within the state range
-            FILE       = 1, ///< Defined in a file
-            MIN_CORNER = 2, ///< At the minimum range corner of all variables
-            MAX_CORNER = 3, ///< At the maximum range corner of all variables
-            MIDRANGE   = 4, ///< At the midpoint of all variables
-        };
         unsigned int    mNumVars;         /**< (1) Number of Monte Carlo variables. */
         unsigned int    mMaxEpoch;        /**< (1) Maximum number of epochs, or iterations, in the total run. */
-        double          mPropagationGain; /**< (1) TODO */
-        unsigned int    mRandomSeed;      /**< (1) Seed for the random number generator. */
-        StateDefinition mInitState;       /**< (1) How the initial state is defined. */
+        double          mPropagationGain; /**< (1) Scales the amount of propagation of states along their gradient. */
+        double*         mInitialState;    /**< (1) Starting values for the state to begin optimizing from. */
         /// @brief Default constructor.
         GunnsOptimGradientDescentConfigData();
         /// @brief Default destructor.
@@ -90,48 +82,33 @@ class GunnsOptimGradientDescentConfigData : public GunnsOptimBaseConfigData
 /// @brief    GUNNS Gradient Descent Optimizer
 ///
 /// @details  This implements a Gradient Descent Optimization scheme for use with Trick Monte Carlo
-///           and the GUNNS Monte Carlo Manager. TODO
+///           and the GUNNS Monte Carlo Manager.  From the given initial state, this will approach
+///           the minimum of the local trough in the state space.  For each MC input state variable,
+///           this determines its gradients of delta-cost over delta-state for a small increase and
+///           decrease of the state value.  The delta-state that improves the cost the most is
+///           propagated along its gradient to a new state value used for the next iteration, and
+///           the process repeats.
 ///
-/// TODO
-/// Prototype the Gradient Descent thing!
-/// - 2 main reasons:
-///   1) see if the base class interface w/ MC manager can work with other algorithms than PSO
-///   2) see if this works for finding the exact solution
-/// - for each N MC variables, each iteration will have 2*N + 1 Slave runs:
-///   - each N will have a run finding the cost gradient to increasing the variable, and a run
-///     finding the cost gradient to decreasing the variable
-///   - final run propagates the MC vars to the next state and evaluates it
-///     - there will be a Gain factor on how much we propagate each MC var, like 0.5 the distance to
-///       zero cost, etc.  This helps to avoid overshoot.
-///     - Also we must account for there are multiple variables affecting the cost when we update the
-///       state, so we must limit their combined deltas to avoid overshooting.
-/// - The initial state must be given by the user.  We could use the last state from the PSO, or
-///   all min/max, or midway between each range, etc.
-///   - let user either specify the initial state or tell us how we want to init it
+///           For each iteration, this performs 2*N + 1 MC slave runs: two for each N MC input state
+///           variables being optimized to determine their cost gradients, and one to propagate
+///           along the chosen gradients to the next state.  The 2*N cost gradient runs can be
+///           parallelized, but their set must be serial with the one propagation run.
 ///
-/// Prototype performance notes:
-/// - RUN_mc/input_grad.py
-/// - it's working for tuning just the 2 conductors in the test model, but doesn't work if trying
-///   to tune all 4 (2 conductors + 2 valves).
-/// - When trying to tune all 4, couple of problems (limitation?) emerge:
-///   - we're seeing conductors tune the wrong way because as their conductance increases (wrong
-///     direction) the pressure decreases more.  Adjusting the relative cost weights doesn't seem
-///     to help.
-///   - even if we start the 2 conductors at the truth tuning, because there is >0 cost due to the
-///     error in the 2 valves, changing the conductors lowers the cost - the changed conductor is
-///     compensating for the error caused by the valves - this sends the conductor tuning away from
-///     it's truth value.
-/// - lower propagation gain can get more accurate results, because less overshoot,
-///    but takes more iterations to get there.  Still can't converge on exact solution because
-///    gain eventually causes overshoot in the propagation.
-///    - and you still have to start in the correct trough - just tuning the 2 conductors, but
-///      starting them at 2x truth, they converge on the wrong values -- wrong trough
-/// - So: this is working, but with limitations:
-///   - you must start in the correct trough, which is usually very close to truth.  This is not
-///     a good method to start with - start with a PSO or something else that is better at getting
-///     close from a totally unknown starting position.
-///   - Only seems to work for 1 or 2 variables
-
+///           This seems to work well enough for optimizing one or two variables, but with some
+///           limitations:
+///           - This fails when attempting to optimize 3 or more variables, at least on the one
+///             model that we've tested with so far.  For multi-variate optimization in general,
+///             another optimizer like Particle Swarm might be better.
+///           - This only finds the minimum of the local trough containing the given initial state,
+///             and is not guaranteed to find the global minimum.  We recommend this be used in
+///             concert with another optimizer that is better at getting close to the global minimum
+///             this using this Gradient Descent to approach closer to the minimum.
+///           - Because this method is ill-suited for finding the global minimum, this requires the
+///             user to explicitly define the starting state, and this provides no other options for
+///             guessing at a starting state on its own.
+///           - Using a lower propagation gain (see the configuration data) can obtain a more
+///             accurate result, because it overshoots the local minimum less, but takes more
+///             iterations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsOptimGradientDescent : public GunnsOptimBase
 {
@@ -164,23 +141,7 @@ class GunnsOptimGradientDescent : public GunnsOptimBase
         virtual void validate();
         /// @brief Initializes the particle states with the configured distribution setting.
         void initState();
-//        /// @brief Initializes the stored best costs for the swarm global and each particle.
-//        void initBestCosts();
-        /// @brief Randomizes the state.
-        void randomizeState();
-//        /// @brief Randomizes the initial particle state velocities.
-//        void randomizeSwarmVelocity();
-        /// @brief Sets the state to the minimum of each MC variable range.
-        void setMinCornerState();
-        /// @brief Sets the state to the maximum of each MC variable range.
-        void setMaxCornerState();
-        /// @brief Sets the state to the median of each MC variable range.
-        void setMedianState();
-        /// @brief Reads the state from a file.
-        void readFileState();
-//        /// @brief Updates the global swarm best state and each particle's personal best state.
-//        void updateBestStates();
-        /// @brief TODO
+        /// @brief Computes the delta-states for each gradient direction for each optimized variable.
         void setGradientStates();
         /// @brief Propagates the state to the next iteration.
         void propagateState(const double gain);

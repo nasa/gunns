@@ -653,6 +653,17 @@ void UtGunnsFluidMetabolic2::testUpdateState()
 
     tArticle->initialize(*tConfigData, *tInputData, tLinks, 2, 1);
 
+    double o2ConsumptionBias =   0.123; //arbitrary
+    double cO2ProductionBias =  -0.156; //arbitrary 
+    double h2OProductionBias =   0.417; //arbitrary
+    double heatProductionBias = 10.333; //arbitrary
+
+    ///@test set consumption/production biases in test article, simulating a simbus write
+    tArticle->mO2ConsumptionBias =  o2ConsumptionBias;
+    tArticle->mCO2ProductionBias =  cO2ProductionBias;
+    tArticle->mH2OProductionBias =  h2OProductionBias;
+    tArticle->mHeatProductionBias = heatProductionBias;
+
     /// @test nominal flows
     double expectedO2  = tNNominal   * tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::NOMINAL]
                        + tNSleep     * tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::SLEEP]
@@ -731,13 +742,28 @@ void UtGunnsFluidMetabolic2::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC3H6O,  tArticle->mProducedC3H6O,  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     DBL_EPSILON);
 
+    /// @test production/consumption biases applied
+    tArticle->mShouldApplyBias = true;
+    expectedO2  += o2ConsumptionBias;
+    expectedQ   += heatProductionBias;
+    expectedCO2 += cO2ProductionBias;
+    expectedH2O += h2OProductionBias;
+
+    tArticle->step(0.1);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2,     tArticle->mConsumedO2,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mProducedHeat,   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO2,    tArticle->mProducedCO2,    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2O,    tArticle->mProducedH2O,    DBL_EPSILON);
+
     /// @test when NH3, CO, H2, CH4 are fluids and O2 limited to available mass in the node
     tArticle->mNH3 = 0;
     tArticle->mCO  = 0;
     tArticle->mH2  = 0;
     tArticle->mCH4 = 0;
     tNodes[1].initVolume(0.0);
-    expectedFlow += expectedNH3 + expectedCO + expectedH2 + expectedCH4 + expectedO2;
+    expectedO2 = 0.0; //since O2 is limited now
+    expectedFlow = expectedCO2 + expectedH2O - expectedO2 + expectedNH3 + expectedCO + expectedH2 + expectedCH4;
 
     tArticle->step(0.1);
 
@@ -748,7 +774,8 @@ void UtGunnsFluidMetabolic2::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4,    tArticle->mProducedCH4,    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     DBL_EPSILON);
 
-    /// @test zero total flow rate
+    /// @test zero total flow rate, with no bias
+    tArticle->mShouldApplyBias = false;
     for (unsigned int i=0; i<GunnsFluidMetabolic2::NO_METABOLIC; ++i) {
         tArticle->mNCrew[i] = 0.0;
     }

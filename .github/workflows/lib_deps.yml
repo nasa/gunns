@@ -59,18 +59,18 @@ jobs:
     # All added or modified files, space-delimited
     # Reference: https://github.com/marketplace/actions/get-all-changed-files
     - name: List added and modified files
-      - id: files
-        uses: jitterbit/get-changed-files@v1
-      - run: |
-          cd sims/SIM_class_test_compile
-          for added_modified_file in ${{ steps.files.outputs.added_modified }}
-          do
-            echo "Do something with this ${added_modified_file}."
-            echo "${added_modified_file}" >> class_test_list.py
-          done
-          # This keeps in the repo as an existing, but empty file, so cat won't error if 
-          # above doesn't add any files
-          cat class_test_list.py
+      uses: jitterbit/get-changed-files@v1
+    - id: files
+      run: |
+        cd sims/SIM_class_test_compile
+        for added_modified_file in ${{ steps.files.outputs.added_modified }}
+        do
+          echo "Do something with this ${added_modified_file}."
+          echo "${added_modified_file}" >> class_test_list.py
+        done
+        # This keeps in the repo as an existing, but empty file, so cat won't error if 
+        # above doesn't add any files
+        cat class_test_list.py
 
     # TODO #83 restore this once we can test just the added_modified files
     #- name: Run test suite, check for pass/fail

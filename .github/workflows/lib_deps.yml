@@ -71,18 +71,14 @@ jobs:
         echo "class_test_list.py:"
         cat class_test_list.py
 
-    # TODO #83 restore this once we can test just the added_modified files
-    #- name: Run test suite, check for pass/fail
-    #  run: |
-    #    export TRICK_HOME="/home/trick"
-    #    export PATH="${PATH}:${TRICK_HOME}/bin"
-    #    export MAKEFLAGS=-j`nproc`
-    #    export GUNNS_HOME=`pwd`
-    #    export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
-    #    export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
-    #    cd sims/SIM_class_test_compile
-    # leave test_all.py alone so we can keep using it during manual testint for release
-    # make a new script that only tests a list of files, which we'll write in the
-    # added_modified list step above
-    #    python3 ./test_all.py
+    - name: Run test suite, check for pass/fail
+      run: |
+        export TRICK_HOME="/home/trick"
+        export PATH="${PATH}:${TRICK_HOME}/bin"
+        export MAKEFLAGS=-j`nproc`
+        export GUNNS_HOME=`pwd`
+        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
+        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
+        cd sims/SIM_class_test_compile
+        python3 ./test_list.py
         

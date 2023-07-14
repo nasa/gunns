@@ -9,7 +9,8 @@
 # @revs_end
 #
 # This builds and runs the SIM_class_test_compile sim for every C++ class listed in
-# gunns/lib/trick_if/S_source.hh, minus those listed in class_ignore_list.py.
+# the local class_test_list.py file and also present in gunns/lib/trick_if/S_source.hh,
+# minus those listed in class_ignore_list.py.
 #
 # For each class to be tested, the following process is performed:
 # - make clean the sim,
@@ -44,7 +45,21 @@ outputfile = 'test_all_output_errors'
 if os.path.isfile(outputfile):
     os.system('rm ' + outputfile)
 
-# read gunns/lib/trick_if/S_source.hh (requires lib/trick to have been built).
+# Read class_test_list.py into a python list.
+# The file is written as 1 name per line.
+testlist = []
+with open('class_test_list.py', 'r') as flist:
+    for line in flist:
+        #the path is relative to gunns/
+        classpath = line.strip()
+
+        #skip if the extension is not for C++. We're only testing C++ classes
+        if classpath != '':
+            if ('hh' == os.path.basename(classpath).split('.')[1]) or ('cpp' == os.path.basename(classpath).split('.')[1]):
+                testlist.append(os.path.basename(classpath).split('.')[0])
+
+# Read gunns/lib/trick_if/S_source.hh (requires lib/trick to have been built).
+anytests = False
 with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
     # each line is similar to:
     # #include "aspects/dynamics/GunnsDynEuler321.hh"
@@ -53,31 +68,37 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
         classpath = line.strip().lstrip('#include ').strip('"')
         
         #skip if the extension is not hh. We're only testing C++ classes
-        if classpath is not '':
+        if classpath != '':
             if 'hh' == os.path.basename(classpath).split('.')[1]:
                 classtype = os.path.basename(classpath).split('.')[0]
             
-                #skip of the class type is in the class ignore list
-                if classtype not in class_ignore_list:
+                #skip if the class type is in the class ignore list or
+                #is not in the test list
+                if (classtype not in class_ignore_list) and (classtype in testlist):
                     print("\n\n-=#=-=#=-=#=-=#=-=#=-")
                     print("Testing ", classpath, ":")
+                    anytests = True
                     testtype(classpath)
-            
-# Scan the output file for errors, output overall pass/fail
-outputfile = os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors"
-if os.path.isfile(outputfile):
-    results = open(outputfile).read()
-    print('\n\n-=#=-=#=-=#=-=#=-=#=-\nContents of test_all_output_errors file:\n')
-    print(results)
-    if 'error' in results or 'undefined' in results or 'unresolved' in results:
+
+if anytests:
+    # Scan the output file for errors, output overall pass/fail
+    outputfile = os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors"
+    if os.path.isfile(outputfile):
+        results = open(outputfile).read()
+        print('\n\n-=#=-=#=-=#=-=#=-=#=-\nContents of test_all_output_errors file:\n')
+        print(results)
+        if 'error' in results or 'undefined' in results or 'unresolved' in results:
+            print("-=#=-=#=-=#=-=#=-=#=-")
+            print('TEST FAILED')
+            sys.exit(1)
+    else:
         print("-=#=-=#=-=#=-=#=-=#=-")
+        print('test_all_output_errors file is missing!')
         print('TEST FAILED')
         sys.exit(1)
 else:
     print("-=#=-=#=-=#=-=#=-=#=-")
-    print('test_all_output_errors file is missing!')
-    print('TEST FAILED')
-    sys.exit(1)
+    print("There were no classes to test.")
     
 print("-=#=-=#=-=#=-=#=-=#=-")
 print('TEST PASSED')

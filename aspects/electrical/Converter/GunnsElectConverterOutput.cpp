@@ -473,7 +473,11 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
         } else {
             conductance = FLT_EPSILON;
             if (CURRENT == mRegulatorType) {
-                current = applyBlockage(mSetpoint);
+                if (LIMIT_OC == mLimitState) {
+                    current = applyBlockage(mOutputOverCurrentTrip.getLimit());
+                } else {
+                    current = applyBlockage(mSetpoint);
+                }
             } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
                 current = applyBlockage(sqrt(mSetpoint / mLoadResistance));
             }
@@ -549,7 +553,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
                     mOutputOverVoltageTrip .checkForTrip(result, sensedVout, convergedStep);
                     mOutputUnderVoltageTrip.checkForTrip(result, sensedVout, convergedStep);
                 }
-                if (not (mEnableLimiting and isVoltageRegulator())) {
+                if (not mEnableLimiting) {
                     mOutputOverCurrentTrip.checkForTrip(result, sensedIout, convergedStep);
                 }
             }
@@ -695,12 +699,28 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
 {
     bool noReverseBias = false;
 
-    /// - Current regulators can only LIMIT_OV or LIMIT_UV.
+    /// - Current regulators can only LIMIT_OC from the LIMIT_UV state.  In this case, they go from
+    ///   their normal current regulation (NO_LIMIT) to LIMIT_UV when the output voltage drops too
+    ///   low, then if demand keeps pulling output voltage down and current up, we can reach the OC
+    ///   limit.
     const bool canOvLimit = mOutputOverVoltageTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit;
     const bool canUvLimit = mOutputUnderVoltageTrip.getLimit() > 0.0 and mLimitStateFlips < mStateFlipsLimit;
+    const bool canOcLimit = mOutputOverCurrentTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit
+                            and canUvLimit;
 
-    if (LIMIT_UV == mLimitState) {
+    if (LIMIT_OC == mLimitState) {
         if (canOvLimit and voltage > mOutputOverVoltageTrip.getLimit()) {
+            /// - LIMIT_OC to LIMIT_OV transition due to output over-voltage.
+            rejectWithLimitState(result, LIMIT_OV);
+        } else if (voltage > mOutputUnderVoltageTrip.getLimit()) {
+            /// - LIMIT_OC to NO_LIMIT transition due to output voltage restored.
+            rejectWithLimitState(result, NO_LIMIT);
+        }
+    } else if (LIMIT_UV == mLimitState) {
+        if (canOcLimit and current > mOutputOverCurrentTrip.getLimit()) {
+            /// - LIMIT_UV to LIMIT_OC transition due to output over-current.
+            rejectWithLimitState(result, LIMIT_OC);
+        } else if (canOvLimit and voltage > mOutputOverVoltageTrip.getLimit()) {
             /// - LIMIT_UV to LIMIT_OV transition due to output over-voltage.
             rejectWithLimitState(result, LIMIT_OV);
         } else if ((voltage > mOutputUnderVoltageTrip.getLimit()) or (current < computeCurrentControlSetpoint())) {

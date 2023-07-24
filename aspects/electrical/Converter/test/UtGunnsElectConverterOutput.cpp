@@ -698,6 +698,18 @@ void UtGunnsElectConverterOutput::testMinorStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
         CPPUNIT_ASSERT(false == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true  == article2.mOutputPowerAvailable);
+
+        /// @test    minorStep (CURRENT mode) in overcurrent limiting state.
+        article2.mRegulatorType = GunnsElectConverterOutput::CURRENT;
+        article2.setLimitingState(GunnsElectConverterOutput::LIMIT_OC);
+        expectedG = FLT_EPSILON;
+        expectedW = tOutOverCurrentTrip * (1.0 - tMalfBlockageValue);
+        article2.step(0.0);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT(true == article2.needAdmittanceUpdate());
+        CPPUNIT_ASSERT(true == article2.mOutputPowerAvailable);
     }
 
     UT_PASS;
@@ -1160,11 +1172,54 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
 
+    /// @test    Rejects due to entering the over-current limiting state from under-volt limit due
+    ///          to excess output current.
+    tArticle->mAdmittanceMatrix[0] = tOutputConductance;
+    tArticle->mSourceVector[0]     = tOutputConductance * tOutUnderVoltageTrip;
+    tArticle->mPotentialVector[0]  = 0.0;
+    tArticle->mLimitStateFlips     = 3;
+    tArticle->mInputPowerValid     = true;
+    expectedFlux = tArticle->mSourceVector[0];
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
+    CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_OC == tArticle->mLimitState);
+    CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
+    CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+
+    /// @test    Rejects due to entering the over-voltage limiting state from over-current limit due
+    ///          to excess output voltage.
+    tArticle->mAdmittanceMatrix[0] = FLT_EPSILON;
+    tArticle->mSourceVector[0]     = tOutOverCurrentTrip;
+    tArticle->mPotentialVector[0]  = 200.0;
+    tArticle->mLimitStateFlips     = 3;
+    tArticle->mInputPowerValid     = true;
+    expectedFlux = tOutOverCurrentTrip - 200.0 * FLT_EPSILON;
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
+    CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_OV == tArticle->mLimitState);
+    CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
+    CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+
+    /// @test    Rejects due to entering the no-limiting state from over-current limit due
+    ///          to excess output voltage.
+    tArticle->mLimitState = GunnsElectConverterOutput::LIMIT_OC;
+    tArticle->mPotentialVector[0]  = 120.0;
+    tArticle->mLimitStateFlips     = 3;
+    tArticle->mReverseBiasState    = false;
+    tArticle->mInputPowerValid     = true;
+    expectedFlux = tOutOverCurrentTrip - 120.0 * FLT_EPSILON;
+    CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
+    CPPUNIT_ASSERT(GunnsElectConverterOutput::NO_LIMIT == tArticle->mLimitState);
+    CPPUNIT_ASSERT(3                                   == tArticle->mLimitStateFlips);
+    CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+
     /// @test    Can't enter limit state > 4 times.
     tArticle->mLimitState = GunnsElectConverterOutput::NO_LIMIT;
     tArticle->mAdmittanceMatrix[0] = FLT_EPSILON;
     tArticle->mSourceVector[0]     = tSetpoint;
     tArticle->mPotentialVector[0]  = 0.1;
+    tArticle->mLimitStateFlips     = 4;
     tArticle->mSourceVoltage       = 0.0;
     tArticle->mInputPowerValid     = true;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM             == tArticle->confirmSolutionAcceptable(1, 1));

@@ -269,7 +269,7 @@ void GunnsOptimGradientDescent::update()
                 std::cout << std::endl;
             }
         }
-    } else if (mRunCounter > (mGradients.size())) {
+    } else if (mRunCounter > (static_cast<int>(mGradients.size()))) {
         /// - On the 0th run of each epoch, propagate the global state.
         mRunCounter = 0;
         mEpoch++;
@@ -485,7 +485,7 @@ void GunnsOptimGradientDescent::printStates() const
 ///
 /// @details  Writes the final state to the output file.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimGradientDescent::shutdown() const
+void GunnsOptimGradientDescent::shutdown()
 {
     printStates();
 

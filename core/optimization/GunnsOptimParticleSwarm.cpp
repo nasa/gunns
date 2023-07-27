@@ -451,7 +451,7 @@ void GunnsOptimParticleSwarm::update()
     mRunCounter++;
 
     /// - Updates for the next epoch.
-    if (mRunCounter >= mConfigData.mNumParticles) {
+    if (mRunCounter >= static_cast<int>(mConfigData.mNumParticles)) {
         mRunCounter = 0;
         mEpoch++;
 
@@ -679,7 +679,7 @@ void GunnsOptimParticleSwarm::printGlobalBest() const
 ///
 /// @details  Writes the final states to the output files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimParticleSwarm::shutdown() const
+void GunnsOptimParticleSwarm::shutdown()
 {
     printGlobalBest();
 

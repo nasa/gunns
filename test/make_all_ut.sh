@@ -32,6 +32,15 @@ else
     echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
 endif
 
+set FOLDER = core/optimization/test
+
+cd $GUNNS_HOME/$FOLDER; make clean; make;
+if ( -f $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then
+    echo $FOLDER\: `grep -E 'OK \(*|FAILURES\!|Failures \!' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log` `grep 'ERROR SUMMARY' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log | grep -v ' 0 errors'` >> $OUT
+else
+    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
+endif
+
 
 ########################################################
 # test dynamics aspect

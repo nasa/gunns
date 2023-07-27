@@ -21,7 +21,7 @@
 ///
 /// @return    --  status (always 0)
 ///
-/// @details  Main for Gunns unit tests in the CPPUNIT framework.
+/// @details  Main for GUNNS unit tests in the CPPUNIT framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;

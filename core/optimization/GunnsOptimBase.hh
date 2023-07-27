@@ -85,11 +85,11 @@ class GunnsOptimBase
         /// @brief Returns the total number of Monte Carlo Slave runs that the optimizer expects.
         virtual unsigned int getNumRuns() const = 0;
         /// @brief Returns the Monte Carlo input variables state for the next Slave run.
-        virtual const std::vector<double>* getState() const = 0;
+        virtual const std::vector<double>* getState() = 0;
         /// @brief Assigns the given cost to the optimizer state for the given Slave run.
         virtual void assignCost(const double cost, double runID, double runIdReturned) = 0;
         /// @brief Shuts down the optimizer.
-        virtual void shutdown() const = 0;
+        virtual void shutdown() = 0;
         /// @}
 
     protected:

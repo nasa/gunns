@@ -6,12 +6,13 @@
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((GunnsOptimBase.o))
+  ((GunnsOptimBase.o)
+   (core/GunnsInfraFunctions.o))
 */
 
 /// - GUNNS includes:
 #include "GunnsOptimMonteCarlo.hh"
-#include "core/GunnsInfraMacros.hh"
+#include "core/GunnsInfraFunctions.hh"
 #include "core/GunnsMacros.hh"
 #include "math/MsMath.hh"
 #include "strings/Strings.hh"
@@ -32,7 +33,6 @@ GunnsOptimMonteCarlo::GunnsOptimMonteCarlo(const std::string& name)
     mOptimizer(0),
     mRunId(0),
     mName(name),
-    mInitFlag(false),
     mIsMaster(false),
     mIsSlave(false),
     mSlaveId(0),
@@ -63,7 +63,7 @@ GunnsOptimMonteCarlo::~GunnsOptimMonteCarlo()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initMaster()
 {
-    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
+    mIsSlave  = GunnsInfraFunctions::mcIsSlave();
     mIsMaster = not mIsSlave;
     if (mIsMaster) {
         mSlaveId = -1; // indicates this is not a slave
@@ -106,10 +106,10 @@ void GunnsOptimMonteCarlo::initMaster()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::initSlave()
 {
-    mIsSlave  = MC_IS_SLAVE; // from GunnsInfraMacros
+    mIsSlave  = GunnsInfraFunctions::mcIsSlave();
     mIsMaster = not mIsSlave;
     if (mIsSlave) {
-        mSlaveId = MC_GET_SLAVE_ID; // from GunnsInfraMacros
+        mSlaveId = GunnsInfraFunctions::mcSlaveId();
     } else {
         throw std::runtime_error(mName + " initSlave called from non-Slave role.");
     }
@@ -158,8 +158,8 @@ void GunnsOptimMonteCarlo::updateMasterPost()
 {
     /// - Read the Slave cost result and run ID from the MC Master/Slave buffer.
     double cost = 0.0;
-    MC_READ(cost); // from GunnsInfraMacros
-    MC_READ(mRunIdReturned);
+    GunnsInfraFunctions::mcRead(cost); // from GunnsInfraMacros
+    GunnsInfraFunctions::mcRead(mRunIdReturned);
 
     if (mVerbosityLevel > 0) {
         std::cout << "updateMasterPost " << std::endl;
@@ -251,14 +251,14 @@ void GunnsOptimMonteCarlo::updateSlavePost()
     }
 
     /// - Write the total cost result for this run to the MC Master/Slave buffer.
-    MC_WRITE(cost); // from GunnsInfraMacros
+    GunnsInfraFunctions::mcWrite(cost); // from GunnsInfraMacros
 
     /// - Write the run ID to the MC Master/Slave buffer.  We use a double for the run ID, because
     ///   when we tried to use int during development, the int values were getting garbled by the
     ///   time they made it back to the Master role.  If we could figure out why and fix that, then
     ///   it would be better to switch back to integers.
     mRunIdReturned = mRunId;
-    MC_WRITE(mRunIdReturned);
+    GunnsInfraFunctions::mcWrite(mRunIdReturned);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,19 +280,14 @@ void GunnsOptimMonteCarlo::updateSlaveInputs()
 ///           called by either a "scheduled" Trick job after to the model step, or by the model
 ///           itself at the end of its step.  This updates the cost for each target variable
 ///           separately.  They will be summed and weighted in updateMasterPost().  This cost value
-///           grows with accumulated error after each model step.  This cost function, for each
-///           target variable i, is:
-///             cost_i = sum_j{ (model_i_j - target_i_j)^2 }, for all model steps j
+///           grows with accumulated error after each model step.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::updateSlaveOutputs()
 {
-    int stepCount = mModelStepCount + 0;
-    if (stepCount < 0) stepCount = 0;
-
     for (unsigned int i=0; i<mOutputs.size(); ++i) {
-        if (stepCount > 79 and stepCount < mOutputs.at(i).mTargetTraj.size() and not mOutputs.at(i).mIsScalarTarget) {
+        if (mModelStepCount < mOutputs.at(i).mTargetTraj.size() and not mOutputs.at(i).mIsScalarTarget) {
             mOutputs.at(i).mCost += computeCostFunction(*mOutputs.at(i).mAddress,
-                                                         mOutputs.at(i).mTargetTraj.at(stepCount),
+                                                         mOutputs.at(i).mTargetTraj.at(mModelStepCount),
                                                          mOutputs.at(i).mCostWeight);
         }
     }
@@ -315,7 +310,7 @@ void GunnsOptimMonteCarlo::updateSlaveOutputs()
 void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address, const double min,
                                     const double max, GunnsOptimMonteCarloConstraint* constraint)
 {
-    if (not MC_IS_SLAVE) { // from GunnsInfraMacros
+    if (not GunnsInfraFunctions::mcIsSlave()) { // from GunnsInfraMacros
         GunnsOptimMonteCarloInput newInput;
         newInput.mName     = varName;
         newInput.mAddress  = address;

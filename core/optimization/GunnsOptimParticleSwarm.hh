@@ -138,11 +138,11 @@ class GunnsOptimParticleSwarm : public GunnsOptimBase
         /// @brief Returns the number of individual MC Slave runs this PSO needs.
         virtual unsigned int getNumRuns() const;
         /// @brief Returns the MC input variable state of the active swarm particle to the MC manager.
-        virtual const std::vector<double>* getState() const;
+        virtual const std::vector<double>* getState();
         /// @brief Stores the given cost to the swarm particle associated with the given Slave run.
         virtual void assignCost(const double cost, double runID, double runIdReturned);
         /// @brief Writes final outputs.
-        virtual void shutdown() const;
+        virtual void shutdown();
 
     protected:
         /// @brief Validates the configuration and input data for this PSO.
@@ -196,7 +196,7 @@ inline unsigned int GunnsOptimParticleSwarm::getNumRuns() const
 /// @details  Returns a pointer to the active particles current position state.  These values go
 ///           into the MC input variables for the next Slave run.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline const std::vector<double>* GunnsOptimParticleSwarm::getState() const
+inline const std::vector<double>* GunnsOptimParticleSwarm::getState()
 {
     return &mActiveParticle->mCurrentState.mState;
 }

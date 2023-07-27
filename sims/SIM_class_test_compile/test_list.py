@@ -55,7 +55,7 @@ with open('class_test_list.py', 'r') as flist:
 
         #skip if the extension is not for C++. We're only testing C++ classes
         if classpath != '':
-            if ('hh' == os.path.basename(classpath).split('.')[1]) or ('cpp' == os.path.basename(classpath).split('.')[1]):
+            if (os.path.basename(classpath).endswith('.hh') or os.path.basename(classpath).endswith('.cpp')):
                 testlist.append(os.path.basename(classpath).split('.')[0])
 
 # Read gunns/lib/trick_if/S_source.hh (requires lib/trick to have been built).

@@ -33,17 +33,17 @@ class FriendlyGunnsOptimMonteCarlo : public GunnsOptimMonteCarlo
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    GUNNS network base class unit tests.
+/// @brief    GUNNS monte carlo manager unit tests.
 ///
-/// @details  This class provides the unit tests for the GUNNS network base class
+/// @details  This class provides the unit tests for the GUNNS monte carlo manager
 ///           within the CPPUnit framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class UtGunnsOptimMonteCarlo: public CppUnit::TestFixture
 {
     public:
-        /// @brief    Default constructs this GUNNS network base class unit test.
+        /// @brief    Default constructs this GUNNS monte carlo manager unit test.
         UtGunnsOptimMonteCarlo();
-        /// @brief    Default destructs this GUNNS network base class unit test.
+        /// @brief    Default destructs this GUNNS monte carlo manager unit test.
         virtual ~UtGunnsOptimMonteCarlo();
         /// @brief    Executes before each test.
         void setUp();

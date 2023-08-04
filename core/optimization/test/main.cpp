@@ -14,6 +14,7 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 #include "UtGunnsOptimMonteCarlo.hh"
+#include "UtGunnsOptimParticleSwarm.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    argc  int     --  not used
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;
 
     runner.addTest( UtGunnsOptimMonteCarlo::suite() );
+    runner.addTest( UtGunnsOptimParticleSwarm::suite() );
 
     runner.run();
 

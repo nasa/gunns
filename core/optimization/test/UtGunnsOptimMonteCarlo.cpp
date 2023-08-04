@@ -1,8 +1,6 @@
 ///@copyright Copyright 2023 United States Government as represented by the Administrator of the
 ///           National Aeronautics and Space Administration.  All Rights Reserved.
 
-#include "core/network/GunnsBasicSuperNetwork.hh"
-#include "software/exceptions/TsInitializationException.hh"
 #include "strings/UtResult.hh"
 
 #include "UtGunnsOptimMonteCarlo.hh"

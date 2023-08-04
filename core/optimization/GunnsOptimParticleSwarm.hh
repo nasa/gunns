@@ -48,6 +48,10 @@ struct GunnsOptimParticleSwarmState
         std::vector<double> mAcceleration; /**< (1) Acceleration state. */
         double              mCost;         /**< (1) Cost function result. */
         double              mRunId;        /**< (1) MC Slave run ID. */
+        /// @brief Default constructor for this PSO particle state.
+        GunnsOptimParticleSwarmState();
+        /// @brief Default destructor for this PSO particle state.
+        virtual ~GunnsOptimParticleSwarmState();
         /// @brief Custom assignment operator for this PSO particle state.
         GunnsOptimParticleSwarmState& operator =(const GunnsOptimParticleSwarmState& that);
 };

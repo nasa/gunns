@@ -23,9 +23,10 @@ jobs:
 
     steps:
     - name: Update package manager
-      run: dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-      run: dnf config-manager --set-enabled ol8_codeready_builder
-      run: dnf -y update
+      run: |
+        dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        dnf config-manager --set-enabled ol8_codeready_builder
+        dnf -y update
 
     - name: Install Trick dependencies
       run: >

@@ -24,11 +24,14 @@ jobs:
 
     steps:
     - name: Update package manager
-      run: dnf -y install epel-release && dnf -y update && dnf install -y 'dnf-command(config-manager)'
+      run: dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+      run: dnf config-manager --set-enabled ol8_codeready_builder
+      run: dnf -y update
 
     - name: Install Trick dependencies
       run: >
-        dnf install -y bison clang flex git llvm make maven swig cmake clang-devel
+        dnf -y install 'dnf-command(config-manager)' dnf-plugins-core
+        bison clang flex git llvm make maven swig cmake clang-devel
         gcc gcc-c++ java-11-openjdk-devel libxml2-devel llvm-devel llvm-static
         ncurses-devel openmotif openmotif-devel perl perl-Digest-MD5 udunits2
         udunits2-devel which zlib-devel libX11-devel libXt-devel python3-devel diffutils

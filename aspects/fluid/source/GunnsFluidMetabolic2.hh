@@ -280,10 +280,10 @@ class GunnsFluidMetabolic2 : public GunnsFluidSource
         int    mTcH2;                                                   /**< *o (--)   trick_chkpnt_io(**) Index of Hydrogen in trace compounds. */
         int    mTcCH4;                                                  /**< *o (--)   trick_chkpnt_io(**) Index of Methane in trace compounds. */
         bool   mShouldApplyBias;                                        /**<    (--)   trick_chkpnt_io(**) Flag to apply biases onto consumption/production calculations when true. */
-        double mO2ConsumptionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Array of Oxygen consumption rate for a crew member in each metabolic state. */
-        double mCO2ProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Array of Carbon dioxide production rate for a crew member in each metabolic state. */
-        double mH2OProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Array of Water production rate for a crew member in each metabolic state. */
-        double mHeatProductionBias;                                     /**<    (W)    trick_chkpnt_io(**) Array of Heat production rate for a crew member in each metabolic state. */
+        double mO2ConsumptionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Oxygen consumption rate bias, set externally. */
+        double mCO2ProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Carbon dioxide production rate bias, set externally. */
+        double mH2OProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Water production rate bias, set externally. */
+        double mHeatProductionBias;                                     /**<    (W)    trick_chkpnt_io(**) Heat production rate bias, set externally. */
         /// @brief    Validates the initialization inputs of this Metabolic model.
         void   validate(const GunnsFluidMetabolic2InputData&  inputData) const;
         /// @brief Virtual method for derived links to perform their restart functions.

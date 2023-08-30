@@ -16,21 +16,24 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] name          (--)    Link name.
-/// @param[in] nodes         (--)    Network nodes array.
-/// @param[in] isPairPrimary (--)    This is the primary side of the interface, defaults to Supply role.
-/// @param[in] conductance   (1/ohm) Output channel conductance of the internal voltage source.
+/// @param[in] name              (--)    Link name.
+/// @param[in] nodes             (--)    Network nodes array.
+/// @param[in] isPairPrimary     (--)    This is the primary side of the interface, defaults to Supply role.
+/// @param[in] conductance       (1/ohm) Output channel conductance of the internal voltage source.
+/// @param[in] netCapDvThreshold (V)     Network capacitance delta-voltage threshold.
 ///
 /// @details  Default Distributed Bi-Directional Interface link configuration data constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectDistributedIfConfigData::GunnsElectDistributedIfConfigData(const std::string& name,
                                                                      GunnsNodeList*     nodes,
                                                                      const bool         isPairPrimary,
-                                                                     const double       conductance)
+                                                                     const double       conductance,
+                                                                     const double       netCapDvThreshold)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mIsPairPrimary(isPairPrimary),
     mConductance(conductance),
+    mNetCapDvThreshold(netCapDvThreshold),
     mSupplies()
 {
     // nothing to do
@@ -47,6 +50,7 @@ GunnsElectDistributedIfConfigData::GunnsElectDistributedIfConfigData(
     GunnsBasicLinkConfigData(that),
     mIsPairPrimary(that.mIsPairPrimary),
     mConductance(that.mConductance),
+    mNetCapDvThreshold(that.mNetCapDvThreshold),
     mSupplies(that.mSupplies)
 {
     // nothing to do
@@ -110,6 +114,7 @@ GunnsElectDistributedIf::GunnsElectDistributedIf()
     mVoltageSource(),
     mMalfPowerLoad(false),
     mMalfVoltageSource(false),
+    mNetCapDvThreshold(0.0),
     mSupplies(),
     mNumSupplies(0),
     mSupplyMonitorIndex(0),
@@ -150,7 +155,8 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
     mInitFlag = false;
 
     /// - Initialize the interface utility.
-    mNumSupplies = configData.mSupplies.size();
+    mNetCapDvThreshold = configData.mNetCapDvThreshold;
+    mNumSupplies       = configData.mSupplies.size();
     mSupplies.clear();
     for (unsigned int i=0; i<mNumSupplies; ++i) {
         GunnsElectDistributedIfSupplyData supply;
@@ -180,7 +186,21 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
     mVoltageSource.initialize(vsConfig, vsInput, networkLinks, port0);
 
     /// - Set init flag on successful initialization.
+    validate();
     mInitFlag = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @throws   TsInitializationException
+///
+/// @details  Throws exceptions if configuration and input data are outside of valid range.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectDistributedIf::validate() const
+{
+    if (mNetCapDvThreshold < DBL_EPSILON) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "mNetCapDvTreshold < DBL_EPSILON.");
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +294,7 @@ void GunnsElectDistributedIf::updateSupplyData()
     for (unsigned int i=0; i<mSupplies.size(); ++i) {
         const double dV = mNodes[0]->getNetCapDeltaPotential()[mSupplies[i].mLink->getNodeMap()[0]];
         mSupplies.at(i).mNetCapDV = dV;
-        mSupplies.at(i).mSupplyData->mAvailable = mSupplies.at(i).mLink->getEnabled() and (dV > DBL_EPSILON);
+        mSupplies.at(i).mSupplyData->mAvailable = mSupplies.at(i).mLink->getEnabled() and (dV > mNetCapDvThreshold);
     }
 }
 

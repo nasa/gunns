@@ -148,6 +148,16 @@ void UtGunnsOptimMonteCarlo::testInitMaster()
     CPPUNIT_ASSERT(-1    == tArticle->mRunId);
     CPPUNIT_ASSERT(1     == optimizer->mInitCounter);
 
+    /// @test factory creation of a PSO optimizer.
+    tArticle->addOptimizer(GunnsOptimFactory::PSO);
+    GunnsOptimParticleSwarm* optimizerPso = dynamic_cast<GunnsOptimParticleSwarm*>(tArticle->mOptimizer);
+    CPPUNIT_ASSERT(0     != optimizerPso);
+
+    /// @test factory creation of a Gradient Descent optimizer.
+    tArticle->addOptimizer(GunnsOptimFactory::GRADIENT_DESCENT);
+    GunnsOptimGradientDescent* optimizerGrad = dynamic_cast<GunnsOptimGradientDescent*>(tArticle->mOptimizer);
+    CPPUNIT_ASSERT(0     != optimizerGrad);
+
     UT_PASS;
 }
 
@@ -464,6 +474,18 @@ void UtGunnsOptimMonteCarlo::testAccessors()
 
     /// @test setVerbosityLevel, called from setup.
     CPPUNIT_ASSERT(1 == tArticle->mVerbosityLevel);
+
+    /// @test optimizer's getNumRuns.
+    tArticle->addOptimizer(GunnsOptimFactory::TEST);
+    GunnsOptimTest* optimizer = dynamic_cast<GunnsOptimTest*>(tArticle->mOptimizer);
+    optimizer->mNumRuns = 5;
+    CPPUNIT_ASSERT(5 == tArticle->mOptimizer->getNumRuns());
+
+    /// @test optimizer's setConfigData.
+    GunnsOptimTestConfigData* optimConfig = new GunnsOptimTestConfigData();
+    tArticle->mOptimizer->setConfigData(optimConfig);
+    CPPUNIT_ASSERT(1 == optimizer->mConfigCounter);
+    delete optimConfig;
 
     UT_PASS_LAST;
 }

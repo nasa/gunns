@@ -71,7 +71,6 @@ void GunnsOptimBase::validate()
         throw std::range_error(mName + " # monte carlo variables < 1.");
     }
 
-    // state space range max > min -- should this be in the base?
     for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
         /// - Throw if the MC variable range max <= min.
         if (mInStatesMaster->at(i).mMaximum <= mInStatesMaster->at(i).mMinimum) {

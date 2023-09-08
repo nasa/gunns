@@ -399,6 +399,36 @@ void UtGunnsOptimParticleSwarm::testInitErrors()
 {
     UT_RESULT;
 
+    /// @test throw on missing MC variables description.
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(0), std::range_error);
+
+    /// @test throw on empty MC variables description.
+    std::vector<GunnsOptimMonteCarloInput> testMc;
+    testMc.clear();
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(&testMc), std::range_error);
+
+    /// @test throw on MC variable max less than min range.
+    GunnsOptimMonteCarloInput mc1;
+    mc1.mMaximum = 0.0;
+    mc1.mMinimum = 0.01;
+    testMc.push_back(mc1);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(&testMc), std::range_error);
+
+    /// @test throw on MC variable has missing address.
+    mc1.mMaximum = 1.0;
+    mc1.mAddress = 0;
+    testMc.clear();
+    testMc.push_back(mc1);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(&testMc), std::range_error);
+
+    /// @test throw on MC variable has empty name.
+    double x = 1.0;
+    mc1.mAddress = &x;
+    mc1.mName    = "";
+    testMc.clear();
+    testMc.push_back(mc1);
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(&testMc), std::range_error);
+
     /// @test throw on bad number of particles.
     tConfigData->mNumParticles = 0;
     tArticle->setConfigData(tConfigData);

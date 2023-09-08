@@ -32,7 +32,12 @@ class FriendlyGunnsOptimParticleSwarm : public GunnsOptimParticleSwarm
         virtual ~FriendlyGunnsOptimParticleSwarm() {;}
 };
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Test implementation of GunnsOptimBaseConfigData.
+///
+/// @details  Derives from GunnsOptimBaseConfigData and is used to test that a dynamic_cast of
+///           this type to the GunnsOptimParticleSwarmConfigData test article type can fail.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 class BadGunnsOptimParticleSwarmConfig : public GunnsOptimBaseConfigData
 {
     public:

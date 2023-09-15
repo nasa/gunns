@@ -90,6 +90,8 @@ class GunnsOptimTest : public GunnsOptimBase
         virtual void assignCost(const double cost, double runID, double runIdReturned);
         /// @brief Writes final outputs.
         virtual void shutdown();
+        /// @brief Public function to call constraintInputs with the given argument for testing.
+        void accessConstrainInputs(std::vector<double>& vec);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -118,6 +120,18 @@ inline unsigned int GunnsOptimTest::getNumRuns() const
 inline const std::vector<double>* GunnsOptimTest::getState()
 {
     return mState;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[out] vec (--) Vector of doubles to be constrained by the MC input constraints.
+///
+/// @throws   std::range_error
+///
+/// @details  Passes the given vector the the protected constrainInputs function.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsOptimTest::accessConstrainInputs(std::vector<double>& vec)
+{
+    constrainInputs(vec);
 }
 
 #endif

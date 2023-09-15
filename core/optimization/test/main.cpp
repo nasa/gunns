@@ -15,6 +15,7 @@
 
 #include "UtGunnsOptimMonteCarlo.hh"
 #include "UtGunnsOptimParticleSwarm.hh"
+#include "UtGunnsOptimGradientDescent.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    argc  int     --  not used
@@ -29,6 +30,7 @@ int main(int argc, char** argv) {
 
     runner.addTest( UtGunnsOptimMonteCarlo::suite() );
     runner.addTest( UtGunnsOptimParticleSwarm::suite() );
+    runner.addTest( UtGunnsOptimGradientDescent::suite() );
 
     runner.run();
 

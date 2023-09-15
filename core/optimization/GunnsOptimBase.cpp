@@ -90,41 +90,13 @@ void GunnsOptimBase::validate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] vec (--) The given vector to return the magnitude of.
+/// @returns  double (--) Uniform distribution random number in the range [0, 1].
 ///
-/// @returns double (--) Magnitude of the given vector.
-///
-/// @details  Computes and returns the magnitude of the given vector.  This works for a vector of
-///           any size (dimensions).  For a vector of size zero, this returns magnitude zero.
+/// @details  Returns a uniformly-distributed random number between 0 and 1 inclusive.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsOptimBase::computeVectorMagnitude(const std::vector<double>& vec) const
+double GunnsOptimBase::uniformRand() const
 {
-    double rss = 0.0;
-    for (unsigned int i=0; i<vec.size(); ++i) {
-        rss += vec.at(i) * vec.at(i);
-    }
-    return sqrt(rss);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in, out] vec       (--) The given vector to normalize in place.
-/// @param[in]      magnitude (--) The desired length of the resulting normalized vector.
-///
-/// @details  Normalizes the given vector in place to the given magnitude.  This works for vectors
-///           of any size (dimensions) > 0.  The default magnitude argument value = 1 produces a
-///           unit vector.
-///
-/// @note  This does nothing if the magnitude of the given vector is < DBL_EPSILON.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimBase::normalizeVector(std::vector<double>& vec, const double magnitude) const
-{
-    const double vecMag = computeVectorMagnitude(vec);
-    if (vecMag >= DBL_EPSILON) {
-        const double factor = magnitude / vecMag;
-        for (unsigned int i=0; i<vec.size(); ++i) {
-            vec.at(i) *= factor;
-        }
-    }
+    return (1.0 * std::rand() / RAND_MAX);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

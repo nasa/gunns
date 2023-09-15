@@ -466,6 +466,54 @@ void UtGunnsOptimMonteCarlo::testUpdateSlaveOutputs()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests for GUNNS optimization monte carlo input variable constraints.  This only tests
+///           a few things not already covered by other tests, to complete code coverage.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsOptimMonteCarlo::testConstraints()
+{
+    UT_RESULT;
+
+    /// @test GunnsOptimMonteCarloConstraint::evaluate, without the optional Y.
+    LinearFit linearFit(1.0, 2.0, 0.0, 1.0); // z = 1 + 2x, x: [0-1]
+    const double x         = 0.5;
+    double       expectedZ = 1.0 + 2.0 * x;
+    GunnsOptimMonteCarloConstraint constraintLinear(&linearFit, &x);
+    double z = constraintLinear.evaluate();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedZ, z, DBL_EPSILON);
+
+    /// @test GunnsOptimMonteCarloInput::applyConstraints.
+    GunnsOptimMonteCarloInput mcInput;
+    mcInput.addNewConstraint(&constraintLinear);
+    z = 0.0;
+    mcInput.applyConstraints(&z);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedZ, z, DBL_EPSILON);
+
+    /// @test GunnsOptimMonteCarloConstraint::evaluate, with the optional Y.
+    ProductFit productFit(2.0, 0.0, 1.0, 0.0, 1.0); // z = 2 * x * y, x: [0-1], y: [0-1]
+    const double y = 0.1;
+    expectedZ      = 2.0 * x * y;
+    GunnsOptimMonteCarloConstraint constraintProduct(&productFit, &x, &y);
+    z = constraintProduct.evaluate();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedZ, z, DBL_EPSILON);
+
+    /// @test GunnsOptimBase::constrainInputs throws range error for vector size mismatch.
+    tArticle->addOptimizer(GunnsOptimFactory::TEST);
+    GunnsOptimTest* optimizer = dynamic_cast<GunnsOptimTest*>(tArticle->mOptimizer);
+
+    std::vector<GunnsOptimMonteCarloInput> mcInputs;
+    GunnsOptimMonteCarloInput mcInput1;
+    mcInputs.push_back(mcInput1);
+    optimizer->initialize(&mcInputs);
+
+    std::vector<double> vars;
+    vars.push_back(1.0);
+    vars.push_back(2.0);
+    CPPUNIT_ASSERT_THROW(optimizer->accessConstrainInputs(vars), std::range_error);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for GUNNS optimization monte carlo manager class access methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsOptimMonteCarlo::testAccessors()

@@ -77,7 +77,12 @@ struct GunnsOptimMonteCarloConstraint
             : mAddressX(addressX), mAddressY(addressY), mFunction(function) {;}
         /// @returns double (--) The result of the constraint function for the current input values.
         /// @brief  Computes and returns the constraint function Z = f(X, Y);
-        double evaluate() {return mFunction->get(*mAddressX, *mAddressY);}
+        double evaluate() {
+            if (mAddressY) {
+                return mFunction->get(*mAddressX, *mAddressY);
+            }
+            return mFunction->get(*mAddressX);
+        }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

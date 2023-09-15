@@ -67,6 +67,8 @@ class UtGunnsOptimMonteCarlo: public CppUnit::TestFixture
         void testUpdateSlaveInputs();
         /// @brief    Tests the updateSlaveOutputs method.
         void testUpdateSlaveOutputs();
+        /// @brief    Tests some features of MC input constraints.
+        void testConstraints();
         /// @brief    Tests access methods.
         void testAccessors();
 
@@ -81,6 +83,7 @@ class UtGunnsOptimMonteCarlo: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateSlavePost);
         CPPUNIT_TEST(testUpdateSlaveInputs);
         CPPUNIT_TEST(testUpdateSlaveOutputs);
+        CPPUNIT_TEST(testConstraints);
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         std::string                   tName;    /**< (--) Nominal name. */

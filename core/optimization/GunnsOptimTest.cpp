@@ -76,13 +76,14 @@ void GunnsOptimTest::setConfigData(const GunnsOptimBaseConfigData* configData __
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] inStatesMaster (--) not used.
+/// @param[in] inStatesMaster (--) Pointer to the MC input variables description.
 ///
 /// @details  Increments the initialize calls counter.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimTest::initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster __attribute__((unused)))
+void GunnsOptimTest::initialize(const std::vector<GunnsOptimMonteCarloInput>* inStatesMaster)
 {
     mInitCounter++;
+    mInStatesMaster = inStatesMaster;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

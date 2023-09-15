@@ -21,6 +21,7 @@ LIBRARY DEPENDENCY:
    (
     (core/GunnsBasicLink.o)
     (core/GunnsFluidNode.o)
+    (core/GunnsInfraFunctions.o)
     (core/GunnsFluidFlowOrchestrator.o)
     (core/GunnsMinorStepLog.o)
     (math/linear_algebra/Sor.o)
@@ -49,7 +50,7 @@ LIBRARY DEPENDENCY:
 #include "core/Gunns.hh"
 #include "core/GunnsBasicLink.hh"
 #include "core/GunnsFluidNode.hh"
-#include "core/GunnsInfraMacros.hh"
+#include "core/GunnsInfraFunctions.hh"
 #include "core/GunnsFluidFlowOrchestrator.hh"
 #include "math/linear_algebra/Sor.hh"
 #include "math/linear_algebra/CholeskyLdu.hh"
@@ -727,7 +728,7 @@ inline void Gunns::initializeRestartCommonFunctions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Gunns::step(const double timeStep)
 {
-    double startTime = CLOCK_TIME;
+    double startTime = GunnsInfraFunctions::clockTime();
 
     /// - Check for proper initialization and run-time mode settings.
     checkStepInputs();
@@ -793,7 +794,7 @@ void Gunns::step(const double timeStep)
     mStepLog.endMajorStep();
 
     mSolveTime = mSolveTimeWorking;
-    mStepTime  = CLOCK_TIME - startTime;
+    mStepTime  = GunnsInfraFunctions::clockTime() - startTime;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1063,7 +1064,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Gunns::decompose(double *A, const int size, const int island)
 {
-    double startTime = CLOCK_TIME;
+    double startTime = GunnsInfraFunctions::clockTime();
     if ( (size >= mGpuSizeThreshold) and (GPU_DENSE == mGpuMode) ) {
         handleDecompose(mSolverGpuDense, A, size, island);
         /// - Since mSolverGpuDense only populates the upper triangle U of the decomposed A = LDU
@@ -1078,7 +1079,7 @@ void Gunns::decompose(double *A, const int size, const int island)
     } else if ( (GPU_SPARSE != mGpuMode) or (size < mGpuSizeThreshold) ) {
         handleDecompose(mSolverCpu, A, size, island);
     }
-    mSolveTimeWorking += CLOCK_TIME - startTime;
+    mSolveTimeWorking += GunnsInfraFunctions::clockTime() - startTime;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1391,7 +1392,7 @@ void Gunns::solveCholesky()
                                 mAdmittanceMatrix[in + mIslandVectors[island][j]];
                     }
                 }
-                double startTime = CLOCK_TIME;
+                double startTime = GunnsInfraFunctions::clockTime();
                 if (n >= mGpuSizeThreshold) {
                     handleDecompose(mSolverGpuSparse, mAdmittanceMatrixIsland, n, island);
                     handleSolve(mSolverGpuSparse, mAdmittanceMatrixIsland, mSourceVectorIsland,
@@ -1400,7 +1401,7 @@ void Gunns::solveCholesky()
                     handleSolve(mSolverCpu, mAdmittanceMatrixIsland, mSourceVectorIsland,
                                 mPotentialVectorIsland, n, island);
                 }
-                mSolveTimeWorking += CLOCK_TIME - startTime;
+                mSolveTimeWorking += GunnsInfraFunctions::clockTime() - startTime;
                 /// - Copy solved potential vector back into main potential vector.
                 for (int i=0; i<n; ++i) {
                     mPotentialVector[mIslandVectors[island][i]] = mPotentialVectorIsland[i];
@@ -1409,16 +1410,16 @@ void Gunns::solveCholesky()
         } else {
             /// - For no islands, the entire system is solved by mSolverGpuSparse. Same as above,
             ///   the difference is GpuSparse must ->decompose, then -> solve.
-            double startTime = CLOCK_TIME;
+            double startTime = GunnsInfraFunctions::clockTime();
             handleDecompose(mSolverGpuSparse, mAdmittanceMatrix, mNetworkSize);
             handleSolve(mSolverGpuSparse, mAdmittanceMatrix, mSourceVector,
                         mPotentialVector, mNetworkSize);
-            mSolveTimeWorking += CLOCK_TIME - startTime;
+            mSolveTimeWorking += GunnsInfraFunctions::clockTime() - startTime;
         }
     } else {
-        double startTime = CLOCK_TIME;
+        double startTime = GunnsInfraFunctions::clockTime();
         handleSolve(mSolverCpu, mAdmittanceMatrix, mSourceVector, mPotentialVector, mNetworkSize);
-        mSolveTimeWorking += CLOCK_TIME - startTime;
+        mSolveTimeWorking += GunnsInfraFunctions::clockTime() - startTime;
     }
 }
 

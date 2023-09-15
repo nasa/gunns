@@ -226,7 +226,9 @@ void GunnsOptimGradientDescent::validate()
 void GunnsOptimGradientDescent::initState()
 {
     for (unsigned int i=0; i<mConfigData.mNumVars; ++i) {
-        mState->mState.at(i) = mConfigData.mInitialState[i];
+        mState->mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
+                                                  mConfigData.mInitialState[i],
+                                                  mInStatesMaster->at(i).mMaximum);
     }
 }
 
@@ -269,7 +271,7 @@ void GunnsOptimGradientDescent::update()
                 std::cout << std::endl;
             }
         }
-    } else if (mRunCounter > (mGradients.size())) {
+    } else if (mRunCounter > (static_cast<int>(mGradients.size()))) {
         /// - On the 0th run of each epoch, propagate the global state.
         mRunCounter = 0;
         mEpoch++;
@@ -326,10 +328,10 @@ void GunnsOptimGradientDescent::propagateState(const double gain)
 
         /// - Choose which gradient to use, or neither.
         int useGradient = -1;       // use neither
-        if (mGradients.at(gInc).mDeltaCost < 0.0) {
+        if (mGradients.at(gInc).mDeltaCost < 0.0 and mGradients.at(gInc).mCostGradient != 0.0) {
             useGradient = 0;        // use the state increase
         }
-        if (mGradients.at(gDec).mDeltaCost < 0.0 and
+        if (mGradients.at(gDec).mDeltaCost < 0.0 and mGradients.at(gDec).mCostGradient != 0.0 and
             mGradients.at(gDec).mDeltaCost < mGradients.at(gInc).mDeltaCost) {
             useGradient = 1;        // use the state decrease
         }
@@ -339,14 +341,14 @@ void GunnsOptimGradientDescent::propagateState(const double gain)
         if (0 == useGradient) {
             /// - The cost improves (decreases) with an increase in the state, but the gradient is
             ///   negative, and we want the state to increase, so flip the negative gradient sign to
-            ///   positive.
+            ///   positive.  Divide by zero prevented in logic above.
             deltaState = -1.0 * mState->mCost / mGradients.at(gInc).mCostGradient;
         } else if (1 == useGradient) {
             /// - The cost improves (decreases) with a decrease in the state, so the gradient is
             ///   positive, but we want the state to decrease so flip the positive gradient sign to
-            ///   negative.
+            ///   negative.  Divide by zero prevented in logic above.
             deltaState = -1.0 * mState->mCost / mGradients.at(gDec).mCostGradient;
-        }
+        } // else nothing to do
 
         /// - Propagate the state by the delta-state.  We divide by the total number of state so
         ///   reduce overshoot caused by their effects compounding in the cost, and also apply a
@@ -378,20 +380,31 @@ void GunnsOptimGradientDescent::setGradientStates()
         mGradients.at(gInc) = *mState;
         mGradients.at(gDec) = *mState;
 
-        /// - The delta-state is currently hardcoded as 0.1% of the previous state magnitude.
+        /// - The delta-state is currently hardcoded as 0.1% of the previous state magnitude,
+        ///   unless the previous state magnitude is zero, in which case the delta-state is 0.1%
+        ///   of the state range.
+        const double stateRange = mInStatesMaster->at(i).mMaximum - mInStatesMaster->at(i).mMinimum;
         const double stateDeltaFactor = 0.001;
 
         /// - Increment and decrement the state by its delta-states, re-limit it to its min/max
         ///   range, and compute the delta-state from the difference between the new and old values.
         double previousState = mGradients.at(gInc).mState.at(i);
-        mGradients.at(gInc).mState.at(i) += stateDeltaFactor * fabs(previousState);
+        if (0.0 == previousState) {
+            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * stateRange;
+        } else {
+            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * fabs(previousState);
+        }
         mGradients.at(gInc).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gInc).mState.at(i),
                                                               mInStatesMaster->at(i).mMaximum);
         mGradients.at(gInc).mDeltaState = mGradients.at(gInc).mState.at(i) - previousState;
 
         previousState = mGradients.at(gDec).mState.at(i);
-        mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * fabs(previousState);
+        if (0.0 == previousState) {
+            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * stateRange;
+        } else {
+            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * fabs(previousState);
+        }
         mGradients.at(gDec).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gDec).mState.at(i),
                                                               mInStatesMaster->at(i).mMaximum);
@@ -485,7 +498,7 @@ void GunnsOptimGradientDescent::printStates() const
 ///
 /// @details  Writes the final state to the output file.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimGradientDescent::shutdown() const
+void GunnsOptimGradientDescent::shutdown()
 {
     printStates();
 

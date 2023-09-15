@@ -7,7 +7,8 @@
 
 LIBRARY DEPENDENCY:
   ((GunnsOptimParticleSwarm.o)
-   (GunnsOptimGradientDescent.o))
+   (GunnsOptimGradientDescent.o)
+   (GunnsOptimTest.o))
 */
 
 #include <iostream>
@@ -56,6 +57,12 @@ GunnsOptimBase* GunnsOptimFactory::createOptimizer(const OptimizerType type)
         }
         case GRADIENT_DESCENT : {
             GunnsOptimGradientDescent* newOptimizer = new GunnsOptimGradientDescent();
+            mOptimizers.push_back(newOptimizer);
+            return newOptimizer;
+            break;
+        }
+        case TEST : {
+            GunnsOptimTest* newOptimizer = new GunnsOptimTest();
             mOptimizers.push_back(newOptimizer);
             return newOptimizer;
             break;

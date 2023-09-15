@@ -1,0 +1,4 @@
+# Ignore files output by unit test run
+pso_cost_history.csv
+pso_swarm_history.csv
+pso_state.csv

@@ -85,11 +85,11 @@ class GunnsOptimBase
         /// @brief Returns the total number of Monte Carlo Slave runs that the optimizer expects.
         virtual unsigned int getNumRuns() const = 0;
         /// @brief Returns the Monte Carlo input variables state for the next Slave run.
-        virtual const std::vector<double>* getState() const = 0;
+        virtual const std::vector<double>* getState() = 0;
         /// @brief Assigns the given cost to the optimizer state for the given Slave run.
         virtual void assignCost(const double cost, double runID, double runIdReturned) = 0;
         /// @brief Shuts down the optimizer.
-        virtual void shutdown() const = 0;
+        virtual void shutdown() = 0;
         /// @}
 
     protected:
@@ -103,10 +103,6 @@ class GunnsOptimBase
         virtual void validate();
         /// @brief Returns a uniform distribution random number in the range [0, 1].
         double uniformRand() const;
-        /// @brief Returns the RSS magnitude of the given vector's components.
-        double computeVectorMagnitude(const std::vector<double>& vec) const;
-        /// @brief Normalizes the given vector to the given magnitude.
-        void normalizeVector(std::vector<double>& vec, const double magnitude = 1.0) const;
         /// @brief Applies the MC input variable constraints to the given vector.
         void constrainInputs(std::vector<double>& vec);
 
@@ -127,16 +123,6 @@ class GunnsOptimBase
 inline void GunnsOptimBase::setVerbosityLevel(const unsigned int level)
 {
     mVerbosityLevel = level;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  double (--) Uniform distribution random number in the range [0, 1].
-///
-/// @details  Returns a uniformly-distributed random number between 0 and 1 inclusive.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double GunnsOptimBase::uniformRand() const
-{
-    return (1.0 * std::rand() / RAND_MAX);
 }
 
 #endif

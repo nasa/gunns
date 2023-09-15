@@ -32,6 +32,7 @@ PROGRAMMERS:
 // Optimizer type includes
 #include "GunnsOptimParticleSwarm.hh"
 #include "GunnsOptimGradientDescent.hh"
+#include "GunnsOptimTest.hh"
 
 // System includes
 #include <vector>
@@ -51,7 +52,8 @@ class GunnsOptimFactory
         enum OptimizerType{
             PSO              = 0,  ///< Particle Swarm Optimization
             GRADIENT_DESCENT = 1,  ///< Gradient Descent Optimization
-            NONE             = 2,  ///< No optimizer, and number of options
+            TEST             = 2,  ///< Optimizer Test
+            NONE             = 3,  ///< No optimizer, and number of options
         };
         /// @brief Default constructor.
         GunnsOptimFactory();

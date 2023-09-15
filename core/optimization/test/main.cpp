@@ -14,6 +14,8 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 #include "UtGunnsOptimMonteCarlo.hh"
+#include "UtGunnsOptimParticleSwarm.hh"
+#include "UtGunnsOptimGradientDescent.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    argc  int     --  not used
@@ -21,12 +23,14 @@
 ///
 /// @return    --  status (always 0)
 ///
-/// @details  Main for Gunns unit tests in the CPPUNIT framework.
+/// @details  Main for GUNNS unit tests in the CPPUNIT framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;
 
     runner.addTest( UtGunnsOptimMonteCarlo::suite() );
+    runner.addTest( UtGunnsOptimParticleSwarm::suite() );
+    runner.addTest( UtGunnsOptimGradientDescent::suite() );
 
     runner.run();
 

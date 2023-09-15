@@ -52,13 +52,6 @@ PROGRAMMERS:
 ///           The optimizers have a generic interface with the models and this manager, for easy
 ///           plug & play of different optimizers, configured by the input file.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO #78
-// implement constraints of variables relative to each other:
-// - support add (subtract) and multiply (divide), as a line function for both together
-// - only support MC input vars, becuase it seems really unlikely they would be used for drivers and
-//   target outputs
-// - constraints should be applied by each optimizer, not by the MC manager, because the optimizer
-//   drives (optimizes) the input states directly
 class GunnsOptimMonteCarlo
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsOptimMonteCarlo);
@@ -105,10 +98,8 @@ class GunnsOptimMonteCarlo
 
     protected:
         std::string                             mName;             /**< *o (1) trick_chkpnt_io(**) Name of this instance for output messages. */
-        bool                                    mInitFlag;         /**< *o (1) trick_chkpnt_io(**) This instance has been initialized. */
         bool                                    mIsMaster;         /**< *o (1) trick_chkpnt_io(**) This instance is in the Monte Carlo Master role. */
         bool                                    mIsSlave;          /**< *o (1) trick_chkpnt_io(**) This instance is in the Monte Carlo Slave role. */
-        //TODO we don't actually use mSlaveId, so use it for something or delete...
         int                                     mSlaveId;          /**< *o (1) trick_chkpnt_io(**) The Slave role identifier of this instance. */
         double                                  mRunIdReturned;    /**< *o (1) trick_chkpnt_io(**) The returned run identifier from the Slave. */
         unsigned int                            mModelStepCount;   /**< *o (1) trick_chkpnt_io(**) Elapsed model step count for updating slave inputs. */
@@ -117,8 +108,6 @@ class GunnsOptimMonteCarlo
         std::vector<GunnsOptimMonteCarloDriver> mDrivers;          /**< ** (1) trick_chkpnt_io(**) Model driver variables and trajectory data. */
         std::vector<GunnsOptimMonteCarloOutput> mOutputs;          /**< ** (1) trick_chkpnt_io(**) Model output variables and target scalar or trajectory data. */
         GunnsOptimFactory                       mOptimizerFactory; /**< *o (1) trick_chkpnt_io(**) The optimizer factory. */
-        /// @brief Returns the initialization status.
-        bool isInitialized() const;
         /// @brief Computes and returns the cost function for a value compared to its target.
         virtual double computeCostFunction(const double value, const double target, const double weight) const;
         /// @brief Computes the cost function for the scalar targets.
@@ -154,16 +143,6 @@ inline void GunnsOptimMonteCarlo::addOptimizer(const GunnsOptimFactory::Optimize
 inline void GunnsOptimMonteCarlo::setVerbosityLevel(const unsigned int verbosity)
 {
     mVerbosityLevel = verbosity;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   bool (--) The initialization flag.
-///
-/// @details  Returns the initialization status.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsOptimMonteCarlo::isInitialized() const
-{
-    return mInitFlag;
 }
 
 #endif

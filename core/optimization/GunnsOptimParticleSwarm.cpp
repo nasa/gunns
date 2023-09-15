@@ -23,6 +23,31 @@ LIBRARY DEPENDENCY:
 #include <stdexcept>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief  Default constructs this GUNNS Particle Swarm Optimizer particle state.  We don't trust
+///         the implicit constructor to zero the initial values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsOptimParticleSwarmState::GunnsOptimParticleSwarmState()
+    :
+    mState(),
+    mVelocity(),
+    mAcceleration(),
+    mCost(0.0),
+    mRunId(0.0)
+{
+    mState.clear();
+    mVelocity.clear();
+    mAcceleration.clear();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief  Default destructs this GUNNS Particle Swarm Optimizer particle state.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsOptimParticleSwarmState::~GunnsOptimParticleSwarmState()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] that (--) The object to be assigned equal to.
 ///
 /// @returns  GunnsOptimParticleSwarmState& (--) Reference to this object.
@@ -194,7 +219,7 @@ void GunnsOptimParticleSwarm::initialize(const std::vector<GunnsOptimMonteCarloI
             throw std::runtime_error(mName + " error opening file: " + pathFile);
         } else {
             /// - Write the header row.
-            file << "Epoch,Global_Best_Cost " << std::endl;
+            file << "Epoch,Global_Best_Cost" << std::endl;
         }
         file.close();
     }
@@ -274,7 +299,7 @@ void GunnsOptimParticleSwarm::validate()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @throws   std::runtime_error
+/// @throws   std::runtime_error, std::range_error
 ///
 /// @details  Initializes the particle states to the desired distribution.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +307,7 @@ void GunnsOptimParticleSwarm::initSwarm()
 {
     switch (mConfigData.mInitDistribution) {
         case (GunnsOptimParticleSwarmConfigData::RANDOM) :
+            std::cout << "init RANDOM\n";
             randomizeSwarmState();
             randomizeSwarmVelocity();
             initBestCosts();
@@ -293,6 +319,7 @@ void GunnsOptimParticleSwarm::initSwarm()
             initBestCosts();
             break;
         case (GunnsOptimParticleSwarmConfigData::FILE) :
+            std::cout << "init FILE\n";
             readFileSwarmState(false);
             randomizeSwarmVelocity();
             initBestCosts();
@@ -303,9 +330,7 @@ void GunnsOptimParticleSwarm::initSwarm()
             printStates();
             break;
         default :   // invalid selection
-            randomizeSwarmState();
-            randomizeSwarmVelocity();
-            initBestCosts();
+            throw std::range_error(mName + " invalid initial swarm state distribution selection.");
             break;
     };
     applyStateConstraints();
@@ -451,7 +476,7 @@ void GunnsOptimParticleSwarm::update()
     mRunCounter++;
 
     /// - Updates for the next epoch.
-    if (mRunCounter >= mConfigData.mNumParticles) {
+    if (mRunCounter >= static_cast<int>(mConfigData.mNumParticles)) {
         mRunCounter = 0;
         mEpoch++;
 
@@ -679,7 +704,7 @@ void GunnsOptimParticleSwarm::printGlobalBest() const
 ///
 /// @details  Writes the final states to the output files.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimParticleSwarm::shutdown() const
+void GunnsOptimParticleSwarm::shutdown()
 {
     printGlobalBest();
 

@@ -47,14 +47,16 @@ PROGRAMMERS:
 class GunnsElectDistributedIfConfigData : public GunnsBasicLinkConfigData
 {
     public:
-        bool                                          mIsPairPrimary; /**<    (1)     trick_chkpnt_io(**) This is the primary side of the interface, defaults to Supply role. */
-        double                                        mConductance;   /**<    (1/ohm) trick_chkpnt_io(**) Output channel conductance of the internal voltage source. */
-        std::vector<const GunnsElectConverterOutput*> mSupplies;      /**< ** (1)     trick_chkpnt_io(**) Pointers to the voltage supplies in the network. */
+        bool                                          mIsPairPrimary;     /**<    (1)     trick_chkpnt_io(**) This is the primary side of the interface, defaults to Supply role. */
+        double                                        mConductance;       /**<    (1/ohm) trick_chkpnt_io(**) Output channel conductance of the internal voltage source. */
+        double                                        mNetCapDvThreshold; /**<    (V)     trick_chkpnt_io(**) Network capacitance delta-voltage threshold. */
+        std::vector<const GunnsElectConverterOutput*> mSupplies;          /**< ** (1)     trick_chkpnt_io(**) Pointers to the voltage supplies in the network. */
         /// @brief Default constructs this Distributed Bi-Directional Interface configuration data.
-        GunnsElectDistributedIfConfigData(const std::string& name          = "",
-                                          GunnsNodeList*     nodes         = 0,
-                                          const bool         isPairPrimary = false,
-                                          const double       conductance   = 0.0);
+        GunnsElectDistributedIfConfigData(const std::string& name              = "",
+                                          GunnsNodeList*     nodes             = 0,
+                                          const bool         isPairPrimary     = false,
+                                          const double       conductance       = 0.0,
+                                          const double       netCapDvThreshold = 0.0);
         /// @brief Copy constructs this Distributed Bi-Directional Interface configuration data.
         GunnsElectDistributedIfConfigData(const GunnsElectDistributedIfConfigData& that);
         /// @brief Default destructs this Distributed Bi-Directional Interface configuration data.
@@ -149,10 +151,13 @@ class GunnsElectDistributedIf : public GunnsBasicLink
         virtual bool isNonLinear();
 
     protected:
+        double                                         mNetCapDvThreshold;  /**<    (V) trick_chkpnt_io(**) Network capacitance delta-voltage threshold. */
         std::vector<GunnsElectDistributedIfSupplyData> mSupplies;           /**< ** (1) trick_chkpnt_io(**) Local voltage supply descriptions to the interface utility. */
         unsigned int                                   mNumSupplies;        /**< *o (1) trick_chkpnt_io(**) Number of supplies. */
         unsigned int                                   mSupplyMonitorIndex; /**<    (1) trick_chkpnt_io(**) Index of the supply data to monitor. */
         GunnsElectDistributedIfSupplyData*             mSupplyMonitor;      /**<    (1) trick_chkpnt_io(**) Pointer to the monitored supply data, for visbility. */
+        /// @brief Validates initialization data.
+        void validate() const;
         /// @brief Checks for valid implementation-specific port node assignment.
         virtual bool checkSpecificPortRules(const int port, const int node) const;
         /// @brief Virtual method for derived links to perform their restart functions.

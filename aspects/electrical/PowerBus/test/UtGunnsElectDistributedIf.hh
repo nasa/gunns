@@ -120,6 +120,7 @@ class UtGunnsElectDistributedIf: public CppUnit::TestFixture
         FriendlyGunnsElectConverterInput*     tPowerLoad;       /**< (--)    Pointer to the power load link within the test article. */
         bool                                  tIsPairPrimary;   /**< (--)    Nominal config data. */
         double                                tConductance;     /**< (1/ohm) Nominal config data. */
+        double                                tNetCapDvThresh;  /**< (V)     Nominal config data. */
         bool                                  tForceDemandMode; /**< (--)    Nominal input data. */
         bool                                  tForceSupplyMode; /**< (--)    Nominal input data. */
         FriendlyGunnsElectConverterOutput     tSupply;          /**< (--)    Supply link. */

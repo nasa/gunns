@@ -279,6 +279,11 @@ class GunnsFluidMetabolic2 : public GunnsFluidSource
         int    mTcCO;                                                   /**< *o (--)   trick_chkpnt_io(**) Index of Carbon monoxide in trace compounds. */
         int    mTcH2;                                                   /**< *o (--)   trick_chkpnt_io(**) Index of Hydrogen in trace compounds. */
         int    mTcCH4;                                                  /**< *o (--)   trick_chkpnt_io(**) Index of Methane in trace compounds. */
+        bool   mShouldApplyBias;                                        /**<    (--)   trick_chkpnt_io(**) Flag to apply biases onto consumption/production calculations when true. */
+        double mO2ConsumptionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Oxygen consumption rate bias, set externally. */
+        double mCO2ProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Carbon dioxide production rate bias, set externally. */
+        double mH2OProductionBias;                                      /**<    (kg/s) trick_chkpnt_io(**) Water production rate bias, set externally. */
+        double mHeatProductionBias;                                     /**<    (W)    trick_chkpnt_io(**) Heat production rate bias, set externally. */
         /// @brief    Validates the initialization inputs of this Metabolic model.
         void   validate(const GunnsFluidMetabolic2InputData&  inputData) const;
         /// @brief Virtual method for derived links to perform their restart functions.

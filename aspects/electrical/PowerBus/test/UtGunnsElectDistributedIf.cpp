@@ -28,6 +28,7 @@ UtGunnsElectDistributedIf::UtGunnsElectDistributedIf()
     tPowerLoad(0),
     tIsPairPrimary(false),
     tConductance(0.0),
+    tNetCapDvThresh(0.0),
     tForceDemandMode(false),
     tForceSupplyMode(false),
     tSupply()
@@ -68,10 +69,11 @@ void UtGunnsElectDistributedIf::setUp()
     tNodes[1].prepareForStart();
 
     /// - Define the nominal configuration data.
-    tIsPairPrimary = true;
-    tConductance   = 500.0;
-    tConfigData    = new GunnsElectDistributedIfConfigData(tName, &tNodeList, tIsPairPrimary,
-                                                           tConductance);
+    tIsPairPrimary  = true;
+    tConductance    = 500.0;
+    tNetCapDvThresh = 1.0e-10;
+    tConfigData     = new GunnsElectDistributedIfConfigData(tName, &tNodeList, tIsPairPrimary,
+                                                            tConductance, tNetCapDvThresh);
     tConfigData->addSupply(&tSupply);
 
     /// - Define the nominal input data.
@@ -115,12 +117,13 @@ void UtGunnsElectDistributedIf::testConfig()
     UT_RESULT_FIRST;
 
     /// @test    Configuration nominal construction and addSupply method
-    CPPUNIT_ASSERT(tName          == tConfigData->mName);
-    CPPUNIT_ASSERT(&tNodeList     == tConfigData->mNodeList);
-    CPPUNIT_ASSERT(tIsPairPrimary == tConfigData->mIsPairPrimary);
-    CPPUNIT_ASSERT(tConductance   == tConfigData->mConductance);
-    CPPUNIT_ASSERT(1              == tConfigData->mSupplies.size());
-    CPPUNIT_ASSERT(&tSupply       == tConfigData->mSupplies.at(0));
+    CPPUNIT_ASSERT(tName           == tConfigData->mName);
+    CPPUNIT_ASSERT(&tNodeList      == tConfigData->mNodeList);
+    CPPUNIT_ASSERT(tIsPairPrimary  == tConfigData->mIsPairPrimary);
+    CPPUNIT_ASSERT(tConductance    == tConfigData->mConductance);
+    CPPUNIT_ASSERT(tNetCapDvThresh == tConfigData->mNetCapDvThreshold);
+    CPPUNIT_ASSERT(1               == tConfigData->mSupplies.size());
+    CPPUNIT_ASSERT(&tSupply        == tConfigData->mSupplies.at(0));
 
     /// @test    Configuration data default construction.
     GunnsElectDistributedIfConfigData defaultConfig;
@@ -128,16 +131,18 @@ void UtGunnsElectDistributedIf::testConfig()
     CPPUNIT_ASSERT(0     == defaultConfig.mNodeList);
     CPPUNIT_ASSERT(false == defaultConfig.mIsPairPrimary);
     CPPUNIT_ASSERT(0.0   == defaultConfig.mConductance);
+    CPPUNIT_ASSERT(0.0   == defaultConfig.mNetCapDvThreshold);
     CPPUNIT_ASSERT(0     == defaultConfig.mSupplies.size());
 
     /// @test    Configuration data copy construction.
     GunnsElectDistributedIfConfigData copyConfig(*tConfigData);
-    CPPUNIT_ASSERT(tName          == copyConfig.mName);
-    CPPUNIT_ASSERT(&tNodeList     == copyConfig.mNodeList);
-    CPPUNIT_ASSERT(tIsPairPrimary == copyConfig.mIsPairPrimary);
-    CPPUNIT_ASSERT(tConductance   == copyConfig.mConductance);
-    CPPUNIT_ASSERT(1              == copyConfig.mSupplies.size());
-    CPPUNIT_ASSERT(&tSupply       == copyConfig.mSupplies.at(0));
+    CPPUNIT_ASSERT(tName           == copyConfig.mName);
+    CPPUNIT_ASSERT(&tNodeList      == copyConfig.mNodeList);
+    CPPUNIT_ASSERT(tIsPairPrimary  == copyConfig.mIsPairPrimary);
+    CPPUNIT_ASSERT(tConductance    == copyConfig.mConductance);
+    CPPUNIT_ASSERT(tNetCapDvThresh == copyConfig.mNetCapDvThreshold);
+    CPPUNIT_ASSERT(1               == copyConfig.mSupplies.size());
+    CPPUNIT_ASSERT(&tSupply        == copyConfig.mSupplies.at(0));
 
     UT_PASS;
 }
@@ -187,6 +192,7 @@ void UtGunnsElectDistributedIf::testConstruction()
     CPPUNIT_ASSERT(false == tArticle->mMalfVoltageSource);
     CPPUNIT_ASSERT(false == tArticle->mPowerLoad.mMalfBlockageFlag);
     CPPUNIT_ASSERT(false == tArticle->mVoltageSource.mMalfBlockageFlag);
+    CPPUNIT_ASSERT(0.0   == tArticle->mNetCapDvThreshold);
     CPPUNIT_ASSERT(0     == tArticle->mSupplies.size());
     CPPUNIT_ASSERT(0     == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(0     == tArticle->mSupplyMonitorIndex);
@@ -225,19 +231,20 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT(true                      == tPowerLoad->mInitFlag);
 
     /// @test    Nominal state data.
-    CPPUNIT_ASSERT(false    == tArticle->mMalfPowerLoad);
-    CPPUNIT_ASSERT(false    == tArticle->mMalfVoltageSource);
-    CPPUNIT_ASSERT(1        == tArticle->mNumSupplies);
-    CPPUNIT_ASSERT(1        == tArticle->mSupplies.size());
-    CPPUNIT_ASSERT(false    == tArticle->mSupplies.at(0).mSupplyData->mAvailable);
-    CPPUNIT_ASSERT(0.0      == tArticle->mSupplies.at(0).mSupplyData->mMaximumVoltage);
-    CPPUNIT_ASSERT(&tSupply == tArticle->mSupplies.at(0).mLink);
-    CPPUNIT_ASSERT(0.0      == tArticle->mSupplies.at(0).mNetCapDV);
-    CPPUNIT_ASSERT(0        == tArticle->mSupplyMonitorIndex);
-    CPPUNIT_ASSERT(0        == tArticle->mSupplyMonitor->mSupplyData->mAvailable);
-    CPPUNIT_ASSERT(0.0      == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
-    CPPUNIT_ASSERT(&tSupply == tArticle->mSupplyMonitor->mLink);
-    CPPUNIT_ASSERT(0.0      == tArticle->mSupplyMonitor->mNetCapDV);
+    CPPUNIT_ASSERT(false           == tArticle->mMalfPowerLoad);
+    CPPUNIT_ASSERT(false           == tArticle->mMalfVoltageSource);
+    CPPUNIT_ASSERT(tNetCapDvThresh == tArticle->mNetCapDvThreshold);
+    CPPUNIT_ASSERT(1               == tArticle->mNumSupplies);
+    CPPUNIT_ASSERT(1               == tArticle->mSupplies.size());
+    CPPUNIT_ASSERT(false           == tArticle->mSupplies.at(0).mSupplyData->mAvailable);
+    CPPUNIT_ASSERT(0.0             == tArticle->mSupplies.at(0).mSupplyData->mMaximumVoltage);
+    CPPUNIT_ASSERT(&tSupply        == tArticle->mSupplies.at(0).mLink);
+    CPPUNIT_ASSERT(0.0             == tArticle->mSupplies.at(0).mNetCapDV);
+    CPPUNIT_ASSERT(0               == tArticle->mSupplyMonitorIndex);
+    CPPUNIT_ASSERT(0               == tArticle->mSupplyMonitor->mSupplyData->mAvailable);
+    CPPUNIT_ASSERT(0.0             == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
+    CPPUNIT_ASSERT(&tSupply        == tArticle->mSupplyMonitor->mLink);
+    CPPUNIT_ASSERT(0.0             == tArticle->mSupplyMonitor->mNetCapDV);
 
     /// @test    Child links added to the network links vector.
     CPPUNIT_ASSERT(4              == tLinks.size());
@@ -279,6 +286,11 @@ void UtGunnsElectDistributedIf::testInitializationErrors()
 
     /// @test    Exception thrown for attempting to connect to the Ground node.
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, 2), TsInitializationException);
+
+    /// @test    Exception thrown on bad net cap DV threshold.
+    tConfigData->mNetCapDvThreshold = 0.0;
+    CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
+    tConfigData->mNetCapDvThreshold = tNetCapDvThresh;
 
     CPPUNIT_ASSERT(false == tArticle->mInitFlag);
 

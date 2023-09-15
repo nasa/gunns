@@ -344,7 +344,12 @@ GunnsFluidMetabolic2::GunnsFluidMetabolic2()
     mTcNH3(-1),
     mTcCO(-1),
     mTcH2(-1),
-    mTcCH4(-1)
+    mTcCH4(-1),
+    mShouldApplyBias(false),
+    mO2ConsumptionBias(0.0),
+    mCO2ProductionBias(0.0),
+    mH2OProductionBias(0.0),
+    mHeatProductionBias(0.0)
 {
     // nothing to do
 }
@@ -659,6 +664,13 @@ void GunnsFluidMetabolic2::updateState(const double dt)
             mProducedHeat += mNCrew[i] * mHeatProductionRate[i];
             mProducedCO2  += computeProductionRate(mCO2, -1, mNCrew[i], mCO2ProductionRate[i]);
             mProducedH2O  += computeProductionRate(mH2O, -1, mNCrew[i], mH2OProductionRate[i]);
+        }
+        if(mShouldApplyBias)
+        {
+            mConsumedO2   += mO2ConsumptionBias;
+            mProducedHeat += mHeatProductionBias;
+            mProducedCO2  += computeProductionRate(mCO2, -1, 1.0, mCO2ProductionBias);
+            mProducedH2O  += computeProductionRate(mH2O, -1, 1.0, mH2OProductionBias);
         }
         /// - O2 consumption rate is limited by the O2 mass in the node.
         mConsumedO2 = fmin((mNodes[1]->getContent()->getMassFraction(mO2) *

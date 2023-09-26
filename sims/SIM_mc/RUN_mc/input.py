@@ -1,7 +1,7 @@
 # @copyright Copyright 2023 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
-#trick setup
+# Trick setup
 trick.sim_services.exec_set_trap_sigfpe(1)
 
 # Apply constraints between input variables.  In this case we somehow know that
@@ -33,10 +33,8 @@ mc.monteCarlo.addOptimizer(trick.GunnsOptimFactory.PSO)
 # Create a PSO configuration data object and set the values.
 thePsoConfig = trick.GunnsOptimParticleSwarmConfigData()
 
-# Chip's recommendation:
 thePsoConfig.mNumParticles     = 30
 thePsoConfig.mMaxEpoch         = 100
-# These seem to work best:
 thePsoConfig.mInertiaWeight    = 0.5
 thePsoConfig.mInertiaWeightEnd = 0.5
 thePsoConfig.mCognitiveCoeff   = 2.0
@@ -64,7 +62,7 @@ for var in input_vars:
     mcvar = trick.MonteVarCalculated(var[0], var[1])
     trick_mc.mc.add_variable(mcvar)
 
-# TODO add the run ID to send from Master to Slave:
+# Add the run ID to send from Master to Slave:
 mcvar = trick.MonteVarCalculated('mc.monteCarlo.mRunId', '1')
 trick_mc.mc.add_variable(mcvar)
 
@@ -90,8 +88,6 @@ try:
     with open('output_target_data.csv', 'r') as f:
         lines = f.readlines()
         var_list = lines[0].strip().split(',')
-#        for var in var_list[1:]:
-#            mc.monteCarlo.addOutTargetDouble(var, trick.get_address(var))
         for line in lines[1:]:
             mc.monteCarlo.addOutputDataRow(line.strip())
         f.close()
@@ -101,11 +97,6 @@ except:
 # Enable Monte Carlo.
 trick.mc_set_enabled(1)
 
-# Add a Monte Carlo slave for each core.
-#import multiprocessing
-#for i in range(multiprocessing.cpu_count()):
-#    trick.mc_add_slave("localhost")
-    
 # Sets the total number of Slave runs to perform.
 # Must call this after you've set the optimizer config data above!
 trick.mc_set_num_runs(mc.monteCarlo.mOptimizer.getNumRuns())

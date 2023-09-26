@@ -2,24 +2,29 @@
 # Copyright 2023 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
-# TODO
-# - wraps the sim, loops over epochs, managing swarm state between epochs,
-#   calls the sim to do an MC run w/ parallel slaves as a system call for each epoch
-# - outputs final swarm state to a file, can use a file to init swarm state
+# This script runs PSO using parallel processing on a specified number of CPU cores.
+# Each epoch, or iteration, of the swarm is run as a separate Trick sim instance,
+# in series.  Within each Trick sim for an epoch, Trick's monte carlo is used to run
+# each particle run in parallel.  We run each epoch separately within a loop in this
+# script, rather than letting Trick manage the epochs.  This is due to a limitation
+# in Trick's monte carlo capability.  More on that limitation in the GUNNS wiki:
+# https://github.com/nasa/gunns/wiki/Optimization
+#
+# This communicates the swarm state between epochs by feeding the PSO state file
+# output from the previous run to the input initial state of the next run.
+#
+# Because of the extra time overhead in starting and shutting down separate Trick
+# instances for each epoch, this parallel method is only faster than the serial method
+# (input.py) for longer model runs or larger models.
+#
+# This script should be considered as a temporary solution until Trick is upgraded to
+# allow optimization between serial batches of parallel runs.
 
 import sys
 import subprocess
 import random
 
-# compare total run time vs. series:
-# this   30x100, 10 s runs: 1m 45s
-# series 30x100, 10 s runs: 1m 24s
-# What about for longer runs?
-# this   30x100, 1000 s runs: 2m 05s 
-# series 30x100, 1000 s runs: 4m 55s 
-# Good, this starts to outperform serial as runs get to a more realistic length.
-
-MAX_EPOCH     = 4
+MAX_EPOCH     = 100
 INITIAL_DISTR = 'MIN_MAX_CORNERS'
 INERTIA_START = 0.5
 INERTIA_END   = 0.5
@@ -31,7 +36,7 @@ def write_epoch_config(epoch, distribution, inertia, seed):
            + "thePsoConfig.mRandomSeed       = " + str(seed) + "\n" \
            + "thePsoConfig.mInertiaWeight    = " + str(inertia) + "\n" \
            + "thePsoConfig.mInertiaWeightEnd = " + str(inertia) + "\n" \
-           + "thePsoConfig.mInitDistribution = trick.GunnsOptimPsoConfigData." + distribution + "\n"
+           + "thePsoConfig.mInitDistribution = trick.GunnsOptimParticleSwarmConfigData." + distribution + "\n"
     epoch_config_filename = "RUN_mc/epoch_configuration.py"
     with open(epoch_config_filename, 'w') as f:
         f.write(render)
@@ -40,7 +45,7 @@ def write_epoch_config(epoch, distribution, inertia, seed):
 # Return a new seed for the sim's random.  Sim's C++ srand takes an unsigned int,
 # so we want a seed between 0 and UINT_MAX 0xffffffff.
 # Since each epoch runs a separate instance of the sim executable, the sim needs
-# to be given a different seed for it random generator each instance, otherwise
+# to be given a different seed for its random generator each instance, otherwise
 # the particles will see the same random numbers every epoch and won't act random.
 def getSimSeed():
     return random.randint(0, 0xffffffff)
@@ -51,10 +56,10 @@ def main():
     # Set the random seed for repeatability.
     random.seed(42)
     
-    # write the configuration file for the 0th epoch
+    # Write the configuration file for the 0th epoch
     write_epoch_config(1, INITIAL_DISTR, INERTIA_START, getSimSeed())
     
-    # main epoch loop
+    # Main epoch loop.
     for epoch in range(1, MAX_EPOCH + 1):
         print("!!!!!!!!!!!!!!!!!!!!!!")
         print("PSO MANAGER EPOCH: ", epoch)
@@ -62,10 +67,9 @@ def main():
         cmd_str = "./S_main* RUN_mc/input_single_epoch.py"
         subprocess.run(cmd_str, shell=True)
         
-        # TODO handle swarm state between epochs
-        # - First epoch starts the sim with the user-defined initial swarm state
-        #   subsequent epochs use the swarm state file
-        # - update the inertia weight annealing effect
+        # Handle swarm state between epochs.  The first epoch starts the sim with the
+        # user-defined initial swarm state, and subsequent epochs use the swarm state file.
+        # We must update the inertia weight ramping over the epochs.
         seed = random.randint(0, 0xffffffff)
         inertia = INERTIA_START + (INERTIA_END - INERTIA_START) * epoch / max(1, MAX_EPOCH - 1)
         write_epoch_config(epoch, 'FILE_CONTINUOUS', inertia, getSimSeed())
@@ -74,5 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

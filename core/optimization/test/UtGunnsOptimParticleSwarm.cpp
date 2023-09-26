@@ -786,10 +786,10 @@ void UtGunnsOptimParticleSwarm::testShutdown()
     fString << file.rdbuf();
     std::vector<std::string> fLines = Strings::split(fString.str(), "\n");
     CPPUNIT_ASSERT(5 == fLines.size());
-    CPPUNIT_ASSERT("Particle cost pos_0 pos_1 vel_0 vel_1 best_cost best_pos_0 best_pos_1" == fLines.at(0));
-    CPPUNIT_ASSERT("global_best 0.001 10.1 7.7 0.0 0.0 0.001 10.1 7.7"                     == fLines.at(1));
-    CPPUNIT_ASSERT("0 0 1.1 6.6 0.1 0.2 21.12 0 0"                                         == fLines.at(2));
-    CPPUNIT_ASSERT("1 0 19.9 9.9 -0.1 -0.2 0.001 0 0"                                      == fLines.at(3));
+    CPPUNIT_ASSERT("Particle epoch cost pos_0 pos_1 vel_0 vel_1 best_cost best_pos_0 best_pos_1" == fLines.at(0));
+    CPPUNIT_ASSERT("global_best 1 0.001 10.1 7.7 0.0 0.0 0.001 10.1 7.7"                     == fLines.at(1));
+    CPPUNIT_ASSERT("0 1 0 1.1 6.6 0.1 0.2 21.12 0 0"                                         == fLines.at(2));
+    CPPUNIT_ASSERT("1 1 0 19.9 9.9 -0.1 -0.2 0.001 0 0"                                      == fLines.at(3));
     file.close();
 
     UT_PASS;

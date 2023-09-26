@@ -212,7 +212,7 @@ void GunnsOptimParticleSwarm::initialize(const std::vector<GunnsOptimMonteCarloI
     mEpoch            =  1;
 
     /// - Start the global cost/epoch history file
-    {
+    if (mConfigData.mInitDistribution != GunnsOptimParticleSwarmConfigData::FILE_CONTINUOUS) {
         std::string pathFile = "pso_cost_history.csv";
         std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
         if (file.fail()) {
@@ -225,7 +225,7 @@ void GunnsOptimParticleSwarm::initialize(const std::vector<GunnsOptimMonteCarloI
     }
 
     /// - Start the swarm state history file
-    {
+    if (mConfigData.mInitDistribution != GunnsOptimParticleSwarmConfigData::FILE_CONTINUOUS) {
         std::string pathFile = "pso_swarm_history.csv";
         std::ofstream file (pathFile.c_str(), (std::ofstream::out | std::ofstream::trunc));
         if (file.fail()) {
@@ -406,7 +406,7 @@ void GunnsOptimParticleSwarm::readFileSwarmState(const bool continuous)
 
         /// - Check the file for correct sizes.
         const unsigned int expectedRows = 3 + mConfigData.mNumParticles;
-        const unsigned int expectedCols = 3 + 3 * mInStatesMaster->size();
+        const unsigned int expectedCols = 4 + 3 * mInStatesMaster->size();
 
         if (expectedRows != fLines.size()) {
             throw std::runtime_error(mName + " file has wrong number of rows: " + pathFile);
@@ -418,7 +418,9 @@ void GunnsOptimParticleSwarm::readFileSwarmState(const bool continuous)
         for (unsigned int line=1; line<fLines.size(); ++line) {
             std::istringstream in(fLines.at(line));
             std::string particle;  // dummy to hold the 0th column value
+            int         epoch;     // dummy to hold the epoch value
             in >> particle;
+            in >> epoch;
             if (line < 2) {
                 /// - Initialize the global best state from the 1st line (header is 0th line).
                 in >> mGlobalBestState.mCost;
@@ -715,7 +717,7 @@ void GunnsOptimParticleSwarm::shutdown()
         throw std::runtime_error(mName + " error opening file: " + pathFile);
     } else {
         /// - Write the header row.
-        file << "Particle cost";
+        file << "Particle epoch cost";
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
             file << " pos_" << j;
         }
@@ -729,7 +731,7 @@ void GunnsOptimParticleSwarm::shutdown()
         file << std::endl;
 
         /// - Write the first data row as the global best state.
-        file << "global_best " << mGlobalBestState.mCost;
+        file << "global_best " << mEpoch << " " << mGlobalBestState.mCost;
         for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
             file << " " << mGlobalBestState.mState.at(j);
         }
@@ -744,7 +746,7 @@ void GunnsOptimParticleSwarm::shutdown()
 
         /// - Write a data row for each particle state.
         for (unsigned int i=0; i<mConfigData.mNumParticles; ++i) {
-            file << i << " " << mParticles.at(i).mCurrentState.mCost;
+            file << i << " " << mEpoch << " " << mParticles.at(i).mCurrentState.mCost;
             for (unsigned int j=0; j<mInStatesMaster->size(); ++j) {
                 file << " " << mParticles.at(i).mCurrentState.mState.at(j);
             }

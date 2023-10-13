@@ -39,9 +39,12 @@ jobs:
 
     - name: Build Trick
       # Failure here is likely due to new or changed dependencies of Trick, see above
+      # For issue #93: we use the same fix as Trick for assigning JAVA_HOME, see:
+      #   trick/.github/workflows/test_32_oracle.yml
       run: |
         export TRICK_HOME="/home/trick"
         export MAKEFLAGS=-j`nproc`
+        export JAVA_HOME=$(dirname $(dirname $(readlink -f `which java`)))
         git clone https://github.com/nasa/trick.git ${TRICK_HOME}
         cd ${TRICK_HOME}
         ./configure

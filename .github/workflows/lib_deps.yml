@@ -39,16 +39,12 @@ jobs:
 
     - name: Build Trick
       # Failure here is likely due to new or changed dependencies of Trick, see above
-      # From issue #93:
-      #   The JAVA_HOME became necessary because the Trick build suddenly started failing
-      #   with no changes on our end, I suspect due to a change in either Trick or the
-      #   OL8 base image.   This fix seems brittle, as the install path of the openjdk
-      #   may change with any updated version from the installation above.  I expect more
-      #   trouble with this unless we can make a more stable fix.
+      # For issue #93: we use the same fix as Trick for assigning JAVA_HOME, see:
+      #   trick/.github/workflows/test_32_oracle.yml
       run: |
         export TRICK_HOME="/home/trick"
         export MAKEFLAGS=-j`nproc`
-        export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-11.0.20.0.8-3.0.1.el8.x86_64"
+        export JAVA_HOME=$(dirname $(dirname $(readlink -f `which java`)))
         git clone https://github.com/nasa/trick.git ${TRICK_HOME}
         cd ${TRICK_HOME}
         ./configure

@@ -1,12 +1,8 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
- LIBRARY DEPENDENCY:
-    (
-        (core/GunnsBasicLink.o)
-    )
-***************************************************************************************************/
 #include "UtGunnsBasicLink.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
@@ -157,6 +153,12 @@ void UtGunnsBasicLink::testDefaultConstruction()
     CPPUNIT_ASSERT(-1                    == mArticle->mUserPortSelect);
     CPPUNIT_ASSERT(-1                    == mArticle->mUserPortSelectNode);
     CPPUNIT_ASSERT(GunnsBasicLink::READY == mArticle->mUserPortSetControl);
+
+    /// @test new/delete the admittance map for code coverage
+    GunnsBasicLinkAdmittanceMap* map = new GunnsBasicLinkAdmittanceMap();
+    map->allocateMap("map", 4);
+    map->freeMap();
+    delete map;
 
     std::cout << "... Pass";
 }
@@ -360,6 +362,12 @@ void UtGunnsBasicLink::testAccessors()
     mArticle->processInputs();
     mArticle->processOutputs();
 
+    /// @test checkValidNodeNumber
+    CPPUNIT_ASSERT(false == mArticle->GunnsBasicLink::checkValidNodeNumber(-1));
+
+    /// @test getPortDirection
+    CPPUNIT_ASSERT(mArticle->mPortDirections == mArticle->GunnsBasicLink::getPortDirections());
+
     std::cout << "... Pass";
 }
 
@@ -556,6 +564,9 @@ void UtGunnsBasicLink::testTransportFlux()
     CPPUNIT_ASSERT_THROW(mArticle->transportFlux( 2,  1), TsOutOfBoundsException);
     CPPUNIT_ASSERT_THROW(mArticle->transportFlux( 0, -1), TsOutOfBoundsException);
     CPPUNIT_ASSERT_THROW(mArticle->transportFlux( 0,  2), TsOutOfBoundsException);
+
+    /// - Call GunnsBasicLink::transportFlows for code coverage
+    mArticle->GunnsBasicLink::transportFlows(0.0);
 
     std::cout << "... Pass";
 }

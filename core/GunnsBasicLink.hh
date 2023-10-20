@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_BASIC    GUNNS Basic Link
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -100,6 +100,34 @@ class GunnsBasicLinkInputData
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    GUNNS Basic Link Admittance Map
+///
+/// @details  This describes the mapping of the link's internal admittance matrix to the network's
+///           matrix.  This enables links to define custom mapping of their compressed internal
+///           admittance matrix to the network as desired.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class GunnsBasicLinkAdmittanceMap
+{
+    public:
+        unsigned int mSize; /**< *o (1)                     The size of the mMap array. */
+        int*         mMap;  /**< *o (1) trick_chkpnt_io(**) The mapping of the link's internal admittance matrix to the network matrix. */
+        /// @brief Default constructs this link admittance map.
+        GunnsBasicLinkAdmittanceMap();
+        /// @brief Default destructs this link admittance map.
+        virtual ~GunnsBasicLinkAdmittanceMap();
+        /// @brief Allocates the map array to the given size.
+        void allocateMap(const std::string& name, const unsigned int size);
+        /// @brief Deletes the map array.
+        void freeMap();
+
+    private:
+        /// @brief Copy constructor unavailable since declared private and not implemented.
+        GunnsBasicLinkAdmittanceMap(const GunnsBasicLinkAdmittanceMap&);
+        /// @brief Assignment operator unavailable since declared private and not implemented.
+        GunnsBasicLinkAdmittanceMap& operator =(const GunnsBasicLinkAdmittanceMap&);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Basic Link
 ///
 /// @details  This is the base link class for any connection between two nodes in a network.
@@ -164,6 +192,9 @@ class GunnsBasicLink
 
         /// @brief Returns the Node Mapping
         int*           getNodeMap() const;
+
+        /// @brief Returns the admittance matrix mapping
+        GunnsBasicLinkAdmittanceMap* getAdmittanceMap();
 
         /// @brief Returns the link admittance matrix
         double*        getAdmittanceMatrix() const;
@@ -246,29 +277,30 @@ class GunnsBasicLink
         void           unlockNodeMap();
 
     protected:
-        std::string      mName;                      /**< *o (--) trick_chkpnt_io(**) Link object name for error messages */
-        GunnsBasicNode** mNodes;                     /**< *o (--) trick_chkpnt_io(**) Array of pointers to the linked nodes */
-        GunnsNodeList*   mNodeList;                  /**< *o (--) trick_chkpnt_io(**) Pointer to the network nodes structure */
-        double*          mPotentialVector;           /**<    (--) trick_chkpnt_io(**) Generic potential at the link ports */
-        double*          mAdmittanceMatrix;          /**<    (--) trick_chkpnt_io(**) Link contribution to admittance matrix */
-        double*          mSourceVector;              /**<    (--) trick_chkpnt_io(**) Link contribution to the source vector */
-        int*             mDefaultNodeMap;            /**< ** (--) trick_chkpnt_io(**) Default node map restored on restart */
-        int*             mNodeMap;                   /**< *o (--) trick_chkpnt_io(**) Node numbers at the link ports */
-        bool*            mOverrideVector;            /**<    (--) trick_chkpnt_io(**) Port potential override flags */
-        PortDirection*   mPortDirections;            /**<    (--) trick_chkpnt_io(**) Flow direction at each port */
-        int              mNumPorts;                  /**< *o (--) trick_chkpnt_io(**) Number of ports on the link */
-        bool             mAdmittanceUpdate;          /**<    (--) trick_chkpnt_io(**) Link is changing the admittance matrix */
-        double           mFlux;                      /**<    (--)                     Generic flux through the link */
-        double           mPotentialDrop;             /**<    (--)                     Generic potential drop across the link */
-        double           mPower;                     /**<    (W)  trick_chkpnt_io(**) Generic power gain/loss across the link */
-        double           mMinLinearizationPotential; /**<    (--) trick_chkpnt_io(**) Delta-Potential linearization threshold */
-        bool             mInitFlag;                  /**< *o (--) trick_chkpnt_io(**) Link Init Flag */
-        bool             mNodeMapLocked;             /**<    (--) trick_chkpnt_io(**) Ports cannot change nodes for any reason */
-        int              mUserPortSelect;            /**<    (--) trick_chkpnt_io(**) The user-selected port to re-map */
-        int              mUserPortSelectNode;        /**<    (--) trick_chkpnt_io(**) The node to re-map the selected port to */
-        UserPortControl  mUserPortSetControl;        /**<    (--) trick_chkpnt_io(**) Command/feedback for the re-map action */
-        static const double mConductanceLimit;       /**< ** (--)                     Maximum allowed generic conductance */
-        static const double m100EpsilonLimit;        /**< ** (--)                     Limit 100 * DBL_EPSILON for some applications */
+        std::string      mName;                      /**< *o (1) trick_chkpnt_io(**) Link object name for error messages */
+        GunnsBasicNode** mNodes;                     /**< *o (1) trick_chkpnt_io(**) Array of pointers to the linked nodes */
+        GunnsNodeList*   mNodeList;                  /**< *o (1) trick_chkpnt_io(**) Pointer to the network nodes structure */
+        double*          mPotentialVector;           /**<    (1) trick_chkpnt_io(**) Generic potential at the link ports */
+        double*          mAdmittanceMatrix;          /**<    (1) trick_chkpnt_io(**) Link contribution to admittance matrix */
+        double*          mSourceVector;              /**<    (1) trick_chkpnt_io(**) Link contribution to the source vector */
+        int*             mDefaultNodeMap;            /**< ** (1) trick_chkpnt_io(**) Default node map restored on restart */
+        int*             mNodeMap;                   /**< *o (1) trick_chkpnt_io(**) Node numbers at the link ports */
+        GunnsBasicLinkAdmittanceMap mAdmittanceMap;  /**< *o (1)                     Mapping of link to network admittance matrices */
+        bool*            mOverrideVector;            /**<    (1) trick_chkpnt_io(**) Port potential override flags */
+        PortDirection*   mPortDirections;            /**<    (1) trick_chkpnt_io(**) Flow direction at each port */
+        int              mNumPorts;                  /**< *o (1) trick_chkpnt_io(**) Number of ports on the link */
+        bool             mAdmittanceUpdate;          /**<    (1) trick_chkpnt_io(**) Link is changing the admittance matrix */
+        double           mFlux;                      /**<    (1)                     Generic flux through the link */
+        double           mPotentialDrop;             /**<    (1)                     Generic potential drop across the link */
+        double           mPower;                     /**<    (W) trick_chkpnt_io(**) Generic power gain/loss across the link */
+        double           mMinLinearizationPotential; /**<    (1) trick_chkpnt_io(**) Delta-Potential linearization threshold */
+        bool             mInitFlag;                  /**< *o (1) trick_chkpnt_io(**) Link Init Flag */
+        bool             mNodeMapLocked;             /**<    (1) trick_chkpnt_io(**) Ports cannot change nodes for any reason */
+        int              mUserPortSelect;            /**<    (1) trick_chkpnt_io(**) The user-selected port to re-map */
+        int              mUserPortSelectNode;        /**<    (1) trick_chkpnt_io(**) The node to re-map the selected port to */
+        UserPortControl  mUserPortSetControl;        /**<    (1) trick_chkpnt_io(**) Command/feedback for the re-map action */
+        static const double mConductanceLimit;       /**< ** (1)                     Maximum allowed generic conductance */
+        static const double m100EpsilonLimit;        /**< ** (1)                     Limit 100 * DBL_EPSILON for some applications */
 
         /// @brief Protected Constructor because Basic Link is never directly instantiated
         GunnsBasicLink(const int numPorts);
@@ -282,6 +314,9 @@ class GunnsBasicLink
         /// @brief Performs functions common to initialization and restart.
         void         initializeRestartCommonFunctions();
 
+        /// @brief Virtual method for derived links to create a custom or default admittance map.
+        virtual void createAdmittanceMap();
+
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
 
@@ -290,6 +325,9 @@ class GunnsBasicLink
 
         /// @brief Allocates the matrix, node map and vectors
         void         allocateMatrixAndVectors(const std::string& name);
+
+        /// @brief Virtual method for derived links to allocate a custom admittance matrix.
+        virtual void allocateAdmittanceMatrix();
 
         /// @brief Checks for valid port node assignment
         bool         checkPortRules(const int port, const int node) const;
@@ -332,6 +370,9 @@ class GunnsBasicLink
         /// @brief Sets the port node pointer to the node indicated by the port node map
         virtual void updateNodePointer(const int port);
 
+        /// @brief Virtual method for derived links to update a custom or default admittance map.
+        virtual void updateAdmittanceMap();
+
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsBasicLink(const GunnsBasicLink& that);
@@ -342,8 +383,6 @@ class GunnsBasicLink
 
 /// @}
 
-//TODO move methods to body that aren't called regularly during run, as there is little time savings
-//     by having them inline.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @return   char* -- The link Name
 ///
@@ -362,6 +401,16 @@ inline const char* GunnsBasicLink::getName() const
 inline int* GunnsBasicLink::getNodeMap() const
 {
     return mNodeMap;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  GunnsBasicLinkAdmittanceMap* (--) Pointer to this link's admittance map object.
+///
+/// @details  Returns the admittance map map object of this link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline GunnsBasicLinkAdmittanceMap* GunnsBasicLink::getAdmittanceMap()
+{
+    return &mAdmittanceMap;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -435,6 +484,18 @@ inline bool GunnsBasicLink::isInitialized() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Class attribute resets common to both initialization and restart.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsBasicLink::initializeRestartCommonFunctions()
+{
+    mAdmittanceUpdate          = false;
+    mPower                     = 0.0;
+    mUserPortSelect            = -1;
+    mUserPortSelectNode        = -1;
+    mUserPortSetControl        = READY;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Sets mNodeMapLocked = true.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsBasicLink::lockNodeMap()
@@ -448,16 +509,6 @@ inline void GunnsBasicLink::lockNodeMap()
 inline void GunnsBasicLink::unlockNodeMap()
 {
     mNodeMapLocked = false;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   int -- The index of the network's ground node.
-///
-/// @details  Returns the index of the network's ground node.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int GunnsBasicLink::getGroundNodeIndex() const
-{
-    return mNodeList->mNumNodes - 1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -642,6 +693,17 @@ inline void GunnsBasicLink::processInputs()
 inline void GunnsBasicLink::processOutputs()
 {
     // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Calls the admittance map function to allocate the map.  This is the default
+///           implementation, which allocates the map size as nPorts^2, for the default
+///           uncompressed link admittance matrix.  Derived links can override this to size their
+///           custom map for their custom admittance matrix as needed.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsBasicLink::createAdmittanceMap()
+{
+    mAdmittanceMap.allocateMap(mName + ".mAdmittanceMap", mNumPorts * mNumPorts);
 }
 
 #endif

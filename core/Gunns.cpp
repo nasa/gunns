@@ -161,6 +161,7 @@ Gunns::Gunns()
     mLinkOverrideVectors   (0),
     mLinkNodeMaps          (0),
     mLinkNumPorts          (0),
+    mLinkAdmittanceMaps    (0),
     mMajorStepCount        (0),
     mConvergenceFailCount  (0),
     mLinkResetStepFailCount(0),
@@ -236,6 +237,9 @@ void Gunns::cleanup()
     {
         delete [] mLinkNumPorts;
         mLinkNumPorts = 0;
+    } {
+        delete [] mLinkAdmittanceMaps;
+        mLinkAdmittanceMaps = 0;
     } {
         delete [] mLinkNodeMaps;
         mLinkNodeMaps = 0;
@@ -422,6 +426,7 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     mLinkSourceVectors      = new double*[mNumLinks];
     mLinkOverrideVectors    = new bool*  [mNumLinks];
     mLinkNodeMaps           = new int*   [mNumLinks];
+    mLinkAdmittanceMaps     = new GunnsBasicLinkAdmittanceMap*[mNumLinks];
     mLinkNumPorts           = new int    [mNumLinks];
 
     /// - Prepare nodes for startup, and load in their initial potentials for distribution to all
@@ -439,6 +444,7 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
         mLinkSourceVectors[link]      = mLinks[link]->getSourceVector();
         mLinkOverrideVectors[link]    = mLinks[link]->getOverrideVector();
         mLinkNodeMaps[link]           = mLinks[link]->getNodeMap();
+        mLinkAdmittanceMaps[link]     = mLinks[link]->getAdmittanceMap();
         mLinkNumPorts[link]           = mLinks[link]->getNumberPorts();
     }
 
@@ -1213,28 +1219,25 @@ GunnsBasicLink::SolutionResult Gunns::confirmSolutionAcceptance(const int conver
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method assembles the system admittance matrix from the individual link's
-///           contributions.  Looping through the links, we use the link's node mapping to know
-///           where to add its contribution terms into the main matrix.
+///           contributions.  Looping through the links, we use the link's admittance map to know
+///           where to add its contribution terms into the main matrix.  Any out-of-bounds number in
+///           the link's map denote that location doesn't map to anywhere in the network system of
+///           equations, and we omit including the link's contribution at that location.  This will
+///           usually be the Ground node, but might occur for spare terms in a link's compressed
+///           matrix, or for bad link code that we must protect against, etc.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Gunns::buildAdmittanceMatrix()
 {
-    for (int i = 0; i < mNetworkSize*mNetworkSize; ++i) {
+    const int admittanceMatrixSize = mNetworkSize * mNetworkSize;
+    for (int i = 0; i < admittanceMatrixSize; ++i) {
         mAdmittanceMatrix[i] = 0.0;
     }
 
     for (int link = 0; link < mNumLinks; ++link) {
-        const int numPorts = mLinkNumPorts[link];
-
-        for (int port1 = 0; port1 < numPorts; ++port1) {
-            const int node1 = mLinkNodeMaps[link][port1];
-
-            for (int port2 = 0, a = port1*numPorts; port2 < numPorts; ++port2, ++a) {
-                const int node2 = mLinkNodeMaps[link][port2];
-
-                // The vacuum/ground node is not actually in the system, so we leave it off.
-                if (node1 < mNetworkSize && node2 < mNetworkSize) {
-                    mAdmittanceMatrix[node1*mNetworkSize + node2] += mLinkAdmittanceMatrices[link][a];
-                }
+        for (unsigned int linkMap = 0; linkMap < mLinkAdmittanceMaps[link]->mSize; ++linkMap) {
+            const int networkMap = mLinkAdmittanceMaps[link]->mMap[linkMap];
+            if (networkMap > -1 and networkMap < admittanceMatrixSize) {
+                mAdmittanceMatrix[networkMap] += mLinkAdmittanceMatrices[link][linkMap];
             }
         }
     }

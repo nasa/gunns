@@ -4,7 +4,7 @@
 @defgroup  TSM_GUNNS_THERMAL_SOURCE    Gunns ThermalSource Link
 @ingroup   TSM_GUNNS_THERMAL
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -168,6 +168,12 @@ class GunnsThermalSource: public GunnsBasicLink
         /// @details  Average value of temperature among the Source's array of port nodes.
         double mAvgPortTemperature;             /**< (K)                      Average temperature of ports*/
 
+        /// @brief Implements an empty admittance map since this is a source-only link.
+        virtual void createAdmittanceMap();
+
+        /// @brief Implements an empty admittance matrix since this is a source-only link.
+        virtual void allocateAdmittanceMatrix();
+
         /// @brief  Builds the source vector terms of the links contribution to the network.
         virtual void buildSourceVector();
 
@@ -184,6 +190,9 @@ class GunnsThermalSource: public GunnsBasicLink
         /// @brief  Checks for valid implementation-specific port node assignment.
         virtual bool checkSpecificPortRules(const int port, const int node) const;
 
+        /// @brief  Skips updating the admittance map, which is unused by this link.
+        virtual void updateAdmittanceMap();
+
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         GunnsThermalSource(const GunnsThermalSource& that);
@@ -191,5 +200,38 @@ class GunnsThermalSource: public GunnsBasicLink
         GunnsThermalSource& operator=(const GunnsThermalSource& that);
 };
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This link only updates the source vector, and never the admittance matrix, since this
+///           only implmements the flow source effect and no other effects that use the admittance
+///           matrix.  Therefore we leave the admittance map in its default-constructed, empty state
+///           and the network solver will not copy and admittance matrix values from this link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsThermalSource::createAdmittanceMap()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This link only updates the source vector, and never the admittance matrix, since this
+///           only implmements the flow source effect and no other effects that use the admittance
+///           matrix.  Therefore we leave the admittance matrix un-allocated, and the network solver
+///           will not copy and admittance matrix values from this link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsThermalSource::allocateAdmittanceMatrix()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This link only updates the source vector, and never the admittance matrix, since this
+///           only implmements the flow source effect and no other effects that use the admittance
+///           matrix.  Therefore we leave the admittance map un-updated, and the network solver
+///           will not copy and admittance matrix values from this link.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsThermalSource::updateAdmittanceMap()
+{
+    // nothing to do
+}
 
 #endif

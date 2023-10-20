@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_ORCHESTRATOR  GUNNS Orchestrator
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -350,6 +350,7 @@ class Gunns
         bool**   mLinkOverrideVectors;    /**< ** (--) trick_chkpnt_io(**) Pointers to link potential override vectors */
         int**    mLinkNodeMaps;           /**< ** (--) trick_chkpnt_io(**) Pointers to link node mapping */
         int*     mLinkNumPorts;           /**< ** (--) trick_chkpnt_io(**) Number of ports for the link */
+        GunnsBasicLinkAdmittanceMap** mLinkAdmittanceMaps; /**< ** (--) trick_chkpnt_io(**) Pointers to link admittance mapping */
         /// @}
 
         /// @name     Performance metrics.

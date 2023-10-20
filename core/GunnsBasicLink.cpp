@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Basic Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2023 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -117,6 +117,51 @@ GunnsBasicLinkInputData::~GunnsBasicLinkInputData()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Constructs the Basic Link admittance map.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsBasicLinkAdmittanceMap::GunnsBasicLinkAdmittanceMap()
+    :
+    mSize(0),
+    mMap(0)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Destructs the Basic Link admittance map.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsBasicLinkAdmittanceMap::~GunnsBasicLinkAdmittanceMap()
+{
+    freeMap();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] name (--) Name of this map instance for identifying the unique memory allocation.
+/// @param[in] size (--) Size the array to allocate.
+///
+/// @details  This frees the map array, if it is already allocated, then allocates the new array to
+///           the given size, and zeroes all entries.  This is used during link initialization, and
+///           can be used during run to re-size the array when desired.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsBasicLinkAdmittanceMap::allocateMap(const std::string& name, const unsigned int size)
+{
+    freeMap();
+    TS_NEW_PRIM_ARRAY_EXT(mMap, size, int, name + ".mMap");
+    mSize = size;
+    for (unsigned int i=0; i<size; ++i) {
+        mMap[i] = 0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This deletes the map array.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsBasicLinkAdmittanceMap::freeMap()
+{
+    TS_DELETE_ARRAY(mMap);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] numPorts (--) The number of ports the link has
 ///
 /// @details  Constructs the Basic Link Object
@@ -133,6 +178,7 @@ GunnsBasicLink::GunnsBasicLink(const int numPorts)
     mSourceVector(0),
     mDefaultNodeMap(0),
     mNodeMap(0),
+    mAdmittanceMap(),
     mOverrideVector(0),
     mPortDirections(0),
     mNumPorts(numPorts),
@@ -258,18 +304,6 @@ void GunnsBasicLink::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Class attribute resets common to both initialization and restart.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsBasicLink::initializeRestartCommonFunctions()
-{
-    mAdmittanceUpdate          = false;
-    mPower                     = 0.0;
-    mUserPortSelect            = -1;
-    mUserPortSelectNode        = -1;
-    mUserPortSetControl        = READY;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] portMap (--) Network port mapping array
 /// @param[in] source  (--) Source of the port assignment command for output message (i.e. "user")
 /// @param[in] verbose (--) Whether to output H&S messages indicating the move took place
@@ -297,7 +331,7 @@ void GunnsBasicLink::allocateMatrixAndVectors(const std::string& name)
     TS_NEW_PRIM_ARRAY_EXT        (mPotentialVector,  mNumPorts,           double,                         name + ".mPotentialVector");
     TS_NEW_PRIM_ARRAY_EXT        (mOverrideVector,   mNumPorts,           bool,                           name + ".mOverrideVector");
     TS_NEW_PRIM_ARRAY_EXT        (mPortDirections,   mNumPorts,           GunnsBasicLink::PortDirection,  name + ".mPortDirections");
-    TS_NEW_PRIM_ARRAY_EXT        (mAdmittanceMatrix, mNumPorts*mNumPorts, double,                         name + ".mAdmittanceMatrix");
+    allocateAdmittanceMatrix();
 
     // Initialize the arrays out to keep Valgrind happy.  Initialize the node map to an invalid
     // node number so that validation will know if any ports failed to map.
@@ -310,8 +344,49 @@ void GunnsBasicLink::allocateMatrixAndVectors(const std::string& name)
         mPortDirections[i]  = NONE;
     }
 
+    /// - Allocate the admittance map.
+    createAdmittanceMap();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Allocates the admittance matrix and fills it with zeros.  This default implementation
+///           makes the matrix with the default uncompressed size, nPorts * nPorts.  Derived classes
+///           can override this function to allocate their matrix with custom sizes as needed, such
+///           as in links that don't need an admittance matrix, or use a compressed matrix format.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsBasicLink::allocateAdmittanceMatrix()
+{
+    TS_NEW_PRIM_ARRAY_EXT(mAdmittanceMatrix, mNumPorts*mNumPorts, double, mName + ".mAdmittanceMatrix");
     for (int i = 0; i < mNumPorts*mNumPorts; ++i) {
         mAdmittanceMatrix[i] = 0.0;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This is the default implementation, which loads the admittance map for the normal
+///           symmetrical link admittance matrix of size nPorts * nPorts.  Custom links can override
+///           this method to load their custom or compressed maps as needed.
+///
+/// @note  Custom implementations should always use a value of -1 to denote mapping to the network
+///        ground node or a non-node.  This is how the solver knows to avoid copying the
+///        corresponding admittance value from the link to the network matrix.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsBasicLink::updateAdmittanceMap()
+{
+    const int networkSize = getGroundNodeIndex();
+    for (int port1 = 0; port1 < mNumPorts; ++port1) {
+        const int node1 = mNodeMap[port1];
+
+        for (int port2 = 0, a = port1*mNumPorts; port2 < mNumPorts; ++port2, ++a) {
+            const int node2 = mNodeMap[port2];
+
+            if (node1 == networkSize or node2 == networkSize) {
+                /// - Use a value of -1 to tell the solver this is the Ground node.
+                mAdmittanceMap.mMap[a] = -1;
+            } else {
+                mAdmittanceMap.mMap[a] = node1 * networkSize + node2;
+            }
+        }
     }
 }
 
@@ -419,9 +494,10 @@ bool GunnsBasicLink::setPort(const int port, const int node, const std::string& 
         mAdmittanceUpdate = true;
     }
 
-    /// - Regardless of whether the node map was changed, always ensure the node pointer matches the
-    ///   node map.
+    /// - Regardless of whether the node map was changed, always ensure the node pointers and
+    ///   admittance map match the node map.
     updateNodePointer(port);
+    updateAdmittanceMap();
 
     return result;
 }
@@ -678,4 +754,14 @@ void GunnsBasicLink::resetPortOverride(const int port)
     } else {
         GUNNS_WARNING("ignored resetPortOverride call given invalid port number.");
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   int -- The index of the network's ground node.
+///
+/// @details  Returns the index of the network's ground node.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+int GunnsBasicLink::getGroundNodeIndex() const
+{
+    return mNodeList->mNumNodes - 1;
 }

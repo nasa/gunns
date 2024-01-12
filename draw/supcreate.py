@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -411,7 +411,11 @@ for drawing in drawings:
                     if subnetIfNodeCountElem is None:
                         sys.exit(console.abort('a sub-network interface container in network type: ' + netConfig.attrib['label'] + ' is missing the network node count.  Make sure to export the sub-network drawing first.'))
                     else:
-                        sub_nodes_count = int(subnetIfNodeCountElem.text)
+                        try:
+                            sub_nodes_count_str = subnetIfNodeCountElem.attrib['count']
+                        except (KeyError):
+                            sys.exit(console.abort('a sub-network interface container in network type: ' + netConfig.attrib['label'] + ' has obsolete syntax for the network node count.  Please re-export the sub-network drawing first.'))
+                        sub_nodes_count = int(sub_nodes_count_str)
                     # This is a nuisance if there are no connections (all reference nodes) by design.  So commenting out for now.
                     #if 0 == len(an_object.findall('./gunnsSubnetIfConnection')):
                     #    print('    ' + console.warn('sub-network inteface container: ' + an_object.attrib['label'] + ' in network type: ' + netConfig.attrib['label'] + ' has no link connections.  Make sure to export the sub-network drawing first.'))

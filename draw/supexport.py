@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -97,8 +97,8 @@ class SubNet:
                         if nodeCountElem is None:
                             sys.exit(console.abort('in sub-network: ' + obj.attrib['label'] + ', one or more sub-network interface boxes is missing the sub-network node count - you must export the sub-network drawing before adding it to this super-network drawing.'))
                         if 0 == len(self.interfaces):
-                            self.nodeCount = int(nodeCountElem.text)
-                        elif self.nodeCount != int(nodeCountElem.text):
+                            self.nodeCount = int(nodeCountElem.attrib['count'])
+                        elif self.nodeCount != int(nodeCountElem.attrib['count']):
                             sys.exit(console.abort('in sub-network: ' + obj.attrib['label'] + ', one or more sub-network interface boxes disagree on the sub-network node count - you must export the sub-network drawing before adding it to this super-network drawing.'))
                         self.interfaces.append(SubNetIf(obj, objects_and_cells))
     
@@ -825,7 +825,15 @@ if options.project_path:
     for obj in objects:
         if 'Network' == getElemGunnsType(obj) and 'Sub' == getElemGunnsSubtype(obj):
             netConfigs.append(obj)
-    
+
+# Convert old gunnsSubnetIfNodeCount syntax.
+nodeCountElems = root.findall('./root/object/gunnsSubnetIfNodeCount')
+for nodeCountElem in nodeCountElems:
+    count = nodeCountElem.text
+    if count is not None:
+        nodeCountElem.set('count', count.strip())
+        nodeCountElem.text = None
+
 # Rebuild all objects and cells to refresh with the new copies.
 # TODO refactor with above, DRY
 objects = root.findall('./root/object')

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
-GUNNSDRAW_VERSION = '19.4.2'
+GUNNSDRAW_VERSION = '19.4.3'

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -1180,11 +1180,19 @@ for subNetIf in subNetIfs:
     oldNodeCount = subNetIf.find('./gunnsSubnetIfNodeCount')
     if oldNodeCount is None:
         newNodeCount = ET.SubElement(subNetIf, 'gunnsSubnetIfNodeCount')
-        newNodeCount.text = str(nodeCount)
+        newNodeCount.set('count', str(nodeCount))
         updatedSubNetIfsNodeCount = True
-    elif nodeCount != int(oldNodeCount.text):
-        oldNodeCount.text = str(nodeCount)
-        updatedSubNetIfsNodeCount = True
+    else:
+        # convert old syntax (element text) to new syntax (element attribute)
+        oldCountText = oldNodeCount.text
+        if oldCountText is not None:
+            oldNodeCount.set('count', str(nodeCount))
+            oldNodeCount.text = None
+            updatedSubNetIfsNodeCount = True
+        # update the old count value if it has changed
+        elif nodeCount != int(oldNodeCount.attrib['count']):
+            oldNodeCount.set('count', str(nodeCount))
+            updatedSubNetIfsNodeCount = True
         
 # Output notifications about updated drawing contents in the subnet interfaces.
 if updatedSubNetIfsNodeCount:

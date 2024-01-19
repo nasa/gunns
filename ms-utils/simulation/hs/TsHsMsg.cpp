@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -365,7 +365,7 @@ void tsHsSendMsgFileLine(const std::string& file, unsigned line, const std::stri
 #ifdef no_TRICK_ENV
     tsGlobalHsMngr->msg(file, line, function, msg.getSeverity(),  msg.getSubsys().c_str(), mtext.c_str());
 #else
-    const char* subsys =  tsHsGetSubstringFromJob(msg.getSubsys());
+    std::string subsys =  tsHsGetSubstringFromJob(msg.getSubsys());
 
     tsGlobalHsMngr->msg(file, line, function, msg.getSeverity(), subsys, mtext.c_str());
 #endif

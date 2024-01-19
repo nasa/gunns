@@ -4,7 +4,7 @@
 @defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY_MACROS  Sim Compatability Macros
 @ingroup   TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @brief
@@ -527,7 +527,10 @@ class TestHookSimObj;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef no_TRICK_ENV
 #define TS_DELETE_ARRAY(ptr) \
-    TsMemoryManager::tsDelete(reinterpret_cast<void*>(ptr), typeid(ptr).name())
+    { \
+       TsMemoryManager::tsDelete(reinterpret_cast<void*>(ptr), typeid(ptr).name()); \
+       ptr = 0; \
+    }
 #else  // non-Trick
 #define TS_DELETE_ARRAY(ptr) \
     { \

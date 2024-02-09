@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This is the makefile for the GUNNS unit tests.
@@ -6,24 +6,43 @@
 # It depends on the gunns/lib/test compiled object library that is established just for these unit tests.
 # It will update the gunns model compiled objects in gunns/lib/test whenever their source code is changed.
 #
-# In addition to running the unit tests, it also runs LCOV for code coverage and valgrind for memory leak checks.
+# In addition to running the unit tests, it also runs extra tools, depending on the ASAN variable:
+# 1. by default (not defining ASAN), this runs LCOV for code coverage and valgrind for memory leak checks.
+# 2. if ASAN is defined, this runs the asan tool for address sanitizer checks.
 #
-# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with full output via:
+# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with default output
+# (LCOV & Valgrind) via:
 # $ make clean
 # $ make
 #
+# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with asan output 
+# by assigning the ASAN variable to any non-empty value, such as:
+# $ make clean
+# $ make ASAN='anything'
+# Alternatively, the ASAN variable can be defined as a shell environment variable:
+# $ setenv ASAN 'anything'
+# $ make clean
+# $ make
+#
+# Note that when switching between tests with LCOV+Valgrind vs. ASan, you must make clean and make cleanlib,
+# as these tools put hooks in both the test and GUNNS library compiled objects and will interfere with each other.
+#
 # For some complicated code changes to multiple GUNNS model classes, the compiled library's make can't always
 # figure out which objects to re-compile, and you'll get some weird errors.  To force re-build of the entire
-# library, do:
+# library, first do:
 # $ make cleanlib
-# $ make
+# ...before running one of the make options above.
 #
 ifndef GUNNS_HOME
 $(error GUNNS_HOME variable must be set)
 endif
 
 CXXFLAGS = -g -Dno_TRICK_ENV=1 -I$(GUNNS_HOME) -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models
+ifndef ASAN
 extra_CXXFLAGS = -ftest-coverage -fprofile-arcs
+else
+extra_CXXFLAGS = -fstack-protector-all -fsanitize=address
+endif
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(addprefix build/,$(subst .cpp,.o,$(SOURCES)))
@@ -40,14 +59,26 @@ valgrind_html = ./output/valgrind.html
 valgrind_log = ./output/unit-tests-valgrind.log
 
 all: $(test_exe)
+ifndef ASAN
 	$(MAKE) test
+else
+	$(MAKE) test_asan
+endif
 
 .PHONY: lib
 lib:
+ifndef ASAN
 	cd ${GUNNS_HOME}/lib/test && $(MAKE)
+else
+	cd ${GUNNS_HOME}/lib/test && $(MAKE) OPTS='-O2 -g -fstack-protector-all -fsanitize=address'
+endif
 
 $(test_exe): $(OBJECTS) lib
+ifndef ASAN
 	$(CXX) $(OBJECTS) -o $@ -L${GUNNS_HOME}/lib/test -lgunns -lcppunit -lgcov -pthread $(LDFLAGS)
+else
+	$(CXX) $(OBJECTS) -o $@ -lasan -L${GUNNS_HOME}/lib/test -lgunns -lcppunit -pthread $(LDFLAGS)
+endif
 
 $(OBJECTS): build/%.o : %.cpp | $(OBJDIRS)
 	$(CXX) $(CXXFLAGS) $(extra_CXXFLAGS) -c $< -o $@
@@ -59,6 +90,9 @@ test: $(unit_test_html) $(coverage_html) $(valgrind_html)
 	@echo "Unit test output log at $(test_dir)/$(unit_test_html)"
 	@echo "Coverage output at $(test_dir)/$(coverage_html)"
 	@echo "Valgrind output log at $(test_dir)/$(valgrind_html)"
+
+test_asan: $(unit_test_html)
+	@echo "Unit test output log at $(test_dir)/$(unit_test_html)"
 
 $(unit_test_html): $(unit_test_log) | output
 	@echo -ne "<html>\n    <title>Unit Test Results generated `date`</title>\n    <body>\n" > $@ \
@@ -72,22 +106,30 @@ $(unit_test_log): output
 	@$(test_exe) | tee $@
 
 $(coverage_html): $(coverage_info) | $(coverage_output_dir)
+ifndef ASAN
 	genhtml $(quiet) --frames $(coverage_info) --output-directory $(coverage_output_dir)
+endif
 
 $(coverage_info): $(unit_test_log)
+ifndef ASAN
 	${GUNNS_HOME}/test/utils/lcov-wrapper.pl $(realpath ..) ${GUNNS_HOME}/lib/test/build $@
+endif
 
 $(valgrind_html): $(valgrind_log)
+ifndef ASAN
 	@echo -ne "<html>\n    <title>Valgrind memcheck results generated `date`</title>\n    <body>\n" > $@ \
 	&& echo "        <h2>Valgrind memcheck results generated `date`</h2>" >> $@ \
 	&& echo "        <hr>" >> $@ \
 	&& sed -e '/^==[0-9]\+==/!s@.*@<font color="gray">&</font>@' -e's@.*@    <tt>&</tt><br>@' $(valgrind_log) >> $@ \
 	&& echo -ne "    </body>\n</html>\n" >> $@ \
 	|| rm -f $@
+endif
 
 $(valgrind_log): $(test_exe) output
+ifndef ASAN
 	valgrind --leak-check=yes --suppressions=${GUNNS_HOME}/test/utils/gunns.supp $(test_exe) 2>&1 | grep -v 'libcppunit' > $@
 	cat $@
+endif
 
 clean:
 	rm -rf build output $(test_exe)

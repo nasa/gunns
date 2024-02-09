@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This builds the Trick-less GUNNS compiled libraries for unit tests.
@@ -29,6 +29,12 @@
 ################################################################################
 GUNNS_HOME ?= $(abspath ${PWD}/../..)
 
+# Default options, enabling LCOV and Valgrind:
+# For asan, we suggest calling this with overriding OPTS on the command line:
+#     $ make OPTS='-O2 -g -fstack-protector-all -fsanitize=address'
+# Note that asan interferes with Valgrind, and any compilation with asan directives
+# or inclusion of asan libraries breaks Valgrind, so its best to use them
+# completely separately.
 OPTS = -O2 -g -ftest-coverage -fprofile-arcs
 
 GUNNSLIB := libgunns.a

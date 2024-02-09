@@ -26,7 +26,7 @@ jobs:
         yum install -y epel-release && yum update -y
 
     - name: Install dependencies
-      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind python3
+      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind libasan python3
 
     - name: Checkout repository
       uses: actions/checkout@master

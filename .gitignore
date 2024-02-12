@@ -64,6 +64,7 @@ unit-tests
 unit-tests.log
 unit-tests.info
 unit-tests-valgrind.log
+asan.log*
 main.d
 output/
 test/int_test/*/TEST_*
@@ -73,6 +74,7 @@ test/int_test/*/uit_logdata.d
 test/ci/verification/verification
 make_all_ut.out
 make_all_ut_roses.out
+make_all_ut_asan.out
 
 # Ignore trick-generated makefiles for unit tests
 Makefile.trick

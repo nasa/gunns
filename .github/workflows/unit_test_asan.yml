@@ -1,0 +1,52 @@
+name: Unit Tests (ASan)
+
+# For more info and troubleshooting help for this workflow, see the Continuous Integration 
+# page in the GUNNS Wiki.
+
+on:
+  push:
+    paths-ignore:
+    - 'README.md'
+    - 'draw/**'
+    - 'bin/utils/simbus_icd_input_gen/**'
+    - '.github/workflows/**'
+    - '!.github/workflows/unit_test_asan.yml'
+
+jobs:
+  all_unit_tests:
+    runs-on: ubuntu-latest
+    container: docker://oraclelinux:8
+
+    steps:
+    - name: Update package manager
+      run: |
+        yum install -y yum-utils
+        dnf config-manager --set-enabled ol8_codeready_builder
+        yum repolist
+        yum install -y epel-release && yum update -y
+
+    - name: Install dependencies
+      run: yum install -y tcsh make gcc gcc-c++ cppunit cppunit-devel lcov valgrind libasan python3
+
+    - name: Checkout repository
+      uses: actions/checkout@master
+
+    - name: Run tests
+      run: |
+        # Set environment variables
+        export GUNNS_HOME=`pwd`
+        export MS_UTILS_HOME="${GUNNS_HOME}/ms-utils"
+        export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
+        # Some unit tests can fail unless parallel make, probably a missing dependency
+        # in the UT makefiles...
+        export MAKEFLAGS="-j4"
+        # Set file permissions needed by the parsing test
+        chmod a-r ms-utils/parsing/test/file_no_permission.txt
+        chmod a-r ms-utils/parsing/test/nopermission
+        # Make & run unit tests
+        cd test
+        ./make_all_ut_asan.sh
+        # Scan results for pass/fail
+        chmod +x scan_all_ut_asan.py
+        python3 ./scan_all_ut_asan.py
+

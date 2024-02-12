@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2020 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -444,6 +444,7 @@ void UtGunnsMinorStepLog::testRecord()
 {
     std::cout << "\n UtGunnsMinorStepLog .... 07: testRecord ............................";
 
+    tNetworkSize = 2;
     tArticle->initialize(tName, tNetworkSize, tNumLinks, tLinks);
 
     /// - Override the link's [A] and {w} arrays so we don't have to init the links.

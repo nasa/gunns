@@ -1,13 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    (
-      (core/GunnsFluidConductor.o)
-      (aspects/fluid/source/GunnsFluidReactor.o)
-    )
-***************************************************************************************************/
+*/
 
 #include "software/exceptions/TsInitializationException.hh"
 #include "strings/UtResult.hh"
@@ -1548,6 +1542,7 @@ void UtGunnsFluidReactor::testInitializationException()
         PolyFluidConfigData fluidConfig(mFluidProperties, types, N_CONSTITUENTS-1);
         PolyFluidInputData  fluidInput(300.0, 140000.0, 1.0, 1.0, fractions);
         GunnsFluidNode  nodes[3];
+        mNodeList.mNodes = nodes;
         nodes[0].getContent()->initializeName("nodes0.mContent");
         nodes[1].getContent()->initializeName("nodes1.mContent");
         nodes[2].getContent()->initializeName("nodes2.mContent");

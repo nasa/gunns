@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_FLUID_FLOW_ORCH    GUNNS Fluid Flow Orchestrator
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:   (Provides the classes for the GUNNS Fluid Flow Orchestrator.)
@@ -74,14 +74,15 @@ class GunnsFluidFlowOrchestrator : public GunnsBasicFlowOrchestrator
         /// @brief  Default destructor.
         virtual     ~GunnsFluidFlowOrchestrator();
         /// @brief  Initializes the GUNNS Fluid Flow Orchestrator.
-        virtual void initialize(const std::string& name, GunnsBasicLink** links, GunnsBasicNode** nodes);
+        virtual void initialize(const std::string& name, GunnsBasicLink** links, GunnsBasicNode** nodes,
+                                int** linkNodeMaps, int* linkNumPorts);
         /// @brief  Updates the flow transport through the links and integration in the nodes.
         virtual void update(const double dt);
 
     protected:
-        bool*       mLinkStates;                            /**< (--) Completion state of links. */
-        NodeStates* mNodeStates;                            /**< (--) Completion state of nodes. */
-        int         mNumIncompleteLinks;                    /**< (--) Number of incomplete links. */
+        bool*       mLinkStates;                            /**< (1) Completion state of links. */
+        NodeStates* mNodeStates;                            /**< (1) Completion state of nodes. */
+        int         mNumIncompleteLinks;                    /**< (1) Number of incomplete links. */
         /// @brief  Returns whether all of the link's source nodes are complete.
         bool linkSourceNodesReady(int link) const;
         /// @brief  Returns whether all of the node's inflowing links are complete.
@@ -103,21 +104,5 @@ class GunnsFluidFlowOrchestrator : public GunnsBasicFlowOrchestrator
 };
 
 /// @}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  int  (--)  Number of incomplete links.
-///
-/// @details  Counts the number of false (incomplete) flags in the links completion states array.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline int GunnsFluidFlowOrchestrator::countIncompleteLinks() const
-{
-    int result = 0;
-    for (int link = 0; link < mNumLinks; ++link) {
-        if (not mLinkStates[link]) {
-            result++;
-        }
-    }
-    return result;
-}
 
 #endif

@@ -1,4 +1,4 @@
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 
 #include "UtGunnsBasicFlowOrchestrator.hh"
@@ -16,6 +16,8 @@ UtGunnsBasicFlowOrchestrator::UtGunnsBasicFlowOrchestrator()
     tNodesArray(0),
     tConductors(),
     tNodes(),
+    tLinkNodeMaps(0),
+    tLinkNumPorts(0),
     tName("test article")
 {
     //do nothing
@@ -34,6 +36,8 @@ UtGunnsBasicFlowOrchestrator::~UtGunnsBasicFlowOrchestrator()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsBasicFlowOrchestrator::tearDown()
 {
+    delete [] tLinkNumPorts;
+    delete [] tLinkNodeMaps;
     delete [] tNodesArray;
     delete [] tLinksArray;
 }
@@ -53,6 +57,28 @@ void UtGunnsBasicFlowOrchestrator::setUp()
     for (int i=0; i<NUMNODES; ++i) {
         tNodesArray[i] = &tNodes[i];
     }
+
+    /// - Initialize the links.
+    std::vector<GunnsBasicLink*> networkLinks;
+    for (int i=0; i<NUMLINKS; ++i) {
+        networkLinks.push_back(&tConductors[i]);
+    }
+    GunnsNodeList nodeList;
+    nodeList.mNodes    = tNodes;
+    nodeList.mNumNodes = tNumNodes;
+    GunnsBasicConductorConfigData linkConfig("link", &nodeList, 1.0);
+    GunnsBasicConductorInputData  linkInput;
+    tConductors[0].initialize(linkConfig, linkInput, networkLinks, 0, 1);
+    tConductors[1].initialize(linkConfig, linkInput, networkLinks, 1, 2);
+
+    /// - Build the link node map and number of ports arrays that the solver would pass to the
+    ///   orchestrator during initialization.
+    tLinkNodeMaps = new int*[NUMLINKS];
+    tLinkNumPorts = new int[NUMLINKS];
+    for (int i=0; i<NUMLINKS; ++i) {
+        tLinkNodeMaps[i] = tConductors[i].getNodeMap();
+        tLinkNumPorts[i] = tConductors[i].getNumberPorts();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +93,8 @@ void UtGunnsBasicFlowOrchestrator::testDefaultConstruction()
     CPPUNIT_ASSERT(tNumNodes == tArticle.mNumNodes);
     CPPUNIT_ASSERT(0         == tArticle.mLinks);
     CPPUNIT_ASSERT(0         == tArticle.mNodes);
+    CPPUNIT_ASSERT(0         == tArticle.mLinkNodeMaps);
+    CPPUNIT_ASSERT(0         == tArticle.mLinkNumPorts);
     CPPUNIT_ASSERT(""        == tArticle.mName);
     CPPUNIT_ASSERT(false     == tArticle.mInitFlag);
 
@@ -84,16 +112,18 @@ void UtGunnsBasicFlowOrchestrator::testInitialize()
 {
     std::cout << "\n UtGunnsBasicFlowOrchestrator 02: testInitialize ....................";
 
-    CPPUNIT_ASSERT_NO_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray));
+    CPPUNIT_ASSERT_NO_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts));
 
     /// - Test nominal initialization.
-    CPPUNIT_ASSERT(tLinksArray == tArticle.mLinks);
-    CPPUNIT_ASSERT(tNodesArray == tArticle.mNodes);
-    CPPUNIT_ASSERT(tNumLinks   == tArticle.mNumLinks);
-    CPPUNIT_ASSERT(tNumNodes   == tArticle.mNumNodes);
-    CPPUNIT_ASSERT(tName       == tArticle.mName);
-    CPPUNIT_ASSERT(true        == tArticle.mInitFlag);
-    CPPUNIT_ASSERT(true        == tArticle.isInitialized());
+    CPPUNIT_ASSERT(tLinksArray   == tArticle.mLinks);
+    CPPUNIT_ASSERT(tNodesArray   == tArticle.mNodes);
+    CPPUNIT_ASSERT(tNumLinks     == tArticle.mNumLinks);
+    CPPUNIT_ASSERT(tNumNodes     == tArticle.mNumNodes);
+    CPPUNIT_ASSERT(tLinkNodeMaps == tArticle.mLinkNodeMaps);
+    CPPUNIT_ASSERT(tLinkNumPorts == tArticle.mLinkNumPorts);
+    CPPUNIT_ASSERT(tName         == tArticle.mName);
+    CPPUNIT_ASSERT(true          == tArticle.mInitFlag);
+    CPPUNIT_ASSERT(true          == tArticle.isInitialized());
 
     std::cout << "... Pass";
 }
@@ -106,28 +136,36 @@ void UtGunnsBasicFlowOrchestrator::testInitializeExceptions()
     std::cout << "\n UtGunnsBasicFlowOrchestrator 03: testInitializeExceptions ..........";
 
     /// - Test exception thrown from missing name.
-    CPPUNIT_ASSERT_THROW(tArticle.initialize("", tLinksArray, tNodesArray), TsInitializationException);
+    CPPUNIT_ASSERT_THROW(tArticle.initialize("", tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle.mInitFlag);
     CPPUNIT_ASSERT(false == tArticle.isInitialized());
 
     /// - Test exception thrown number of links < 1.
     tNumLinks = 0;
-    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray), TsInitializationException);
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle.mInitFlag);
     tNumLinks = NUMLINKS;
 
     /// - Test exception thrown number of nodes < 1.
     tNumNodes = 0;
-    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray), TsInitializationException);
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle.mInitFlag);
     tNumNodes = NUMNODES;
 
     /// - Test exception thrown for null links array.
-    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, 0, tNodesArray), TsInitializationException);
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, 0, tNodesArray, tLinkNodeMaps, tLinkNumPorts), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle.mInitFlag);
 
     /// - Test exception thrown for null nodes array.
-    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, 0), TsInitializationException);
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, 0, tLinkNodeMaps, tLinkNumPorts), TsInitializationException);
+    CPPUNIT_ASSERT(false == tArticle.mInitFlag);
+
+    /// - Test exception thrown for null link node maps array.
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, 0, tLinkNumPorts), TsInitializationException);
+    CPPUNIT_ASSERT(false == tArticle.mInitFlag);
+
+    /// - Test exception thrown for null link number of ports array.
+    CPPUNIT_ASSERT_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, 0), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle.mInitFlag);
 
     std::cout << "... Pass";
@@ -140,19 +178,12 @@ void UtGunnsBasicFlowOrchestrator::testUpdate()
 {
     std::cout << "\n UtGunnsBasicFlowOrchestrator 04: testUpdate ........................";
 
-    tArticle.initialize(tName, tLinksArray, tNodesArray);
+    tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts);
 
     /// - Initialize the links & nodes.
     tNodes[0].initialize("node", 10.0);
     tNodes[1].initialize("node",  5.0);
     tNodes[2].initialize("node",  0.0);
-
-    GunnsNodeList nodeList(tNumNodes, tNodes);
-    GunnsBasicConductorConfigData linkConfig("link", &nodeList, 1.0);
-    GunnsBasicConductorInputData  linkInput(false, 0.0);
-    std::vector<GunnsBasicLink*> networkLinks;
-    tConductors[0].initialize(linkConfig, linkInput, networkLinks, 0, 1);
-    tConductors[1].initialize(linkConfig, linkInput, networkLinks, 1, 2);
 
     tConductors[0].getPotentialVector()[0] = tNodes[0].getPotential();
     tConductors[0].getPotentialVector()[1] = tNodes[1].getPotential();

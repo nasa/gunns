@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -594,6 +594,19 @@ void UtGunns::testNonLinearInitialization()
     tNetwork.initializeNodes(tNodeList);
     CPPUNIT_ASSERT(std::string("BasicNode3") == tBasicNodes[2].mName);
 
+    /// - Initialize some links including a non-linear link.
+    tConductor1Config.mName        = "tConductor1";
+    tConductor1Config.mNodeList    = &tNodeList;
+    tConductor2Config.mName        = "tConductor2";
+    tConductor2Config.mNodeList    = &tNodeList;
+    tConstantLoad1Config.mName     = "tConstantLoad1";
+    tConstantLoad1Config.mNodeList = &tNodeList;
+    GunnsBasicConductorInputData tInputData;
+    EpsConstantPowerLoadInputData inputData;
+    tConductor1.initialize(tConductor1Config, tInputData, tLinks, 0, 1);
+    tConductor2.initialize(tConductor2Config, tInputData, tLinks, 0, 1);
+    tConstantLoad1.initialize(tConstantLoad1Config, inputData, tLinks, 0, 1);
+
     /// - Test setting a new flow orchestrator.
     const int newNumLinks = 3;
     const int newNumNodes = 3;
@@ -601,12 +614,7 @@ void UtGunns::testNonLinearInitialization()
     tNetwork.setFlowOrchestrator(&newOrch);
     CPPUNIT_ASSERT(&newOrch == tNetwork.mFlowOrchestrator);
 
-    tConstantLoad1Config.mName     = "tConstantLoad1";
-    tConstantLoad1Config.mNodeList = &tNodeList;
-    EpsConstantPowerLoadInputData inputData;
-
     /// - Check for the non-linear network flag being set.
-    tConstantLoad1.initialize(tConstantLoad1Config, inputData, tLinks, 0, 1);
     tNetwork.initialize(tNetworkConfig, tLinks);
     CPPUNIT_ASSERT(tNetwork.mLinearNetwork == false);
 

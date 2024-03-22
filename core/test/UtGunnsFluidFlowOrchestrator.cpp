@@ -1,4 +1,4 @@
-/// Copyright 2019 United States Government as represented by the Administrator of the
+/// Copyright 2024 United States Government as represented by the Administrator of the
 /// National Aeronautics and Space Administration.  All Rights Reserved.
 
 #include "UtGunnsFluidFlowOrchestrator.hh"
@@ -31,7 +31,9 @@ UtGunnsFluidFlowOrchestrator::UtGunnsFluidFlowOrchestrator()
     tSourceConfig(0),
     tSourceInput(0),
     tCapacitorConfig(0),
-    tCapacitorInput(0)
+    tCapacitorInput(0),
+    tLinkNodeMaps(0),
+    tLinkNumPorts(0)
 {
     //do nothing
 }
@@ -49,6 +51,8 @@ UtGunnsFluidFlowOrchestrator::~UtGunnsFluidFlowOrchestrator()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidFlowOrchestrator::tearDown()
 {
+    delete [] tLinkNumPorts;
+    delete [] tLinkNodeMaps;
     delete tCapacitorInput;
     delete tCapacitorConfig;
     delete tSourceInput;
@@ -115,6 +119,15 @@ void UtGunnsFluidFlowOrchestrator::setUp()
     /// - Initialize the capacitor links to make nodes 0, 1 capacitive, 2 is non-capacitive.
     tCapacitor1.initialize(*tCapacitorConfig, *tCapacitorInput, tNetLinks, 0, 3);
     tCapacitor2.initialize(*tCapacitorConfig, *tCapacitorInput, tNetLinks, 1, 3);
+
+    /// - Build the link node map and number of ports arrays that the solver would pass to the
+    ///   orchestrator during initialization.
+    tLinkNodeMaps = new int*[NUMLINKS];
+    tLinkNumPorts = new int[NUMLINKS];
+    for (int i=0; i<NUMLINKS; ++i) {
+        tLinkNodeMaps[i] = tLinksArray[i]->getNodeMap();
+        tLinkNumPorts[i] = tLinksArray[i]->getNumberPorts();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +161,7 @@ void UtGunnsFluidFlowOrchestrator::testInitialize()
 {
     std::cout << "\n UtGunnsFluidFlowOrchestrator 02: testInitialize ....................";
 
-    CPPUNIT_ASSERT_NO_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray));
+    CPPUNIT_ASSERT_NO_THROW(tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts));
 
     /// - Test nominal initialization of base class.
     CPPUNIT_ASSERT(tNumLinks   == tArticle.mNumLinks);
@@ -185,7 +198,7 @@ void UtGunnsFluidFlowOrchestrator::testUpdateNoFlow()
 {
     std::cout << "\n UtGunnsFluidFlowOrchestrator 04: testUpdateNoFlow ..................";
 
-    tArticle.initialize(tName, tLinksArray, tNodesArray);
+    tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts);
 
     const double dt = 0.1;
     tArticle.update(dt);
@@ -211,7 +224,7 @@ void UtGunnsFluidFlowOrchestrator::testUpdateNominal()
 {
     std::cout << "\n UtGunnsFluidFlowOrchestrator 05: testUpdateNominal .................";
 
-    tArticle.initialize(tName, tLinksArray, tNodesArray);
+    tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts);
 
     const double dt = 0.1;
 
@@ -262,7 +275,7 @@ void UtGunnsFluidFlowOrchestrator::testUpdateOverflowLoop()
 {
     std::cout << "\n UtGunnsFluidFlowOrchestrator 06: testUpdateOverflowLoop ............";
 
-    tArticle.initialize(tName, tLinksArray, tNodesArray);
+    tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts);
 
     const double dt = 0.1;
 
@@ -311,7 +324,7 @@ void UtGunnsFluidFlowOrchestrator::testUpdateAbort()
 {
     std::cout << "\n UtGunnsFluidFlowOrchestrator 07: testUpdateAbort ...................";
 
-    tArticle.initialize(tName, tLinksArray, tNodesArray);
+    tArticle.initialize(tName, tLinksArray, tNodesArray, tLinkNodeMaps, tLinkNumPorts);
 
     const double dt = 0.1;
 

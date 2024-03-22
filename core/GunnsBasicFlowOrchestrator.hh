@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_BASIC_FLOW_ORCH    GUNNS Basic Flow Orchestrator
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:   (Provides the classes for the GUNNS Basic Flow Orchestrator.)
@@ -31,9 +31,9 @@ PROGRAMMERS:
 
 #include <string>
 #include "software/SimCompatibility/TsSimCompatibility.hh"
+#include "core/GunnsBasicLink.hh"
 
 // Forward-declare pointer types
-class GunnsBasicLink;
 class GunnsBasicNode;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,22 +54,23 @@ class GunnsBasicFlowOrchestrator
         /// @brief  Default destructor.
         virtual     ~GunnsBasicFlowOrchestrator();
         /// @brief  Initializes the GUNNS Basic Flow Orchestrator.
-        virtual void initialize(const std::string& name, GunnsBasicLink** links, GunnsBasicNode** nodes);
+        virtual void initialize(const std::string& name, GunnsBasicLink** links, GunnsBasicNode** nodes,
+                                int** linkNodeMaps, int* linkNumPorts);
         /// @brief  Updates the flow transport through the links and integration in the nodes.
         virtual void update(const double dt);
         /// @brief  Returns whether this GUNNS Basic Flow Orchestrator has been successfully initialized & validated.
         bool         isInitialized() const;
-        //TODO delete when #98 is completed
-        void         setVerbose(const bool verbose);
 
     protected:
-        const int&       mNumLinks; /**< ** (--) trick_chkpnt_io(**) Number of links in the network. */
-        const int&       mNumNodes; /**< ** (--) trick_chkpnt_io(**) The number of nodes in the netowrk, including Ground. */
-        GunnsBasicLink** mLinks;    /**< ** (--) trick_chkpnt_io(**) Array of pointers to the network links. */
-        GunnsBasicNode** mNodes;    /**< ** (--) trick_chkpnt_io(**) Array of pointers to the network nodes. */
-        std::string      mName;     /**< *o (--) trick_chkpnt_io(**) Instance name for self-identification in messages. */
-        bool             mInitFlag; /**< *o (--) trick_chkpnt_io(**) Initialization status flag (T is good). */
-        bool             mVerbose;  /**<    (--) TODO delete when #98 is completed */
+        const int&                      mNumLinks;           /**< ** (1) trick_chkpnt_io(**) Number of links in the network. */
+        const int&                      mNumNodes;           /**< ** (1) trick_chkpnt_io(**) The number of nodes in the netowrk, including Ground. */
+        GunnsBasicLink**                mLinks;              /**< ** (1) trick_chkpnt_io(**) Array of pointers to the network links. */
+        GunnsBasicNode**                mNodes;              /**< ** (1) trick_chkpnt_io(**) Array of pointers to the network nodes. */
+        int**                           mLinkNodeMaps;       /**< ** (1) trick_chkpnt_io(**) Array of pointers to the network links node maps. */
+        int*                            mLinkNumPorts;       /**< ** (1) trick_chkpnt_io(**) Array of pointers to the network links number of ports. */
+        GunnsBasicLink::PortDirection** mLinkPortDirections; /**< ** (1) trick_chkpnt_io(**) Array of pointers to the network links port flow directions. */
+        std::string                     mName;               /**< *o (1) trick_chkpnt_io(**) Instance name for self-identification in messages. */
+        bool                            mInitFlag;           /**< *o (1) trick_chkpnt_io(**) Initialization status flag (T is good). */
         /// @brief  Validates the initialization of this GUNNS Basic Flow Orchestrator.
         void         validate();
 
@@ -81,12 +82,6 @@ class GunnsBasicFlowOrchestrator
 };
 
 /// @}
-
-//TODO
-inline void GunnsBasicFlowOrchestrator::setVerbose(const bool verbose)
-{
-    mVerbose = verbose;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @return   bool  (--)  Returns true if initialization & validation were successful.

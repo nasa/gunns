@@ -2,7 +2,7 @@
 @file
 @brief     GUNNS Basic Flow Orchestrator implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -12,7 +12,6 @@ LIBRARY DEPENDENCY:
 
 #include "GunnsBasicFlowOrchestrator.hh"
 #include "core/GunnsMacros.hh"
-#include "core/GunnsBasicLink.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
@@ -24,13 +23,15 @@ LIBRARY DEPENDENCY:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsBasicFlowOrchestrator::GunnsBasicFlowOrchestrator(const int& numLinks, const int& numNodes)
     :
-    mNumLinks(numLinks),
-    mNumNodes(numNodes),
-    mLinks   (0),
-    mNodes   (0),
-    mName    (),
-    mInitFlag(false),
-    mVerbose (false)
+    mNumLinks          (numLinks),
+    mNumNodes          (numNodes),
+    mLinks             (0),
+    mNodes             (0),
+    mLinkNodeMaps      (0),
+    mLinkNumPorts      (0),
+    mLinkPortDirections(0),
+    mName              (),
+    mInitFlag          (false)
 {
     // nothing to do
 }
@@ -40,20 +41,23 @@ GunnsBasicFlowOrchestrator::GunnsBasicFlowOrchestrator(const int& numLinks, cons
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsBasicFlowOrchestrator::~GunnsBasicFlowOrchestrator()
 {
-    // nothing to do
+    delete [] mLinkPortDirections;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name   (--)  Instance name for messages.
-/// @param[in]  links  (--)  Pointer to the network links.
-/// @param[in]  nodes  (--)  Pointer to the network nodes.
+/// @param[in]  name         (--)  Instance name for messages.
+/// @param[in]  links        (--)  Pointer to the network links.
+/// @param[in]  nodes        (--)  Pointer to the network nodes.
+/// @param[in]  linkNodeMaps (--)  Pointer to the network links node maps.
+/// @param[in]  linkNumPorts (--)  Pointer to the network links number of ports.
 ///
 /// @throws   TsInitializationException
 ///
 /// @details  Initializes this Basic Flow Orchestrator.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsBasicFlowOrchestrator::initialize(const std::string& name, GunnsBasicLink** links,
-                                            GunnsBasicNode** nodes)
+                                            GunnsBasicNode** nodes, int** linkNodeMaps,
+                                            int* linkNumPorts)
 {
     /// - Reset the initialization complete flag.
     mInitFlag = false;
@@ -62,11 +66,19 @@ void GunnsBasicFlowOrchestrator::initialize(const std::string& name, GunnsBasicL
     GUNNS_NAME_ERREX("GunnsBasicFlowOrchestrator", name);
 
     /// - Initialize state.
-    mLinks = links;
-    mNodes = nodes;
+    mLinks        = links;
+    mNodes        = nodes;
+    mLinkNodeMaps = linkNodeMaps;
+    mLinkNumPorts = linkNumPorts;
 
     /// - Validate the initialization.
     validate();
+
+    /// - Initialize the link port directions array.
+    mLinkPortDirections = new GunnsBasicLink::PortDirection*[mNumLinks];
+    for (int link = 0; link < mNumLinks; ++link) {
+        mLinkPortDirections[link] = mLinks[link]->getPortDirections();
+    }
 
     /// - Set the initialization complete flag.
     mInitFlag = true;
@@ -101,6 +113,18 @@ void GunnsBasicFlowOrchestrator::validate()
     if (!mNodes) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                     "missing nodes array.");
+    }
+
+    /// - Throw on null links node maps array.
+    if (!mLinkNodeMaps) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "missing links node maps array.");
+    }
+
+    /// - Throw on null links node number of ports array.
+    if (!mLinkNumPorts) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "missing links number of ports array.");
     }
 }
 

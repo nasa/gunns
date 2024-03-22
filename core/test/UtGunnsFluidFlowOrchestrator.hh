@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_FLUID_FLOW_ORCH    GUNNS Fluid Flow Orchestrator Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Flow Orchestrator class
@@ -112,6 +112,8 @@ class UtGunnsFluidFlowOrchestrator : public CppUnit::TestFixture
         GunnsFluidSourceInputData*         tSourceInput;     /**< (--) Source links input data */
         GunnsFluidCapacitorConfigData*     tCapacitorConfig; /**< (--) Capacitor links config data */
         GunnsFluidCapacitorInputData*      tCapacitorInput;  /**< (--) Capacitor links input data */
+        int**                              tLinkNodeMaps;    /**< (--) Array of link node maps */
+        int*                               tLinkNumPorts;    /**< (--) Array of link number of ports */
 
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtGunnsFluidFlowOrchestrator(const UtGunnsFluidFlowOrchestrator& that);

@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Orchestrator implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -454,7 +454,8 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     }
 
     verifyNodeInitialization();
-    mFlowOrchestrator->initialize(mName + ".mFlowOrchestrator", mLinks, mNodes);
+    mFlowOrchestrator->initialize(mName + ".mFlowOrchestrator", mLinks, mNodes,
+                                  mLinkNodeMaps, mLinkNumPorts);
 
     /// - Zero the potential and reset the state of the vacuum/ground boundary node.  This node is
     ///   always the last node in the list.
@@ -772,7 +773,6 @@ void Gunns::step(const double timeStep)
 
     if (isConverged) {
         /// - Compute & transport flows.
-        mFlowOrchestrator->setVerbose(mVerbose);
         mFlowOrchestrator->update(timeStep);
 
         /// - Once the nodes have been updated, call the links to process final outputs.

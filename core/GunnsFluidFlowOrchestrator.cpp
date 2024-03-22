@@ -2,7 +2,7 @@
 @file
 @brief     GUNNS Fluid Flow Orchestrator implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -17,8 +17,6 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "core/GunnsFluidLink.hh"
 #include "core/GunnsMacros.hh"
-
-#include <cstdio> //TODO remove all 'verbose' flag and printf's when this upgrade is complete.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  numLinks  (--)  The number of links in the network.
@@ -48,17 +46,20 @@ GunnsFluidFlowOrchestrator::~GunnsFluidFlowOrchestrator()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  name   (--)  Instance name for messages.
-/// @param[in]  links  (--)  Pointer to the network links.
-/// @param[in]  nodes  (--)  Pointer to the network nodes.
+/// @param[in]  name         (--)  Instance name for messages.
+/// @param[in]  links        (--)  Pointer to the network links.
+/// @param[in]  nodes        (--)  Pointer to the network nodes.
+/// @param[in]  linkNodeMaps (--)  Pointer to the network links node maps.
+/// @param[in]  linkNumPorts (--)  Pointer to the network links number of ports.
 ///
 /// @details  Initializes this Fluid Flow Orchestrator.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidFlowOrchestrator::initialize(const std::string& name, GunnsBasicLink** links,
-                                            GunnsBasicNode** nodes)
+                                            GunnsBasicNode** nodes, int** linkNodeMaps,
+                                            int* linkNumPorts)
 {
     /// - Initialize the base class.
-    GunnsBasicFlowOrchestrator::initialize(name, links, nodes);
+    GunnsBasicFlowOrchestrator::initialize(name, links, nodes, linkNodeMaps, linkNumPorts);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
@@ -108,14 +109,11 @@ void GunnsFluidFlowOrchestrator::update(const double dt)
     /// - Initially flag all nodes as incomplete, except for the Ground node which is always
     ///   complete.
     mNodeStates[mNumNodes-1] = COMPLETE;
-    if (mVerbose) printf("\n");
     for (int node = 0; node < mNumNodes-1; ++node) {
         if (mNodes[node]->isOverflowing(dt)) {
             mNodeStates[node] = OVERFLOWING;
-            if (mVerbose) printf("Node %d OVERFLOWING\n", node);
         } else {
             mNodeStates[node] = INCOMPLETE;
-            if (mVerbose) printf("Node %d INCOMPLETE\n", node);
         }
     }
 
@@ -130,7 +128,6 @@ void GunnsFluidFlowOrchestrator::update(const double dt)
                 if (not mLinkStates[link] and linkSourceNodesReady(link)) {
                     mLinks[link]->transportFlows(dt);
                     mLinkStates[link] = true;
-                    if (mVerbose) printf("Link %s complete\n", mLinks[link]->getName());
                 }
             }
 
@@ -140,7 +137,6 @@ void GunnsFluidFlowOrchestrator::update(const double dt)
                 if (COMPLETE != mNodeStates[node] and nodeInputLinksComplete(node)) {
                     mNodes[node]->integrateFlows(dt);
                     mNodeStates[node] = COMPLETE;
-                    if (mVerbose) printf("Node %d complete\n", node);
                 }
             }
         } while (not checkAllComplete(dt));
@@ -165,7 +161,6 @@ bool GunnsFluidFlowOrchestrator::checkAllComplete(const double dt)
 {
     /// - Return true to exit the transport loop when all nodes & links are complete:
     int incompleteLinks = countIncompleteLinks();
-    if (mVerbose) printf("Check %d incomplete links\n", incompleteLinks);
     if (0 == incompleteLinks and checkAllNodesComplete()) {
         mNumIncompleteLinks = 0;
         return true;
@@ -247,12 +242,10 @@ unsigned int GunnsFluidFlowOrchestrator::getFirstIncompleteLink() const
 bool GunnsFluidFlowOrchestrator::linkSourceNodesReady(int link) const
 {
     /// - Return false (not ready) if any of the link's source nodes are overflowing and incomplete.
-    const int numPorts = mLinks[link]->getNumberPorts();
-    for (int port = 0; port < numPorts; ++port) {
-        if (GunnsBasicLink::SOURCE == mLinks[link]->getPortDirections()[port] or
-            GunnsBasicLink::BOTH   == mLinks[link]->getPortDirections()[port]) {
-            const int node = mLinks[link]->getNodeMap()[port];
-            if (OVERFLOWING == mNodeStates[node]) {
+    for (int port = 0; port < mLinkNumPorts[link]; ++port) {
+        if (GunnsBasicLink::SOURCE == mLinkPortDirections[link][port] or
+            GunnsBasicLink::BOTH   == mLinkPortDirections[link][port]) {
+            if (OVERFLOWING == mNodeStates[mLinkNodeMaps[link][port]]) {
                 return false;
             }
         }
@@ -273,11 +266,10 @@ bool GunnsFluidFlowOrchestrator::nodeInputLinksComplete(int node) const
     /// - Loop over all links.  Find all links connected to this node that are flowing to this node.
     ///   If any is not complete, then return false (not ready).
     for (int link = 0; link < mNumLinks; ++link) {
-        const int numPorts = mLinks[link]->getNumberPorts();
-        for (int port = 0; port < numPorts; ++port) {
-            if (node == mLinks[link]->getNodeMap()[port] and not mLinkStates[link]
-                    and (GunnsBasicLink::SINK == mLinks[link]->getPortDirections()[port]
-                      or GunnsBasicLink::BOTH == mLinks[link]->getPortDirections()[port])) {
+        for (int port = 0; port < mLinkNumPorts[link]; ++port) {
+            if (node == mLinkNodeMaps[link][port] and not mLinkStates[link]
+                    and (GunnsBasicLink::SINK == mLinkPortDirections[link][port]
+                      or GunnsBasicLink::BOTH == mLinkPortDirections[link][port])) {
                 return false;
             }
         }
@@ -286,4 +278,20 @@ bool GunnsFluidFlowOrchestrator::nodeInputLinksComplete(int node) const
     /// - After loop ends, return true because either no links are connected, or all connected links
     ///   are complete or not an input flow to this node.
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  int  (--)  Number of incomplete links.
+///
+/// @details  Counts the number of false (incomplete) flags in the links completion states array.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+int GunnsFluidFlowOrchestrator::countIncompleteLinks() const
+{
+    int result = 0;
+    for (int link = 0; link < mNumLinks; ++link) {
+        if (not mLinkStates[link]) {
+            result++;
+        }
+    }
+    return result;
 }

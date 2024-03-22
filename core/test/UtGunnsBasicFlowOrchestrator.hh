@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_BASIC_FLOW_ORCH    GUNNS Basic Flow Orchestrator Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Basic Flow Orchestrator class
@@ -75,6 +75,8 @@ class UtGunnsBasicFlowOrchestrator : public CppUnit::TestFixture
         GunnsBasicNode**                   tNodesArray;           /**< (--) Array of node pointers */
         GunnsBasicConductor                tConductors[NUMLINKS]; /**< (--) Test referenced network link */
         GunnsBasicNode                     tNodes[NUMNODES];      /**< (--) Test referenced network link */
+        int**                              tLinkNodeMaps;         /**< (--) Array of link node maps */
+        int*                               tLinkNumPorts;         /**< (--) Array of link number of ports */
         std::string                        tName;                 /**< (--) Instance name */
 
         /// @brief Copy constructor unavailable since declared private and not implemented.

@@ -322,6 +322,17 @@ endif
 echo `grep -s 'SUMMARY' $MS_UTILS_HOME/$FOLDER/output/asan.log*` >> $OUT
 
 #
+set FOLDER = math/elementary_functions/test
+
+cd $MS_UTILS_HOME/$FOLDER; make clean; $UT_RECIPE;
+if ( -f $MS_UTILS_HOME/$FOLDER/output/unit-tests.log ) then
+    echo $FOLDER\: `grep -s -E 'OK \(*|FAILURES\!|Failures \!' $MS_UTILS_HOME/$FOLDER/output/unit-tests.log` >> $OUT
+else
+    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
+endif
+echo `grep -s 'SUMMARY' $MS_UTILS_HOME/$FOLDER/output/asan.log*` >> $OUT
+
+#
 set FOLDER = math/linear_algebra/test
 
 cd $MS_UTILS_HOME/$FOLDER; make clean; $UT_RECIPE;

@@ -61,6 +61,10 @@ class UtLambertW : public CppUnit::TestFixture
         void testW0Errors();
         /// @brief    Tests solveW1 for error conditions.
         void testW1Errors();
+        /// @brief    Tests fastSolveW0 for nominal inputs.
+        void testW0Fast();
+        /// @brief    Tests fastSolveW1 for nominal inputs.
+        void testW1Fast();
 
     private:
         CPPUNIT_TEST_SUITE(UtLambertW);
@@ -68,6 +72,8 @@ class UtLambertW : public CppUnit::TestFixture
         CPPUNIT_TEST(testW0Errors);
         CPPUNIT_TEST(testW1Nominal);
         CPPUNIT_TEST(testW1Errors);
+        CPPUNIT_TEST(testW0Fast);
+        CPPUNIT_TEST(testW1Fast);
         CPPUNIT_TEST_SUITE_END();
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtLambertW(const UtLambertW& that);

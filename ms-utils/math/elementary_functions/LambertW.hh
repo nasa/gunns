@@ -16,12 +16,14 @@ PURPOSE:
 - (Implements calculations to solve the Lambert W, or Product Logarithm function.)
 
 REFERENCE:
-- ((Iacono, R.; Boyd, J. "New approximations to the principal real-valued branch of the Lambert W-function", Advances in Computational Mathematics, Dec. 2017.))
+- ((Iacono, R.; Boyd, J. "New approximations to the principal real-valued branch of the Lambert W-function", Advances in Computational Mathematics, December 2017.)
+   (E. Millan, et.al., "Lambert W-function simplified expressions for photovoltaic current-voltage modelling", 2020 IEEE EEEIC / I&CPS Europe, June 2020.))
 
 ASSUMPTIONS AND LIMITATIONS:
 - ((We don't accept inputs > 1e300 for the principal branch.)
    (we don't accept inputs > -1e-300 for the non-principal branch.)
-   (Accuracy is limited and may not converge for inputs near -1/e.))
+   (Accuracy is limited and may not converge for inputs near -1/e.)
+   (The "fast" solution methods have up to 3% error compared to the exact solution.))
 
 LIBRARY_DEPENDENCY:
 - ((math/approximation/LambertW.o))
@@ -46,6 +48,12 @@ PROGRAMMERS:
 ///           up the result.  This implements logic to handle special ranges where the iterative
 ///           method doesn't perform well.  The worst-case accuracy and number of iterations occurs
 ///           for inputs near -1/e.
+///
+///           Faster approximations are provided if speed is desired over accuracy.  These 'fast'
+///           functions generally agree within 3% of the Iacono & Boyd solution, and should save
+///           some compute time.  Some regions of the input range are not approximated, and instead
+///           reuse the exact solution function.  See the code body comments for details.  We have
+///           not characterized the speed savings.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class LambertW
 {
@@ -54,6 +62,10 @@ class LambertW
         static double solveW0(const double input, const double convergence = 0.0);
         /// @brief  Returns the Lambert W function non-principal branch solution for the given input.
         static double solveW1(const double input, const double convergence = 0.0);
+        /// @brief  Returns an approximate Lambert W function principal branch solution for the given input.
+        static double fastSolveW0(const double input);
+        /// @brief  Returns an approximate Lambert W function non-principal branch solution for the given input.
+        static double fastSolveW1(const double input);
 
     private:
         static const double mEulerNum;            /**< ** (--) Euler's number, e. */

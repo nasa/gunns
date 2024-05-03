@@ -100,7 +100,7 @@ double LambertW::solveW1(const double input, const double convergence)
     /// - Check for exceeding the min or max ranges.
     if (input > mMaxInputLim1) {
         //  - For inputs > -1e-300, throw exception because it can fail in the log function.
-        throw TsOutOfBoundsException("Input range exceeded", "LambertW::solveW0",
+        throw TsOutOfBoundsException("Input range exceeded", "LambertW::solveW1",
                                      "Input exceeds the max limit for the non-principal branch.");
     }
     checkMinRange(input);
@@ -167,6 +167,109 @@ double LambertW::improve(const double input, const double initial, const double 
         if (std::fabs(result - previous) <= convergence) {
             break;
         }
+    }
+    return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] input (--) Given input to the W function.
+///
+/// @returns  double (--) The Lambert W function principal branch result for the given input.
+///
+/// @throws   TsOutOfBoundsException, for invalid input ranges.
+///
+/// @details  Checks for valid range of input, computes and returns approximate principal branch
+///           solution for the given input.  Approximations are accurate to within 3% error or
+///           better (see comments below for accuracy in each region).  For the input < -0.01, we
+///           don't have an approximation and instead fall back on the exact solution from solveW0.
+///
+///           These approximations, when used, should use less compute than the solveW0 function.
+///
+/// @note  We have a lot of magic numbers and violate the coding standard of no magic numbers here,
+///        because these are specific curve fits to a specific function, and defining constant class
+///        attributes for these would be silly.  Risk is mitigated by the unit test.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double LambertW::fastSolveW0(const double input)
+{
+    if (input > mMaxInputLim0) {
+        //  - For inputs > 1e300, throw exception because it can fail in the log function.
+        throw TsOutOfBoundsException("Input range exceeded", "LambertW::fastSolveW0",
+                                     "Input exceeds the max limit for the principal branch.");
+    }
+    checkMinRange(input);
+
+    double result = 0.0;
+    if (input <= -1.0e-2) {
+        result = solveW0(input);
+    } else if (input < 1.0e-2) {
+        /// - Accuracy within 1% error:
+        result = input;
+    } else {
+        const double lnx = std::log(input);
+        if (input < 1.0e-1) {
+            /// - This is from Eqn. 24 of Reference "Lambert W-function simplified expressions..."
+            /// - Accuracy within 2% error:
+            result = input - std::exp((4.123e-6 * lnx + 2.0) * lnx + 1.64e-4);
+        } else if (input < 1.0e2) {
+            /// - Accuracy within 0.5% error:
+            result = (((-8.3436e-4 * lnx + 5.1352e-4) * lnx + 7.0871e-2) * lnx + 0.35642) * lnx + 0.56635;
+        } else if (input <= 1.0e10) {
+            /// - Accuracy within 0.3% error:
+            result = ((-1.9947e-4 * lnx + 1.2102e-2) * lnx + 0.70037) * lnx - 8.5476e-2;
+        } else {
+            /// - Accuracy within 3% error:
+            result = 0.996 * lnx - 3.47;
+        }
+    }
+    return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] input (--) Given input to the W function.
+///
+/// @returns  double (--) The Lambert W function non-principal branch result for the given input.
+///
+/// @throws   TsOutOfBoundsException, for invalid input ranges.
+///
+/// @details  Checks for valid range of input, computes and returns approximate principal branch
+///           solution for the given input.  Approximations are accurate to within 1% error or
+///           better (see comments below for accuracy in each region).  For the input > -1e-20, we
+///           don't have an approximation and instead fall back on the exact solution from solveW1.
+///
+///           These approximations, when used, should use less compute than the solveW1 function.
+///
+/// @note  We have a lot of magic numbers and violate the coding standard of no magic numbers here,
+///        because these are specific curve fits to a specific function, and defining constant class
+///        attributes for these would be silly.  Risk is mitigated by the unit test.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+double LambertW::fastSolveW1(const double input)
+{
+    /// - Check for exceeding the min or max ranges.
+    if (input > mMaxInputLim1) {
+        //  - For inputs > -1e-300, throw exception because it can fail in the log function.
+        throw TsOutOfBoundsException("Input range exceeded", "LambertW::fastSolveW1",
+                                     "Input exceeds the max limit for the non-principal branch.");
+    }
+    checkMinRange(input);
+
+    double result = 0.0;
+    if (input > -1.0e-20) {
+        result = solveW1(input);
+    } else if (input > -1.0e-3) {
+        /// - This is from Eqn. 26 of Reference "Lambert W-function simplified expressions..."
+        /// - Accuracy within 0.4% error:
+        const double lnx = std::log(-input);
+        result = ((2.4978e-5 * lnx + 2.8111e-3) * lnx + 1.1299) * lnx - 1.4733;
+    } else if (input > -0.1) {
+        /// - Accuracy within 0.4% error:
+        const double lnx = std::log(-input);
+        result = (2.292e-2 * lnx + 1.411) * lnx - 0.461;
+    } else if (input >= -0.364) {
+        /// - This is from Eqn. 28 of Reference "Lambert W-function simplified expressions..."
+        /// - Accuracy within 1.6% error:
+        result = (((248.42 * input + 134.24) * input + 4.4258) * input - 14.629) * input - 4.9631;
+    } else {  // input > -1/e
+        result = solveW1(input);
     }
     return result;
 }

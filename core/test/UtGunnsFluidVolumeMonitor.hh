@@ -119,14 +119,14 @@ class UtGunnsFluidVolumeMonitor : public CppUnit::TestFixture
         PolyFluidConfigData*                tFluidConfig0;          /**< (--) Fluid config data */
         PolyFluidInputData*                 tFluidInput;           /**< (--) Fluid input data */
         double                              tMassFractions[2];     /**< (--) Fluid mass fractions. */
-        std::vector<GunnsBasicLink*>        tLinks;                /**< (--) Test basic link vector. Needed to initalize the test link.*/
+        std::vector<GunnsBasicLink*>        tLinks;                /**< (--) Test basic link vector. Needed to initialize the test link.*/
         GunnsFluidConductor                 tConductorLink;        /**< (--) Test conductor link */
         GunnsFluidConductorConfigData*      tConductorLinkConfig;  /**< (--) Test conductor link */
         GunnsFluidConductorInputData*       tConductorLinkInput;   /**< (--) Test conductor link */
         double                              tMaxConductivity;      /**< (--) Max conductivity for test conductor link */
         double                              tExpansionScaleFactor; /**< (--) Expansion scale factor for test conductor link */
         int                                 tPort0;                /**< (--) Port 0 for link initialization */
-        int                                 tPort1;                /**< (--) Port 1 for link intialization */
+        int                                 tPort1;                /**< (--) Port 1 for link initialization */
         double                              tTimeStep;             /**< (--) Time step size for this test */
         GunnsFluidTraceCompoundsConfigData* tTcConfig;             /**< (--) Trace Compounds */
         GunnsFluidTraceCompoundsInputData*  tTcInput;              /**< (--) Trace Compounds */

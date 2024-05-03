@@ -239,7 +239,7 @@ class GunnsFluidAccum : public GunnsFluidLink {
         double mForceBellowsMaxRate;         /**< (--)  trick_chkpnt_io(**) Percent/sec, maximum rate at which bellows position can be forced by edit or malfunction. */
         double mMinTemperature;              /**< (K)   trick_chkpnt_io(**) Minimum temperature for both chambers of accumulator. */
         double mMaxTemperature;              /**< (K)   trick_chkpnt_io(**) Maximum temperature for both chambers of accumulator. */
-        double mMaxPressure;                 /**< (kPa) trick_chkpnt_io(**) Maximum pressure the accumulator can acheive. */
+        double mMaxPressure;                 /**< (kPa) trick_chkpnt_io(**) Maximum pressure the accumulator can achieve. */
         bool   mBellowsMalfSet;              /**< (--)                      Flag to signal requested malfunction bellows position was reached. */
         bool   mEditsAreReactive;            /**< (--)                      Flag to for reactive edits. If true, other actors will react like normal. */
         bool   mSimultaneousEditsInProgress; /**< (--)                      Flag to indicate pressurizer and bellows edit at the same time. MUST BE ACTIVATED BY DERIVED CLASS. */
@@ -441,4 +441,3 @@ inline void GunnsFluidAccum::setAccelPressureHead(const double pressure)
 }
 
 #endif  /* GunnsFluidAccum_EXISTS */
-

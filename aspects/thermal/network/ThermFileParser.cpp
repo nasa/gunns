@@ -98,7 +98,7 @@ ThermFileParser::~ThermFileParser()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @throw    TsParseException
 ///
-/// @details  This is intended to be called prior to the intialize method, to count and store the
+/// @details  This is intended to be called prior to the initialize method, to count and store the
 ///           number of nodes for a ThermalNetwork to access prior to its initialization when used
 ///           in a super-network.
 ///
@@ -1116,7 +1116,7 @@ void ThermFileParser::registerInputRad(TiXmlElement* radiation)
     std::string linkName = "(error setting name)";
 
     if (numInputEntriesRad > numLinksRad) {
-    	TS_PTCS_WARNING("More radiation input data than radiation links. Did not register rad link input data: "<< linkName);
+        TS_PTCS_WARNING("More radiation input data than radiation links. Did not register rad link input data: "<< linkName);
     }
 
     try

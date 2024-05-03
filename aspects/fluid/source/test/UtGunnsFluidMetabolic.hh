@@ -57,7 +57,7 @@ class UtGunnsFluidMetabolic: public CppUnit::TestFixture
         void testDefaultConstruction();
         /// @brief    Tests initialize method.
         void testNominalInitialization();
-        /// @brief    Tests multiple intialization.
+        /// @brief    Tests multiple initialization.
         void testMultipleInitialization();
         /// @brief    Tests accessor methods.
         void testAccess();

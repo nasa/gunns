@@ -29,7 +29,7 @@ TsBilinearInterpolator::TsBilinearInterpolator()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.
@@ -99,7 +99,7 @@ void TsBilinearInterpolator::cleanup()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.
@@ -319,4 +319,3 @@ inline double TsBilinearInterpolator::evaluate(const double x, const double y)
     const double Z2      = ((mX[mI+1] - x) * mZ[mI][mJ+1] + (x - mX[mI]) * mZ[mI+1][mJ+1]);
     return (Z1 * (mY[mJ+1] - y) + Z2 * (y - mY[mJ])) * XDifInv / (mY[mJ+1] - mY[mJ]);
 }
-

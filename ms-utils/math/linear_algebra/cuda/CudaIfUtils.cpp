@@ -30,7 +30,7 @@ CudaIfUtils::~CudaIfUtils()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] err  (--) cuda runtime library return code enumeration.
 /// @param[in] file (--) Source code file string from the caller.
-/// @param[in] line (--) Source code line number from teh caller.
+/// @param[in] line (--) Source code line number from the caller.
 ///
 /// @throws   TsInitialization Exception
 ///

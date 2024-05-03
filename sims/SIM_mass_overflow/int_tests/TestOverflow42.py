@@ -51,9 +51,9 @@ class TestOverflow42(Test):
     # This isn't actually testing any values, rather just storing values for later test.
     def checkNodesInitState(self):
        sep1_mass    = massOverflow.fluid42.lsep1.getFlowRate() * 0.0125
-       self.total_mass     = - (sep1_mass) 
+       self.total_mass     = - (sep1_mass)
        self.total_mass_WATER = - (sep1_mass) * self.nodeMassFraction(2, "GUNNS_WATER")
-        
+
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
           mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")
@@ -85,7 +85,7 @@ class TestOverflow42(Test):
 
        print("-------------------------------------------------------------------------------------------------")
        # Comparing relative error (final - start / start) to tolerance
-       # For liquid seperator only need to test that water mass is conserved
+       # For liquid separator only need to test that water mass is conserved
        self.testNear(final_total_mass     - self.total_mass,     0.0, (1.0E-16 + tolerance * self.total_mass),        " mass error fraction ::")
        self.testNear(final_total_mass_WATER  - self.total_mass_WATER,  0.0, (1.0E-16 + tolerance * self.total_mass_WATER),  " mass WATER error fraction ::")
 
@@ -94,7 +94,7 @@ class TestOverflow42(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid42.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid42.netNodes[node]
     # Getter for node fluid
@@ -114,4 +114,3 @@ class TestOverflow42(Test):
         return [massOverflow.fluid42.accum0.getInternalFluid(),
                 massOverflow.fluid42.accum1.getInternalFluid(),
                 massOverflow.fluid42.accum2.getInternalFluid()]
-

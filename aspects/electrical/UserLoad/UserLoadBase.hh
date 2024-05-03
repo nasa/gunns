@@ -459,7 +459,7 @@ inline bool UserLoadBase::isInitialized() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] flag (--) The value of the malfunciton activation flag.
+/// @param[in] flag (--) The value of the malfunction activation flag.
 ///
 /// @details  Sets mMalfBlowFuse equal to the given flag.  Calling this method with default
 ///           arguments resets the malfunction.

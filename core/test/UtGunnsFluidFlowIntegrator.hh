@@ -29,7 +29,7 @@
 class FriendlyGunnsFluidFlowIntegrator : public GunnsFluidFlowIntegrator
 {
     public:
-        FriendlyGunnsFluidFlowIntegrator(const GunnsFluidLink& link) 
+        FriendlyGunnsFluidFlowIntegrator(const GunnsFluidLink& link)
             : GunnsFluidFlowIntegrator(link) {};
         virtual ~FriendlyGunnsFluidFlowIntegrator() {;}
         friend class UtGunnsFluidFlowIntegrator;
@@ -123,7 +123,7 @@ class UtGunnsFluidFlowIntegrator : public CppUnit::TestFixture
         double                             tMaxConductivity;      /**< (--) Max conductivity for test conductor link */
         double                             tExpansionScaleFactor; /**< (--) Expansion scale factor for test conductor link */
         int                                tPort0;                /**< (--) Port 0 for link initialization */
-        int                                tPort1;                /**< (--) Port 1 for link intialization */
+        int                                tPort1;                /**< (--) Port 1 for link initialization */
         double                             tTimeStep;             /**< (--) Time step size for this test */
         double                             tTolerance;            /**< (--) Comparison tolerance for floating pt tests */
 

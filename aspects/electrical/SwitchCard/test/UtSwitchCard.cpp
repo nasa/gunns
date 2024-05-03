@@ -147,7 +147,7 @@ void UtSwitchCard::setUp() {
     tConfigData->mPorts[1] = testRpcm1;
     tConfigData->mPorts[2] = testRpcm2;
 
-    // input data for teh switch card
+    // input data for the switch card
     tInputData = new SwitchCardElectInputData (tMalfBlockageFlag,
                                                tMalfBlockageValue,
                                                tNumSwitches,

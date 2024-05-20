@@ -223,7 +223,7 @@ void GunnsFluidHatch::initialize(const GunnsFluidHatchConfigData& configData,
 void GunnsFluidHatch::validate() const
 {
     /// - Throw an exception if distance between port node centers < FLT_EPSILON.
-    if (mLength0 + mLength1 < FLT_EPSILON) {
+    if (mLength0 + mLength1 < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Distance between node volume centers < FLT_EPSILON.");
     }

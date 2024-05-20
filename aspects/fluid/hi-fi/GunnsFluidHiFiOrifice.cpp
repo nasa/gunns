@@ -380,7 +380,7 @@ double GunnsFluidHiFiOrifice::computeGasConductivity(const PolyFluid* fluid0, co
     double p0          = std::max(fluid0->getPressure(), p1 + mMinLinearizationPotential);
     p1                *= UnitConversion::PA_PER_KPA;
     p0                *= UnitConversion::PA_PER_KPA;
-    const double pstar = p0 * powf( (2.0 / (g+1)), (g/(g-1)));
+    const double pstar = p0 * std::pow( (2.0 / (g+1.0)), (g/(g-1.0)));
     mPressureRatio     = p1 / pstar;
     double massFlux    = 0.0;
     if (mPressureRatio < 1.0) {                                             // choked gas flow
@@ -411,7 +411,7 @@ double GunnsFluidHiFiOrifice::computeCriticalGasFlux(const double g,
                                                      const double p0,
                                                      const double rho0) const
 {
-    return sqrt(g * p0 * rho0 * powf((2/(g+1)), (g+1)/(g-1)));
+    return std::sqrt(g * p0 * rho0 * std::pow((2.0/(g+1.0)), (g+1.0)/(g-1.0)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,7 +434,7 @@ double GunnsFluidHiFiOrifice::computeSubCriticalGasFlux(const double g,
                                                         const double rho0,
                                                         const double p1) const
 {
-    return sqrt(2 * p0 * rho0 * g/(g-1) * (powf(p1/p0, 2/g) - powf(p1/p0, (g+1)/g)));
+    return std::sqrt(2.0 * p0 * rho0 * g/(g-1.0) * (std::pow(p1/p0, 2.0/g) - std::pow(p1/p0, (g+1.0)/g)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -480,7 +480,7 @@ double GunnsFluidHiFiOrifice::computeBernoulliFlux(const double rho,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Builds the Admittance Matrix for the link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidHiFiOrifice::buildAdmittanceMatrix() 
+void GunnsFluidHiFiOrifice::buildAdmittanceMatrix()
 {
     if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
@@ -504,7 +504,7 @@ void GunnsFluidHiFiOrifice::computeFlows(const double dt __attribute__((unused))
     computeFlux();
 
     /// - Set Port Directions
-    if (mFlux > DBL_EPSILON) { 
+    if (mFlux > DBL_EPSILON) {
         mPortDirections[0] = SOURCE;
         mPortDirections[1] = SINK;
         mNodes[0]->scheduleOutflux(mFlux);

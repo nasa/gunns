@@ -496,7 +496,7 @@ void GunnsFluidReactor::updateFluid(const double dt, const double flowrate __att
     mProductsFluid->resetState();
 
     /// - Skip reactions if flow rate or time step are negligible.
-    if (fabs(mFlowRate) > FLT_EPSILON && dt > DBL_EPSILON) {
+    if (std::fabs(mFlowRate) > static_cast<double>(FLT_EPSILON) && dt > DBL_EPSILON) {
         /// - Set the compound state from the input atmosphere.
         inputFromAtmosphere(dt);
         /// - Perform the reactions.
@@ -687,13 +687,13 @@ void GunnsFluidReactor::updateTemperature(const double dt __attribute__((unused)
 ///
 /// @details  Adds or removes the heat from the reactions to the reaction fluid.
 ///
-///           For a reaction: aA + bB -> cC + dD  with dH = h; 
-///           
+///           For a reaction: aA + bB -> cC + dD  with dH = h;
+///
 ///           The dH is tied with the chemical equation so if the balance changed, dH will
 ///           change.
 ///
 ///           For example:
-///               H2O(l) -> H2O(g) dH = 44 kJ/mole; 
+///               H2O(l) -> H2O(g) dH = 44 kJ/mole;
 ///           while
 ///               2H2O(l) -> 2H2O(g) dH = 88 kJ/mole
 ///
@@ -703,9 +703,9 @@ void GunnsFluidReactor::updateTemperature(const double dt __attribute__((unused)
 ///           2. Compute conversion factor using h [kJ/mole] and c [--] cFactor = h/c [unit: kJ/mole]
 ///           3. Compute heat generation [J] using product C's mass [kg], C's molar weight [g/mole], and cFactor [kJ/mole]
 ///              Heat[J] = mass_c [kg] * 1000[g/kg] * (1/ molarW_c[g/mole]) * cFactor[kJ/mole] * 1000[J/kJ]
-///           
+///
 ///           NOTE: we can also use A, B, or D to do the computation; the steps will be the same,
-///           and the result should be the same. Use of product 1 mole ratio was determined to be 
+///           and the result should be the same. Use of product 1 mole ratio was determined to be
 ///           the best option because not all chem rxns have products 2, 3, etc...
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidReactor::addRxnHeat(const double dt)

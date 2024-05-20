@@ -351,14 +351,14 @@ void GunnsElectConverterOutput::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  dt  (s)  Integration time step.
+/// @param[in]  dt  (s)  Integration time step (unused).
 ///
 /// @details  Updates the link admittance matrix and source vector contributions to the system of
 ///           equations based on converter state, load and load type.  Update sensors with the
 ///           timestep to advance their drift malfunction.  Then call minorStep for the main update
 ///           functions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConverterOutput::step(const double dt)
+void GunnsElectConverterOutput::step(const double dt __attribute__((unused)))
 {
     /// - Process user commands to dynamically re-map ports.
     processUserPortCommand();
@@ -458,18 +458,18 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
             conductance = FLT_EPSILON;
         } else {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mSetpoint;
+            voltage = mSetpoint;
             if (TRANSFORMER == mRegulatorType) {
-                mSourceVoltage *= mInputVoltage;
+                voltage *= mInputVoltage;
             }
         }
     } else {
         if (LIMIT_OV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mOutputOverVoltageTrip.getLimit();
+            voltage = mOutputOverVoltageTrip.getLimit();
         } else if (LIMIT_UV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mOutputUnderVoltageTrip.getLimit();
+            voltage = mOutputUnderVoltageTrip.getLimit();
         } else {
             conductance = FLT_EPSILON;
             if (CURRENT == mRegulatorType) {
@@ -530,8 +530,10 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 
             /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
             ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
-            float sensedVout = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);
-            float sensedIout = MsMath::limitRange(-FLT_MAX, mFlux,               FLT_MAX);
+            float sensedVout = static_cast<float>(
+                MsMath::limitRange(static_cast<double>(-FLT_MAX), mPotentialVector[0], static_cast<double>(FLT_MAX)));
+            float sensedIout = static_cast<float>(
+                MsMath::limitRange(static_cast<double>(-FLT_MAX), mFlux,               static_cast<double>(FLT_MAX)));
 
             /// - Note that since we step the sensors without a time-step, its drift malfunction
             ///   isn't integrated.  This is because we don't have the time-step in this function,

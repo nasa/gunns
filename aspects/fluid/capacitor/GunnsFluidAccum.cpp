@@ -1370,10 +1370,10 @@ void GunnsFluidAccum::validate(const GunnsFluidAccumConfigData& configData,
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Min Conductivity Scale must be between DBL_EPSILON and 1.0.");
     }
-    /// - Throw an exception on accumulator volume <= DBL_EPSILON.
-    if (configData.mAccumVolume <= FLT_EPSILON) {
+    /// - Throw an exception on accumulator volume <= FLT_EPSILON.
+    if (configData.mAccumVolume <= static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
-                    "Accumlator Volume cannot be <= FLT_EPSILON.");
+                    "Accumulator Volume cannot be <= FLT_EPSILON.");
     }
     /// - Throw an exception on Minimum chamber volume percentage <= 0.0.
     if (configData.mMinChamberVolPercent <= 0.0) {

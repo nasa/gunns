@@ -1282,7 +1282,7 @@ int ThermFileParser::getCapEditGroupId(TiXmlElement* node)
         return NOT_FOUND;
     }
 
-    return std::distance(vCapEditGroupList.begin(), iter);
+    return static_cast<int>(std::distance(vCapEditGroupList.begin(), iter));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in,out]  vectorInt    (--)  pointer to vector<int> holding port numbers for a multi-port link
@@ -1412,7 +1412,7 @@ void ThermFileParser::confirmNodeBuild()
                 "No node data found in xml-file.");
 
     /// - Make sure that the last node has zero capacitance.
-    } else  if (fabs( vCapCapacitances.back() ) < FLT_EPSILON )
+    } else  if (std::fabs( vCapCapacitances.back() ) < static_cast<double>(FLT_EPSILON) )
     {
         /// - Remove the last capacitance link since the space node doesn't need one.
         vCapNames.pop_back();

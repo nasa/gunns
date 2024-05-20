@@ -149,7 +149,7 @@ class GunnsBasicNode
         virtual bool   isOverflowing(const double dt) const;
 
         /// @brief Integrate flows within the node
-        virtual void   integrateFlows(const double);
+        virtual void   integrateFlows(const double dt);
 
         /// @brief Collect the outflows from the node
         virtual void   collectOutflux(const double fluxRate);

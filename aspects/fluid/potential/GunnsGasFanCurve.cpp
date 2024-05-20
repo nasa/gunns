@@ -73,7 +73,7 @@ void GunnsGasFanCurve::improveRoot(double& realRoot, double* realCoeffs, double 
             /// - If Laguerre failed to converge on a valid root, try Brent's method.  Store the
             ///   given coefficients into the curve object.
             setCoeffs(realCoeffs);
-            mIterBrent = solve(realRoot, 0.0, (maxQ + FLT_EPSILON), FLT_EPSILON);
+            mIterBrent = solve(realRoot, 0.0, (maxQ + static_cast<double>(FLT_EPSILON)), static_cast<double>(FLT_EPSILON));
 
         } catch (...) {
             /// - Throw an exception if no suitable root was found.  For a properly configured fan

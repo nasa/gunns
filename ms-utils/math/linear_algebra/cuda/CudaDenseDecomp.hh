@@ -51,6 +51,9 @@ class CudaDenseDecomp : public CholeskyLdu, public CudaIfUtils
         virtual ~CudaDenseDecomp();
         /// @brief Decomposes the admittance matrix [A].
         virtual void Decompose(double *A, int n);
+        /// @brief Decomposes only the rows of the admittance matrix [A] given by the vector
+        ///        argument r.
+        virtual void Decompose(double *A, int n, std::vector<int>& r);
 
     protected:
         cusolverDnHandle_t solver_handle; /**< (--) Handle to the cuSolverDN context. */
@@ -63,5 +66,9 @@ class CudaDenseDecomp : public CholeskyLdu, public CudaIfUtils
 };
 
 /// @}
+
+inline void CudaDenseDecomp::Decompose(double *A, int n, std::vector<int>& r) {
+    CholeskyLdu::Decompose(A, n, r);
+}
 
 #endif

@@ -108,21 +108,21 @@ class GunnsElectConstantPowerUserLoad : public GunnsElectUserLoad
         /// @brief Default destructor.
         virtual     ~GunnsElectConstantPowerUserLoad();
         /// @brief Loads the config & input data.
-        virtual void          initialize(GunnsNetworkSpotterConfigData* configData,
-                                         GunnsNetworkSpotterInputData*  inputData);
+        virtual void         initialize(const GunnsNetworkSpotterConfigData* configData,
+                                         const GunnsNetworkSpotterInputData*  inputData);
         /// @brief Initializes this spotter and the contained User Load.
         virtual void          initLoad();
         /// @brief Provides interface to the contained User Load.
         virtual UserLoadBase* getLoad();
 
     protected:
-        GunnsElectConstantPowerUserLoadConfigData* mConfig; /**< ** (--) trick_chkpnt_io(**) The resistive User Load's config data. */
-        GunnsElectConstantPowerUserLoadInputData*  mInput;  /**< ** (--) trick_chkpnt_io(**) The resistive User Load's input data. */
-        ConstantPowerLoad                          mLoad;   /**<    (--)                     The resistive User Load. */
+        const GunnsElectConstantPowerUserLoadConfigData* mConfig; /**< ** (--) trick_chkpnt_io(**) The resistive User Load's config data. */
+        const GunnsElectConstantPowerUserLoadInputData*  mInput;  /**< ** (--) trick_chkpnt_io(**) The resistive User Load's input data. */
+        ConstantPowerLoad                                mLoad;   /**<    (--)                     The resistive User Load. */
         /// @brief Validates the supplied configuration data.
-        GunnsElectConstantPowerUserLoadConfigData* validateConfig(GunnsNetworkSpotterConfigData* config);
+        const GunnsElectConstantPowerUserLoadConfigData* validateConfig(const GunnsNetworkSpotterConfigData* config);
         /// @brief Validates the supplied input data.
-        GunnsElectConstantPowerUserLoadInputData*  validateInput (GunnsNetworkSpotterInputData* input);
+        const GunnsElectConstantPowerUserLoadInputData*  validateInput (const GunnsNetworkSpotterInputData* input);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

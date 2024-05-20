@@ -182,7 +182,7 @@ class GunnsFluidAdsorber : public GunnsFluidConductor
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief    Update for adsorbtion.
-        virtual void adsorb(const double dt, const double rate, const double efficiency);
+        virtual void adsorb(const double dt, const double rate, const double availability_efficiency);
         /// @brief    Update for desorbtion.
         virtual void desorb(const double dt, const double rate, const double efficiency);
         /// @brief    Updates the fluid temperature.

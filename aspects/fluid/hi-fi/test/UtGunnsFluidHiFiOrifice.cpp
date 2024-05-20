@@ -7,6 +7,7 @@
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "core/GunnsFluidConductor.hh"
+#include <cmath> // sqrt, pow
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsFluidHiFiOrifice class.
@@ -440,8 +441,8 @@ void UtGunnsFluidHiFiOrifice::testStepGasNonChoked()
 
     const double gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     const double rho0  = tNodes[0].getOutflow()->getDensity();
-    const double flux  = sqrt(2 * p0 * rho0 * gamma/(gamma-1) * (powf(p1/p0, 2/gamma)
-                                                               - powf(p1/p0, (gamma+1)/gamma)));
+    const double flux  = std::sqrt(2.0 * p0 * rho0 * gamma/(gamma-1.0) * (std::pow(p1/p0, 2.0/gamma)
+                                                               - std::pow(p1/p0, (gamma+1.0)/gamma)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeSubCriticalGasFlux(gamma, p0, rho0, p1), DBL_EPSILON);
     const double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
     const double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
@@ -526,7 +527,7 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     double gamma = tNodes[1].getOutflow()->getAdiabaticIndex();
     double rho0  = tNodes[1].getOutflow()->getDensity();
-    double flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    double flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
     double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
@@ -573,7 +574,7 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     rho0  = tNodes[0].getOutflow()->getDensity();
-    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
     avgMW = tNodes[0].getOutflow()->getMWeight();
@@ -600,7 +601,7 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     rho0  = tNodes[0].getOutflow()->getDensity();
-    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
     avgMW = tNodes[0].getOutflow()->getMWeight();
@@ -701,7 +702,7 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
 
         /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 
@@ -718,15 +719,15 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct sink port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getScheduledOutflux(),tArticle->mFlux,DBL_EPSILON);
 
-    tArticle->transportFlows(tTimeStep);  
-        
+    tArticle->transportFlows(tTimeStep);
+
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0, tArticle->determineSourcePort(tArticle->mFlux, 0, 1), DBL_EPSILON);
 
@@ -739,22 +740,22 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
     tArticle->mPotentialVector[0] = -0.6;
     tArticle->computeFlows(tTimeStep);
 
-     /// - Molar flux should be less than zero because the port 0 potential vector is negative   
+     /// - Molar flux should be less than zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( tArticle->mFlux < 0.0);
 
     /// - Confirm correct sink port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getScheduledOutflux(),- tArticle->mFlux,DBL_EPSILON);
-    
+
     tArticle->transportFlows(tTimeStep);
 
     /// - Confirm correct source port selection with negative potential Vector (TrasportFlows)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, tArticle->determineSourcePort(tArticle->mFlux, 0, 1), 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, tArticle->determineSourcePort(tArticle->mFlux, 0, 1),
                                                             DBL_EPSILON);
 
     /// @test negative flow rate because the port 0 potential vector is negative
@@ -793,7 +794,7 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
     tNodes[1].resetFlows();
     tArticle->computeFlows(tTimeStep);
     tArticle->transportFlows(tTimeStep);
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mVolFlowRate);
 
     std::cout << "... Pass";

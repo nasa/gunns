@@ -261,13 +261,13 @@ void GunnsFluidCondensingHx::validate(const GunnsFluidCondensingHxConfigData& co
     }
 
     /// - Throw an exception if the HTC upper limit < FLT_EPSILON.
-    if (configData.mHtcLimit < FLT_EPSILON) {
+    if (configData.mHtcLimit < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                 "HTC upper limit < FLT_EPSILON.");
     }
 
     /// - Throw an exception on default wall temperature < 0.
-    if (inputData.mWallTemperature < FLT_EPSILON) {
+    if (inputData.mWallTemperature < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Default wall temperature < FLT_EPSILON.");
     }
@@ -301,7 +301,7 @@ void GunnsFluidCondensingHx::restartModel()
 void GunnsFluidCondensingHx::updateFluid(const double dt       __attribute__((unused)),
                                          const double flowRate __attribute__((unused)))
 {
-    mInternalFluid->setFlowRate(fabs(mFlowRate));
+    mInternalFluid->setFlowRate(std::fabs(mFlowRate));
 
     /// - Update the hardware models.
     computeHeatTransferCoefficient();
@@ -311,7 +311,7 @@ void GunnsFluidCondensingHx::updateFluid(const double dt       __attribute__((un
     /// - Update link source vector so the pressure solution will reflect the removed condensate
     ///   next pass.  Since the pressure lags a cycle there will be a small pressure error, but
     ///   mass will be conserved and GUNNS washes out pressure errors over time.
-    if (fabs(mCondensationRate) > m100EpsilonLimit) {
+    if (std::fabs(mCondensationRate) > m100EpsilonLimit) {
         mSourceVector[0] = 0.0;
         mSourceVector[1] = -mCondensationRate / mCondensateFluid->getMWeight();
     } else {
@@ -326,10 +326,10 @@ void GunnsFluidCondensingHx::updateFluid(const double dt       __attribute__((un
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidCondensingHx::computeHeatTransferCoefficient()
 {
-    const double fabsMdot = std::min(10.0, fabs(mFlowRate));
+    const double fabsMdot = std::min(10.0, std::fabs(mFlowRate));
     double htc = mHtcCoeff0;
-    if (fabsMdot > FLT_EPSILON) {
-        htc += mHtcCoeff1 * powf(fabsMdot, MsMath::limitRange(0.05, mHtcExponent, 20.0));
+    if (fabsMdot > static_cast<double>(FLT_EPSILON)) {
+        htc += mHtcCoeff1 * std::pow(fabsMdot, MsMath::limitRange(0.05, mHtcExponent, 20.0));
     }
     mSegmentHtc = MsMath::limitRange(0.0, htc, mHtcLimit) / mNumSegments;
 }
@@ -346,11 +346,11 @@ void GunnsFluidCondensingHx::degradeHeatTransferCoefficient()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  dt        (s)     Time step.
+/// @param[in]  dt        (s)     Time step (unused).
 ///
 /// @details  Models heat transfer and water condensation in the heat exchanger segments.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidCondensingHx::updateHeatExchanger(const double dt)
+void GunnsFluidCondensingHx::updateHeatExchanger(const double dt __attribute__((unused)))
 {
     mSensibleHeat     = 0.0;
     mLatentHeat       = 0.0;

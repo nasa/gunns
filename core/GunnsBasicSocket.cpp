@@ -251,7 +251,7 @@ int GunnsBasicSocket::requestDisconnection(const GunnsBasicJumperPlug* plug)
 ///           sealing.  Only a non-self-sealing socket that has no connection will have
 ///           conductivity.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsBasicSocket::updateState(const double)
+void GunnsBasicSocket::updateState(const double dt __attribute__((unused)))
 {
     if (mSelfSealing or mConnection) {
         mEffectiveConductivity = 0.0;

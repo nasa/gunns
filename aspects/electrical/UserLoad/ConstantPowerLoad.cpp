@@ -8,6 +8,7 @@ LIBRARY DEPENDENCY:
      (aspects/electrical/UserLoad/ConstantPowerLoad.o)
      (simulation/hs/TsHsMsg.o)
      (software/exceptions/TsInitializationException.o)
+     (software/exceptions/TsOutOfBoundsException.o)
      (software/exceptions/TsNumericalException.o)
     )
 */
@@ -20,6 +21,7 @@ LIBRARY DEPENDENCY:
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "software/exceptions/TsOutOfBoundsException.hh"
 #include "software/exceptions/TsNumericalException.hh"
 
 
@@ -253,7 +255,7 @@ void ConstantPowerLoad::calculateConstantPowerLoad()
             computeActualPower();
         } else { // current value can't be less than zero.
             TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_EPS, " Tried to set override Current less than 0.0, expects > 0.0.",
-                                TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
+                            TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
         }
     } else if (mMalfOverridePowerFlag) {
         if (0.0 <= mMalfOverridePower) {
@@ -261,7 +263,7 @@ void ConstantPowerLoad::calculateConstantPowerLoad()
             computeActualPower();
         } else {
             TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_EPS, " Tried to set override Power less than 0.0, expects > 0.0.",
-                                TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
+                            TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
         }
     } else if (mLoadOperMode > LoadOFF){
         switch(mLoadOperMode) {
@@ -271,6 +273,9 @@ void ConstantPowerLoad::calculateConstantPowerLoad()
         case LoadSTANDBY:  // In Standby Operation
             mActualPower = mPowerStandby;
             break;
+        default:
+            TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_EPS, " Load operation mode is an invalid value.",
+                            TsOutOfBoundsException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
         }
         computeActualPower();
     }
@@ -294,7 +299,7 @@ void ConstantPowerLoad::computeActualPower() {
         std::ostringstream msg;
         msg << "Actual power value " <<  mActualPower  << " is less than zero, expected a value greater than or equal to zero.";
         TS_HS_EXCEPTION(TS_HS_ERROR, "EPS", msg.str(),
-                TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
+                        TsNumericalException, "ConstantPowerLoad::calculateConstantPowerLoad", mNameLoad);
     }
 
 }
@@ -315,8 +320,3 @@ void ConstantPowerLoad::updateLoad(){
 void ConstantPowerLoad::setPowerNormal(const double power){
     mPowerNormal = fmax(0.0, power);
 }
-
-
-
-
-

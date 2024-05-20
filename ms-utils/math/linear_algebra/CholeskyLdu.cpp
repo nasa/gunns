@@ -130,7 +130,7 @@ void CholeskyLdu::Decompose(double *A, int n)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CholeskyLdu::Decompose(double *A, int n, std::vector<int>& r)
 {
-    const int rn = r.size();
+    const int rn = static_cast<int>(r.size());
     // create vectors that contain the increments between rows in r.  Tried actual std::vectors,
     // but they're slower to reference than arrays.  This method runs faster with arrays.
     int* vri = new int[rn];

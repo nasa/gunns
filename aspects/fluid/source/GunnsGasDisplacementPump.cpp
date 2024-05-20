@@ -337,7 +337,7 @@ void GunnsGasDisplacementPump::updateFluid(const double dt __attribute__((unused
     ///   to relate to torque in N*m and power in Watts.  Torque on the shaft is zero if the drive
     ///   ratio is zero, i.e. impeller is disconnected from the motor.
     mImpellerPower = UnitConversion::PA_PER_KPA * fabs(mVolFlowRate * mPotentialDrop);
-    if (fabs(mMotorSpeed ) > FLT_EPSILON and mDriveRatio > DBL_EPSILON) {
+    if (std::fabs(mMotorSpeed ) > static_cast<double>(FLT_EPSILON) and mDriveRatio > DBL_EPSILON) {
         mImpellerTorque = -mImpellerPower * UnitConversion::SEC_PER_MIN_PER_2PI / mMotorSpeed;
     } else {
         mImpellerTorque = 0.0;

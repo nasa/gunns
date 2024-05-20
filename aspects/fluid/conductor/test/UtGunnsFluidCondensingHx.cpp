@@ -273,7 +273,7 @@ void UtGunnsFluidCondensingHx::testHtc()
     tArticle->mFlowRate = mdot;
     tArticle->mMalfHxDegradeFlag  = true;
     tArticle->mMalfHxDegradeValue = 0.5;
-    double dryHtc = tHxDryHtcCoeff0 + tHxDryHtcCoeff1 * powf(mdot, tHxDryHtcExponent);
+    double dryHtc = tHxDryHtcCoeff0 + tHxDryHtcCoeff1 * std::pow(mdot, tHxDryHtcExponent);
     double expectedHtc = dryHtc * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();

@@ -268,23 +268,25 @@ void GunnsFluidReliefValve::initialize(const GunnsFluidReliefValveConfigData& co
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidReliefValve::validate() const
 {
+    double flt_epsilon = static_cast<double>(FLT_EPSILON);
+
     /// - Throw an exception if reseat pressure < FLT_EPSILON.
-    if (mReseatPressure < FLT_EPSILON) {
+    if (mReseatPressure < flt_epsilon) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Reseat pressure < FLT_EPSILON.");
     }
 
     /// - Throw an exception if crack pressure <= reseat pressure.
-    if (-FLT_EPSILON < mReseatPressure - mCrackPressure) {
+    if (-flt_epsilon < mReseatPressure - mCrackPressure) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Reseat pressure <= crack pressure.");
     }
 
     /// - Throw an exception if full open pressure <= crack pressure.
-    if (-FLT_EPSILON < mCrackPressure - mFullOpenPressure) {
+    if (-flt_epsilon < mCrackPressure - mFullOpenPressure) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Full open pressure <= crack pressure.");
     }
 
     /// - Throw an exception if pop position <= 0 or pop position >= 1.
-    if (!MsMath::isInRange(FLT_EPSILON, mPopPosition, 1.0 - FLT_EPSILON)) {
+    if (!MsMath::isInRange(flt_epsilon, mPopPosition, 1.0 - flt_epsilon)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Pop position outside valid range (0-1).");
     }
 

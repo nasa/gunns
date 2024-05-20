@@ -15,6 +15,7 @@ PROGRAMMERS:
 #include "software/exceptions/TsHsException.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "math/MsMath.hh"
+#include <cmath> // fabs
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] minRange          (--) Minimum sensed output value, in output units
@@ -386,14 +387,14 @@ float SensorAnalog::sense(const double timeStep,
 void SensorAnalog::processInput()
 {
     /// - Protect against underflow in the type casting.
-    if (fabs(mTruthInput) < FLT_MIN) {
+    if (std::fabs(mTruthInput) < static_cast<double>(FLT_MIN)) {
         mSensedOutput = 0.0;
     } else {
         mSensedOutput = static_cast<float>(mTruthInput);
     }
 
     /// - Apply units conversion method.
-    mSensedOutput = UnitConversion::convert(mUnitConversion, mSensedOutput);
+    mSensedOutput = static_cast<float>(UnitConversion::convert(mUnitConversion, static_cast<double>(mSensedOutput)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +403,7 @@ void SensorAnalog::processInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void SensorAnalog::processOutput()
 {
-    mSensedOutput = MsMath::limitRange(mMinRange, mSensedOutput, mMaxRange);
+    mSensedOutput = static_cast<float>(MsMath::limitRange(mMinRange, mSensedOutput, mMaxRange));
     mTruthOutput  = UnitConversion::convert(mUnitConversion, mTruthInput);
 }
 
@@ -439,7 +440,7 @@ void SensorAnalog::applyBias()
 void SensorAnalog::applyDrift(const double timeStep)
 {
     if (mMalfDriftFlag) {
-        mDrift += mMalfDriftRate * timeStep;
+        mDrift += static_cast<float>(static_cast<double>(mMalfDriftRate) * timeStep);
         mSensedOutput += mDrift;
     } else {
         mDrift = 0.0;
@@ -491,13 +492,13 @@ void SensorAnalog::applyNoise()
         ///   it to zero anyway.
         ///
         /// - Apply the input-scaling noise component.
-        activeNoiseMult *= fabs(mSensedOutput - mOffValue);
-        if (fabs(activeNoiseMult) > FLT_EPSILON) {
+        activeNoiseMult *= std::fabs(mSensedOutput - mOffValue);
+        if (std::fabs(activeNoiseMult) > FLT_EPSILON) {
             mSensedOutput += static_cast<float>((*mNoiseFunction)()) * activeNoiseMult;
         }
 
         /// - Apply the constant scale noise component.
-        if (fabs(activeNoiseScale) > FLT_EPSILON) {
+        if (std::fabs(activeNoiseScale) > FLT_EPSILON) {
             mSensedOutput += static_cast<float>((*mNoiseFunction)()) * activeNoiseScale;
         }
     }
@@ -523,7 +524,7 @@ void SensorAnalog::applyResolution()
     }
 
     /// - Flip the sign if necessary so the used value is always positive.
-    value = fabs(value);
+    value = std::fabs(value);
 
     if (value > FLT_EPSILON) {
         mSensedOutput = value * static_cast<float>(round(mSensedOutput/value));

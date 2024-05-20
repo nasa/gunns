@@ -309,7 +309,7 @@ void GunnsFluid3WayValve::step(const double dt)
 ///
 /// @details  Drives the path A & B sub-valves positions from this 3-way position.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluid3WayValve::updateState(const double dt)
+inline void GunnsFluid3WayValve::updateState(const double dt __attribute__((unused)))
 {
     /// - Calculate path valve positions from main valve position and set them.
     if (mNonMixingBand > 0.0) {

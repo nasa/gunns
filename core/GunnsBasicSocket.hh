@@ -134,7 +134,7 @@ class GunnsBasicSocket : public GunnsBasicConductor
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief Updates the State of the Basic Socket
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

@@ -382,13 +382,13 @@ void GunnsFluidSimpleRocket::updateCombustion()
     /// - Determine our combustion state based on ignition and forward flow.  This can be reset by
     ///   the combustion model below.
     if (mNeedsIgnition) {
-        if (mFlowRate > FLT_EPSILON) {
+        if (mFlowRate > static_cast<double>(FLT_EPSILON)) {
             mCombustion = mCombustion or mIgnition;
         } else {
             mCombustion = false;
         }
     } else {
-        mCombustion = (mFlowRate > FLT_EPSILON);
+        mCombustion = (mFlowRate > static_cast<double>(FLT_EPSILON));
     }
 
     if (mCombustModel and mCombustion) {
@@ -454,7 +454,7 @@ void GunnsFluidSimpleRocket::updateChamber()
     /// - Apply sane minimums to chamber properties to avoid divide-by-zero in later functions.
     mChamberTemperature = std::max(mChamberTemperature, 1.0);
     mChamberMWeight     = std::max(mChamberMWeight,     2.0);
-    mChamberGamma       = std::max(mChamberGamma,       1.0 + FLT_EPSILON);
+    mChamberGamma       = std::max(mChamberGamma,       1.0 + static_cast<double>(FLT_EPSILON));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -484,12 +484,12 @@ double GunnsFluidSimpleRocket::updateNozzle()
     updateExitMach(g);
     const double gm1 = g - 1.0;
     const double gMM = 1.0 + 0.5 * gm1 * mExitMach * mExitMach;
-    mExitPressure = mChamberPressure * powf(gMM, -g/gm1);
+    mExitPressure = mChamberPressure * std::pow(gMM, -g/gm1);
 
     /// - Exit velocity assuming 'frozen' flow for now, Hill & Peterson, Eqn. 11.3.
     const double Tc  = mChamberTemperature;
     const double MWc = mChamberMWeight;
-    double Ue = sqrt( (1.0 - 1.0/gMM) * 2.0 * g * Tc * UnitConversion::UNIT_PER_KILO
+    double Ue = std::sqrt( (1.0 - 1.0/gMM) * 2.0 * g * Tc * UnitConversion::UNIT_PER_KILO
                     * UnitConversion::UNIV_GAS_CONST_SI / gm1 / MWc );
 
     /// - Initial calculation of exit temperature by isentropic relations asssuming 'frozen' flow.
@@ -504,7 +504,7 @@ double GunnsFluidSimpleRocket::updateNozzle()
     ///   no-recombination result.  This would cause a jump in thrust.
     const double RTF = MsMath::limitRange(0.0, mRecombinationTuning, 1.0);
     if (mCombustion) {
-        if (mCombustModel and RTF > FLT_EPSILON) {
+        if (mCombustModel and RTF > static_cast<double>(FLT_EPSILON)) {
             try {
                 /// - Enthalpy from the combustion model is in (kJ/g), so we convert to (J/kg).
                 double dH = mCombustModel->getEnth() * UnitConversion::UNIT_PER_MEGA;
@@ -594,7 +594,7 @@ void GunnsFluidSimpleRocket::updateConductance(const double mdot)
 
     /// - Protect against divide by zero molecular weight, and shut off the link when no forward
     ///   pressure gradient.
-    if (MW > DBL_EPSILON and (mPotentialVector[0] > mPotentialVector[1] - FLT_EPSILON)) {
+    if (MW > DBL_EPSILON and (mPotentialVector[0] > mPotentialVector[1] - static_cast<double>(FLT_EPSILON))) {
 
         double conductance = 0.0;
         if (1 == mCombustionCount) {
@@ -640,7 +640,7 @@ void GunnsFluidSimpleRocket::computeFlows(const double dt __attribute__((unused)
     updateFlux(0.0, 0.0);
 
     /// - Set Port Directions
-    if (mFlux > DBL_EPSILON) { 
+    if (mFlux > DBL_EPSILON) {
         mPortDirections[0] = SOURCE;
         mPortDirections[1] = SINK;
         mNodes[0]->scheduleOutflux(mFlux);
@@ -666,7 +666,7 @@ void GunnsFluidSimpleRocket::transportFlows(const double dt __attribute__((unuse
 
     /// - This characteristic velocity can be used to tune the config data term for faster
     ///   convergence to steady-state during startup.  Hill & Peterson, Eqn. 11.8:
-    if (mFlowRate > FLT_EPSILON) {
+    if (mFlowRate > static_cast<double>(FLT_EPSILON)) {
         mCharacteristicVelocity = mPotentialVector[0] * UnitConversion::PA_PER_KPA * mThroatArea
                                 / mFlowRate;
     } else {

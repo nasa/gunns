@@ -155,6 +155,9 @@ void Combust::updateRecombinationMixture(double tempGuess, double press){
         case Combust::S :
             solveUnstableRecombination();
             break;
+        default:
+            throwError("Invalid Constant Property",
+                "Something has gone very wrong. The model has set a protected enumeration to an invalid value.");
         }
     }
     else{
@@ -180,6 +183,9 @@ void Combust::calculateProperties(){
     case Combust::S :
         mReactants = mEnt;
         break;
+    default:
+        throwError("Invalid Constant Property",
+            "Something has gone very wrong. The model has set a protected enumeration to an invalid value.");
     }
 
     /// - Call combustion function
@@ -643,6 +649,9 @@ double Combust::calculateCombustionProduct(double temp){
             mMW += mRatio[i] * mCompounds[i]->mMWeight;
         }
         break;
+    default:
+        throwError("Invalid Constant Property",
+            "Something has gone very wrong. The model has set a protected enumeration to an invalid value.");
     }
     return product / mMW;
 }

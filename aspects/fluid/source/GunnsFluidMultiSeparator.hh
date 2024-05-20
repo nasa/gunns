@@ -127,11 +127,11 @@ class GunnsFluidMultiSeparator : public GunnsFluidLink
         /// @brief  Sets the separation mass fraction for the given fluid type.
         void setSeparationFraction(const FluidProperties::FluidType, const double fraction);
         /// @brief  Returns the separation mass fraction for the given fluid type.
-        double getSeparationFraction(const FluidProperties::FluidType) const;
+        double getSeparationFraction(const FluidProperties::FluidType type) const;
         /// @brief  Sets the separation mass fraction for the given trace compound type.
         void setTcFraction(const ChemicalCompound::Type, const double fraction);
         /// @brief  Returns the separation mass fraction for the given trace compound type.
-        double getTcFraction(const ChemicalCompound::Type) const;
+        double getTcFraction(const ChemicalCompound::Type type) const;
 
     protected:
         double     mMaxConductance;       /**<    (m2)           trick_chkpnt_io(**) Max conductance of the flow-thru path. */

@@ -115,7 +115,7 @@ class EpsConstantPowerLoad : public GunnsBasicConductor {
         virtual void minorStep(const double dt, const int);
 
         /// @brief Updates the State of the link
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
 
         /// @brief Returns if the link is non-linear
         virtual bool isNonLinear();

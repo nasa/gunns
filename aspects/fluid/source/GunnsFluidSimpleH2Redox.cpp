@@ -215,7 +215,7 @@ void GunnsFluidSimpleH2Redox::initialize(      GunnsFluidSimpleH2RedoxConfigData
 /// @details  Validates the initialization of this Simple H2 Redox link model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSimpleH2Redox::validate(const GunnsFluidSimpleH2RedoxConfigData& configData,
-                                       const GunnsFluidSimpleH2RedoxInputData&  inputData)
+                                       const GunnsFluidSimpleH2RedoxInputData&  inputData __attribute__((unused)))
 {
     /// - Throw an exception on reaction compounds (H2, O2, H2O) unavailable in the network.
     try {

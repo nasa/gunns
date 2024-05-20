@@ -401,7 +401,7 @@ void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
 /// @details  Updates the jumper's conductivity based on the plug connection states and whether the
 ///           plugs are self-sealing.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void PowerBusElect::updateState(const double)
+void PowerBusElect::updateState(const double dt __attribute__((unused)))
 {
     /// - Update the plugs and map ports to the connected nodes if they have changed.
     if (mPlug[0]) {

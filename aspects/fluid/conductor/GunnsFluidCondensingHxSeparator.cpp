@@ -351,19 +351,19 @@ void GunnsFluidCondensingHxSeparator::validate(
     }
 
     /// - Throw an exception on liquid mass capacity < FLT_EPSILON.
-    if (configData.mWsMaxCondensate < FLT_EPSILON) {
+    if (configData.mWsMaxCondensate < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS maximum condensate capacity < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference speed < FLT_EPSILON.
-    if (configData.mWsReferenceSpeed < FLT_EPSILON) {
+    if (configData.mWsReferenceSpeed < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS reference speed < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference pressure < FLT_EPSILON.
-    if (configData.mWsReferencePressure < FLT_EPSILON) {
+    if (configData.mWsReferencePressure < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS reference pressure < FLT_EPSILON.");
     }
@@ -535,9 +535,9 @@ void GunnsFluidCondensingHxSeparator::updateHeatExchanger(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidCondensingHxSeparator::updateSlurper()
 {
-    const bool pooled     = mHxCondensateMass > FLT_EPSILON;
-    const bool condensing = mCondensationRate > FLT_EPSILON;
-    const bool separating = mWsDrumSpeed      > FLT_EPSILON;
+    const bool pooled     = mHxCondensateMass > static_cast<double>(FLT_EPSILON);
+    const bool condensing = mCondensationRate > static_cast<double>(FLT_EPSILON);
+    const bool separating = mWsDrumSpeed      > static_cast<double>(FLT_EPSILON);
 
     /// - Slurper state transition conditions, implemented in order below:
     ///     FLOWING    to PAUSED_WET if (condensate = 0 or WS speed = 0) & condensing

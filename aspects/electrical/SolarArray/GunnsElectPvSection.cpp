@@ -294,7 +294,7 @@ void GunnsElectPvSection::initialize(const std::string&                  name,
     validate();
 
     /// - Construct the array of string objects of type determined from the config data.
-    if (version2strings) {
+    if (mConfig->mStringConfig.mCellConfig.isVersion2()) {
         TS_NEW_CLASS_ARRAY_EXT(mStrings, static_cast<int>(mNumStrings), GunnsElectPvString2,
                                (&mConfig->mStringConfig, &mStringsInput), std::string(mName) + ".mStrings");
     } else {

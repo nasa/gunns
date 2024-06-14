@@ -17,10 +17,13 @@ PURPOSE:
    class details below.)
 
 REFERENCE:
-- (TBD)
+- (("Lambert W-function simplified expressions for photovoltaic current-voltage modelling" TODO))
 
 ASSUMPTIONS AND LIMITATIONS:
-- (TBD)
+- ((Limitation: for some cell configurations, the equivalent circuit model's computeVoltage function
+    can't compute cell voltage for the full range of currents.)
+   (Limitation: the equivalent circuit model's computeVoltage and computeCurrent functions are
+    generally only accurate to within 5% error.))
 
 LIBRARY DEPENDENCY:
 - ((GunnsElectPvString2.o))
@@ -51,7 +54,8 @@ class GunnsElectPvCellEquivCircuit2 : public GunnsElectPvCellEquivCircuit
         /// @brief Initializes this Photovoltaic Cell Version 2 Equivalent Circuit Properties.
         virtual void initialize(const GunnsElectPvCellConfigData* configData, const std::string& name);
         /// @brief Updates this Photovoltaic Cell Version 2 Equivalent Circuit Properties.
-        virtual void update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature, const double photoFlux);
+        virtual void update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature,
+                            const double photoFlux, const double degradation = 0.0);
         /// @brief Computes remaining equivalent circuit properties after initialization or update.
         virtual void derive();
         /// @brief Returns the cell current at the given voltage.
@@ -60,8 +64,6 @@ class GunnsElectPvCellEquivCircuit2 : public GunnsElectPvCellEquivCircuit
         virtual double computeVoltage(const double current) const;
 
     protected:
-        /// @brief Validates the initialization of this Photovoltaic Cell Version 2 Equivalent Circuit Properties.
-        virtual void validate() const;
         /// @brief Computes the efficiency and fill factor.
         void computeEfficiency();
 

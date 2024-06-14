@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -200,6 +200,55 @@ void UtGunnsElectPvArray::testConfig()
 
     delete [] numStringsBySection;
 
+    /// @test    Version 2 string construction.
+    const double cellIsc = 2.6;
+    const double cellVmp = 0.5;
+    const double cellImp = 2.4;
+    const double cellN   = 1.0;
+    GunnsElectPvArrayConfigData version2Config(tName,
+                                               &tNodeList,
+                                               tCellOpenCircuitVoltage,
+                                               cellIsc,
+                                               cellVmp,
+                                               cellImp,
+                                               tCellRefTemperature,
+                                               tCellTemperatureVoltageCoeff,
+                                               tCellTemperatureCurrentCoeff,
+                                               cellN,
+                                               tCellSurfaceArea,
+                                               tSourceAngleExponent,
+                                               tBacksideReduction,
+                                               tSourceAngleEdgeOn,
+                                               tRefSourceFluxMagnitude,
+                                               tBlockingDiodeVoltageDrop,
+                                               tBypassDiodeVoltageDrop,
+                                               tBypassDiodeInterval,
+                                               tNumCells,
+                                               tNumSections,
+                                               tNumStrings);
+    CPPUNIT_ASSERT(version2Config.mSectionConfig.mStringConfig.mCellConfig.isVersion2());
+    CPPUNIT_ASSERT(tNumSections == version2Config.mNumSections);
+    CPPUNIT_ASSERT(tNumStrings  == version2Config.mNumStrings);
+    CPPUNIT_ASSERT(0            == version2Config.mNumStringsBySection);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceAngleExponent,         version2Config.mSectionConfig.mSourceAngleExponent,                    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceAngleExponent,         version2Config.mSectionConfig.mSourceAngleExponent,                    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tBacksideReduction,           version2Config.mSectionConfig.mBacksideReduction,                      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tSourceAngleEdgeOn,           version2Config.mSectionConfig.mSourceAngleEdgeOn,                      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tRefSourceFluxMagnitude,      version2Config.mSectionConfig.mRefSourceFluxMagnitude,                 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tBlockingDiodeVoltageDrop,    version2Config.mSectionConfig.mStringConfig.mBlockingDiodeVoltageDrop, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tBypassDiodeVoltageDrop,      version2Config.mSectionConfig.mStringConfig.mBypassDiodeVoltageDrop,   0.0);
+    CPPUNIT_ASSERT(tBypassDiodeInterval == version2Config.mSectionConfig.mStringConfig.mBypassDiodeInterval);
+    CPPUNIT_ASSERT(tNumCells            == version2Config.mSectionConfig.mStringConfig.mNumCells);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSurfaceArea,             version2Config.mSectionConfig.mStringConfig.mCellConfig.mSurfaceArea,             0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(cellIsc,                      version2Config.mSectionConfig.mStringConfig.mCellConfig.mShortCircuitCurrent,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(cellVmp,                      version2Config.mSectionConfig.mStringConfig.mCellConfig.mMppVoltage,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(cellImp,                      version2Config.mSectionConfig.mStringConfig.mCellConfig.mMppCurrent,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(cellN,                        version2Config.mSectionConfig.mStringConfig.mCellConfig.mIdeality,                0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellOpenCircuitVoltage,      version2Config.mSectionConfig.mStringConfig.mCellConfig.mOpenCircuitVoltage,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellRefTemperature,          version2Config.mSectionConfig.mStringConfig.mCellConfig.mRefTemperature,          0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellTemperatureVoltageCoeff, version2Config.mSectionConfig.mStringConfig.mCellConfig.mTemperatureVoltageCoeff, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellTemperatureCurrentCoeff, version2Config.mSectionConfig.mStringConfig.mCellConfig.mTemperatureCurrentCoeff, 0.0);
+
     UT_PASS;
 }
 
@@ -319,6 +368,8 @@ void UtGunnsElectPvArray::testNominalInitialization()
     CPPUNIT_ASSERT(0.0   == tArticle->mIvCornerCurrent);
     CPPUNIT_ASSERT(tName == tArticle->mName);
     CPPUNIT_ASSERT(true  == tArticle->mInitFlag);
+
+    //TODO test version 2 strings
 
     UT_PASS;
 }

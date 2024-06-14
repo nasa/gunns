@@ -175,8 +175,17 @@ void UtGunnsElectPvString::testCellEquivProps()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mRsh,               0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mRs,                0.0);
 
-    /// @test    Clear method call for code coverage.
+    /// @test    Initialization with the object name.
+    cellEqData.initialize(0, "cellEqData");
+    FriendlyGunnsElectPvCellEquivCircuit* visibleCellEqData = static_cast<FriendlyGunnsElectPvCellEquivCircuit*>(&cellEqData);
+    CPPUNIT_ASSERT("cellEqData" == visibleCellEqData->mName);
+
+    /// @test    Empty method calls for code coverage.
     cellEqData.clear();
+    cellEqData.update(&cellEqData, 0.0, 0.0);
+    cellEqData.derive();
+    cellEqData.computeCurrent(0.0);
+    cellEqData.computeVoltage(0.0);
 
     /// @test    New/delete for code coverage.
     GunnsElectPvCellEquivCircuit* testArticle = new GunnsElectPvCellEquivCircuit();

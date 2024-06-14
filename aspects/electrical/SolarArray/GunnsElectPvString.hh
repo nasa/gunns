@@ -128,7 +128,8 @@ class GunnsElectPvCellEquivCircuit
         /// @brief Initializes this Photovoltaic Cell Equivalent Circuit Properties.
         virtual void initialize(const GunnsElectPvCellConfigData* configData, const std::string& name);
         /// @brief Updates this Photovoltaic Cell Equivalent Circuit Properties.
-        virtual void update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature, const double photoFlux);
+        virtual void update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature,
+                            const double photoFlux, const double degradation = 0.0);
         /// @brief Computes remaining equivalent circuit properties after initialization or update.
         virtual void derive();
         /// @brief Returns the cell current at the given voltage.
@@ -138,8 +139,6 @@ class GunnsElectPvCellEquivCircuit
 
     protected:
         std::string  mName; /**< (1) trick_chkpnt_io(**) Instance name for H&S messages. */
-        /// @brief Validates the initialization of this Photovoltaic Cell Equivalent Circuit Properties.
-        virtual void validate() const;
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
@@ -398,12 +397,14 @@ inline void GunnsElectPvCellEquivCircuit::initialize(const GunnsElectPvCellConfi
 /// @param[in] refCell     (--) Not used.
 /// @param[in] temperature (--) Not used.
 /// @param[in] photoFlux   (--) Not used.
+/// @param[in] degradation (--) Not used.
 ///
 /// @details  This is an empty virtual method intended for override by derived classes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsElectPvCellEquivCircuit::update(const GunnsElectPvCellEquivCircuit* refCell     __attribute__((unused)),
                                                  const double                        temperature __attribute__((unused)),
-                                                 const double                        photoFlux   __attribute__((unused)))
+                                                 const double                        photoFlux   __attribute__((unused)),
+                                                 const double                        degradation __attribute__((unused)))
 {
     // nothing to do
 }
@@ -438,14 +439,6 @@ inline double GunnsElectPvCellEquivCircuit::computeCurrent(const double voltage 
 inline double GunnsElectPvCellEquivCircuit::computeVoltage(const double current __attribute__((unused))) const
 {
     return 0.0;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is an empty virtual method intended for override by derived classes.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsElectPvCellEquivCircuit::validate() const
-{
-    // nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

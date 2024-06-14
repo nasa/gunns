@@ -169,6 +169,23 @@ const double GunnsElectPvCellEquivCircuit::mBoltzmannOverCharge = UnitConversion
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvCellEquivCircuit::GunnsElectPvCellEquivCircuit()
     :
+    mIL(0.0),
+    mRsh(0.0),
+    mRs(0.0),
+    mNVt(0.0),
+    mI0(0.0),
+    mFillFactor(0.0),
+    mEfficiency(0.0),
+    mVoc(0.0),
+    mIsc(0.0),
+    mVmp(0.0),
+    mImp(0.0),
+    mPhotoFlux(0.0),
+    mIdeality(0.0),
+    mTemperature(0.0),
+    mCoeffDVocDT(0.0),
+    mCoeffDIscDT(0.0),
+    mSurfaceArea(0.0),
     mName("")
 {
     clear();
@@ -193,13 +210,23 @@ GunnsElectPvCellEquivCircuit::~GunnsElectPvCellEquivCircuit()
 GunnsElectPvCellEquivCircuit& GunnsElectPvCellEquivCircuit::operator =(const GunnsElectPvCellEquivCircuit& that)
 {
     if (&that != this) {
-        mIL         = that.mIL;
-        mRsh       = that.mRsh;
-        mRs      = that.mRs;
-        mNVt = that.mNVt;
-        mI0     = that.mI0;
-        mFillFactor            = that.mFillFactor;
-        mEfficiency            = that.mEfficiency;
+        mIL          = that.mIL;
+        mRsh         = that.mRsh;
+        mRs          = that.mRs;
+        mNVt         = that.mNVt;
+        mI0          = that.mI0;
+        mFillFactor  = that.mFillFactor;
+        mEfficiency  = that.mEfficiency;
+        mVoc         = that.mVoc;
+        mIsc         = that.mIsc;
+        mVmp         = that.mVmp;
+        mImp         = that.mImp;
+        mPhotoFlux   = that.mPhotoFlux;
+        mIdeality    = that.mIdeality;
+        mTemperature = that.mTemperature;
+        mCoeffDVocDT = that.mCoeffDVocDT;
+        mCoeffDIscDT = that.mCoeffDIscDT;
+        mSurfaceArea = that.mSurfaceArea;
     }
     return *this;
 }
@@ -210,13 +237,23 @@ GunnsElectPvCellEquivCircuit& GunnsElectPvCellEquivCircuit::operator =(const Gun
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvCellEquivCircuit::clear()
 {
-    mIL         = 0.0;
-    mRsh       = 0.0;
-    mRs      = 0.0;
-    mNVt = 0.0;
-    mI0     = 0.0;
-    mFillFactor            = 0.0;
-    mEfficiency            = 0.0;
+    mIL          = 0.0;
+    mRsh         = 0.0;
+    mRs          = 0.0;
+    mNVt         = 0.0;
+    mI0          = 0.0;
+    mFillFactor  = 0.0;
+    mEfficiency  = 0.0;
+    mVoc         = 0.0;
+    mIsc         = 0.0;
+    mVmp         = 0.0;
+    mImp         = 0.0;
+    mPhotoFlux   = 0.0;
+    mIdeality    = 0.0;
+    mTemperature = 0.0;
+    mCoeffDVocDT = 0.0;
+    mCoeffDIscDT = 0.0;
+    mSurfaceArea = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

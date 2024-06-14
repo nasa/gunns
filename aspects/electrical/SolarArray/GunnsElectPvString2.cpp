@@ -23,7 +23,9 @@ LIBRARY DEPENDENCY:
 #include "math/UnitConversion.hh"
 #include "math/elementary_functions/LambertW.hh"
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Photovoltaic Cell Version 2 Equivalent Circuit model.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvCellEquivCircuit2::GunnsElectPvCellEquivCircuit2()
     :
     GunnsElectPvCellEquivCircuit()
@@ -31,13 +33,23 @@ GunnsElectPvCellEquivCircuit2::GunnsElectPvCellEquivCircuit2()
     // nothing to do
 }
 
-//TODO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default destructs this Photovoltaic Cell Version 2 Equivalent Circuit model.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvCellEquivCircuit2::~GunnsElectPvCellEquivCircuit2()
 {
     // nothing to do
 }
 
-//TODO throws out of bounds exception, catch & rethrow in link init
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] configData (--) The cell configuration data.
+/// @param[in] name       (--) Instance name for identification in error messages.
+///
+/// @throws   TsInitializationException
+///
+/// @details  Initializes this Photovoltaic Cell Version 2 Equivalent Circuit model with the cell
+///           configuration data an the instance name.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvCellEquivCircuit2::initialize(const GunnsElectPvCellConfigData* configData, const std::string& name)
 {
     mName = name;
@@ -54,23 +66,19 @@ void GunnsElectPvCellEquivCircuit2::initialize(const GunnsElectPvCellConfigData*
     mCoeffDIscDT = configData->mTemperatureCurrentCoeff;
     mSurfaceArea = configData->mSurfaceArea;
 
-    //TODO catch out of bounds and re-throw init
-    derive();
-    computeEfficiency();
-    validate();
+    /// - Compute and validate initial state.
+    try {
+        derive();
+        computeEfficiency();
+    } catch (TsOutOfBoundsException& e) {
+        GUNNS_ERROR(TsInitializationException, "Re-throw",
+                    "caught exception from derive().");
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @throws   TsInitializationException
-///
-/// @details  Validates this Photovoltaic String Model equivalent circuit properties initialization.
+/// @details  Computes the efficiency and fill factor for the cell at current conditions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO move to PvCellEquivCircuit
-void GunnsElectPvCellEquivCircuit2::validate() const
-{
-}
-
-//TODO
 void GunnsElectPvCellEquivCircuit2::computeEfficiency()
 {
     if (mSurfaceArea > 0.0 and mPhotoFlux > 0.0) {
@@ -86,25 +94,34 @@ void GunnsElectPvCellEquivCircuit2::computeEfficiency()
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] refCell     (--)   Pointer to the reference cell.
+/// @param[in] temperature (K)    Cell temperature.
+/// @param[in] photoFlux   (W/m2) Cell absorbed illumination power flux.
+/// @param[in] degradation (--)   Fraction of cell degradation.
+///
 /// @throws   TsOutOfBoundsException
 ///
-//TODO
-void GunnsElectPvCellEquivCircuit2::update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature, const double photoFlux)
+/// @details  Computes the equivalent cell parameters as differing from the given reference cell
+///           affected by the given temperature and illumination values.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvCellEquivCircuit2::update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature,
+                                           const double photoFlux, const double degradation)
 {
-    // start identical to the ref cell
+    /// - Start identical to the reference cell.
     static_cast<GunnsElectPvCellEquivCircuit&>(*this) = *refCell;
 
-    // load new input conditions
+    /// - Store the given temperature and lighting conditions.  Protection against divide by zero is
+    ///   provided by preventing zero reference cell photo flux in its initialization.  Cell
+    ///   degradation is modeled as simply reducing the effective flux it can use.
     mTemperature = temperature;
     mPhotoFlux   = photoFlux;
-    // protection against divide by zero is provided by preventing zero reference cell photo
-    // flux in validate.
-    const double photoRatio = mPhotoFlux / refCell->mPhotoFlux;
+    const double photoRatio = mPhotoFlux * (1.0 - degradation) / refCell->mPhotoFlux;
     if (photoRatio > DBL_EPSILON) {
-        //TODO here's where we recalculate the equis props due to T, light, shading, malfs, etc.
         if (mTemperature == refCell->mTemperature) {
-            // update equiv cell for lighting, but no temperature change
-            // equiv currents increase with light ratio, resistances decrease
+            /// - If we're at the reference temperature, cell only varies with illumination.
+            ///   Currents increase with more light, resistances decrease, and all other parameters
+            ///   are unchanged from teh reference cell.
             mIsc = refCell->mIsc * photoRatio;
             mImp = refCell->mImp * photoRatio;
             mRs  = refCell->mRs  / photoRatio;
@@ -113,18 +130,20 @@ void GunnsElectPvCellEquivCircuit2::update(const GunnsElectPvCellEquivCircuit* r
             mIL  = refCell->mIL  * photoRatio;
 
         } else {
-            // update equiv cell for lighting and temperature changes
+            /// - Away from the reference temperature, Voc and Isc are biased by their temperature
+            ///   coefficients, Isc and Imp increase with more light as above, Vmp and Imp change
+            ///   by the same ratios as Voc and Isc, and all other cell parameters are re-computed.
             const double dT = mTemperature - refCell->mTemperature;
             const double dVoc = dT * mCoeffDVocDT;
             const double dIsc = dT * mCoeffDIscDT;
-            mVoc += dVoc;
-            mIsc += dIsc;
+            const double tempIsc = refCell->mIsc * photoRatio;
+            mVoc = refCell->mVoc + dVoc;
+            mIsc = tempIsc + dIsc;
+            /// - Extreme temperatures can cause Voc or Isc to reach zero, in which case we zero out
+            ///   the cell, as if it has no illumination.
             if (mVoc > DBL_EPSILON and mIsc > DBL_EPSILON) {
-                // protection against divide by zero is provided by preventing zero values in reference cell validate
-                const double tempIsc = refCell->mIsc * photoRatio;
                 const double tempImp = refCell->mImp * photoRatio;
-                // TODO divide zero protected by checks above
-                mVmp *= mVoc / refCell->mVoc;
+                mVmp = refCell->mVmp * mVoc / refCell->mVoc;
                 mImp = tempImp * mIsc / tempIsc;
                 derive();
             } else {
@@ -137,25 +156,20 @@ void GunnsElectPvCellEquivCircuit2::update(const GunnsElectPvCellEquivCircuit* r
     computeEfficiency();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @throws   TsOutOfBoundsException
 ///
-//TODO
-// computes Rs, Rsh, I0, IL given Voc, Isc, Vmp, Imp, T, ideality
+/// @details  Computes N*Vt, Rs, Rsh, I0, and IL, given Voc, Isc, Vmp, Imp, T, and ideality.  This
+///           method to calculate Rs, Rsh, I0 and IL is from Reference 1.  Results and some
+///           intermediate computations are checked for valid ranges and exception is thrown for
+///           any out-of-bounds values to avoid later math faults.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvCellEquivCircuit2::derive()
 {
-    //TODO #90
-    // this is from reference:
-    // "Lambert W-function simplified expressions for photovoltaic current-voltage modelling"
-    // Given cell config data:
-    // - Voc, Isc, Vmpp, Impp, n, Tref
-    // Compute the remainder of the reference cell equivalent properties:
-    // - Vt, Rs, Rsh, I0, IL
-    // - compute reference thermal voltage @ reference T, Vt
-    //   TODO needs either class or config data attr
-    // n * Vt:
+    /// - Compute product of diode ideality and thermal voltage.
     mNVt = mIdeality * mBoltzmannOverCharge * mTemperature;
 
-    // - compute and range check Rs
+    /// - Compute and range check series resistance.
     const double A = mNVt / mImp;
     const double B = -mVmp * (2.0 * mImp - mIsc)
                    / (mVmp * mIsc + mVoc * (mImp - mIsc));
@@ -182,7 +196,7 @@ void GunnsElectPvCellEquivCircuit2::derive()
                     "computed series resistance <= 0.");
     }
 
-    // - compute and range check Rsh
+    /// - Compute and range check shunt resistance.
     mRsh = (mVmp - mImp * mRs) * (mVmp - mRs * (mIsc - mImp) - mNVt)
          / ((mVmp - mImp * mRs) * (mIsc - mImp) - mNVt * mImp);
     if (mRsh <= 0.0) {
@@ -191,7 +205,7 @@ void GunnsElectPvCellEquivCircuit2::derive()
                     "computed shunt resistance <= 0.");
     }
 
-    // - Compute and range check I0
+    /// - Compute and range check reverse saturation current.
     const double vexp = mVoc / mNVt;
     if (not MsMath::isInRange(-500.0, vexp, 500.0)) {
         GUNNS_ERROR(TsOutOfBoundsException, "Operand out of Range",
@@ -203,12 +217,9 @@ void GunnsElectPvCellEquivCircuit2::derive()
                     "computed saturation current <= 0.");
     }
 
-    // - Compute and range check IL
+    /// - Compute and range check illumination source current.  Error checking for valid range isn't
+    ///   needed since this can never be <= 0 because of previous error checks.
     mIL = (mRsh + mRs) * mIsc / mRsh;
-    if (mIL <= 0.0) {
-        GUNNS_ERROR(TsOutOfBoundsException, "Failed Initialization",
-                    "computed illumination source current <= 0.");
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,8 +341,12 @@ GunnsElectPvString2::~GunnsElectPvString2()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvString2::initialize(const std::string& name)
 {
-    /// - Initialize the instance name.
+    /// - Initialize the instance name and throw an exception if it's empty.
     mName = name;
+    if (mName.empty()) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "empty instance name.");
+    }
 
     /// - Throw an exception on null pointer to config data.
     if (!mConfig) {
@@ -345,26 +360,23 @@ void GunnsElectPvString2::initialize(const std::string& name)
                     "mInput is null pointer.");
     }
 
-    /// - Validate config & input data and initialize the base class.
+    /// - Validate config & input data.
     validate();
 
-    TS_NEW_CLASS_OBJECT_EXT(mRefCell, GunnsElectPvCellEquivCircuit2,  (), mName + ".mRefCell");
-    TS_NEW_CLASS_OBJECT_EXT(mEqProps,  GunnsElectPvCellEquivCircuit2, (), mName + ".mEqProps");
-
     /// - Initialize and validate the reference cell and equivalent circuit properties.
+    TS_NEW_CLASS_OBJECT_EXT(mRefCell, GunnsElectPvCellEquivCircuit2, (), mName + ".mRefCell");
+    TS_NEW_CLASS_OBJECT_EXT(mEqProps, GunnsElectPvCellEquivCircuit2, (), mName + ".mEqProps");
+
     mRefCell->initialize(&mConfig->mCellConfig, mName + ".mRefCell");
     mEqProps->initialize(&mConfig->mCellConfig, mName + ".mEqProps");
 
     /// - Compute and validate the initial state.
     mEqProps->update(mRefCell, mInput->mTemperature, mInput->mPhotoFlux);
-
-    // init unloaded so MPP and terminal are stll clear
     mMpp.clear();
     mTerminal.clear();
-
-    mNumBypassedGroups   = 0;
-    mNumActiveCells      = 0;
-    mShunted             = false;
+    mNumBypassedGroups = 0;
+    mNumActiveCells    = 0;
+    mShunted           = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,6 +434,42 @@ void GunnsElectPvString2::validate() const
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "reference cell surface area < 0.");
     }
+
+    /// - Throw an exception on # cells < 1.
+    if (mConfig->mNumCells < 1) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "number of cells < 1.");
+    }
+
+    /// - Throw an exception on bypass diode interval < 1.
+    if (mConfig->mBypassDiodeInterval < 1) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "bypass diode interval < 1.");
+    }
+
+    /// - Throw an exception if bypass diode interval not evenly divisible in total # cells.
+    if (0 != mConfig->mNumCells % mConfig->mBypassDiodeInterval) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
+                    "bypass diode interval not evenly divisible in number of cells.");
+    }
+
+    /// - Throw an exception on photo flux magnitude < 0.
+    if (mInput->mPhotoFlux < 0.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "initial photo flux magnitude < 0.");
+    }
+
+    /// - Throw an exception on source exposed fraction not in 0-1.
+    if (not MsMath::isInRange(0.0, mInput->mSourceExposedFraction, 1.0)) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "initial source exposed fraction not in 0-1.");
+    }
+
+    /// - Throw an exception on temperature < 0.
+    if (mInput->mTemperature < 0.0) {
+        GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
+                    "initial temperature < 0.");
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -435,17 +483,15 @@ void GunnsElectPvString2::update()
     /// - Number of active cells reduced by the bypassed groups.
     updateBypassedGroups();
     mNumActiveCells = mConfig->mNumCells - mNumBypassedGroups * mConfig->mBypassDiodeInterval;
+    mSeriesVoltageDrop = mConfig->mBlockingDiodeVoltageDrop
+                       + mNumBypassedGroups * mConfig->mBypassDiodeVoltageDrop;
 
     if (mNumActiveCells > 0) {
-        mSeriesVoltageDrop = mConfig->mBlockingDiodeVoltageDrop
-                           + mNumBypassedGroups * mConfig->mBypassDiodeVoltageDrop;
-
-        /// - The degrade malfunction simply reduces effective lighting.
-        double photoFlux = mInput->mPhotoFlux;
         if (mMalfDegradeFlag) {
-            photoFlux *= MsMath::limitRange(0.0, 1.0 - mMalfDegradeValue, 1.0);
+            mEqProps->update(mRefCell, mInput->mTemperature, mInput->mPhotoFlux, MsMath::limitRange(0.0, mMalfDegradeValue, 1.0));
+        } else {
+            mEqProps->update(mRefCell, mInput->mTemperature, mInput->mPhotoFlux);
         }
-        mEqProps->update(mRefCell, mInput->mTemperature, photoFlux);
         updateMpp();
         mShortCircuitCurrent = mEqProps->mIsc;
         mOpenCircuitVoltage  = std::max(0.0, mEqProps->mVoc * mNumActiveCells - mSeriesVoltageDrop);
@@ -458,13 +504,7 @@ void GunnsElectPvString2::update()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO new description
-// - this is the MPP of the whole string, whereas mEqProps holds the MPP of a single cell
-// - basically multiply eq cell voltages by num active cells, hold currents the same, recompute P & G
-/// @details  Computes the Maximum Power Point assuming the junction node is at the open-circuit
-///           voltage, shunt diode is reverse biased and series diode is forward biased.
-///
-/// @note     Caller must ensure mEqProps->mSeriesConductance > 0.
+/// @details  Computes the Maximum Power Point of the string.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvString2::updateMpp()
 {
@@ -482,11 +522,9 @@ void GunnsElectPvString2::updateMpp()
 /// @param[in]  power      (W)   The output power load to apply.
 /// @param[in]  shortSide  (--)  True uses the solution on the short-circuit side of maximum power.
 ///
-/// @details  This loads the string at the given power output and on the given side of the string's
-///           Maximum Power Point on its I-V performance curve.  If the given power exceeds the
-///           string's maximum power output then the terminal outputs are zeroed.
-//TODO for this version 2, we only load at the MPP, and ignore the shortSide argument.
-// this will only be useful for a future MPP regulator link.
+/// @details  This loads the string at either the MPP, or zero power at Isc or Voc, depending on the
+///           the given power output.  This version 2 string model does not have the ability to
+///           load the string at arbitrary power loads, only at either MPP or zero.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvString2::loadAtPower(const double power, const bool shortSide)
 {
@@ -494,18 +532,15 @@ void GunnsElectPvString2::loadAtPower(const double power, const bool shortSide)
         mTerminal.mPower = 0.0;
         if (shortSide) {
             mTerminal.mVoltage     = 0.0;
-            mTerminal.mCurrent     = mEqProps->mIsc;
-            mTerminal.mConductance = mEqProps->mIsc / DBL_EPSILON;
+            mTerminal.mCurrent     = mShortCircuitCurrent;
+            mTerminal.mConductance = mShortCircuitCurrent / DBL_EPSILON;
         } else {
-            mTerminal.mVoltage     = mEqProps->mVoc;
+            mTerminal.mVoltage     = mOpenCircuitVoltage;
             mTerminal.mCurrent     = 0.0;
             mTerminal.mConductance = 0.0;
         }
     } else {
-        mTerminal.mVoltage     = mMpp.mVoltage;
-        mTerminal.mCurrent     = mMpp.mCurrent;
-        mTerminal.mPower       = mMpp.mPower;
-        mTerminal.mConductance = mMpp.mConductance;
+        loadAtMpp();
     }
 }
 
@@ -535,20 +570,18 @@ void GunnsElectPvString2::loadAtVoltage(const double v1)
 ///
 /// @throws   TsOutOfBoundsException
 ///
-/// @details  This loads the string with the given conductive load and computes the resulting
-///           terminal output state.
-//TODO we can't really load at the given g.
-//  instead, we will load at either near Voc or near Isc (shunted) depending on whether given g is
-//  below or above the MPP g, respectively.
-// this should never really be used...
+/// @details  This loads the string near either the open-circuit or short-circuit points, depending
+///           on which side of the MPP the given conductance represents.  The version 2 equivalent
+///           cell model has limited ability to load at arbitrary current or power, so we can't load
+///           at arbitrary conductance either.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvString2::loadAtConductance(const double g)
 {
     if (g < mMpp.mConductance) {
-        // load at 99.99% of Voc
+        /// - On the open-circuit side, load at 99.99% of Voc.
         loadAtVoltage(0.9999 * mOpenCircuitVoltage);
     } else {
-        // load at 0.01% of Voc
+        /// - If on the short-circuit side or at MPP, load at 0.01% of Voc.
         loadAtVoltage(0.0001 * mOpenCircuitVoltage);
     }
 }
@@ -560,15 +593,15 @@ void GunnsElectPvString2::loadAtConductance(const double g)
 ///
 /// @throws   TsOutOfBoundsException
 ///
-/// @details TODO This is similar to loadAtVoltage method, but only returns the current, and doesn't
-///           store the result or actually load the string.
+/// @details This computes the string current at the given string voltage.  This doesn't store the
+///          result or actually load the string.  Voltage is given for the entire string, but we can
+///          only compute current for an equivalent cell, so we work out what the individual cell
+///          voltage is by adding the series diode voltage drops and dividing by the number of
+///          active cells.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsElectPvString2::predictCurrentAtVoltage(const double v1) const
 {
     double current = 0.0;
-
-    //TODO given voltage is for the entire string, but we can only solve for current for a single
-    // cell, so divide the given voltage by the number of active cells
 
     if (mNumActiveCells > 0) {
         const double cellVoltage = (v1 + mSeriesVoltageDrop) / mNumActiveCells;

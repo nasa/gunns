@@ -1,4 +1,4 @@
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 #include <cppunit/ui/text/TestRunner.h>
 
@@ -7,6 +7,7 @@
 #include "UtSolarSection.hh"
 #include "UtSolarArray.hh"
 #include "UtGunnsElectPvString.hh"
+#include "UtGunnsElectPvString2.hh"
 #include "UtGunnsElectPvSection.hh"
 #include "UtGunnsElectPvArray.hh"
 #include "UtGunnsElectPvRegTrips.hh"
@@ -28,6 +29,7 @@ int main(int argc, char** argv) {
     runner.addTest(UtSolarSection::suite());
     runner.addTest(UtSolarArray::suite());
     runner.addTest(UtGunnsElectPvString::suite());
+    runner.addTest(UtGunnsElectPvString2::suite());
     runner.addTest(UtGunnsElectPvSection::suite());
     runner.addTest(UtGunnsElectPvArray::suite());
     runner.addTest(UtGunnsElectPvRegTrips::suite());

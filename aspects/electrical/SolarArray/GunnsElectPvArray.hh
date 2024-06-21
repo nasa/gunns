@@ -2,13 +2,13 @@
 #define GunnsElectPvArray_EXISTS
 
 /**
-@file
+@file     GunnsElectPvArray.hh
 @brief    GUNNS Electrical Photovoltaic Array Link declarations
 
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_ARRAY    Photovoltaic Array Link
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -38,36 +38,63 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Photovoltaic Array Link Configuration Data.
 ///
-/// @details  This provides a data structure for the Photovoltaic Array Link config data.
+/// @details  This provides a data structure for the Photovoltaic Array Link config data.  This has
+///           overloaded constructors that determine which version of the underlying String & Cell
+///           models are to be used.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectPvArrayConfigData : public GunnsBasicLinkConfigData
 {
     public:
-        unsigned int            mNumSections;         /**< (--) trick_chkpnt_io(**) Number of sections in the array. */
-        unsigned int            mNumStrings;          /**< (--) trick_chkpnt_io(**) Default total number of strings in the array. */
-        unsigned int*           mNumStringsBySection; /**< (--) trick_chkpnt_io(**) Optional list of number of strings in each section. */
-        GunnsElectPvSectionConfigData mSectionConfig; /**< (--) trick_chkpnt_io(**) Config data for the sections. */
+        unsigned int                  mNumSections;         /**< (1) trick_chkpnt_io(**) Number of sections in the array. */
+        unsigned int                  mNumStrings;          /**< (1) trick_chkpnt_io(**) Default total number of strings in the array. */
+        unsigned int*                 mNumStringsBySection; /**< (1) trick_chkpnt_io(**) Optional list of number of strings in each section. */
+        GunnsElectPvSectionConfigData mSectionConfig;       /**< (1) trick_chkpnt_io(**) Config data for the sections. */
         /// @brief Default constructs this Photovoltaic Array Link config data.
-        GunnsElectPvArrayConfigData(const std::string& name                           = "",
-                                    GunnsNodeList*     nodes                          = 0,
-                                    const unsigned int arrayNumSections               = 0,
-                                    const unsigned int arrayNumStrings                = 0,
-                                    const double       sectionSourceAngleExponent     = 0.0,
-                                    const double       sectionBacksideReduction       = 0.0,
-                                    const bool         sectionSourceAngleEdgeOn       = 0.0,
-                                    const double       sectionRefSourceFluxMagnitude  = 0.0,
-                                    const double       stringBlockingDiodeVoltageDrop = 0.0,
-                                    const double       stringBypassDiodeVoltageDrop   = 0.0,
-                                    const unsigned int stringBypassDiodeInterval      = 0,
-                                    const unsigned int stringNumCells                 = 0,
-                                    const double       cellSurfaceArea                = 0.0,
-                                    const double       cellEfficiency                 = 0.0,
-                                    const double       cellSeriesResistance           = 0.0,
-                                    const double       cellShuntResistance            = 0.0,
-                                    const double       cellOpenCircuitVoltage         = 0.0,
-                                    const double       cellRefTemperature             = 0.0,
-                                    const double       cellTemperatureVoltageCoeff    = 0.0,
-                                    const double       cellTemperatureCurrentCoeff    = 0.0);
+        GunnsElectPvArrayConfigData(const std::string& name = "",
+                                    GunnsNodeList*     nodes = 0);
+        /// @brief Constructs this Photovoltaic Array Link config data for the original version strings.
+        GunnsElectPvArrayConfigData(const std::string& name,
+                                    GunnsNodeList*     nodes,
+                                    const unsigned int arrayNumSections,
+                                    const unsigned int arrayNumStrings,
+                                    const double       sectionSourceAngleExponent,
+                                    const double       sectionBacksideReduction,
+                                    const bool         sectionSourceAngleEdgeOn,
+                                    const double       sectionRefSourceFluxMagnitude,
+                                    const double       stringBlockingDiodeVoltageDrop,
+                                    const double       stringBypassDiodeVoltageDrop,
+                                    const unsigned int stringBypassDiodeInterval,
+                                    const unsigned int stringNumCells,
+                                    const double       cellSurfaceArea,
+                                    const double       cellEfficiency,
+                                    const double       cellSeriesResistance,
+                                    const double       cellShuntResistance,
+                                    const double       cellOpenCircuitVoltage,
+                                    const double       cellRefTemperature,
+                                    const double       cellTemperatureVoltageCoeff,
+                                    const double       cellTemperatureCurrentCoeff);
+        /// @brief Constructs this Photovoltaic Array Link config data for the version 2 strings.
+        GunnsElectPvArrayConfigData(const std::string& name,
+                                    GunnsNodeList*     nodes,
+                                    const double       cellRefVoc,
+                                    const double       cellRefIsc,
+                                    const double       cellRefVmp,
+                                    const double       cellRefImp,
+                                    const double       cellRefTemperature,
+                                    const double       cellCoeffDVocDT,
+                                    const double       cellCoeffDIscDT,
+                                    const double       cellIdeality,
+                                    const double       cellArea,
+                                    const double       sectionSourceAngleExponent,
+                                    const double       sectionBacksideReduction,
+                                    const bool         sectionSourceAngleEdgeOn,
+                                    const double       sectionRefSourceFluxMagnitude,
+                                    const double       stringBlockingDiodeVoltageDrop,
+                                    const double       stringBypassDiodeVoltageDrop,
+                                    const unsigned int stringBypassDiodeInterval,
+                                    const unsigned int stringNumCells,
+                                    const unsigned int arrayNumSections,
+                                    const unsigned int arrayNumStrings);
         /// @brief Default destructs this Photovoltaic Array Link config data.
         virtual ~GunnsElectPvArrayConfigData();
         /// @brief Assignment operator for this Photovoltaic Array Link config data.
@@ -134,7 +161,7 @@ class GunnsElectPvArray : public GunnsBasicLink
         /// @name    Embedded objects.
         /// @{
         /// @details Embedded objects are public to allow access from the Trick events processor.
-        GunnsElectPvSection*        mSections;             /**<    (--) trick_chkpnt_io(**) Array of sections in this array. */
+        GunnsElectPvSection* mSections; /**< (1) trick_chkpnt_io(**) Array of sections in this array. */
         /// @}
         /// @brief Default Constructor.
         GunnsElectPvArray();
@@ -180,16 +207,16 @@ class GunnsElectPvArray : public GunnsBasicLink
         void setCommonStringsOutput(const bool flag);
 
     protected:
-        GunnsElectPvArrayConfigData mConfig;              /**< (--)    trick_chkpnt_io(**) Array config data. */
-        bool                        mOpenCircuitSide;     /**< (--)    trick_chkpnt_io(**) Array is operating on the open-circuit side of its I-V curve. */
-        bool                        mCommonStringsOutput; /**< (--)                        String terminals are tied to a common output. */
-        double                      mPercentInsolation;   /**< (--)    trick_chkpnt_io(**) Percentage of actual light incident on array relative to reference source flux magnitude. */
-        double                      mShortCircuitCurrent; /**< (amp)   trick_chkpnt_io(**) Short-circuit current at terminal node (max load). */
-        double                      mOpenCircuitVoltage;  /**< (V)     trick_chkpnt_io(**) Open-circuit voltage at terminal node (no load). */
-        GunnsElectPvLoadState       mMpp;                 /**< (--)    trick_chkpnt_io(**) Maximum Power Point load state. */
-        GunnsElectPvLoadState       mTerminal;            /**< (--)    trick_chkpnt_io(**) Terminal output load state. */
-        double                      mIvCornerVoltage;     /**< (V)     trick_chkpnt_io(**) Average array I-V curve corner voltage. */
-        double                      mIvCornerCurrent;     /**< (amp)   trick_chkpnt_io(**) Average array I-V curve corner current. */
+        GunnsElectPvArrayConfigData mConfig;              /**< (1)   trick_chkpnt_io(**) Array config data. */
+        bool                        mOpenCircuitSide;     /**< (1)   trick_chkpnt_io(**) Array is operating on the open-circuit side of its I-V curve. */
+        bool                        mCommonStringsOutput; /**< (1)                        String terminals are tied to a common output. */
+        double                      mPercentInsolation;   /**< (1)   trick_chkpnt_io(**) Percentage of actual light incident on array relative to reference source flux magnitude. */
+        double                      mShortCircuitCurrent; /**< (amp) trick_chkpnt_io(**) Short-circuit current at terminal node (max load). */
+        double                      mOpenCircuitVoltage;  /**< (V)   trick_chkpnt_io(**) Open-circuit voltage at terminal node (no load). */
+        GunnsElectPvLoadState       mMpp;                 /**< (1)   trick_chkpnt_io(**) Maximum Power Point load state. */
+        GunnsElectPvLoadState       mTerminal;            /**< (1)   trick_chkpnt_io(**) Terminal output load state. */
+        double                      mIvCornerVoltage;     /**< (V)   trick_chkpnt_io(**) Average array I-V curve corner voltage. */
+        double                      mIvCornerCurrent;     /**< (amp) trick_chkpnt_io(**) Average array I-V curve corner current. */
         /// @brief Validates the initialization of this Gunns Photovoltaic Array.
         void validate() const;
         /// @brief Virtual method for derived links to perform their restart functions.

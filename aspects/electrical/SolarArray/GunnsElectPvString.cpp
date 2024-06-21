@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Photovoltaic String Model implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -18,6 +18,32 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsInitializationException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Photovoltaic Cell model config data.  This only exists to
+///           avoid ambiguity with the overloaded custom constructors below.  This shouldn't
+///           actually be used, as a cell configured with this constructor will not be able to
+///           initialize.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvCellConfigData::GunnsElectPvCellConfigData()
+    :
+    mSurfaceArea(0.0),
+    mEfficiency(0.0),
+    mSeriesResistance(0.0),
+    mShuntResistance(0.0),
+    mOpenCircuitVoltage(0.0),
+    mRefTemperature(0.0),
+    mTemperatureVoltageCoeff(0.0),
+    mTemperatureCurrentCoeff(0.0),
+    mShortCircuitCurrent(0.0),
+    mMppVoltage(0.0),
+    mMppCurrent(0.0),
+    mPhotoFlux(0.0),
+    mIdeality(0.0),
+    mIsVersion2(false)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] cellSurfaceArea             (m2)  Surface area of one side.
 /// @param[in] cellEfficiency              (--)  Photovoltaic efficiency (0-1).
 /// @param[in] cellSeriesResistance        (ohm) Series resistance.
@@ -27,7 +53,8 @@ LIBRARY DEPENDENCY:
 /// @param[in] cellTemperatureVoltageCoeff (1/K) Coefficient for temperature effect on open-circuit voltage.
 /// @param[in] cellTemperatureVoltageCoeff (1/K) Coefficient for temperature effect on source current.
 ///
-/// @details  Default constructs this Photovoltaic Cell config data.
+/// @details  This overloaded constructor constructs this Photovoltaic Cell config data for an
+///           original version cell model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvCellConfigData::GunnsElectPvCellConfigData(const double cellSurfaceArea,
                                                        const double cellEfficiency,
@@ -45,7 +72,57 @@ GunnsElectPvCellConfigData::GunnsElectPvCellConfigData(const double cellSurfaceA
     mOpenCircuitVoltage(cellOpenCircuitVoltage),
     mRefTemperature(cellRefTemperature),
     mTemperatureVoltageCoeff(cellTemperatureVoltageCoeff),
-    mTemperatureCurrentCoeff(cellTemperatureCurrentCoeff)
+    mTemperatureCurrentCoeff(cellTemperatureCurrentCoeff),
+    mShortCircuitCurrent(0.0),
+    mMppVoltage(0.0),
+    mMppCurrent(0.0),
+    mPhotoFlux(0.0),
+    mIdeality(0.0),
+    mIsVersion2(false)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] voc         (V)     Open-circuit voltage.
+/// @param[in] isc         (amp)   Short-circuit current.
+/// @param[in] vmp         (V)     Voltage at the maximum power point.
+/// @param[in] imp         (amp)   Current at the maximum power point.
+/// @param[in] photoFlux   (W/m2)  Absorbed photo power flux incident on the string.
+/// @param[in] temperature (K)     Temperature.
+/// @param[in] coeffDVocDT (V/K)   Coefficient for temperature effect on open-circuit voltage.
+/// @param[in] coeffDIscDT (amp/K) Coefficient for temperature effect on source current.
+/// @param[in] ideality    (1)     Diode ideality constant.
+/// @param[in] cellArea    (m2)    Optional cell area, used for efficiency estimation.
+///
+/// @details  This overloaded constructor constructs this Photovoltaic Cell config data for a
+///           version 2 cell model.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvCellConfigData::GunnsElectPvCellConfigData(const double voc,
+                                                       const double isc,
+                                                       const double vmp,
+                                                       const double imp,
+                                                       const double photoFlux,
+                                                       const double temperature,
+                                                       const double coeffDVocDT,
+                                                       const double coeffDIscDT,
+                                                       const double ideality,
+                                                       const double cellArea)
+    :
+    mSurfaceArea(cellArea),
+    mEfficiency(0.0),
+    mSeriesResistance(0.0),
+    mShuntResistance(0.0),
+    mOpenCircuitVoltage(voc),
+    mRefTemperature(temperature),
+    mTemperatureVoltageCoeff(coeffDVocDT),
+    mTemperatureCurrentCoeff(coeffDIscDT),
+    mShortCircuitCurrent(isc),
+    mMppVoltage(vmp),
+    mMppCurrent(imp),
+    mPhotoFlux(photoFlux),
+    mIdeality(ideality),
+    mIsVersion2(true)
 {
     // nothing to do
 }
@@ -74,36 +151,109 @@ GunnsElectPvCellConfigData& GunnsElectPvCellConfigData::operator =(const GunnsEl
         mRefTemperature          = that.mRefTemperature;
         mTemperatureVoltageCoeff = that.mTemperatureVoltageCoeff;
         mTemperatureCurrentCoeff = that.mTemperatureCurrentCoeff;
+        mShortCircuitCurrent     = that.mShortCircuitCurrent;
+        mMppVoltage              = that.mMppVoltage;
+        mMppCurrent              = that.mMppCurrent;
+        mPhotoFlux               = that.mPhotoFlux;
+        mIdeality                = that.mIdeality;
+        mIsVersion2              = that.mIsVersion2;
     }
     return *this;
 }
 
+/// @details  The ratio of the Boltzmann constant over the electron charge constant.
+const double GunnsElectPvCellEquivCircuit::mBoltzmannOverCharge = UnitConversion::BOLTZMANN_CONST / UnitConversion::ELECTRON_CHARGE;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Default constructs this Photovoltaic Cell Equivalent Circuit Properties.
+/// @details  Default constructs this Photovoltaic Cell Equivalent Circuit Model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectPvCellEquivProps::GunnsElectPvCellEquivProps()
+GunnsElectPvCellEquivCircuit::GunnsElectPvCellEquivCircuit()
+    :
+    mIL(0.0),
+    mRsh(0.0),
+    mRs(0.0),
+    mNVt(0.0),
+    mI0(0.0),
+    mFillFactor(0.0),
+    mEfficiency(0.0),
+    mVoc(0.0),
+    mIsc(0.0),
+    mVmp(0.0),
+    mImp(0.0),
+    mPhotoFlux(0.0),
+    mIdeality(0.0),
+    mTemperature(0.0),
+    mCoeffDVocDT(0.0),
+    mCoeffDIscDT(0.0),
+    mSurfaceArea(0.0),
+    mName("")
 {
     clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Default destructs this Photovoltaic Cell Equivalent Circuit Properties.
+/// @details  Default destructs this Photovoltaic Cell Equivalent Circuit Model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectPvCellEquivProps::~GunnsElectPvCellEquivProps()
+GunnsElectPvCellEquivCircuit::~GunnsElectPvCellEquivCircuit()
 {
     // nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Zeroes all attributes of this Photovoltaic Cell Equivalent Circuit Properties.
+/// @param[in] that (--) Reference to the instance to be assigned values from.
+///
+/// @returns  GunnsElectPvCellEquivCircuit& (--) Reference to this instance.
+///
+/// @details  Assigns this Photovoltaic Cell Equivalent Circuit Model to values from the given
+///           instance, except for the instance name
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectPvCellEquivProps::clear()
+GunnsElectPvCellEquivCircuit& GunnsElectPvCellEquivCircuit::operator =(const GunnsElectPvCellEquivCircuit& that)
 {
-    mSourceCurrent     = 0.0;
-    mShuntVoltageDrop  = 0.0;
-    mShuntResistance   = 0.0;
-    mSeriesVoltageDrop = 0.0;
-    mSeriesResistance  = 0.0;
+    if (&that != this) {
+        mIL          = that.mIL;
+        mRsh         = that.mRsh;
+        mRs          = that.mRs;
+        mNVt         = that.mNVt;
+        mI0          = that.mI0;
+        mFillFactor  = that.mFillFactor;
+        mEfficiency  = that.mEfficiency;
+        mVoc         = that.mVoc;
+        mIsc         = that.mIsc;
+        mVmp         = that.mVmp;
+        mImp         = that.mImp;
+        mPhotoFlux   = that.mPhotoFlux;
+        mIdeality    = that.mIdeality;
+        mTemperature = that.mTemperature;
+        mCoeffDVocDT = that.mCoeffDVocDT;
+        mCoeffDIscDT = that.mCoeffDIscDT;
+        mSurfaceArea = that.mSurfaceArea;
+    }
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Zeroes all attributes of this Photovoltaic Cell Equivalent Circuit Model, except for
+///           the instance name.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsElectPvCellEquivCircuit::clear()
+{
+    mIL          = 0.0;
+    mRsh         = 0.0;
+    mRs          = 0.0;
+    mNVt         = 0.0;
+    mI0          = 0.0;
+    mFillFactor  = 0.0;
+    mEfficiency  = 0.0;
+    mVoc         = 0.0;
+    mIsc         = 0.0;
+    mVmp         = 0.0;
+    mImp         = 0.0;
+    mPhotoFlux   = 0.0;
+    mIdeality    = 0.0;
+    mTemperature = 0.0;
+    mCoeffDVocDT = 0.0;
+    mCoeffDIscDT = 0.0;
+    mSurfaceArea = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,6 +302,23 @@ void GunnsElectPvLoadState::clear()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Photovoltaic String model config data.  This only exists to
+///           avoid ambiguity with the overloaded custom constructors below.  This shouldn't
+///           actually be used, as a string configured with this constructor will not be able to
+///           initialize.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvStringConfigData::GunnsElectPvStringConfigData()
+    :
+    mBlockingDiodeVoltageDrop(0.0),
+    mBypassDiodeVoltageDrop(0.0),
+    mBypassDiodeInterval(0),
+    mNumCells(0),
+    mCellConfig()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] stringBlockingDiodeVoltageDrop (V)   Voltage drop across the diode at end of string.
 /// @param[in] stringBypassDiodeVoltageDrop   (V)   Voltage drop across each bypass diode.
 /// @param[in] stringBypassDiodeInterval      (--)  Number of cells per bypass diode.
@@ -165,7 +332,8 @@ void GunnsElectPvLoadState::clear()
 /// @param[in] cellTemperatureVoltageCoeff    (1/K) Cell coefficient for temperature effect on open-circuit voltage.
 /// @param[in] cellTemperatureVoltageCoeff    (1/K) Cell coefficient for temperature effect on source current.
 ///
-/// @details  Default constructs this Photovoltaic String Model config data.
+/// @details  This overloaded constructor constructs this Photovoltaic String Model config data for
+///           an original version string model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvStringConfigData::GunnsElectPvStringConfigData(
         const double       stringBlockingDiodeVoltageDrop,
@@ -193,6 +361,59 @@ GunnsElectPvStringConfigData::GunnsElectPvStringConfigData(
                 cellRefTemperature,
                 cellTemperatureVoltageCoeff,
                 cellTemperatureCurrentCoeff)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] stringBlockingDiodeVoltageDrop (V)     Voltage drop across the diode at end of string.
+/// @param[in] stringBypassDiodeVoltageDrop   (V)     Voltage drop across each bypass diode.
+/// @param[in] stringBypassDiodeInterval      (--)    Number of cells per bypass diode.
+/// @param[in] stringNumCells                 (--)    Number of cells in this string.
+/// @param[in] cellRefVoc                     (V)     Reference cell open-circuit voltage.
+/// @param[in] cellRefIsc                     (amp)   Reference cell short-circuit current.
+/// @param[in] cellRefVmp                     (V)     Reference cell voltage at the maximum power point.
+/// @param[in] cellRefImp                     (amp)   Reference cell current at the maximum power point.
+/// @param[in] cellRefPhotoFlux               (W/m2)  Reference cell absorbed photo power flux.
+/// @param[in] cellRefTemperature             (K)     Reference cell temperature.
+/// @param[in] cellCoeffDVocDT                (V/K)   Coefficient for temperature effect on open-circuit voltage.
+/// @param[in] cellCoeffDIscDT                (amp/K) Coefficient for temperature effect on source current.
+/// @param[in] cellIdeality                   (1)     Cell equivalent diode ideality constant.
+/// @param[in] cellArea                       (m2)    Optional cell area, used for efficiency estimation.
+///
+/// @details  This overloaded constructor constructs this Photovoltaic String Model config data for
+///           a Version 2 string model.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvStringConfigData::GunnsElectPvStringConfigData(
+        const double       stringBlockingDiodeVoltageDrop,
+        const double       stringBypassDiodeVoltageDrop,
+        const unsigned int stringBypassDiodeInterval,
+        const unsigned int stringNumCells,
+        const double       cellRefVoc,
+        const double       cellRefIsc,
+        const double       cellRefVmp,
+        const double       cellRefImp,
+        const double       cellRefPhotoFlux,
+        const double       cellRefTemperature,
+        const double       cellCoeffDVocDT,
+        const double       cellCoeffDIscDT,
+        const double       cellIdeality,
+        const double       cellArea)
+    :
+    mBlockingDiodeVoltageDrop(stringBlockingDiodeVoltageDrop),
+    mBypassDiodeVoltageDrop(stringBypassDiodeVoltageDrop),
+    mBypassDiodeInterval(stringBypassDiodeInterval),
+    mNumCells(stringNumCells),
+    mCellConfig(cellRefVoc,
+                cellRefIsc,
+                cellRefVmp,
+                cellRefImp,
+                cellRefPhotoFlux,
+                cellRefTemperature,
+                cellCoeffDVocDT,
+                cellCoeffDIscDT,
+                cellIdeality,
+                cellArea)
 {
     // nothing to do
 }
@@ -342,14 +563,17 @@ GunnsElectPvString::GunnsElectPvString()
     mName(""),
     mConfig(0),
     mInput(0),
+    mShuntVoltageDrop(0.0),
+    mSeriesVoltageDrop(0.0),
     mShortCircuitCurrent(0.0),
     mOpenCircuitVoltage(0.0),
-    mEqProps(),
+    mEqProps(0),
     mMpp(),
     mTerminal(),
     mNumBypassedGroups(0),
     mNumActiveCells(0),
-    mShunted(false)
+    mShunted(false),
+    mRefCell(0)
 {
     // nothing to do
 }
@@ -371,14 +595,17 @@ GunnsElectPvString::GunnsElectPvString(const GunnsElectPvStringConfigData* confi
     mName(""),
     mConfig(configData),
     mInput(inputData),
+    mShuntVoltageDrop(0.0),
+    mSeriesVoltageDrop(0.0),
     mShortCircuitCurrent(0.0),
     mOpenCircuitVoltage(0.0),
-    mEqProps(),
+    mEqProps(0),
     mMpp(),
     mTerminal(),
     mNumBypassedGroups(0),
     mNumActiveCells(0),
-    mShunted(false)
+    mShunted(false),
+    mRefCell(0)
 {
     // nothing to do
 }
@@ -388,7 +615,7 @@ GunnsElectPvString::GunnsElectPvString(const GunnsElectPvStringConfigData* confi
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvString::~GunnsElectPvString()
 {
-    // nothing to do
+    TS_DELETE_OBJECT(mEqProps);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -405,10 +632,13 @@ void GunnsElectPvString::initialize(const std::string& name)
     mName = name;
     validate();
 
+    /// - Create the equivalent cell model for this string version.
+    TS_NEW_CLASS_OBJECT_EXT(mEqProps, GunnsElectPvCellEquivCircuit, (), mName + ".mEqProps");
+
     /// - Initialize state.
     mShortCircuitCurrent = 0.0;
     mOpenCircuitVoltage  = 0.0;
-    mEqProps.clear();
+    mEqProps->clear();
     mMpp.clear();
     mTerminal.clear();
     mNumBypassedGroups   = 0;
@@ -521,25 +751,25 @@ void GunnsElectPvString::update()
     mNumActiveCells = mConfig->mNumCells - mNumBypassedGroups * mConfig->mBypassDiodeInterval;
 
     /// - Shunt resistance.
-    mEqProps.mShuntResistance = std::max(1.0 / mIdealDiodeFactor,
+    mEqProps->mRsh = std::max(1.0 / mIdealDiodeFactor,
                                          mConfig->mCellConfig.mShuntResistance);
 
     /// - Shunt voltage drop is the effective open-circuit voltage of the string based on number of
     ///   active cells & temperature.
     const double dT = mInput->mTemperature - mConfig->mCellConfig.mRefTemperature;
-    mEqProps.mShuntVoltageDrop = mNumActiveCells * mConfig->mCellConfig.mOpenCircuitVoltage
+    mShuntVoltageDrop = mNumActiveCells * mConfig->mCellConfig.mOpenCircuitVoltage
             * std::max(1.0 + dT * mConfig->mCellConfig.mTemperatureVoltageCoeff, 0.0);
 
     /// - Series resistance.
-    mEqProps.mSeriesResistance = std::max(1.0 / mIdealDiodeFactor,
+    mEqProps->mRs = std::max(1.0 / mIdealDiodeFactor,
                                           mNumActiveCells * mConfig->mCellConfig.mSeriesResistance);
 
     /// - Series diode voltage drop.
-    mEqProps.mSeriesVoltageDrop = mConfig->mBlockingDiodeVoltageDrop
-                                + mNumBypassedGroups * mConfig->mBypassDiodeVoltageDrop;
+    mSeriesVoltageDrop = mConfig->mBlockingDiodeVoltageDrop
+                       + mNumBypassedGroups * mConfig->mBypassDiodeVoltageDrop;
 
     /// - Compute short-circuit current and Maximum Power Point.
-    if (mEqProps.mShuntVoltageDrop > DBL_EPSILON) {
+    if (mShuntVoltageDrop > DBL_EPSILON) {
         /// - Fraction of photo power converted to electricity based on cell efficiency and
         ///   temperature.
         const double conv = mConfig->mCellConfig.mEfficiency
@@ -551,17 +781,17 @@ void GunnsElectPvString::update()
         if (mMalfDegradeFlag) {
             power *= MsMath::limitRange(0.0, (1.0 - mMalfDegradeValue), 1.0);
         }
-        mEqProps.mSourceCurrent = power / mEqProps.mShuntVoltageDrop;
+        mEqProps->mIL = power / mShuntVoltageDrop;
     } else {
-        mEqProps.mSourceCurrent = 0.0;
+        mEqProps->mIL = 0.0;
     }
 
     if (mNumActiveCells > 0) {
-        mOpenCircuitVoltage  = mEqProps.mShuntVoltageDrop - mEqProps.mSeriesVoltageDrop
-                + mEqProps.mSourceCurrent * mEqProps.mShuntResistance / mIdealDiodeFactor;
+        mOpenCircuitVoltage  = mShuntVoltageDrop - mSeriesVoltageDrop
+                + mEqProps->mIL * mEqProps->mRsh / mIdealDiodeFactor;
         mShortCircuitCurrent = std::max(0.0,
-                (mEqProps.mSourceCurrent * mEqProps.mShuntResistance - mEqProps.mSeriesVoltageDrop)
-                / (mEqProps.mShuntResistance + mEqProps.mSeriesResistance));
+                (mEqProps->mIL * mEqProps->mRsh - mSeriesVoltageDrop)
+                / (mEqProps->mRsh + mEqProps->mRs));
         updateMpp();
     } else {
         mOpenCircuitVoltage  = 0.0;
@@ -598,22 +828,22 @@ void GunnsElectPvString::updateBypassedGroups()
 /// @details  Computes the Maximum Power Point assuming the junction node is at the open-circuit
 ///           voltage, shunt diode is reverse biased and series diode is forward biased.
 ///
-/// @note     Caller must ensure mEqProps.mSeriesConductance > 0.
+/// @note     Caller must ensure mEqProps->mSeriesConductance > 0.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectPvString::updateMpp()
 {
     /// - Total electrical power, shunt current and series current.
-    const double power = mEqProps.mShuntVoltageDrop * mEqProps.mSourceCurrent;
-    const double ish   = mEqProps.mShuntVoltageDrop / mEqProps.mShuntResistance;
-    const double is    = mEqProps.mSourceCurrent - ish;
+    const double power = mShuntVoltageDrop * mEqProps->mIL;
+    const double ish   = mShuntVoltageDrop / mEqProps->mRsh;
+    const double is    = mEqProps->mIL - ish;
 
     /// - Maximum Power Point.
-    mMpp.mPower = std::max(0.0, power - mEqProps.mShuntVoltageDrop*ish - is*mEqProps.mSeriesVoltageDrop
+    mMpp.mPower = std::max(0.0, power - mShuntVoltageDrop*ish - is*mSeriesVoltageDrop
                 - is*is*mNumActiveCells*mConfig->mCellConfig.mSeriesResistance);
 
     if (mMpp.mPower > 0.0) {
-        mMpp.mVoltage     = std::max(DBL_EPSILON, mEqProps.mShuntVoltageDrop
-                          - is*mEqProps.mSeriesResistance - mEqProps.mSeriesVoltageDrop);
+        mMpp.mVoltage     = std::max(DBL_EPSILON, mShuntVoltageDrop
+                          - is*mEqProps->mRs - mSeriesVoltageDrop);
         mMpp.mCurrent     = mMpp.mPower / mMpp.mVoltage;
         mMpp.mConductance = mMpp.mCurrent / mMpp.mVoltage;
     } else {

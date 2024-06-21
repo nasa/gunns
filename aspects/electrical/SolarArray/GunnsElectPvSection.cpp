@@ -1,13 +1,14 @@
 /**
-@file
+@file     GunnsElectPvSection.cpp
 @brief    GUNNS Electrical Photovoltaic Section Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
   (
    (GunnsElectPvString.o)
+   (GunnsElectPvString2.o)
    (software/exceptions/TsInitializationException.o)
   )
 */
@@ -16,6 +17,23 @@ LIBRARY DEPENDENCY:
 #include "GunnsElectPvSection.hh"
 #include "core/GunnsBasicNode.hh"
 #include "software/exceptions/TsInitializationException.hh"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Default constructs this Photovoltaic Section model config data.  This only exists to
+///           avoid ambiguity with the overloaded custom constructors below.  This shouldn't
+///           actually be used, as a section configured with this constructor will not be able to
+///           initialize.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvSectionConfigData::GunnsElectPvSectionConfigData()
+    :
+    mSourceAngleExponent(0.0),
+    mBacksideReduction(0.0),
+    mSourceAngleEdgeOn(false),
+    mRefSourceFluxMagnitude(0.0),
+    mStringConfig()
+{
+    // nothing to do
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] sectionSourceAngleExponent     (--)   Exponent on trig function of light source incident angle.
@@ -35,7 +53,8 @@ LIBRARY DEPENDENCY:
 /// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on open-circuit voltage.
 /// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on source current.
 ///
-/// @details  Default constructs this Photovoltaic Section Model config data.
+/// @details  This overloaded constructor constructs this Photovoltaic Section Mode config data for
+///           the original version strings.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvSectionConfigData::GunnsElectPvSectionConfigData(
         const double       sectionSourceAngleExponent,
@@ -71,6 +90,69 @@ GunnsElectPvSectionConfigData::GunnsElectPvSectionConfigData(
                   cellRefTemperature,
                   cellTemperatureVoltageCoeff,
                   cellTemperatureCurrentCoeff)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] cellRefVoc                     (V)     Reference cell open-circuit voltage.
+/// @param[in] cellRefIsc                     (amp)   Reference cell short-circuit current.
+/// @param[in] cellRefVmp                     (V)     Reference cell voltage at the maximum power point.
+/// @param[in] cellRefImp                     (amp)   Reference cell current at the maximum power point.
+/// @param[in] cellRefTemperature             (K)     Reference cell temperature.
+/// @param[in] cellCoeffDVocDT                (V/K)   Coefficient for temperature effect on open-circuit voltage.
+/// @param[in] cellCoeffDIscDT                (amp/K) Coefficient for temperature effect on source current.
+/// @param[in] cellIdeality                   (1)     Cell equivalent diode ideality constant.
+/// @param[in] cellArea                       (m2)    Optional cell area, used for efficiency estimation.
+/// @param[in] sectionSourceAngleExponent     (--)    Exponent on trig function of light source incident angle.
+/// @param[in] sectionBacksideReduction       (--)    Reduction fraction (0-1) when lit from back side.
+/// @param[in] sectionSourceAngleEdgeOn       (--)    Angle of light source to surface is edge-on instead of normal.
+/// @param[in] sectionRefSourceFluxMagnitude  (W/m2)  Reference ambient flux magnitude of light source absorbed by the surface.
+/// @param[in] stringBlockingDiodeVoltageDrop (v)     Voltage drop across the diode at end of string.
+/// @param[in] stringBypassDiodeVoltageDrop   (v)     Voltage drop across each bypass diode.
+/// @param[in] stringBypassDiodeInterval      (--)    Number of cells per bypass diode.
+/// @param[in] stringNumCells                 (--)    Number of cells in this string.
+///
+/// @details  This overloaded constructor constructs this Photovoltaic Section Mode config data for
+///           the version 2 strings.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvSectionConfigData::GunnsElectPvSectionConfigData(
+        const double       cellRefVoc,
+        const double       cellRefIsc,
+        const double       cellRefVmp,
+        const double       cellRefImp,
+        const double       cellRefTemperature,
+        const double       cellCoeffDVocDT,
+        const double       cellCoeffDIscDT,
+        const double       cellIdeality,
+        const double       cellArea,
+        const double       sectionSourceAngleExponent,
+        const double       sectionBacksideReduction,
+        const bool         sectionSourceAngleEdgeOn,
+        const double       sectionRefSourceFluxMagnitude,
+        const double       stringBlockingDiodeVoltageDrop,
+        const double       stringBypassDiodeVoltageDrop,
+        const unsigned int stringBypassDiodeInterval,
+        const unsigned int stringNumCells)
+    :
+    mSourceAngleExponent(sectionSourceAngleExponent),
+    mBacksideReduction(sectionBacksideReduction),
+    mSourceAngleEdgeOn(sectionSourceAngleEdgeOn),
+    mRefSourceFluxMagnitude(sectionRefSourceFluxMagnitude),
+    mStringConfig(stringBlockingDiodeVoltageDrop,
+                  stringBypassDiodeVoltageDrop,
+                  stringBypassDiodeInterval,
+                  stringNumCells,
+                  cellRefVoc,
+                  cellRefIsc,
+                  cellRefVmp,
+                  cellRefImp,
+                  sectionRefSourceFluxMagnitude,
+                  cellRefTemperature,
+                  cellCoeffDVocDT,
+                  cellCoeffDIscDT,
+                  cellIdeality,
+                  cellArea)
 {
     // nothing to do
 }
@@ -211,10 +293,14 @@ void GunnsElectPvSection::initialize(const std::string&                  name,
     mNumStrings = numStrings;
     validate();
 
-    /// - Construct the array of string objects.
-    const GunnsElectPvStringConfigData& stringConfig = mConfig->mStringConfig;
-    TS_NEW_CLASS_ARRAY_EXT(mStrings, static_cast<int>(mNumStrings), GunnsElectPvString,
-                           (&stringConfig, &mStringsInput), std::string(mName) + ".mStrings");
+    /// - Construct the array of string objects of type determined from the config data.
+    if (mConfig->mStringConfig.mCellConfig.isVersion2()) {
+        TS_NEW_CLASS_ARRAY_EXT(mStrings, static_cast<int>(mNumStrings), GunnsElectPvString2,
+                               (&mConfig->mStringConfig, &mStringsInput), std::string(mName) + ".mStrings");
+    } else {
+        TS_NEW_CLASS_ARRAY_EXT(mStrings, static_cast<int>(mNumStrings), GunnsElectPvString,
+                               (&mConfig->mStringConfig, &mStringsInput), std::string(mName) + ".mStrings");
+    }
 
     /// - Initialize the strings.
     for (unsigned int i=0; i<mNumStrings; ++i) {

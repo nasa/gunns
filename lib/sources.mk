@@ -1,4 +1,4 @@
-# Copyright 2023 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # All source folders containing run-time code to be compiled in libraries
@@ -43,6 +43,7 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/ms-utils/software/exceptions/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/approximation/*.cpp) \
+ $(wildcard $(GUNNS_HOME)/ms-utils/math/elementary_functions/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/linear_algebra/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/root_finding/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/time/*.cpp) \

@@ -1,100 +1,73 @@
-#ifndef UtGunnsElectPvString_EXISTS
-#define UtGunnsElectPvString_EXISTS
+#ifndef UtGunnsElectPvString2_EXISTS
+#define UtGunnsElectPvString2_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup UT_PHOTOVOLTAIC_STRING    Photovoltaic String Model Unit Test
+/// @defgroup UT_PHOTOVOLTAIC_STRING_V2    Photovoltaic String Version 2 Model Unit Test
 /// @ingroup  UT_GUNNS
 ///
 /// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
-/// @details  Unit Tests for the Photovoltaic String Model
+/// @details  Unit Tests for the Photovoltaic String Version 2 Model
 /// @{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-#include "aspects/electrical/SolarArray/GunnsElectPvString.hh"
+#include "aspects/electrical/SolarArray/GunnsElectPvString2.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsElectPvStringInputData and befriend UtGunnsElectPvString.
+/// @brief    Inherit from GunnsElectPvString2 and befriend UtGunnsElectPvString2.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsElectPvStringInputData : public GunnsElectPvStringInputData
+class FriendlyGunnsElectPvString2 : public GunnsElectPvString2
 {
     public:
-        FriendlyGunnsElectPvStringInputData() {;}
-        virtual ~FriendlyGunnsElectPvStringInputData() {;}
-        friend class UtGunnsElectPvString;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsElectPvString and befriend UtGunnsElectPvString.
-///
-/// @details  Class derived from the unit under test. It just has a constructor with the same
-///           arguments as the parent and a default destructor, but it befriends the unit test case
-///           driver class to allow it access to protected data members.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsElectPvString : public GunnsElectPvString
-{
-    public:
-        FriendlyGunnsElectPvString() {;}
-        FriendlyGunnsElectPvString(const GunnsElectPvStringConfigData* configData,
-                                   const GunnsElectPvStringInputData*  inputData)
-            : GunnsElectPvString(configData, inputData) {;}
-        virtual ~FriendlyGunnsElectPvString() {;}
-        friend class UtGunnsElectPvString;
+        FriendlyGunnsElectPvString2()
+            : GunnsElectPvString2() {;}
+        FriendlyGunnsElectPvString2(const GunnsElectPvStringConfigData* configData,
+                                    const GunnsElectPvStringInputData*  inputData)
+            : GunnsElectPvString2(configData, inputData) {;}
+        virtual ~FriendlyGunnsElectPvString2() {;}
+        friend class UtGunnsElectPvString2;
         friend class UtGunnsElectPvSection;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsElectPvCellEquivCircuit and befriend UtGunnsElectPvString.
-///
-/// @details  Class derived from the unit under test. It just has a constructor with the same
-///           arguments as the parent and a default destructor, but it befriends the unit test case
-///           driver class to allow it access to protected data members.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsElectPvCellEquivCircuit : public GunnsElectPvCellEquivCircuit
-{
-    public:
-        FriendlyGunnsElectPvCellEquivCircuit() {;}
-        virtual ~FriendlyGunnsElectPvCellEquivCircuit() {;}
-        friend class UtGunnsElectPvString;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Electric Photovoltaic String Model unit tests.
 ////
-/// @details  This class provides the unit tests for the GunnsElectPvString within the CPPUnit
+/// @details  This class provides the unit tests for the GunnsElectPvString2 within the CPPUnit
 ///           framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class UtGunnsElectPvString: public CppUnit::TestFixture
+class UtGunnsElectPvString2: public CppUnit::TestFixture
 {
     public:
         /// @brief  Nominal constructor
-        UtGunnsElectPvString();
+        UtGunnsElectPvString2();
         /// @brief  Nominal destructs
-        virtual ~UtGunnsElectPvString();
+        virtual ~UtGunnsElectPvString2();
         /// @brief  Executes before each test.
         void setUp();
         /// @brief  Executes after each test.
         void tearDown();
         /// @brief  Tests cell config data.
         void testCellConfig();
-        /// @brief  Tests cell equivalent properties data.
+        /// @brief  Tests cell equivalent circuit model construction.
         void testCellEquivProps();
-        /// @brief  Tests load state data.
-        void testLoadState();
-        /// @brief  Tests config data.
-        void testConfig();
-        /// @brief  Tests input data.
-        void testInput();
-        /// @brief  Tests input data overrides.
-        void testInputOverrides();
+        /// @brief  Tests cell equivalent circuit model initialization.
+        void testCellEquivInit();
+        /// @brief  Tests cell equivalent circuit model initialization method with errors.
+        void testCellEquivInitErrors();
+        /// @brief  Tests cell equivalent circuit model update function.
+        void testCellEquivUpdate();
+        /// @brief  Tests cell equivalent circuit model compute current function.
+        void testCellEquivCurrent();
+        /// @brief  Tests cell equivalent circuit model compute voltage function.
+        void testCellEquivVoltage();
         /// @brief  Tests construction methods.
         void testConstruction();
         /// @brief  Tests the initialization method with nominal values.
@@ -105,10 +78,6 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         void testActiveCells();
         /// @brief  Tests the step method.
         void testStep();
-        /// @brief  Tests the getter and setter methods.
-        void testAccessors();
-        /// @brief  Tests the loadAtMpp method.
-        void testLoadAtMpp();
         /// @brief  Tests the loadAtPower method.
         void testLoadAtPower();
         /// @brief  Tests the loadAtVoltage method.
@@ -117,21 +86,20 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         void testLoadAtConductance();
 
     private:
-        /// @brief  Sets up the suite of tests for the GunnsElectPvStringric unit testing.
-        CPPUNIT_TEST_SUITE(UtGunnsElectPvString);
+        /// @brief  Sets up the suite of tests for the GunnsElectPvString2ric unit testing.
+        CPPUNIT_TEST_SUITE(UtGunnsElectPvString2);
         CPPUNIT_TEST(testCellConfig);
         CPPUNIT_TEST(testCellEquivProps);
-        CPPUNIT_TEST(testLoadState);
-        CPPUNIT_TEST(testConfig);
-        CPPUNIT_TEST(testInput);
-        CPPUNIT_TEST(testInputOverrides);
+        CPPUNIT_TEST(testCellEquivInit);
+        CPPUNIT_TEST(testCellEquivInitErrors);
+        CPPUNIT_TEST(testCellEquivUpdate);
+        CPPUNIT_TEST(testCellEquivCurrent);
+        CPPUNIT_TEST(testCellEquivVoltage);
         CPPUNIT_TEST(testConstruction);
         CPPUNIT_TEST(testNominalInitialization);
         CPPUNIT_TEST(testInitializationErrors);
         CPPUNIT_TEST(testActiveCells);
         CPPUNIT_TEST(testStep);
-        CPPUNIT_TEST(testAccessors);
-        CPPUNIT_TEST(testLoadAtMpp);
         CPPUNIT_TEST(testLoadAtPower);
         CPPUNIT_TEST(testLoadAtVoltage);
         CPPUNIT_TEST(testLoadAtConductance);
@@ -140,15 +108,20 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         std::string                   tName;                        /**< (--)   Test article name. */
         GunnsElectPvStringConfigData* tConfigData;                  /**< (--)   Pointer to config data. */
         GunnsElectPvStringInputData*  tInputData;                   /**< (--)   Pointer to input data. */
-        FriendlyGunnsElectPvString*   tArticle;                     /**< (--)   Pointer to article under test. */
+        FriendlyGunnsElectPvString2*  tArticle;                     /**< (--)   Pointer to article under test. */
         double                        tCellSurfaceArea;             /**< (m2)   Nominal config data. */
-        double                        tCellEfficiency;              /**< (--)   Nominal config data. */
+        double                        tCellEfficiency;              /**< (1)    Nominal config data. */
         double                        tCellSeriesResistance;        /**< (ohm)  Nominal config data. */
         double                        tCellShuntResistance;         /**< (ohm)  Nominal config data. */
-        double                        tCellOpenCircuitVoltage;      /**< (v)    Nominal config data. */
+        double                        tCellOpenCircuitVoltage;      /**< (V)    Nominal config data. */
         double                        tCellRefTemperature;          /**< (K)    Nominal config data. */
         double                        tCellTemperatureVoltageCoeff; /**< (1/K)  Nominal config data. */
         double                        tCellTemperatureCurrentCoeff; /**< (1/K)  Nominal config data. */
+        double                        tCellShortCircuitCurrent;     /**< (amp)  Nominal config data. */
+        double                        tCellMppVoltage;              /**< (V)    Nominal config data. */
+        double                        tCellMppCurrent;              /**< (amp)  Nominal config data. */
+        double                        tCellPhotoFlux;               /**< (W/m2) Nominal config data. */
+        double                        tCellIdeality;                /**< (1)    Nominal config data. */
         double                        tBlockingDiodeVoltageDrop;    /**< (v)    Nominal config data. */
         double                        tBypassDiodeVoltageDrop;      /**< (v)    Nominal config data. */
         int                           tBypassDiodeInterval;         /**< (--)   Nominal config data. */
@@ -160,11 +133,11 @@ class UtGunnsElectPvString: public CppUnit::TestFixture
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        UtGunnsElectPvString(const UtGunnsElectPvString& that);
+        UtGunnsElectPvString2(const UtGunnsElectPvString2& that);
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Assignment operator unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        UtGunnsElectPvString& operator =(const UtGunnsElectPvString& that);
+        UtGunnsElectPvString2& operator =(const UtGunnsElectPvString2& that);
 };
 
 ///@}

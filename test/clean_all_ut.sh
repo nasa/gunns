@@ -1,6 +1,6 @@
 #!/bin/tcsh -f
 
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 #TODO Clean this up and improve it to work on a list of test folders....
@@ -79,6 +79,9 @@ set FOLDER = math/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
 set FOLDER = math/approximation/test
+cd $MS_UTILS_HOME/$FOLDER; make clean;
+
+set FOLDER = math/elementary_functions/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
 set FOLDER = math/linear_algebra/test

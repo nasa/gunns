@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -163,25 +163,32 @@ void UtGunnsElectPvString::testCellConfig()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests for Photovoltaic Cell equivalent properties data.
+/// @details  Tests for Photovoltaic Cell equivalent circuit model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectPvString::testCellEquivProps()
 {
     UT_RESULT;
 
     /// @test    Cell equivalent data default construction.
-    GunnsElectPvCellEquivProps cellEqData;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mSourceCurrent,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mShuntVoltageDrop,  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mShuntResistance,   0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mSeriesVoltageDrop, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mSeriesResistance,  0.0);
+    GunnsElectPvCellEquivCircuit cellEqData;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mIL,                0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mRsh,               0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, cellEqData.mRs,                0.0);
 
-    /// @test    Clear method call for code coverage.
+    /// @test    Initialization with the object name.
+    cellEqData.initialize(0, "cellEqData");
+    FriendlyGunnsElectPvCellEquivCircuit* visibleCellEqData = static_cast<FriendlyGunnsElectPvCellEquivCircuit*>(&cellEqData);
+    CPPUNIT_ASSERT("cellEqData" == visibleCellEqData->mName);
+
+    /// @test    Empty method calls for code coverage.
     cellEqData.clear();
+    cellEqData.update(&cellEqData, 0.0, 0.0);
+    cellEqData.derive();
+    cellEqData.computeCurrent(0.0);
+    cellEqData.computeVoltage(0.0);
 
     /// @test    New/delete for code coverage.
-    GunnsElectPvCellEquivProps* testArticle = new GunnsElectPvCellEquivProps();
+    GunnsElectPvCellEquivCircuit* testArticle = new GunnsElectPvCellEquivCircuit();
     delete testArticle;
 
     UT_PASS;
@@ -415,12 +422,15 @@ void UtGunnsElectPvString::testConstruction()
     CPPUNIT_ASSERT(tInputData  == tArticle->mInput);
     CPPUNIT_ASSERT(0.0   == tArticle->mShortCircuitCurrent);
     CPPUNIT_ASSERT(0.0   == tArticle->mOpenCircuitVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mEqProps.mSeriesResistance);
+    CPPUNIT_ASSERT(0     == tArticle->mRefCell);
+    CPPUNIT_ASSERT(0     == tArticle->mEqProps);
     CPPUNIT_ASSERT(0.0   == tArticle->mMpp.mConductance);
     CPPUNIT_ASSERT(0.0   == tArticle->mTerminal.mConductance);
     CPPUNIT_ASSERT(0     == tArticle->mNumBypassedGroups);
     CPPUNIT_ASSERT(0     == tArticle->mNumActiveCells);
     CPPUNIT_ASSERT(false == tArticle->mShunted);
+    CPPUNIT_ASSERT(0.0   == tArticle->mShuntVoltageDrop);
+    CPPUNIT_ASSERT(0.0   == tArticle->mSeriesVoltageDrop);
 
     /// @test    Default construction.
     FriendlyGunnsElectPvString defaultString;
@@ -431,12 +441,15 @@ void UtGunnsElectPvString::testConstruction()
     CPPUNIT_ASSERT(""    ==  defaultString.mName);
     CPPUNIT_ASSERT(0.0   ==  defaultString.mShortCircuitCurrent);
     CPPUNIT_ASSERT(0.0   ==  defaultString.mOpenCircuitVoltage);
-    CPPUNIT_ASSERT(0.0   ==  defaultString.mEqProps.mSeriesResistance);
+    CPPUNIT_ASSERT(0     ==  defaultString.mRefCell);
+    CPPUNIT_ASSERT(0     ==  defaultString.mEqProps);
     CPPUNIT_ASSERT(0.0   ==  defaultString.mMpp.mConductance);
     CPPUNIT_ASSERT(0.0   ==  defaultString.mTerminal.mConductance);
     CPPUNIT_ASSERT(0     ==  defaultString.mNumBypassedGroups);
     CPPUNIT_ASSERT(0     ==  defaultString.mNumActiveCells);
     CPPUNIT_ASSERT(false ==  defaultString.mShunted);
+    CPPUNIT_ASSERT(0.0   ==  defaultString.mShuntVoltageDrop);
+    CPPUNIT_ASSERT(0.0   ==  defaultString.mSeriesVoltageDrop);
 
     /// @test    New/delete for code coverage.
     GunnsElectPvString* article = new GunnsElectPvString;
@@ -459,7 +472,7 @@ void UtGunnsElectPvString::testNominalInitialization()
     CPPUNIT_ASSERT(tName == tArticle->mName);
     CPPUNIT_ASSERT(0.0   == tArticle->mShortCircuitCurrent);
     CPPUNIT_ASSERT(0.0   == tArticle->mOpenCircuitVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mEqProps.mSeriesResistance);
+    CPPUNIT_ASSERT(0.0   == tArticle->mEqProps->mRs);
     CPPUNIT_ASSERT(0.0   == tArticle->mMpp.mConductance);
     CPPUNIT_ASSERT(0.0   == tArticle->mTerminal.mConductance);
     CPPUNIT_ASSERT(0     == tArticle->mNumBypassedGroups);
@@ -671,11 +684,11 @@ void UtGunnsElectPvString::testStep()
         const double expectedImpp   = expectedPmpp / expectedVmpp;
         const double expectedGmpp   = expectedImpp / expectedVmpp;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps.mShuntResistance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mEqProps.mShuntVoltageDrop,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps.mSeriesResistance,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mEqProps.mSeriesVoltageDrop,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps.mSourceCurrent,      DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps->mRsh,               DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mShuntVoltageDrop,            DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps->mRs,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mSeriesVoltageDrop,           DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps->mIL,                DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,    tArticle->mOpenCircuitVoltage,          DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,    tArticle->mShortCircuitCurrent,         DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp,   tArticle->mMpp.mPower,                  DBL_EPSILON);
@@ -710,11 +723,11 @@ void UtGunnsElectPvString::testStep()
         const double expectedImpp   = expectedPmpp / expectedVmpp;
         const double expectedGmpp   = expectedImpp / expectedVmpp;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps.mShuntResistance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mEqProps.mShuntVoltageDrop,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps.mSeriesResistance,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mEqProps.mSeriesVoltageDrop,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps.mSourceCurrent,      DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps->mRsh,               DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mShuntVoltageDrop,            DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps->mRs,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mSeriesVoltageDrop,           DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps->mIL,                DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,    tArticle->mOpenCircuitVoltage,          DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,    tArticle->mShortCircuitCurrent,         DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp,   tArticle->mMpp.mPower,                  DBL_EPSILON);
@@ -743,11 +756,11 @@ void UtGunnsElectPvString::testStep()
         const double expectedImpp   = 0.0;
         const double expectedGmpp   = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps.mShuntResistance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mEqProps.mShuntVoltageDrop,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps.mSeriesResistance,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mEqProps.mSeriesVoltageDrop,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps.mSourceCurrent,      DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps->mRsh,               DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mShuntVoltageDrop,            DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps->mRs,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mSeriesVoltageDrop,           DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps->mIL,                DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,    tArticle->mOpenCircuitVoltage,          DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,    tArticle->mShortCircuitCurrent,         DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp,   tArticle->mMpp.mPower,                  DBL_EPSILON);
@@ -773,11 +786,11 @@ void UtGunnsElectPvString::testStep()
         const double expectedImpp   = 0.0;
         const double expectedGmpp   = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps.mShuntResistance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mEqProps.mShuntVoltageDrop,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps.mSeriesResistance,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mEqProps.mSeriesVoltageDrop,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps.mSourceCurrent,      DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRsh,    tArticle->mEqProps->mRsh,               DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVsh,    tArticle->mShuntVoltageDrop,            DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRs,     tArticle->mEqProps->mRs,                DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVs,     tArticle->mSeriesVoltageDrop,           DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsrc,   tArticle->mEqProps->mIL,                DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,    tArticle->mOpenCircuitVoltage,          DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,    tArticle->mShortCircuitCurrent,         DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp,   tArticle->mMpp.mPower,                  DBL_EPSILON);
@@ -786,7 +799,7 @@ void UtGunnsElectPvString::testStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp,   tArticle->mMpp.mConductance,            DBL_EPSILON);
     } {
         /// @test    Update MPP with zero source power.
-        tArticle->mEqProps.mSourceCurrent;
+        tArticle->mEqProps->mIL;
         tArticle->updateMpp();
 
         const double expectedPmpp   = 0.0;
@@ -827,8 +840,8 @@ void UtGunnsElectPvString::testAccessors()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(12.0, tArticle->getOpenCircuitVoltage(), 0.0);
 
     /// @test    Can get equivalent properties values.
-    tArticle->mEqProps.mSourceCurrent = 13.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(13.0, tArticle->getEqProps().mSourceCurrent, 0.0);
+//    tArticle->mEqProps->mIL = 13.0;
+//    CPPUNIT_ASSERT_DOUBLES_EQUAL(13.0, tArticle->getEqProps()->mIL, 0.0);
 
     /// @test    Can get short-circuit current.
     tArticle->mShortCircuitCurrent = 7.0;

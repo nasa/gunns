@@ -1,16 +1,14 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-LIBRARY DEPENDENCY:
-  ((aspects/electrical/SolarArray/GunnsElectPvSection.o)
-   (software/exceptions/TsInitializationException.o))
 */
+
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
 #include "strings/UtResult.hh"
 #include "UtGunnsElectPvSection.hh"
 #include "math/MsMath.hh"
+#include "aspects/electrical/SolarArray/test/UtGunnsElectPvString2.hh"
 
 /// @details  Test identification number.
 int UtGunnsElectPvSection::TEST_ID = 0;
@@ -287,6 +285,36 @@ void UtGunnsElectPvSection::testNominalInitialization()
     CPPUNIT_ASSERT(&tArticle->mStringsInput           == stringPtr[1]->mInput);
     CPPUNIT_ASSERT(&tArticle->mStringsInput           == stringPtr[2]->mInput);
     CPPUNIT_ASSERT(0.0                                == tArticle->mPercentInsolation);
+
+    /// @test    Initialization with version 2 strings.
+    const double cellIsc = 2.6;
+    const double cellVmp = 0.5;
+    const double cellImp = 2.4;
+    const double cellN   = 1.0;
+    GunnsElectPvSectionConfigData version2Config(tCellOpenCircuitVoltage,
+                                                 cellIsc,
+                                                 cellVmp,
+                                                 cellImp,
+                                                 tCellRefTemperature,
+                                                 tCellTemperatureVoltageCoeff,
+                                                 tCellTemperatureCurrentCoeff,
+                                                 cellN,
+                                                 tCellSurfaceArea,
+                                                 tSourceAngleExponent,
+                                                 tBacksideReduction,
+                                                 tSourceAngleEdgeOn,
+                                                 tRefSourceFluxMagnitude,
+                                                 tBlockingDiodeVoltageDrop,
+                                                 tBypassDiodeVoltageDrop,
+                                                 tBypassDiodeInterval,
+                                                 tNumCells);
+    CPPUNIT_ASSERT(version2Config.mStringConfig.mCellConfig.isVersion2());
+    CPPUNIT_ASSERT(cellN == version2Config.mStringConfig.mCellConfig.mIdeality);
+    FriendlyGunnsElectPvSection* article2 = new FriendlyGunnsElectPvSection(&version2Config);
+    CPPUNIT_ASSERT_NO_THROW(article2->initialize("article2", *tInputData, tNumStrings));
+    FriendlyGunnsElectPvString2* v2string = static_cast<FriendlyGunnsElectPvString2*>(&article2->mStrings[0]);
+    CPPUNIT_ASSERT(0 != v2string->mRefCell);
+    delete article2;
 
     UT_PASS;
 }

@@ -1,8 +1,8 @@
 /**
-@file
+@file     GunnsElectPvArray.cpp
 @brief    GUNNS Electrical Photovoltaic Array Link Model implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -22,6 +22,29 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsOutOfBoundsException.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] name  (--) Instance name for memory allocation and H&S messages.
+/// @param[in] nodes (--) Pointer to the network nodes list.
+///
+/// @details  Default constructs this Photovoltaic Array Link config data.  This only exists to
+///           avoid ambiguity with the overloaded custom constructors below.  This shouldn't
+///           actually be used, as an array configured with this constructor will not be able to
+///           initialize.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayConfigData::GunnsElectPvArrayConfigData(const std::string& name,
+                                                         GunnsNodeList*     nodes)
+    :
+    GunnsBasicLinkConfigData(name, nodes),
+    mNumSections(0),
+    mNumStrings(0),
+    mNumStringsBySection(0),
+    mSectionConfig()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] name                           (--)   Instance name for memory allocation and H&S messages.
+/// @param[in] nodes                          (--)   Pointer to the network nodes list.
 /// @param[in] arrayNumSections               (--)   Number of sections in the array.
 /// @param[in] arrayNumStrings                (--)   Default total number of strings in the array.
 /// @param[in] sectionSourceAngleExponent     (--)   Exponent on trig function of light source incident angle.
@@ -41,7 +64,8 @@ LIBRARY DEPENDENCY:
 /// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on open-circuit voltage.
 /// @param[in] cellTemperatureVoltageCoeff    (1/K)  Cell coefficient for temperature effect on source current.
 ///
-/// @details  Default constructs this Photovoltaic Array Link config data.
+/// @details  This overloaded constructor constructs this Photovoltaic Array Link config data for
+///           the original version strings.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsElectPvArrayConfigData::GunnsElectPvArrayConfigData(
         const std::string& name,
@@ -85,6 +109,80 @@ GunnsElectPvArrayConfigData::GunnsElectPvArrayConfigData(
                    cellRefTemperature,
                    cellTemperatureVoltageCoeff,
                    cellTemperatureCurrentCoeff)
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] name                           (--)    Instance name for memory allocation and H&S messages.
+/// @param[in] nodes                          (--)    Pointer to the network nodes list.
+/// @param[in] cellRefVoc                     (V)     Reference cell open-circuit voltage.
+/// @param[in] cellRefIsc                     (amp)   Reference cell short-circuit current.
+/// @param[in] cellRefVmp                     (V)     Reference cell voltage at the maximum power point.
+/// @param[in] cellRefImp                     (amp)   Reference cell current at the maximum power point.
+/// @param[in] cellRefTemperature             (K)     Reference cell temperature.
+/// @param[in] cellCoeffDVocDT                (V/K)   Coefficient for temperature effect on open-circuit voltage.
+/// @param[in] cellCoeffDIscDT                (amp/K) Coefficient for temperature effect on source current.
+/// @param[in] cellIdeality                   (1)     Cell equivalent diode ideality constant.
+/// @param[in] cellArea                       (m2)    Optional cell area, used for efficiency estimation.
+/// @param[in] sectionSourceAngleExponent     (--)    Exponent on trig function of light source incident angle.
+/// @param[in] sectionBacksideReduction       (--)    Reduction fraction (0-1) when lit from back side.
+/// @param[in] sectionSourceAngleEdgeOn       (--)    Angle of light source to surface is edge-on instead of normal.
+/// @param[in] sectionRefSourceFluxMagnitude  (W/m2)  Reference ambient flux magnitude of light source absorbed by the surface.
+/// @param[in] stringBlockingDiodeVoltageDrop (V)     Voltage drop across the diode at end of string.
+/// @param[in] stringBypassDiodeVoltageDrop   (V)     Voltage drop across each bypass diode.
+/// @param[in] stringBypassDiodeInterval      (--)    Number of cells per bypass diode.
+/// @param[in] stringNumCells                 (--)    Number of cells in this string.
+/// @param[in] arrayNumSections               (--)    Number of sections in the array.
+/// @param[in] arrayNumStrings                (--)    Default total number of strings in the array.
+///
+/// @details  This overloaded constructor constructs this Photovoltaic Array Link config data for
+///           the version 2 strings.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+GunnsElectPvArrayConfigData::GunnsElectPvArrayConfigData(
+        const std::string& name,
+        GunnsNodeList*     nodes,
+        const double       cellRefVoc,
+        const double       cellRefIsc,
+        const double       cellRefVmp,
+        const double       cellRefImp,
+        const double       cellRefTemperature,
+        const double       cellCoeffDVocDT,
+        const double       cellCoeffDIscDT,
+        const double       cellIdeality,
+        const double       cellArea,
+        const double       sectionSourceAngleExponent,
+        const double       sectionBacksideReduction,
+        const bool         sectionSourceAngleEdgeOn,
+        const double       sectionRefSourceFluxMagnitude,
+        const double       stringBlockingDiodeVoltageDrop,
+        const double       stringBypassDiodeVoltageDrop,
+        const unsigned int stringBypassDiodeInterval,
+        const unsigned int stringNumCells,
+        const unsigned int arrayNumSections,
+        const unsigned int arrayNumStrings)
+    :
+    GunnsBasicLinkConfigData(name, nodes),
+    mNumSections(arrayNumSections),
+    mNumStrings(arrayNumStrings),
+    mNumStringsBySection(0),
+    mSectionConfig(cellRefVoc,
+                   cellRefIsc,
+                   cellRefVmp,
+                   cellRefImp,
+                   cellRefTemperature,
+                   cellCoeffDVocDT,
+                   cellCoeffDIscDT,
+                   cellIdeality,
+                   cellArea,
+                   sectionSourceAngleExponent,
+                   sectionBacksideReduction,
+                   sectionSourceAngleEdgeOn,
+                   sectionRefSourceFluxMagnitude,
+                   stringBlockingDiodeVoltageDrop,
+                   stringBypassDiodeVoltageDrop,
+                   stringBypassDiodeInterval,
+                   stringNumCells)
 {
     // nothing to do
 }

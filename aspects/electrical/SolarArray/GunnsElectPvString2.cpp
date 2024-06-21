@@ -486,7 +486,9 @@ void GunnsElectPvString2::update()
     mSeriesVoltageDrop = mConfig->mBlockingDiodeVoltageDrop
                        + mNumBypassedGroups * mConfig->mBypassDiodeVoltageDrop;
 
-    if (mNumActiveCells > 0) {
+    /// - Skip updating the model, and instead zero the string outputs, if there are no active
+    ///   cells or if temperature is near zero.
+    if (mNumActiveCells > 0 and mInput->mTemperature > 1.0) {
         if (mMalfDegradeFlag) {
             mEqProps->update(mRefCell, mInput->mTemperature, mInput->mPhotoFlux, MsMath::limitRange(0.0, mMalfDegradeValue, 1.0));
         } else {

@@ -899,6 +899,31 @@ void UtGunnsElectPvString2::testStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mPower,            0.0);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mConductance,      0.0);
     } {
+        /// @test Update outputs zero panel temperature so the string makes no power.
+        tArticle->mMalfCellGroupValue = 0;
+        tInputData->mTemperature = 0.0;
+        CPPUNIT_ASSERT_NO_THROW(tArticle->update());
+        CPPUNIT_ASSERT_EQUAL(tNumCells, static_cast<int>(tArticle->mNumActiveCells));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mTemperature, 0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mPhotoFlux,   0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mVoc,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mIsc,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mVmp,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mImp,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mNVt,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mRs,          0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mRsh,         0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mI0,          0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mIL,          0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mEfficiency,  0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mEqProps->mFillFactor,  0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mShortCircuitCurrent,   0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mOpenCircuitVoltage,    0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mVoltage,          0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mCurrent,          0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mPower,            0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mMpp.mConductance,      0.0);
+    } {
         /// @test Update outputs with MPP voltage = 0, for coverage.  We force this by manipulating
         ///       the blocking diode voltage to be higher than the entire output of all the cells.
         tArticle->mMalfCellGroupValue = 0;
@@ -908,6 +933,15 @@ void UtGunnsElectPvString2::testStep()
         tConfigData->mBlockingDiodeVoltageDrop = 10.0;
         CPPUNIT_ASSERT_NO_THROW(tArticle->update());
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mConductance,      0.0);
+    } {
+        /// @test updateMpp in the zero voltage case for code coverage.
+        tArticle->mEqProps->mVmp = 0.0;
+        tArticle->mEqProps->mImp = 1.0;
+        tArticle->updateMpp();
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mVoltage,     0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->mMpp.mCurrent,     0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mPower,       0.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mConductance, 0.0);
     }
 
     UT_PASS;

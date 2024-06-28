@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -7,7 +7,7 @@ LIBRARY DEPENDENCY:
     (core/GunnsFluidSource.o)
     (properties/ChemicalReaction.o)
    )
-**************************************************************************************************/
+*/
 
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -61,14 +61,14 @@ GunnsFluidReactorConfigData::GunnsFluidReactorConfigData(const std::string&     
 {
     /// - Allocate and initialize the array of reaction types.
     if (nReactions > 0 && reactionTypes != 0) {
-        TS_NEW_PRIM_ARRAY(mReactionTypes, nReactions, ChemicalReaction::Type, name + ".mReactionTypes");
+        TS_NEW_PRIM_ARRAY_EXT(mReactionTypes, nReactions, ChemicalReaction::Type, name + ".mReactionTypes");
         for (int i = 0; i < nReactions; ++i) {
             mReactionTypes[i] = reactionTypes[i];
         }
     }
     /// - Allocate and initialize the array of compound types.
     if (nCompounds > 0 && compoundTypes != 0) {
-        TS_NEW_PRIM_ARRAY(mCompoundTypes, nCompounds, ChemicalCompound::Type, name + ".mCompoundTypes");
+        TS_NEW_PRIM_ARRAY_EXT(mCompoundTypes, nCompounds, ChemicalCompound::Type, name + ".mCompoundTypes");
         for (int i = 0; i < nCompounds; ++i) {
             mCompoundTypes[i] = compoundTypes[i];
         }

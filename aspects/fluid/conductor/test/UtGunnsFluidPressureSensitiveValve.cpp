@@ -1,12 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    (
-        (aspects/fluid/conductor/GunnsFluidPressureSensitiveValve.o)
-    )
-***************************************************************************************************/
+*/
 // @reqt method R.TS222-0063 TS21 ECLSS models shall perform pressure regulator control.
 // @reqt method R.TS222-0068 TS21 ECLSS models shall provide malfunctions to freeze valves at non-target positions.
 // @reqt method R.TS222-0082 TS21 ECLSS models shall simulate the functionality of valves.
@@ -52,6 +47,8 @@ UtGunnsFluidPressureSensitiveValve::UtGunnsFluidPressureSensitiveValve()
     mThermalLength(0.0),
     mThermalDiameter(0.0),
     mSurfaceRoughness(0.0),
+    mInletDependencyCoeff0(0.0),
+    mInletDependencyCoeff1(0.0),
     mThermalSurfaceArea(0.0),
     mThermalROverD(0.0),
     mConfigData(0),
@@ -154,6 +151,8 @@ void UtGunnsFluidPressureSensitiveValve::setUp()
     mThermalLength         =  0.2;
     mThermalDiameter       =  0.5;
     mSurfaceRoughness      =  1.0e-06;
+    mInletDependencyCoeff0 =  700.0;
+    mInletDependencyCoeff1 = -1.0;
     mThermalSurfaceArea    =  mThermalLength * mThermalDiameter * UnitConversion::PI_UTIL;
     mThermalROverD         =  mSurfaceRoughness / mThermalDiameter;
     mConfigData            = new GunnsFluidPressureSensitiveValveConfigData(mName,
@@ -163,7 +162,9 @@ void UtGunnsFluidPressureSensitiveValve::setUp()
                                                                             mRateLimit,
                                                                             mThermalLength,
                                                                             mThermalDiameter,
-                                                                            mSurfaceRoughness);
+                                                                            mSurfaceRoughness,
+                                                                            mInletDependencyCoeff0,
+                                                                            mInletDependencyCoeff1);
 
     /// - Define the nominal input data.
     mMalfBlockageFlag      = false;
@@ -248,78 +249,84 @@ void UtGunnsFluidPressureSensitiveValve::testConfigAndInput()
     /// @test    Configuration data nominal construction.
     CPPUNIT_ASSERT(mName                                           == mConfigData->mName);
     CPPUNIT_ASSERT(mNodes                                          == mConfigData->mNodeList->mNodes);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMaxConductivity,                    mConfigData->mMaxConductivity,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mExpansionScaleFactor,               mConfigData->mExpansionScaleFactor, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mRateLimit,                          mConfigData->mRateLimit,            0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalLength,                      mConfigData->mThermalLength,        0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalDiameter,                    mConfigData->mThermalDiameter,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSurfaceRoughness,                   mConfigData->mSurfaceRoughness,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMaxConductivity,                    mConfigData->mMaxConductivity,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mExpansionScaleFactor,               mConfigData->mExpansionScaleFactor,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mRateLimit,                          mConfigData->mRateLimit,             0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalLength,                      mConfigData->mThermalLength,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalDiameter,                    mConfigData->mThermalDiameter,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSurfaceRoughness,                   mConfigData->mSurfaceRoughness,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff0,              mConfigData->mInletDependencyCoeff0, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff1,              mConfigData->mInletDependencyCoeff1, 0.0);
 
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(mMalfBlockageFlag                               == mInputData->mMalfBlockageFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfBlockageValue,                  mInputData->mMalfBlockageValue,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPosition,                           mInputData->mPosition,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfBlockageValue,                  mInputData->mMalfBlockageValue,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPosition,                           mInputData->mPosition,               0.0);
     CPPUNIT_ASSERT(mMalfLeakThruFlag                               == mInputData->mMalfLeakThruFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfLeakThruValue,                  mInputData->mMalfLeakThruValue,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfLeakThruValue,                  mInputData->mMalfLeakThruValue,      0.0);
     CPPUNIT_ASSERT(mMalfPressureBiasFlag                           == mInputData->mMalfPressureBiasFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfPressureBiasValue,              mInputData->mMalfPressureBiasValue, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSetPointPressureBias,               mInputData->mSetPointPressureBias,  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mWallTemperature,                    mInputData->mWallTemperature,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfPressureBiasValue,              mInputData->mMalfPressureBiasValue,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSetPointPressureBias,               mInputData->mSetPointPressureBias,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mWallTemperature,                    mInputData->mWallTemperature,        0.0);
     CPPUNIT_ASSERT(mMalfStuckFlag                                  == mInputData->mMalfStuckFlag);
     CPPUNIT_ASSERT(mMalfFailToFlag                                 == mInputData->mMalfFailToFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfFailToValue,                    mInputData->mMalfFailToValue,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMalfFailToValue,                    mInputData->mMalfFailToValue,        0.0);
 
     /// @test    Configuration data default construction.
     GunnsFluidPressureSensitiveValveConfigData defaultConfig;
     CPPUNIT_ASSERT(0                                              == defaultConfig.mName.size());
     CPPUNIT_ASSERT(0                                              == defaultConfig.mNodeList);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mMaxConductivity,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mExpansionScaleFactor, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mRateLimit,            0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mThermalLength,        0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mThermalDiameter,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mSurfaceRoughness,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mMaxConductivity,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mExpansionScaleFactor,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mRateLimit,             0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mThermalLength,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mThermalDiameter,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mSurfaceRoughness,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mInletDependencyCoeff0, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultConfig.mInletDependencyCoeff1, 0.0);
 
     /// @test    Input data default construction.
     GunnsFluidPressureSensitiveValveInputData   defaultInput;
     CPPUNIT_ASSERT(                                                 !defaultInput.mMalfBlockageFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfBlockageValue,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mPosition,              0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfBlockageValue,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mPosition,               0.0);
     CPPUNIT_ASSERT(                                                 !defaultInput.mMalfLeakThruFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfLeakThruValue,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfLeakThruValue,      0.0);
     CPPUNIT_ASSERT(                                                 !defaultInput.mMalfPressureBiasFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfPressureBiasValue, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mSetPointPressureBias,  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mWallTemperature,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfPressureBiasValue,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mSetPointPressureBias,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mWallTemperature,        0.0);
     CPPUNIT_ASSERT(                                                 !defaultInput.mMalfStuckFlag);
     CPPUNIT_ASSERT(                                                 !defaultInput.mMalfFailToFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfFailToValue,0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                                defaultInput.mMalfFailToValue,        0.0);
 
     /// @test    Configuration data copy construction.
     GunnsFluidPressureSensitiveValveConfigData copyConfig(*mConfigData);
-    CPPUNIT_ASSERT(mConfigData->mName                             == copyConfig.mName);
-    CPPUNIT_ASSERT(mConfigData->mNodeList->mNodes                 == copyConfig.mNodeList->mNodes);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mMaxConductivity,      copyConfig.mMaxConductivity,         0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mExpansionScaleFactor, copyConfig.mExpansionScaleFactor,    0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mRateLimit,            copyConfig.mRateLimit,               0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mThermalLength,        copyConfig.mThermalLength,           0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mThermalDiameter,      copyConfig.mThermalDiameter,         0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mSurfaceRoughness,     copyConfig.mSurfaceRoughness,        0.0);
+    CPPUNIT_ASSERT(mConfigData->mName                              == copyConfig.mName);
+    CPPUNIT_ASSERT(mConfigData->mNodeList->mNodes                  == copyConfig.mNodeList->mNodes);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mMaxConductivity,       copyConfig.mMaxConductivity,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mExpansionScaleFactor,  copyConfig.mExpansionScaleFactor,    0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mRateLimit,             copyConfig.mRateLimit,               0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mThermalLength,         copyConfig.mThermalLength,           0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mThermalDiameter,       copyConfig.mThermalDiameter,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mSurfaceRoughness,      copyConfig.mSurfaceRoughness,        0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mInletDependencyCoeff0, copyConfig.mInletDependencyCoeff0,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mConfigData->mInletDependencyCoeff1, copyConfig.mInletDependencyCoeff1,   0.0);
 
     /// @test    Input data copy construction.
     GunnsFluidPressureSensitiveValveInputData   copyInput(*mInputData);
     CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag                  == copyInput.mMalfBlockageFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue,     copyInput.mMalfBlockageValue,        0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mPosition,              copyInput.mPosition,                 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue,     copyInput.mMalfBlockageValue,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mPosition,              copyInput.mPosition,                  0.0);
     CPPUNIT_ASSERT(mInputData->mMalfLeakThruFlag                  == copyInput.mMalfLeakThruFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfLeakThruValue,     copyInput.mMalfLeakThruValue,        0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfLeakThruValue,     copyInput.mMalfLeakThruValue,         0.0);
     CPPUNIT_ASSERT(mInputData->mMalfPressureBiasFlag              == copyInput.mMalfPressureBiasFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfPressureBiasValue, copyInput.mMalfPressureBiasValue,    0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mSetPointPressureBias,  copyInput.mSetPointPressureBias,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mWallTemperature,       copyInput.mWallTemperature,          0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfPressureBiasValue, copyInput.mMalfPressureBiasValue,     0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mSetPointPressureBias,  copyInput.mSetPointPressureBias,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mWallTemperature,       copyInput.mWallTemperature,           0.0);
     CPPUNIT_ASSERT(mInputData->mMalfStuckFlag                     == copyInput.mMalfStuckFlag);
     CPPUNIT_ASSERT(mInputData->mMalfFailToFlag                    == copyInput.mMalfFailToFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfFailToValue,       copyInput.mMalfFailToValue,   0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfFailToValue,       copyInput.mMalfFailToValue,           0.0);
 
     UT_PASS;
 }
@@ -341,6 +348,8 @@ void UtGunnsFluidPressureSensitiveValve::testDefaultConstruction()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mThermalDiameter,       0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mThermalSurfaceArea,    0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mThermalROverD,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mInletDependencyCoeff0, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mInletDependencyCoeff1, 0.0);
 
     /// @test    Default construction input data.
     CPPUNIT_ASSERT(                       !mArticle->mMalfBlockageFlag);
@@ -364,6 +373,7 @@ void UtGunnsFluidPressureSensitiveValve::testDefaultConstruction()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mTuneMassFlow,          0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mTuneVolFlow,           0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mTuneDeltaT,            0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mInletDependencyBias,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mEffectiveConductivity, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mSystemConductance,     0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      mArticle->mControlPressure,       0.0);
@@ -400,6 +410,8 @@ void UtGunnsFluidPressureSensitiveValve::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalDiameter,       article.mThermalDiameter,       0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalSurfaceArea,    article.mThermalSurfaceArea,    0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalROverD,         article.mThermalROverD,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff0, article.mInletDependencyCoeff0, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff1, article.mInletDependencyCoeff1, 0.0);
 
     /// @test    Nominal input data.
     CPPUNIT_ASSERT(mMalfBlockageFlag                  == article.mMalfBlockageFlag);
@@ -423,6 +435,7 @@ void UtGunnsFluidPressureSensitiveValve::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mTuneMassFlow,          article.mTuneMassFlow,          0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mTuneVolFlow,           article.mTuneVolFlow,           0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mTuneDeltaT,            article.mTuneDeltaT,            0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    article.mInletDependencyBias,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mEffectiveConductivity, article.mEffectiveConductivity, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mSystemConductance,     article.mSystemConductance,     0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mControlPressure,       article.mControlPressure,       0.0);
@@ -432,21 +445,25 @@ void UtGunnsFluidPressureSensitiveValve::testNominalInitialization()
     CPPUNIT_ASSERT(                                      article.mInitFlag);
 
     /// @test    Verify restartModel functionality
-    mEffectiveConductivity = 1.0;
-    mSystemConductance     = 1.0;
-    mTuneMassFlow          = 1.0;
-    mControlPressure       = 1.0;
-    mTuneDeltaT            = 1.0;
-    mTuneVolFlow           = 1.0;
+    article.mEffectiveConductivity = 1.0;
+    article.mSystemConductance     = 1.0;
+    article.mTuneMode              = GunnsFluidUtils::MASS;
+    article.mTuneMassFlow          = 1.0;
+    article.mTuneVolFlow           = 1.0;
+    article.mTuneDeltaT            = 1.0;
+    article.mControlPressure       = 1.0;
+    article.mInletDependencyBias   = 1.0;
 
     article.restartModel();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mEffectiveConductivity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mSystemConductance,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mTuneMassFlow,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mControlPressure,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mTuneDeltaT,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article.mTuneVolFlow,           DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mEffectiveConductivity, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mSystemConductance,     0.0);
+    CPPUNIT_ASSERT(GunnsFluidUtils::OFF == article.mTuneMode);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mTuneMassFlow,          0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mTuneVolFlow,           0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mTuneDeltaT,            0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mControlPressure,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,      article.mInletDependencyBias,   0.0);
 
     /// @test   Catch case if mThermalDiameter is zero
     mConfigData->mThermalDiameter = 0.0;
@@ -611,9 +628,13 @@ void UtGunnsFluidPressureSensitiveValve::testStep()
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3);
 
+    mArticle->mPotentialVector[0]   = mNodes[0].getOutflow()->getPressure();
     mArticle->mPotentialVector[2]   = mNodes[2].getOutflow()->getPressure();
     mArticle->mPotentialVector[3]   = mNodes[3].getOutflow()->getPressure();
-    const double expected = mNodes[2].getOutflow()->getPressure() - mNodes[3].getOutflow()->getPressure();
+    const double expectedInletBias  = mInletDependencyCoeff0
+                                    + mInletDependencyCoeff1 * mNodes[0].getOutflow()->getPressure();
+    double expected = mNodes[2].getOutflow()->getPressure() - mNodes[3].getOutflow()->getPressure()
+                    - expectedInletBias;
     mArticle->step(mTimeStep);
 
     /// @test    Positive admittance and zero potential.
@@ -621,7 +642,8 @@ void UtGunnsFluidPressureSensitiveValve::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mSourceVector[0], mTolerance);
 
     /// @test    Control pressure.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->mControlPressure, mTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInletBias, mArticle->mInletDependencyBias, mTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,          mArticle->mControlPressure,     mTolerance);
 
     mArticle->step(mTimeStep);
 
@@ -636,7 +658,10 @@ void UtGunnsFluidPressureSensitiveValve::testStep()
     mArticle->mPotentialVector[2]   = mNodes[3].getOutflow()->getPressure();
     mArticle->mPotentialVector[3]   = mNodes[2].getOutflow()->getPressure();
     mArticle->step(mTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expected, mArticle->mControlPressure, mTolerance);
+    expected = mNodes[3].getOutflow()->getPressure() - mNodes[2].getOutflow()->getPressure()
+             - expectedInletBias;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInletBias, mArticle->mInletDependencyBias, mTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,          mArticle->mControlPressure,     mTolerance);
 
     /// @test     Step with pressure bias malfunction insertion.
     double expectedP = mArticle->mControlPressure + 1.0;

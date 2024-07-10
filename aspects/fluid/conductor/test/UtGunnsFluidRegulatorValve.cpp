@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((aspects/fluid/conductor/GunnsFluidRegulatorValve.o))
-***************************************************************************************************/
+*/
 
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -43,6 +40,8 @@ UtGunnsFluidRegulatorValve::UtGunnsFluidRegulatorValve()
     mThermalLength(0.0),
     mThermalDiameter(0.0),
     mSurfaceRoughness(0.0),
+    mInletDependencyCoeff0(0.0),
+    mInletDependencyCoeff1(0.0),
     mThermalSurfaceArea(0.0),
     mThermalROverD(0.0),
     mReseatPressure(0.0),
@@ -157,6 +156,8 @@ void UtGunnsFluidRegulatorValve::setUp()
     mFullOpenPressure      = 1.0;
     mPopPosition           = 0.10;
     mPopSlopeScale         = 4.0;
+    mInletDependencyCoeff0 = 0.0;
+    mInletDependencyCoeff1 = 0.0;
     mConfigData            = new GunnsFluidRegulatorValveConfigData(mName,
                                                                     &mNodeList,
                                                                     mMaxConductivity,
@@ -169,7 +170,9 @@ void UtGunnsFluidRegulatorValve::setUp()
                                                                     mCrackPressure,
                                                                     mFullOpenPressure,
                                                                     mPopPosition,
-                                                                    mPopSlopeScale);
+                                                                    mPopSlopeScale,
+                                                                    mInletDependencyCoeff0,
+                                                                    mInletDependencyCoeff1);
 
     /// - Define the nominal input data.
     mMalfBlockageFlag      = false;
@@ -253,19 +256,39 @@ void UtGunnsFluidRegulatorValve::testConfigAndInput()
     UT_RESULT_FIRST;
 
     /// @test    Configuration data nominal construction.
-    CPPUNIT_ASSERT(mName                                           == mConfigData->mName);
-    CPPUNIT_ASSERT(mNodes                                          == mConfigData->mNodeList->mNodes);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMaxConductivity,                    mConfigData->mMaxConductivity,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mExpansionScaleFactor,               mConfigData->mExpansionScaleFactor, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mRateLimit,                          mConfigData->mRateLimit,            0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalLength,                      mConfigData->mThermalLength,        0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalDiameter,                    mConfigData->mThermalDiameter,      0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSurfaceRoughness,                   mConfigData->mSurfaceRoughness,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mReseatPressure,                     mConfigData->mReseatPressure,       0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mCrackPressure,                      mConfigData->mCrackPressure,        0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mFullOpenPressure,                   mConfigData->mFullOpenPressure,     0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPopPosition,                        mConfigData->mPopPosition,          0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPopSlopeScale,                      mConfigData->mPopSlopeScale,        0.0);
+    mInletDependencyCoeff0 =  111.0;
+    mInletDependencyCoeff1 = -1.0;
+    GunnsFluidRegulatorValveConfigData nominalConfig(mName,
+                                                     &mNodeList,
+                                                     mMaxConductivity,
+                                                     mExpansionScaleFactor,
+                                                     mRateLimit,
+                                                     mThermalLength,
+                                                     mThermalDiameter,
+                                                     mSurfaceRoughness,
+                                                     mReseatPressure,
+                                                     mCrackPressure,
+                                                     mFullOpenPressure,
+                                                     mPopPosition,
+                                                     mPopSlopeScale,
+                                                     mInletDependencyCoeff0,
+                                                     mInletDependencyCoeff1);
+
+    CPPUNIT_ASSERT(mName                                           == nominalConfig.mName);
+    CPPUNIT_ASSERT(mNodes                                          == nominalConfig.mNodeList->mNodes);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mMaxConductivity,                    nominalConfig.mMaxConductivity,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mExpansionScaleFactor,               nominalConfig.mExpansionScaleFactor,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mRateLimit,                          nominalConfig.mRateLimit,             0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalLength,                      nominalConfig.mThermalLength,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mThermalDiameter,                    nominalConfig.mThermalDiameter,       0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mSurfaceRoughness,                   nominalConfig.mSurfaceRoughness,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mReseatPressure,                     nominalConfig.mReseatPressure,        0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mCrackPressure,                      nominalConfig.mCrackPressure,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mFullOpenPressure,                   nominalConfig.mFullOpenPressure,      0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPopPosition,                        nominalConfig.mPopPosition,           0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mPopSlopeScale,                      nominalConfig.mPopSlopeScale,         0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff0,              nominalConfig.mInletDependencyCoeff0, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mInletDependencyCoeff1,              nominalConfig.mInletDependencyCoeff1, 0.0);
 
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(mMalfBlockageFlag                               == mInputData->mMalfBlockageFlag);

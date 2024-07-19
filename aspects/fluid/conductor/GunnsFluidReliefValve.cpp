@@ -1,10 +1,13 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@file      GunnsFluidReliefValve.cpp
+@brief     Pressure Relief Valve Model implementation
+
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
  ((GunnsFluidPressureSensitiveValve.o))
-***************************************************************************************************/
+*/
 
 #include <algorithm>
 
@@ -15,19 +18,21 @@ LIBRARY DEPENDENCY:
 #include "GunnsFluidReliefValve.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]      name                 (--)  Name of object.
-/// @param[in]      nodes                (--)  Pointer to nodes.
-/// @param[in]      maxConductivity      (m2)  Max conductivity.
-/// @param[in]      expansionScaleFactor (--)  Scale factor for isentropic gas cooling.
-/// @param[in]      rateLimit            (1/s) Valve position rate limit.
-/// @param[in]      thermalLength        (m)   Tube length for thermal convection.
-/// @param[in]      thermalDiameter      (m)   Tube inner diameter for thermal convection.
-/// @param[in]      surfaceRoughness     (m)   Tube wall surface roughness for thermal convection.
-/// @param[in]      reseatPressure       (kPa) Valve reseat pressure.
-/// @param[in]      crackPressure        (kPa) Valve crack pressure.
-/// @param[in]      fullOpenPressure     (kPa) Valve full open pressure.
-/// @param[in]      popPosition          (--)  Valve pop position.
-/// @param[in]      popSlopeScale        (kPa) Valve pop slope scale factor.
+/// @param[in]      name                  (--)    Name of object.
+/// @param[in]      nodes                 (--)    Pointer to nodes.
+/// @param[in]      maxConductivity       (m2)    Max conductivity.
+/// @param[in]      expansionScaleFactor  (--)    Scale factor for isentropic gas cooling.
+/// @param[in]      rateLimit             (1/s)   Valve position rate limit.
+/// @param[in]      thermalLength         (m)     Tube length for thermal convection.
+/// @param[in]      thermalDiameter       (m)     Tube inner diameter for thermal convection.
+/// @param[in]      surfaceRoughness      (m)     Tube wall surface roughness for thermal convection.
+/// @param[in]      reseatPressure        (kPa)   Valve reseat pressure.
+/// @param[in]      crackPressure         (kPa)   Valve crack pressure.
+/// @param[in]      fullOpenPressure      (kPa)   Valve full open pressure.
+/// @param[in]      popPosition           (--)    Valve pop position.
+/// @param[in]      popSlopeScale         (kPa)   Valve pop slope scale factor.
+/// @param[in]      inletDependencyCoeff0 (--)    0th order coefficient of inlet dependency effect on control pressure.
+/// @param[in]      inletDependencyCoeff1 (1/kPa) 1st order coefficient of inlet dependency effect on control pressure.
 ///
 /// @details        Default constructs this GUNNS Fluid Pressure Relief Valve Link Model
 ///                 configuration data.
@@ -44,7 +49,9 @@ GunnsFluidReliefValveConfigData::GunnsFluidReliefValveConfigData(const std::stri
                                                                  const double       crackPressure,
                                                                  const double       fullOpenPressure,
                                                                  const double       popPosition,
-                                                                 const double       popSlopeScale)
+                                                                 const double       popSlopeScale,
+                                                                 const double       inletDependencyCoeff0,
+                                                                 const double       inletDependencyCoeff1)
     :
     GunnsFluidPressureSensitiveValveConfigData(name,
                                                nodes,
@@ -53,7 +60,9 @@ GunnsFluidReliefValveConfigData::GunnsFluidReliefValveConfigData(const std::stri
                                                rateLimit,
                                                thermalLength,
                                                thermalDiameter,
-                                               surfaceRoughness),
+                                               surfaceRoughness,
+                                               inletDependencyCoeff0,
+                                               inletDependencyCoeff1),
     mReseatPressure(reseatPressure),
     mCrackPressure(crackPressure),
     mFullOpenPressure(fullOpenPressure),

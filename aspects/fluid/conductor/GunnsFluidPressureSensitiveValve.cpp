@@ -1,10 +1,13 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@file      GunnsFluidPressureSensitiveValve.cpp
+@brief     Pressure Sensitive Valve Model implementation
+
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
   ((core/GunnsFluidLink.o))
-***************************************************************************************************/
+*/
 
 #include "math/MsMath.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -13,14 +16,16 @@ LIBRARY DEPENDENCY:
 #include "GunnsFluidPressureSensitiveValve.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]      name                  (--)   Link name.
-/// @param[in]      nodes                 (--)   Network nodes array.
-/// @param[in]      maxConductivity       (m2)   Maximum possible effective conductivity of the link.
-/// @param[in]      expansionScaleFactor  (--)   Scale factor for isentropic cooling across the link (0-1).
-/// @param[in]      rateLimit             (1/s)  Valve fractional position rate limit.
-/// @param[in]      thermalLength         (m)    Tube length for thermal convection.
-/// @param[in]      thermalDiameter       (m)    Tube inner diameter for thermal convection.
-/// @param[in]      surfaceRoughness      (m)    Tube wall surface roughness for thermal convection.
+/// @param[in]      name                  (--)    Link name.
+/// @param[in]      nodes                 (--)    Network nodes array.
+/// @param[in]      maxConductivity       (m2)    Maximum possible effective conductivity of the link.
+/// @param[in]      expansionScaleFactor  (--)    Scale factor for isentropic cooling across the link (0-1).
+/// @param[in]      rateLimit             (1/s)   Valve fractional position rate limit.
+/// @param[in]      thermalLength         (m)     Tube length for thermal convection.
+/// @param[in]      thermalDiameter       (m)     Tube inner diameter for thermal convection.
+/// @param[in]      surfaceRoughness      (m)     Tube wall surface roughness for thermal convection.
+/// @param[in]      inletDependencyCoeff0 (--)    0th order coefficient of inlet dependency effect on control pressure.
+/// @param[in]      inletDependencyCoeff1 (1/kPa) 1st order coefficient of inlet dependency effect on control pressure.
 ///
 /// @details        Default constructs this GUNNS Fluid Pressure Sensitive Valve Link Model
 ///                 configuration data.
@@ -32,7 +37,9 @@ GunnsFluidPressureSensitiveValveConfigData::GunnsFluidPressureSensitiveValveConf
                                                                                        const double       rateLimit,
                                                                                        const double       thermalLength,
                                                                                        const double       thermalDiameter,
-                                                                                       const double       surfaceRoughness)
+                                                                                       const double       surfaceRoughness,
+                                                                                       const double       inletDependencyCoeff0,
+                                                                                       const double       inletDependencyCoeff1)
     :
     GunnsFluidLinkConfigData(name, nodes),
     mMaxConductivity(maxConductivity),
@@ -40,7 +47,9 @@ GunnsFluidPressureSensitiveValveConfigData::GunnsFluidPressureSensitiveValveConf
     mRateLimit(rateLimit),
     mThermalLength(thermalLength),
     mThermalDiameter(thermalDiameter),
-    mSurfaceRoughness(surfaceRoughness)
+    mSurfaceRoughness(surfaceRoughness),
+    mInletDependencyCoeff0(inletDependencyCoeff0),
+    mInletDependencyCoeff1(inletDependencyCoeff1)
 {
     // nothing to do
 }
@@ -59,7 +68,9 @@ GunnsFluidPressureSensitiveValveConfigData::GunnsFluidPressureSensitiveValveConf
     mRateLimit(that.mRateLimit),
     mThermalLength(that.mThermalLength),
     mThermalDiameter(that.mThermalDiameter),
-    mSurfaceRoughness(that.mSurfaceRoughness)
+    mSurfaceRoughness(that.mSurfaceRoughness),
+    mInletDependencyCoeff0(that.mInletDependencyCoeff0),
+    mInletDependencyCoeff1(that.mInletDependencyCoeff1)
 {
     // nothing to do
 }
@@ -171,6 +182,8 @@ GunnsFluidPressureSensitiveValve::GunnsFluidPressureSensitiveValve()
     mThermalDiameter(0.0),
     mThermalSurfaceArea(0.0),
     mThermalROverD(0.0),
+    mInletDependencyCoeff0(0.0),
+    mInletDependencyCoeff1(0.0),
     mPosition(0.0),
     mSetPointPressureBias(0.0),
     mWallTemperature(0.0),
@@ -180,6 +193,7 @@ GunnsFluidPressureSensitiveValve::GunnsFluidPressureSensitiveValve()
     mTuneMassFlow(0.0),
     mTuneVolFlow(0.0),
     mTuneDeltaT(0.0),
+    mInletDependencyBias(0.0),
     mEffectiveConductivity(0.0),
     mSystemConductance(0.0),
     mControlPressure(0.0),
@@ -242,6 +256,8 @@ void GunnsFluidPressureSensitiveValve::initialize(const GunnsFluidPressureSensit
         mThermalROverD        = 0.0;
 
     }
+    mInletDependencyCoeff0    = configData.mInletDependencyCoeff0;
+    mInletDependencyCoeff1    = configData.mInletDependencyCoeff1;
 
     /// - Initialize with input data.
     mPosition                 = inputData.mPosition;
@@ -335,6 +351,7 @@ void GunnsFluidPressureSensitiveValve::restartModel()
     mTuneVolFlow           = 0.0;
     mTuneDeltaT            = 0.0;
     mControlPressure       = 0.0;
+    mInletDependencyBias   = 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,6 +406,11 @@ void GunnsFluidPressureSensitiveValve::step(const double dt)
 
     /// - The set point pressure bias is equivalent to an opposite bias on the control pressure.
     mControlPressure     -= mSetPointPressureBias;
+
+    /// - Compute and apply the inlet dependency bias as equivalent to an opposite bias on the
+    ///   control pressure.
+    computeInletDependencyBias();
+    mControlPressure     -= mInletDependencyBias;
 
     /// - Call the virtual updateState method so a derived model can calculate a new valve position.
     updateState(dt);

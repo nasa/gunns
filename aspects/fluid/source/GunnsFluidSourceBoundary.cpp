@@ -1,8 +1,8 @@
 /**
-@file
+@file     GunnsFluidSourceBoundary.cpp
 @brief    GUNNS Fluid Source Boundary Link implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -113,6 +113,10 @@ GunnsFluidSourceBoundaryInputData::~GunnsFluidSourceBoundaryInputData()
 GunnsFluidSourceBoundary::GunnsFluidSourceBoundary()
     :
     GunnsFluidLink(NPORTS),
+    mOverrideMode(false),
+    mOverrideHeat(0.0),
+    mOverrideFlowRates(0),
+    mOverrideTcFlowRates(0),
     mFlipFlowSign(false),
     mTraceCompoundsOnly(false),
     mFlowDemand(0.0),
@@ -126,7 +130,9 @@ GunnsFluidSourceBoundary::GunnsFluidSourceBoundary()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidSourceBoundary::~GunnsFluidSourceBoundary()
 {
-    /// - Delete the trace compounds array.
+    /// - Delete dynamic objects.
+    TS_DELETE_ARRAY(mOverrideFlowRates);
+    TS_DELETE_ARRAY(mOverrideTcFlowRates);
     TS_DELETE_ARRAY(mTraceCompoundRates);
 }
 
@@ -162,10 +168,11 @@ void GunnsFluidSourceBoundary::initialize(const GunnsFluidSourceBoundaryConfigDa
     mFlowDemand         = inputData.mFlowDemand;
     createInternalFluid(*inputData.mInternalFluid);
 
-    /// - Initialize the trace compounds array.
+    /// - Initialize the trace compounds arrays.
     if (GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds()) {
         const int tcNtypes = tc->getConfig()->mNTypes;
-        TS_NEW_PRIM_ARRAY_EXT(mTraceCompoundRates, tcNtypes, double, mName + ".mTraceCompoundRates");
+        TS_NEW_PRIM_ARRAY_EXT(mTraceCompoundRates,  tcNtypes, double, mName + ".mTraceCompoundRates");
+        TS_NEW_PRIM_ARRAY_EXT(mOverrideTcFlowRates, tcNtypes, double, mName + ".mOverrideTcFlowRates");
 
         for (int i = 0; i < tcNtypes; ++i) {
             if (inputData.mInternalFluid->mTraceCompounds) {
@@ -173,7 +180,15 @@ void GunnsFluidSourceBoundary::initialize(const GunnsFluidSourceBoundaryConfigDa
             } else {
                 mTraceCompoundRates[i] = 0.0;
             }
+            mOverrideTcFlowRates[i] = 0.0;
         }
+    }
+
+    /// - Initialize the override rates arrays and fluid.
+    const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
+    TS_NEW_PRIM_ARRAY_EXT(mOverrideFlowRates, nFluids, double, mName + ".mOverrideFlowRates");
+    for (int i = 0; i < nFluids; ++i) {
+        mOverrideFlowRates[i] = 0.0;
     }
 
     /// - Set init flag on successful validation.
@@ -263,6 +278,33 @@ void GunnsFluidSourceBoundary::step(const double dt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt (s) Unused.
+///
+/// @details  When in override mode, loads the override bulk constituent flow rates into the
+///           internal fluid and sets the link total flow demand to the sum of the override rates.
+///
+/// @note  When exiting override mode, the user is responsible for resetting the internal fluid
+///        and/or the flow demand rate.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidSourceBoundary::updateState(const double dt __attribute__((unused)))
+{
+    if (mOverrideMode) {
+        mInternalFluid->resetState();
+        double netFlowRate = 0.0;
+        const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
+        for (int i = 0; i < nFluids; ++i) {
+            /// - Load override rates into the internal fluid and update the total rate.
+            netFlowRate += mOverrideFlowRates[i];
+            mInternalFluid->setMass(i, mOverrideFlowRates[i]);
+        }
+        mFlowDemand = netFlowRate;
+        /// - Update the internal fluid's constituent masses, mole rates, and molecular weight to
+        ///   match the masses we have set.
+        mInternalFluid->updateMass();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] dt (s) Integration time step
 ///
 /// @details  Computes the potential drop and port direction across the link.
@@ -293,6 +335,10 @@ void GunnsFluidSourceBoundary::computeFlows(const double dt __attribute__((unuse
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSourceBoundary::transportFlows(const double dt)
 {
+    /// - Call the virtual updateFluid method to allow derived classes to further modify the
+    ///   internal fluid before it is transported.
+    updateFluid(dt, mFlowRate);
+
     /// - Calculate true volumetric flow rate from the mass flow rate, using the density of the
     ///   internal fluid.
     const double sourceDensity = mInternalFluid->getDensity();
@@ -305,15 +351,21 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
     /// - Calculate hydraulic power.
     computePower();
 
-    /// - Call the virtual updateFluid method to allow derived classes to further modify the
-    ///   internal fluid before it is transported.
-    updateFluid(dt, mFlowRate);
-
     /// - Update the flow rates of the trace compounds that will be given to the node.
     GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();
     if (tc) {
         const GunnsFluidTraceCompoundsConfigData& tcConfig = *tc->getConfig();
-        if (mTraceCompoundsOnly and fabs(mFlowRate) > DBL_EPSILON) {
+        if (mOverrideMode) {
+            /// - In override mode, TC's are given directly to/from the node's via its collectTc
+            ///   function.
+            for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
+                if (mFlipFlowSign) {
+                    static_cast<GunnsFluidNode*>(mNodes[0])->collectTc(i, -mOverrideTcFlowRates[i]);
+                } else {
+                    static_cast<GunnsFluidNode*>(mNodes[0])->collectTc(i, mOverrideTcFlowRates[i]);
+                }
+            }
+        } else if (mTraceCompoundsOnly and fabs(mFlowRate) > DBL_EPSILON) {
             /// - In TC-only mode, TC's are given directly to/from the node's via its collectTc
             ///   function.
             for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
@@ -331,6 +383,28 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
 
     /// - Transport the internal fluid to/from the attached node.
     transportFluid(true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] dt   (s)    Unused.
+/// @param[in] mdot (kg/s) Unused.
+///
+/// @details  When in override mode, updates the internal fluid to match the temperature of the
+///           boundary node's contents, then adds the override heat to the node's extra heat
+///           collection.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidSourceBoundary::updateFluid(const double dt __attribute__((unused)),
+                                           const double mdot __attribute__((unused)))
+{
+    if (mOverrideMode) {
+        mInternalFluid->setPressure(mNodes[0]->getContent()->getPressure());
+        mInternalFluid->setTemperature(mNodes[0]->getContent()->getTemperature());
+        if (mFlipFlowSign) {
+            mNodes[0]->collectHeatFlux(-mOverrideHeat);
+        } else {
+            mNodes[0]->collectHeatFlux(mOverrideHeat);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

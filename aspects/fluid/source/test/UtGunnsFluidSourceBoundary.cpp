@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -222,6 +222,10 @@ void UtGunnsFluidSourceBoundary::testDefaultConstruction()
     UT_RESULT;
 
     /// @test state data
+    CPPUNIT_ASSERT(false == tArticle->mOverrideMode);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideHeat);
+    CPPUNIT_ASSERT(0     == tArticle->mOverrideFlowRates);
+    CPPUNIT_ASSERT(0     == tArticle->mOverrideTcFlowRates);
     CPPUNIT_ASSERT(false == tArticle->mFlipFlowSign);
     CPPUNIT_ASSERT(false == tArticle->mTraceCompoundsOnly);
     CPPUNIT_ASSERT(0.0   == tArticle->mFlowDemand);
@@ -263,6 +267,14 @@ void UtGunnsFluidSourceBoundary::testNominalInitialization()
     CPPUNIT_ASSERT(tArticle->mTraceCompoundRates);
     CPPUNIT_ASSERT(tArticle->mTraceCompoundRates[0] == tTcRatesState[0]);
     CPPUNIT_ASSERT(tArticle->mTraceCompoundRates[1] == tTcRatesState[1]);
+    CPPUNIT_ASSERT(false == tArticle->mOverrideMode);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideHeat);
+    CPPUNIT_ASSERT(tArticle->mOverrideFlowRates);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideFlowRates[0]);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideFlowRates[1]);
+    CPPUNIT_ASSERT(tArticle->mOverrideTcFlowRates);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideTcFlowRates[0]);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideTcFlowRates[1]);
 
     /// @test init flag
     CPPUNIT_ASSERT(true               == tArticle->mInitFlag);
@@ -315,7 +327,13 @@ void UtGunnsFluidSourceBoundary::testNominalInitialization()
                                  tArticle->mInternalFluid->getMassFraction(FluidProperties::GUNNS_O2),
                                  DBL_EPSILON);
     CPPUNIT_ASSERT(!tArticle->mTraceCompoundRates);
-    CPPUNIT_ASSERT(true               == tArticle->mInitFlag);
+    CPPUNIT_ASSERT(false == tArticle->mOverrideMode);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideHeat);
+    CPPUNIT_ASSERT(tArticle->mOverrideFlowRates);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideFlowRates[0]);
+    CPPUNIT_ASSERT(0.0   == tArticle->mOverrideFlowRates[1]);
+    CPPUNIT_ASSERT(0     == tArticle->mOverrideTcFlowRates);
+    CPPUNIT_ASSERT(true  == tArticle->mInitFlag);
 
     UT_PASS;
 }
@@ -445,6 +463,27 @@ void UtGunnsFluidSourceBoundary::testStep()
     tArticle->mTraceCompoundsOnly = true;
     tArticle->step(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,            DBL_EPSILON);
+
+    /// - Step again with overrides on.
+    tArticle->mTraceCompoundsOnly     = false;
+    tArticle->mOverrideMode           = true;
+    tArticle->mOverrideHeat           = 300.0;
+    tArticle->mOverrideFlowRates[0]   = 0.01;    // N2
+    tArticle->mOverrideFlowRates[1]   = 0.02;    // O2
+    tArticle->mOverrideTcFlowRates[0] = 1.0e-6;  // H2O
+    tArticle->mOverrideTcFlowRates[1] = 2.0e-5;  // CO2
+    tArticle->step(tTimeStep);
+    expectedMdot          = 0.03;
+    double expectedNdotN2 = 0.01 / 28.0134; // MW of N2
+    double expectedNdotO2 = 0.02 / 31.9988; // MW of O2
+    double expectedNdot   = expectedNdotN2 + expectedNdotO2;
+    double expectedMW     = expectedMdot / expectedNdot;
+    expectedFlux = expectedMdot / expectedMW;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, tArticle->mFlowRate,                    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, tArticle->mFlowDemand,                  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW,   tArticle->mInternalFluid->getMWeight(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,                        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mSourceVector[0],             DBL_EPSILON);
 
     UT_PASS;
 }
@@ -606,6 +645,89 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsTcOnly()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                              tArticle->mFlux,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[0], mdotH2O,             DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[1], mdotCO2,             DBL_EPSILON);
+
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test for Compute Flows with the override mode.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsFluidSourceBoundary::testComputeFlowsOverride()
+{
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tConfigData->mFlipFlowSign       = false;
+    tConfigData->mTraceCompoundsOnly = false;
+    tInputData->mMalfBlockageFlag    = false;
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+
+    tArticle->mOverrideMode           = true;
+    tArticle->mOverrideHeat           = 300.0;
+    tArticle->mOverrideFlowRates[0]   = 0.01;    // N2
+    tArticle->mOverrideFlowRates[1]   = 0.02;    // O2
+    tArticle->mOverrideTcFlowRates[0] = 1.0e-6;  // H2O
+    tArticle->mOverrideTcFlowRates[1] = 2.0e-5;  // CO2
+
+    const double expectedMdot   = tArticle->mOverrideFlowRates[0] + tArticle->mOverrideFlowRates[1];
+    const double expectedNdotN2 = tArticle->mOverrideFlowRates[0] / 28.0134; // MW of N2
+    const double expectedNdotO2 = tArticle->mOverrideFlowRates[1] / 31.9988; // MW of O2
+    const double expectedNdot   = expectedNdotN2 + expectedNdotO2;
+    const double expectedMW     = expectedMdot / expectedNdot;
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, tArticle->mFlowRate,                    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW,   tArticle->mInternalFluid->getMWeight(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNdot, tArticle->mFlux,                        DBL_EPSILON);
+
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+    tArticle->mPotentialVector[0] = node->getPotential();
+    tArticle->computeFlows(tTimeStep);
+
+    CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
+
+    tArticle->transportFlows(tTimeStep);
+
+    const double expectedP   = node->getPotential();
+    const double expectedT   = node->getContent()->getTemperature();
+    const double expectedV   = expectedMdot / tArticle->getInternalFluid()->getDensity();
+    const double expectedPwr = 1000.0 * expectedV * expectedP;
+    const double expectedH   = (tArticle->mOverrideFlowRates[0] * tArticle->getInternalFluid()->getProperties(FluidProperties::GUNNS_N2)->getSpecificEnthalpy(expectedT, expectedP)
+                              + tArticle->mOverrideFlowRates[1] * tArticle->getInternalFluid()->getProperties(FluidProperties::GUNNS_O2)->getSpecificEnthalpy(expectedT, expectedP))
+                             / expectedMdot;
+    const double expectedQ   = expectedMdot * expectedH + tArticle->mOverrideHeat;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP,    tArticle->mPotentialDrop,                            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedV,    tArticle->mVolFlowRate,                              DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,  tArticle->mPower,                                    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMdot, node->getInflux(),                                   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedT,    node->getInflow()->getTemperature(),                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedH,    tArticle->getInternalFluid()->getSpecificEnthalpy(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedQ,    node->mInflowHeatFlux,                               FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,          node->getOutflux(),                                  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mOverrideTcFlowRates[0], node->mTcInflow.mState[0],       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mOverrideTcFlowRates[1], node->mTcInflow.mState[1],       DBL_EPSILON);
+
+    /// - Test with flipped flow sign.
+    tArticle->mFlipFlowSign = true;
+    node->resetFlows();
+
+    tArticle->step(tTimeStep);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedMdot, tArticle->mFlowRate,                    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMW,   tArticle->mInternalFluid->getMWeight(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedNdot, tArticle->mFlux,                        DBL_EPSILON);
+    CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
+
+    tArticle->transportFlows(tTimeStep);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedP,    tArticle->mPotentialDrop,                            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedV,    tArticle->mVolFlowRate,                              DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedPwr,  tArticle->mPower,                                    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedMdot, node->getInflux(),                                   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedT,    node->getInflow()->getTemperature(),                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedH,    tArticle->getInternalFluid()->getSpecificEnthalpy(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedQ,    node->mInflowHeatFlux,                               FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,          node->getOutflux(),                                  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-tArticle->mOverrideTcFlowRates[0], node->mTcInflow.mState[0],       DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-tArticle->mOverrideTcFlowRates[1], node->mTcInflow.mState[1],       DBL_EPSILON);
 
     UT_PASS_LAST;
 }

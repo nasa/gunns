@@ -2,13 +2,13 @@
 #define GunnsFluidSourceBoundary_EXISTS
 
 /**
-@file
+@file     GunnsFluidSourceBoundary.hh
 @brief    GUNNS Fluid Source Boundary Link declarations
 
 @defgroup  TSM_GUNNS_FLUID_SOURCE_BOUNDARY    GUNNS Fluid Source Boundary Link
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -42,8 +42,8 @@ PROGRAMMERS:
 class GunnsFluidSourceBoundaryConfigData : public GunnsFluidLinkConfigData
 {
     public:
-        bool mFlipFlowSign;       /**< (--) trick_chkpnt_io(**) True makes positive flow rate go out of the node. */
-        bool mTraceCompoundsOnly; /**< (--) trick_chkpnt_io(**) True only flows trace compounds, not bulk fluid. */
+        bool mFlipFlowSign;       /**< (1) trick_chkpnt_io(**) True makes positive flow rate go out of the node. */
+        bool mTraceCompoundsOnly; /**< (1) trick_chkpnt_io(**) True only flows trace compounds, not bulk fluid. */
         /// @brief Default constructs this Fluid Source Boundary configuration data.
         GunnsFluidSourceBoundaryConfigData(const std::string& name               = "",
                                            GunnsNodeList*     nodes              = 0,
@@ -69,7 +69,7 @@ class GunnsFluidSourceBoundaryInputData : public GunnsFluidLinkInputData
 {
     public:
         double              mFlowDemand;    /**< (kg/s) trick_chkpnt_io(**) Initial demanded mass flow rate of the link. */
-        PolyFluidInputData* mInternalFluid; /**< (--)   trick_chkpnt_io(**) Initial fluid properties of the link flow. */
+        PolyFluidInputData* mInternalFluid; /**< (1)    trick_chkpnt_io(**) Initial fluid properties of the link flow. */
         /// @brief    Default constructs this Fluid Source Boundary input data.
         GunnsFluidSourceBoundaryInputData(const bool          malfBlockageFlag  = false,
                                           const double        malfBlockageValue = 0.0,
@@ -100,11 +100,22 @@ class GunnsFluidSourceBoundaryInputData : public GunnsFluidLinkInputData
 ///           - The internal fluid can contain trace compounds, making this link a source of trace
 ///             compounds to/from the node.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class GunnsFluidSourceBoundary : public GunnsFluidLink
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidSourceBoundary);
 
     public:
+        /// @name    User override terms.
+        /// @{
+        /// @details User overrides are public to allow access from the Trick events processor.
+        ///          The FlowRates arrays are not available to be set until after initialize is
+        ///          called, since they are allocated in that call.
+        bool    mOverrideMode;        /**< (1)                        Flow uses the override properties instead of the input data properties. */
+        double  mOverrideHeat;        /**< (W)                        Total heat added to node in the bulk fluid heat advection when in override mode. */
+        double* mOverrideFlowRates;   /**< (kg/s) trick_chkpnt_io(**) Mass flow rate of each bulk fluid constituent when in override mode. */
+        double* mOverrideTcFlowRates; /**< (kg/s) trick_chkpnt_io(**) Mass flow rate of each trace compounds when in override mode. */
+        /// @}
         /// @brief Default Constructor.
         GunnsFluidSourceBoundary();
         /// @brief Default Destructor.
@@ -116,10 +127,14 @@ class GunnsFluidSourceBoundary : public GunnsFluidLink
                         const int                                 port0);
         /// @brief Step method for updating the link.
         virtual void   step(const double dt);
+        /// @brief Updates the state of the link
+        virtual void   updateState(const double dt);
         /// @brief Method for computing the flows across the link.
         virtual void   computeFlows(const double dt);
         /// @brief Method for transporting the flows across the link.
         virtual void   transportFlows(const double dt);
+        /// @brief Updates the internal fluid.
+        virtual void   updateFluid(const double dt, const double mdot);
         /// @brief Sets the flow demand for the link.
         virtual void   setFlowDemand(const double toFlowDemand);
         /// @brief Sets the flow state of the link.
@@ -132,10 +147,10 @@ class GunnsFluidSourceBoundary : public GunnsFluidLink
                                       const int  toPort   = 1);
 
     protected:
-        bool    mFlipFlowSign;       /**< (--)   trick_chkpnt_io(**) True makes positive flow rate go out of the node. */
-        bool    mTraceCompoundsOnly; /**< (--)   trick_chkpnt_io(**) True only flows trace compounds, not bulk fluid. */
+        bool    mFlipFlowSign;       /**< (1)    trick_chkpnt_io(**) True makes positive flow rate go out of the node. */
+        bool    mTraceCompoundsOnly; /**< (1)    trick_chkpnt_io(**) True only flows trace compounds, not bulk fluid. */
         double  mFlowDemand;         /**< (kg/s)                     User demanded mass flow rate through the link. */
-        double* mTraceCompoundRates; /**< (--)   trick_chkpnt_io(**) Source flow rate of the trace compounds relative to mFlowDemand. */
+        double* mTraceCompoundRates; /**< (1)    trick_chkpnt_io(**) Source flow rate of the trace compounds relative to mFlowDemand. */
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void   restartModel();
         /// @brief Builds the source vector terms of the links contribution to the network.

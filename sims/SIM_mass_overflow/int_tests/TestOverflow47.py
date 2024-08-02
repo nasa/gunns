@@ -64,7 +64,7 @@ class TestOverflow47(Test):
 
        self.total_mass_ad      = self.total_mass_ad     + sorb12adH2O_mass
        self.total_mass_H2O_ad  = self.total_mass_H2O_ad + sorb12adH2O_mass
-       self.total_mass_CO2_ad  = self.total_mass_CO2_ad 
+       self.total_mass_CO2_ad  = self.total_mass_CO2_ad
        self.temperature_ad     = self.nodeTemperature(0)
 
        self.total_mass_des     = self.total_mass_des     + sorb45deH2O_mass
@@ -104,20 +104,20 @@ class TestOverflow47(Test):
        sorb12adH2O_mass  = float (massOverflow.fluid47.hsorb12ad.getAdsorbedMass())
        sorb45deH2O_mass  = float (massOverflow.fluid47.hsorb45de.getAdsorbedMass())
 
-       final_total_mass_ad      = sorb12adH2O_mass 
+       final_total_mass_ad      = sorb12adH2O_mass
        final_total_mass_N2_ad   = 0.0
        final_total_mass_O2_ad   = 0.0
        final_total_mass_H2O_ad  = sorb12adH2O_mass
        final_total_mass_CO2_ad  = 0.0
        final_temperature_ad     = self.nodeTemperature(0)
 
-       final_total_mass_des     = sorb45deH2O_mass 
+       final_total_mass_des     = sorb45deH2O_mass
        final_total_mass_N2_des  = 0.0
        final_total_mass_O2_des  = 0.0
        final_total_mass_H2O_des = sorb45deH2O_mass
        final_total_mass_CO2_des = 0.0
-       final_temperature_des    = self.nodeTemperature(4) 
-       
+       final_temperature_des    = self.nodeTemperature(4)
+
        for node in range(0,self.getNumNodes()-3):
           mass_ad     = self.nodeMass(node)
           mass_N2_ad  = mass_ad * self.nodeMassFraction(node, "GUNNS_N2")
@@ -137,7 +137,7 @@ class TestOverflow47(Test):
           mass_O2_des  = mass_des * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O_des = mass_des * self.nodeMassFraction(node, "GUNNS_H2O")
           mass_CO2_des = mass_des * self.nodeMassFraction(node, "GUNNS_CO2")
-  
+
           final_total_mass_des     = final_total_mass_des     + mass_des
           final_total_mass_N2_des  = final_total_mass_N2_des  + mass_N2_des
           final_total_mass_O2_des  = final_total_mass_O2_des  + mass_O2_des
@@ -167,7 +167,7 @@ class TestOverflow47(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid47.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid47.netNodes[node]
     # Getter for node fluid

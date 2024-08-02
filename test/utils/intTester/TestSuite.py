@@ -16,7 +16,7 @@ class TestSuite:
        testTearDownTime The amount of time added to the last scheduled test event time before
                         shutting down the entire sim.
     """
-    
+
     def __init__(self, tearDownTime):
         """TestSuite class constructor"""
         self.testList          = []
@@ -34,7 +34,7 @@ class TestSuite:
             for var in test.getLogVariables():
                 self.suiteLogVariables.append(var)
         self.suiteLogVariables = sorted(set(self.suiteLogVariables))
-        
+
         # Set up the recording group and add it to Trick's data recording.
         dr_group = trick.DRAscii(logName)
         dr_group.thisown = 0
@@ -44,12 +44,12 @@ class TestSuite:
         for var in self.suiteLogVariables:
             dr_group.add_variable(var)
         trick.add_data_record_group(dr_group, trick.DR_Buffer)
-        
+
         # Give the output log file path/name to the tests.
         logFileName = trick.command_line_args_get_output_dir() + '/log_' + logName + '.csv'
         for test in self.testList:
             test.setLogFileName(logFileName)
-        
+
     def runAllTests(self):
         """Function to loop through the test list and call each test's setup function,
            activate the test event, check its pass/fail status and update the failed and

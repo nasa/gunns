@@ -32,8 +32,8 @@ LIBRARY DEPENDENCY:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
 
-	ResistiveLoad lResistanceLoad;
-	ConstantPowerLoad lPowerLoad;
+    ResistiveLoad lResistanceLoad;
+    ConstantPowerLoad lPowerLoad;
 
     CppUnit::TextTestRunner runner;
 

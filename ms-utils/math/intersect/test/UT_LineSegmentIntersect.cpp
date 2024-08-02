@@ -255,7 +255,7 @@ void UT_LineSegmentIntersect::
                     spheroidR[1],
                     spheroidR[2]));
     }
-    
+
 }
 
 void UT_LineSegmentIntersect::
@@ -282,4 +282,3 @@ void UT_LineSegmentIntersect::
                     spheroidR[2]));
     }
 }
-

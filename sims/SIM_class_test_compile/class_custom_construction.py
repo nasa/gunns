@@ -115,7 +115,7 @@ class_custom_construction[type]['declare']   = '        GunnsFluidSuperNetwork c
 class_custom_construction[type]['construct'] = '            :\n' \
                                              + '            code("code")\n'
 
-# GunnsMultiLinkConnector needs a GunnsNetworkBase*, but GunnsNetworkBase is abstract, so 
+# GunnsMultiLinkConnector needs a GunnsNetworkBase*, but GunnsNetworkBase is abstract, so
 # we must define a network type just for this test.  Don't want to use any other networks in the
 # gunns repo because they will include other classes that could satisfy missing library dependencies
 # in GunnsMultiLinkConnector, which would degrade this test.

@@ -56,7 +56,7 @@ PVCellCompanionModelConfigData::PVCellCompanionModelConfigData(const double vocR
                                                                const double vCrit                ,
                                                                const double backSideIscReduc     ,
                                                                const double cellEfficiency       ,
-                                                               const double cellArea     
+                                                               const double cellArea
                                                                )
      :
     mVocRef(vocRef),
@@ -105,7 +105,7 @@ PVCellCompanionModelConfigData::PVCellCompanionModelConfigData(const PVCellCompa
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Destructs the Config Data Object
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-PVCellCompanionModelConfigData::~PVCellCompanionModelConfigData() 
+PVCellCompanionModelConfigData::~PVCellCompanionModelConfigData()
 {
     //Nothing to do
 }
@@ -401,7 +401,7 @@ void PVCellCompanionModel::updateCompanionModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  applies damping and ensures values stay within possible limits of the IV curve.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void PVCellCompanionModel::dampAndBoundIVCurve() 
+void PVCellCompanionModel::dampAndBoundIVCurve()
 {
     double filterI = mI;
     double filterV = mV;
@@ -488,7 +488,7 @@ void PVCellCompanionModel::dampAndBoundIVCurve()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///@brief sets up conductance and modifies it based on any malfuctions
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void PVCellCompanionModel::setupConductance() 
+void PVCellCompanionModel::setupConductance()
 {
     if (mCellPowerMalfunctionIsEnabled) {
         mGeqCell = 0.0;
@@ -497,7 +497,7 @@ void PVCellCompanionModel::setupConductance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///@brief sets up source vector and modifies it based on any malfunctions
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void PVCellCompanionModel::setupSourceVector() 
+void PVCellCompanionModel::setupSourceVector()
 {
     if (mCellPowerMalfunctionIsEnabled) {
         mIeqCell = 0.0;

@@ -317,7 +317,7 @@ void UtGunnsGasDisplacementPump::testNominalInitialization()
     tArticle->mImpellerPower = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mImpellerSpeed);
     CPPUNIT_ASSERT(0.0 == tArticle->mImpellerPower);
 
@@ -566,28 +566,28 @@ void UtGunnsGasDisplacementPump::testUpdateFluid()
 
     tNodes[0].getContent()->setTemperature(200.0);
     tNodes[0].getContent()->setPressure(100.0);
-    tNodes[0].resetFlows();  
+    tNodes[0].resetFlows();
 
     tNodes[0].getContent()->setTemperature(283.0);
     tNodes[0].getContent()->setPressure(109.0);
 
     tArticle->mFlux = 1.0;
     tArticle->updateFluid(tTimeStep, 0.0);
-    
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, tArticle->mInternalFluid->getPressure(),DBL_EPSILON);        
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, tArticle->mInternalFluid->getPressure(),DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tArticle->mInternalFluid->getTemperature(),DBL_EPSILON);
 
     tNodes[1].getContent()->setTemperature(200.0);
     tNodes[1].getContent()->setPressure(100.0);
-    tNodes[1].resetFlows();  
+    tNodes[1].resetFlows();
 
     tNodes[1].getContent()->setTemperature(283.0);
     tNodes[1].getContent()->setPressure(109.0);
 
     tArticle->mFlux = -1.0;
     tArticle->updateFluid(tTimeStep, 0.0);
-    
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, tArticle->mInternalFluid->getPressure(),DBL_EPSILON);        
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, tArticle->mInternalFluid->getPressure(),DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tArticle->mInternalFluid->getTemperature(),DBL_EPSILON);
 
     UT_PASS;
@@ -599,7 +599,7 @@ void UtGunnsGasDisplacementPump::testUpdateFluid()
 void UtGunnsGasDisplacementPump::testComputeFlows()
 {
     UT_RESULT;
-   
+
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
@@ -614,7 +614,7 @@ void UtGunnsGasDisplacementPump::testComputeFlows()
 
     double tempFlowRate    = tArticle->mFlux * tNodes[0].getOutflow()->getMWeight();
     double dP              = tArticle->mPotentialVector[0] - tArticle->mPotentialVector[1];
-    double tempVolFlowRate = tArticle->mFlowRate / tNodes[0].getOutflow()->getDensity();      
+    double tempVolFlowRate = tArticle->mFlowRate / tNodes[0].getOutflow()->getDensity();
     double tempPower       = -UnitConversion::PA_PER_KPA * tempVolFlowRate * dP;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(dP,              tArticle->mPotentialDrop, DBL_EPSILON);
@@ -634,7 +634,7 @@ void UtGunnsGasDisplacementPump::testComputeFlows()
     CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getScheduledOutflux(),-tArticle->mFlux,DBL_EPSILON);
     tArticle->transportFlows(tTimeStep);
-    
+
     tempFlowRate    = tArticle->mFlux * tNodes[1].getOutflow()->getMWeight();
     dP              = tArticle->mPotentialVector[0] - tArticle->mPotentialVector[1];
     tempVolFlowRate = tArticle->mFlowRate / tNodes[0].getOutflow()->getDensity();
@@ -655,7 +655,7 @@ void UtGunnsGasDisplacementPump::testComputeFlows()
     tArticle->computeFlows(tTimeStep);
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    tArticle->transportFlows(tTimeStep); 
+    tArticle->transportFlows(tTimeStep);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPotentialDrop, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mVolFlowRate,   DBL_EPSILON);
@@ -663,4 +663,3 @@ void UtGunnsGasDisplacementPump::testComputeFlows()
 
     UT_PASS_LAST;
 }
-

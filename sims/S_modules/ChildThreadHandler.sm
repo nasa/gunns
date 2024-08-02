@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 /*************************************************************
 PURPOSE:
   (Trick multithreading scalable architecture)
@@ -83,7 +83,7 @@ private:
     std::map<std::string, int> mThreadMap;
 };
 
-// The manager class definition above can be #included anywhere but the instantiation must happen 
+// The manager class definition above can be #included anywhere but the instantiation must happen
 // before any sim object references it. Ideally, this is at the top of the S_define
 ChildThreadHandler CTH;
 
@@ -91,4 +91,3 @@ void create_connections()
 {
   CTH.postConstructionComplete();
 }
-

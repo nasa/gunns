@@ -27,7 +27,7 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the PvArrayRegTest Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 PvArrayRegTestConfigData::PvArrayRegTestConfigData(const std::string& name, PvArrayRegTest* network)
@@ -117,7 +117,7 @@ PvArrayRegTest::PvArrayRegTest(const std::string& name)
     netNodes(),
     netConfig(name, this),
     netInput(this),
-    // Data Tables 
+    // Data Tables
     // Spotters
     SAR1SensorVin(),
     SAR1SensorVout(),

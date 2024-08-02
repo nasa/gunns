@@ -25,7 +25,7 @@
 int main(int, char**)
 {
 
-	// Informs test-listener about testresults
+    // Informs test-listener about testresults
     CPPUNIT_NS::TestResult testresult;
 
     // Register listener for collecting the test-results
@@ -57,4 +57,3 @@ int main(int, char**)
 
     return 0;
 }
-

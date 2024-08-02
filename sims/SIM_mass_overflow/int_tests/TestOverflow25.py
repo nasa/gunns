@@ -59,7 +59,7 @@ class TestOverflow25(Test):
        self.total_mass_H2O = self.total_mass_H2O + sorb13ads_mass + sorb23des_mass
        self.total_mass_CO2 = self.total_mass_CO2 + sorb13des_mass + sorb23ads_mass
        self.temperature    = self.nodeTemperature(0)
-       
+
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
           mass_N2  = mass * self.nodeMassFraction(node, "GUNNS_N2")
@@ -86,7 +86,7 @@ class TestOverflow25(Test):
        final_total_mass_H2O = sorb13ads_mass + sorb23des_mass
        final_total_mass_CO2 = sorb13des_mass + sorb23ads_mass
        final_temperature    = self.nodeTemperature(0)
-       
+
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
           mass_N2  = mass * self.nodeMassFraction(node, "GUNNS_N2")
@@ -117,7 +117,7 @@ class TestOverflow25(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid25.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid25.netNodes[node]
     # Getter for node fluid

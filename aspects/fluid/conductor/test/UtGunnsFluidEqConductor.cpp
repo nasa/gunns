@@ -253,9 +253,9 @@ void UtGunnsFluidEqConductor::testNominalInitialization()
     tArticle->mEquivalentConductance = 1.0;
     tArticle->mPort0LeakConductance  = 1.0;
     tArticle->mPort1LeakConductance  = 1.0;
-    
+
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,tArticle->mEquivalentConductance,DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,tArticle->mPort0LeakConductance,DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,tArticle->mPort1LeakConductance,DBL_EPSILON);
@@ -563,16 +563,16 @@ void UtGunnsFluidEqConductor::testComputeFlows()
     tNodes[1].getContent()->setMassAndMassFractions(1.0,fractions);
     tArticle->transportFlows(tTimeStep);
 
-    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getMWeight() != 
+    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getMWeight() !=
                            tNodes[0].getContent()->getMWeight());
 
-    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getMWeight() != 
+    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getMWeight() !=
                            tNodes[1].getContent()->getMWeight());
 
-    double tempPort0LeakFlow = 0.1 * (tArticle->mPort0LeakConductance * 
+    double tempPort0LeakFlow = 0.1 * (tArticle->mPort0LeakConductance *
                            tArticle->mPotentialVector[0]  * tNodes[0].getOutflow()->getMWeight());
 
-    double tempPort1LeakFlow = 0.1 * (tArticle->mPort1LeakConductance * 
+    double tempPort1LeakFlow = 0.1 * (tArticle->mPort1LeakConductance *
                            tArticle->mPotentialVector[1] * tNodes[1].getOutflow()->getMWeight());
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getOutflux(), tempPort0LeakFlow, DBL_EPSILON);
@@ -584,36 +584,36 @@ void UtGunnsFluidEqConductor::testComputeFlows()
     tArticle->mEquivalentConductance = 1.0;
     tArticle->computeFlows(tTimeStep);
 
-    /// - Molar flux should be greater than zero because the port 0 potential vector is positive  
+    /// - Molar flux should be greater than zero because the port 0 potential vector is positive
     CPPUNIT_ASSERT( tArticle->mFlux > 0.0);
 
     /// - Confirm correct source port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
     tArticle->mEquivalentConductance = -1.0;
     tArticle->computeFlows(tTimeStep);
 
-    /// - Molar flux should be less than zero because the port 0 potential vector is negative   
+    /// - Molar flux should be less than zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( tArticle->mFlux < 0.0);
 
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
 
     tArticle->mEquivalentConductance = 0.0;
     tArticle->computeFlows(tTimeStep);
 
-    /// - Molar flux should be equal to zero because the port 0 potential vector is zero  
+    /// - Molar flux should be equal to zero because the port 0 potential vector is zero
     CPPUNIT_ASSERT( tArticle->mFlux == 0.0);
 
     /// - Confirm correct source port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 

@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "sims/networks/electrical/PvArrayRegTest.hh"
 ##include "sims/networks/electrical/test/TestElectSarNetwork.hh"
 
@@ -23,9 +23,9 @@ class PhotovoltaicTestSimObject: public Trick::SimObject
             CthreadIdElect   (ECLSS_LO, "scheduled") pvNetwork.update(ECLSS_LO);
             CthreadIdElect   (ECLSS_LO, "scheduled") sarNetwork.update(ECLSS_LO);
         }
-        
+
         virtual ~PhotovoltaicTestSimObject() { /* nothing to do */ }
-        
+
     private:
         // Copy constructor unavailable since declared private and not implemented.
         PhotovoltaicTestSimObject(const PhotovoltaicTestSimObject&);

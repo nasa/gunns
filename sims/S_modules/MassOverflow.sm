@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "sims/networks/fluid/test/overflow/TestOverflow.hh"
 ##include "sims/networks/fluid/test/overflow/TestOverflow2.hh"
 ##include "sims/networks/fluid/test/overflow/TestOverflow3.hh"
@@ -317,9 +317,9 @@ class MassOverflowSimObject: public Trick::SimObject
             CthreadIdFluid   (ECLSS_LO, "scheduled") fluid47.update(ECLSS_LO);
             CthreadIdFluid   (ECLSS_LO, "scheduled") fluid48.update(ECLSS_LO);
         }
-        
+
         virtual ~MassOverflowSimObject() { /* nothing to do */ }
-        
+
     private:
         // Copy constructor unavailable since declared private and not implemented.
         MassOverflowSimObject(const MassOverflowSimObject&);

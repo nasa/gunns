@@ -59,7 +59,7 @@ typedef struct DrawFluidExtrasFractions {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  Union for DrawFluidExtras GUNNS network mass fractions as scalars and as an array.
-///         The array is used as an argument in the PolyFluidInputData constructor. 
+///         The array is used as an argument in the PolyFluidInputData constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 union DrawFluidExtrasMassFractions {
     DrawFluidExtrasFractions scalar;
@@ -83,7 +83,7 @@ typedef struct DrawFluidExtras_netTcConfigScalars {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  Union for a DrawFluidExtras GUNNS network trace compounds state as scalars and as an
-///         array. The array is used as an argument in various objects input data constructors. 
+///         array. The array is used as an argument in various objects input data constructors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 union DrawFluidExtras_netTcConfigState {
     DrawFluidExtras_netTcConfigScalars scalar;
@@ -106,7 +106,7 @@ typedef struct DrawFluidExtras_reactorCompoundsMasses {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  Union for reactor compound masses as scalars and as an array.
-///         The array is used as an argument in the chemical reactor input data constructor. 
+///         The array is used as an argument in the chemical reactor input data constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 union DrawFluidExtras_reactorCompoundsTotalMasses {
     DrawFluidExtras_reactorCompoundsMasses scalar;
@@ -120,7 +120,7 @@ union DrawFluidExtras_reactorCompoundsTotalMasses {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    DrawFluidExtras_sockets Jumper Plug definitions 
+/// @brief    DrawFluidExtras_sockets Jumper Plug definitions
 ///
 /// @details  Defines a jumper plug class for a socket list in this network.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ class DrawFluidExtrasConfigData
         static ChemicalReaction::Type reactorReactions[DrawFluidExtrasConfigData::N_REACTORREACTIONS];    /**< (--) trick_chkpnt_io(**) reactorReactions chemical reactions list. */
         static ChemicalCompound::Type reactorCompounds[DrawFluidExtrasConfigData::N_REACTORCOMPOUNDS];    /**< (--) trick_chkpnt_io(**) reactorCompounds chemical compounds list. */
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         GunnsFluidVolumeMonitorConfigData tankVolumeMonitor;    /**< (--) trick_chkpnt_io(**) tankVolumeMonitor config data. */
         // Links configuration data
@@ -330,7 +330,7 @@ class DrawFluidExtras : public GunnsNetworkBase
         DrawFluidExtras& operator =(const DrawFluidExtras&);
 };
 
-/// @}  
+/// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  PolyFluidConfigData* (--) Pointer to this network's fluid configuration.

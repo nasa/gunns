@@ -30,7 +30,7 @@ RELEASE_CFLAGS   := -Wall -Wno-unknown-pragmas -Wno-format -O3
 
 LIBS		 :=
 
-DEBUG_CXXFLAGS   := ${DEBUG_CFLAGS} 
+DEBUG_CXXFLAGS   := ${DEBUG_CFLAGS}
 RELEASE_CXXFLAGS := ${RELEASE_CFLAGS}
 
 DEBUG_LDFLAGS    := -g

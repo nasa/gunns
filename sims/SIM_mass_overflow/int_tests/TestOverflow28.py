@@ -96,7 +96,7 @@ class TestOverflow28(Test):
        print("-------------------------------------------------------------------------------------------------")
        # Comparing relative error (final - start / start) to tolerance
        # Human respiration is tested for metabolic link to ensure accurate cabin air modeling
-       # Enthalpy will be conserved because heat creation is set to 0.0 in TestOverFlow28.xml 
+       # Enthalpy will be conserved because heat creation is set to 0.0 in TestOverFlow28.xml
        self.testNear(final_total_mass     - self.total_mass,     0.0, (1.0E-16 + tolerance * self.total_mass),     " mass error fraction ::")
        self.testNear(final_total_enthalpy - self.total_enthalpy, 0.0, (1.0E-16 + tolerance * self.total_enthalpy), " enthalpy error fraction ::")
        self.testNear(final_total_mass_N2  - self.total_mass_N2,  0.0, (1.0E-16 + tolerance * self.total_mass_N2),  " mass N2 error fraction ::")
@@ -107,7 +107,7 @@ class TestOverflow28(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid28.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid28.netNodes[node]
     # Getter for node fluid
@@ -122,4 +122,3 @@ class TestOverflow28(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

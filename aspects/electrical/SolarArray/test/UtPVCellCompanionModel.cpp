@@ -56,7 +56,7 @@ UtPVCellCompanionModel::UtPVCellCompanionModel()
     mThisSunInt(0.0),
     mThisBackSideIsLit(0)
 
-    
+
 
 {
 
@@ -119,7 +119,7 @@ void UtPVCellCompanionModel::setUp() {
     mThisSunAng  = 0.80;
     mThisTemp    = 250.0;
     mThisSunInt  = 0.80;
-   
+
     mThisBackSideIsLit = false;
 
     mCellCD = new PVCellCompanionModelConfigData(mVocRef,mVmpRef,mVocTempCoefficient,mIscRef,mImpRef,mIscTempCoefficient,mIsat,mTemperatureRef,mCellDegradation,mRs,mRsh,mVCrit,mBackSideRedux);
@@ -618,8 +618,8 @@ void UtPVCellCompanionModel::testUpdateHandlesBadSunAngleNicely(){
     CPPUNIT_ASSERT_DOUBLES_EQUAL(258.0,result,mTolerance);
 
 
-    //There arent really any bad angles, we just expect it to work and be happy. However, since 
-    // the angle is out of the range (its not between 0 and pi), this means the vector is on the backside 
+    //There arent really any bad angles, we just expect it to work and be happy. However, since
+    // the angle is out of the range (its not between 0 and pi), this means the vector is on the backside
     mTestObj->initialize(*mCellCD,*mCellID);
     mThisSunAng = -2000.0;
     mTestObj->update(mIsMinor,mThisV,mThisI,mThisSunAng,mThisTemp,mThisSunInt,mThisBackSideIsLit);
@@ -627,7 +627,7 @@ void UtPVCellCompanionModel::testUpdateHandlesBadSunAngleNicely(){
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mTestObj->mIsc,mTolerance);
     mThisSunAng = 2000.0;
     mTestObj->update(mIsMinor,mThisV,mThisI,mThisSunAng,mThisTemp,mThisSunInt,mThisBackSideIsLit);
-    expected = 1.90792024093944;  
+    expected = 1.90792024093944;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mTestObj->mIsc,mTolerance);
     std::cout << "... Pass";
 }
@@ -672,4 +672,3 @@ void UtPVCellCompanionModel::testIscReducedByPercentageWhenBackSideLit(){
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mTestObj->mIsc,mTolerance);
     std::cout << "... Pass";
 }
-

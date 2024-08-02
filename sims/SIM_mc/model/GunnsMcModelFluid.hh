@@ -46,7 +46,7 @@ typedef struct GunnsMcModelFluidFractions {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  Union for GunnsMcModelFluid GUNNS network mass fractions as scalars and as an array.
-///         The array is used as an argument in the PolyFluidInputData constructor. 
+///         The array is used as an argument in the PolyFluidInputData constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 union GunnsMcModelFluidMassFractions {
     GunnsMcModelFluidFractions scalar;
@@ -69,7 +69,7 @@ class GunnsMcModelFluidConfigData
         // Network fluid configurations
         static FluidProperties::FluidType netInternalFluidTypes[GunnsMcModelFluidConfigData::N_INTERNAL_FLUIDS];    /**< (--) trick_chkpnt_io(**) Network internal fluid types array. */
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         // Links configuration data
         GunnsFluidConductorConfigData conductor1;    /**< (--) trick_chkpnt_io(**) conductor1 config data. */
@@ -176,7 +176,7 @@ class GunnsMcModelFluid : public GunnsNetworkBase
         GunnsMcModelFluid& operator =(const GunnsMcModelFluid&);
 };
 
-/// @}  
+/// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  PolyFluidConfigData* (--) Pointer to this network's fluid configuration.

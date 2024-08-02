@@ -33,7 +33,7 @@ class UtTime: public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE(UtTime);
 
-	    CPPUNIT_TEST(TestGetTimeOfDay);
+        CPPUNIT_TEST(TestGetTimeOfDay);
 
         CPPUNIT_TEST_SUITE_END();
 
@@ -42,4 +42,4 @@ class UtTime: public CppUnit::TestFixture
         void TestGetTimeOfDay();
 };
 
-#endif 
+#endif

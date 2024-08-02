@@ -1,6 +1,6 @@
 /**
 @file
-@brief TestFluidNetworkWrapper implementation. 
+@brief TestFluidNetworkWrapper implementation.
 @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved.
 */
@@ -52,4 +52,3 @@ void TestFluidNetworkWrapper::printState()
                        << ", " << netNodes[1].getContent()->getMassFraction(5) << std::endl;
     std::cout << "  Leak mDot: " << leak.getFlowRate() << std::endl;
 }
-

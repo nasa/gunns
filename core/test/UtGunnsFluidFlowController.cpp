@@ -310,7 +310,7 @@ void UtGunnsFluidFlowController::testUpdateState()
     expectedG = lastG + tFilterProportionalGain * (expectedG - lastG);
 
     tArticle->step(0.1);
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mEffectiveConductivity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mLastConductivity,      DBL_EPSILON);
 

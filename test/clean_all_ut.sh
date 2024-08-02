@@ -29,7 +29,7 @@ cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/fluid/potential/test
 cd $GUNNS_HOME/$FOLDER; make clean;
- 
+
 set FOLDER = aspects/fluid/source/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
@@ -128,4 +128,3 @@ cd $TS_MODELS_HOME/$FOLDER; make clean;
 
 # clean the test compiled lib
 cd $GUNNS_HOME/lib/test; make clean;
-

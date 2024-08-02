@@ -21,7 +21,7 @@ LIBRARY DEPENDENCY:
     ((Time.o))
 
 PROGRAMMERS:
-    ((Dan Jordan) (METECS) (April 2012) 
+    ((Dan Jordan) (METECS) (April 2012)
 
 @{
 */
@@ -36,7 +36,7 @@ class Time
 {
     public:
         /// @brief Get's time of day from system call in seconds
-        double getTimeOfDay();         
+        double getTimeOfDay();
 
     private:
         timeval tv;

@@ -62,7 +62,7 @@ GunnsSolarArrayRegulatorConfigData::GunnsSolarArrayRegulatorConfigData(const std
                                                            const double    regulatedVoltageLowLimit,
                                                            const double    regulatedVoltageHighLimit)
     :
-    ConverterElectConfigData(name, nodes, outVoltageSensorConfig, outCurrentSensorConfig, outputConductance, converterOffConductance, 
+    ConverterElectConfigData(name, nodes, outVoltageSensorConfig, outCurrentSensorConfig, outputConductance, converterOffConductance,
                                 tripPriority, standbyPower),
     mBattery(battery),
     mNominalTrickleChargeRate(trickleChargeRate),
@@ -256,7 +256,7 @@ void GunnsSolarArrayRegulator::initialize(const GunnsSolarArrayRegulatorConfigDa
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsSolarArrayRegulator::validate() const
 {
-    /// - Issue an error if the battery pointer is null. This link cannot function 
+    /// - Issue an error if the battery pointer is null. This link cannot function
     ///   without a valid reference to a battery.
     if (mBattery == 0) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",

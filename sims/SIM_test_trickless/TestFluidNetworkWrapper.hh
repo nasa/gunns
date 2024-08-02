@@ -17,7 +17,7 @@
 #include "../networks/fluid/test/TestFluidNetwork.hh"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    TestFluidNetworkWrapper 
+/// @brief    TestFluidNetworkWrapper
 ///
 /// @details  Extends TestFluidNetwork to output node properties values to cout for testing.
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,5 +38,5 @@ class TestFluidNetworkWrapper : public TestFluidNetwork
         TestFluidNetworkWrapper& operator =(const TestFluidNetworkWrapper& rhs);
 };
 
-/// @}  
+/// @}
 #endif

@@ -138,14 +138,14 @@ void UtConstantPowerLoad::setUp() {
         std::cout
         << "UTConstantPowerLoad Setup method initialization exception -- failed"
         << std::endl;
-	 } catch (...) {
-	     std::cout
-	     << "UTConstantPowerLoad Setup method catch all exception -- failed"
-	     << std::endl;
-	 }
+     } catch (...) {
+         std::cout
+         << "UTConstantPowerLoad Setup method catch all exception -- failed"
+         << std::endl;
+     }
 
-	 /// - Increment the test identification number.
-	 ++TEST_ID;
+     /// - Increment the test identification number.
+     ++TEST_ID;
 
 }
 

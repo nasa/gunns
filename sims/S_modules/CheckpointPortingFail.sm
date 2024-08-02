@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "software/SimCompatibility/TsSimCompatibility.hh"
 ##include "sims/networks/fluid/cabin/CabinFluidPortingFail.hh"
 
@@ -8,7 +8,7 @@ class CheckpointSimObject: public Trick::SimObject
 {
     public:
         CabinFluid   cabinFluid;      /**< (--) GUNNS fluid network */
-        
+
         CheckpointSimObject()
             :
             cabinFluid("cabinFluid")
@@ -17,9 +17,9 @@ class CheckpointSimObject: public Trick::SimObject
             ("restart")             cabinFluid.restart("cabinFluid");
             (ECLSS_LO, "scheduled") cabinFluid.update(ECLSS_LO);
         }
-        
+
         virtual ~CheckpointSimObject() {;}
-        
+
     private:
         // Assignment operator unavailable since declared private and not implemented.
         CheckpointSimObject operator = (const CheckpointSimObject &);

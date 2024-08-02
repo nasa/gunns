@@ -13,13 +13,13 @@ thread_safe_bus/alloc_simbus.cpp:
 	$(shell PYTHONPATH="${PYTHONPATH}" ICD_HOME="${ICD_HOME}" ${ICD_HOME}/icd_generate $(ICD_TXT_FILES) >& icd_files.out)
 	$(shell PYTHONPATH="${PYTHONPATH}" ICD_HOME="${ICD_HOME}" ${ICD_HOME}/icd_generate $(simname) >& alloc_simbus.out )
 
-ifneq "$(MAKECMDGOALS)" "spotless" 
+ifneq "$(MAKECMDGOALS)" "spotless"
 ifneq "$(MAKECMDGOALS)" "apocalypse"
 S_define: thread_safe_bus/alloc_simbus.cpp
 endif
 endif
 
-clean_icd: 
+clean_icd:
 	rm -rf thread_safe_bus ;\
 	rm -f icd_files.out alloc_simbus.out
 

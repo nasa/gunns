@@ -3,7 +3,7 @@
 #
 # All source folders containing run-time code to be compiled in libraries
 # should be included in this list.  We grab all .cpp's by default, and
-# specific classes can be omitted later. 
+# specific classes can be omitted later.
 SOURCES := \
  $(wildcard $(GUNNS_HOME)/aspects/dynamics/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/Batt/*.cpp) \
@@ -53,4 +53,3 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/ms-utils/simulation/hs/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/simulation/timer/*.c) \
  $(wildcard $(GUNNS_HOME)/ms-utils/units/*.c)
- 

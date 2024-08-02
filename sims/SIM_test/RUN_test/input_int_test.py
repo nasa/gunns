@@ -6,7 +6,7 @@
 #---------------------------------------------
 f = "RUN_test/input.py"
 exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
- 
+
 #---------------------------------------------
 # Setup Trick
 #---------------------------------------------
@@ -20,4 +20,3 @@ trick_utest.unit_tests.enable()
 trick_utest.unit_tests.set_file_name( "RUN_test/results/SIM_test_int_test_results.xml" )
 f = "int_tests/SimTestSuite.py"
 exec(compile(open(f, "rb").read(), f, 'exec'), globals(), locals())
-

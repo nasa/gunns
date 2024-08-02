@@ -57,14 +57,14 @@ class TestOverflow26(Test):
           mass_N2  = mass * self.nodeMassFraction(node, "GUNNS_N2")
           mass_O2  = mass * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O = mass * self.nodeMassFraction(node, "GUNNS_H2O")
-          mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")         
+          mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")
 
           self.total_mass     = self.total_mass     + mass
           self.total_enthalpy = self.total_enthalpy + enthalpy
           self.total_mass_N2  = self.total_mass_N2  + mass_N2
           self.total_mass_O2  = self.total_mass_O2  + mass_O2
           self.total_mass_H2O = self.total_mass_H2O + mass_H2O
-          self.total_mass_WATER = self.total_mass_WATER + mass_WATER 
+          self.total_mass_WATER = self.total_mass_WATER + mass_WATER
 
 
     # Tests final total fluid quantities in all nodes against the stored values from the start of
@@ -95,12 +95,12 @@ class TestOverflow26(Test):
 
        print("-------------------------------------------------------------------------------------------------")
        # Comparing relative error (final - start / start) to tolerance
-       # Evaporation link makes change in WATER mass + change in H2O mass ~= 0.0 
+       # Evaporation link makes change in WATER mass + change in H2O mass ~= 0.0
        self.testNear(final_total_mass     - self.total_mass,     0.0, (1.0E-16 + tolerance * self.total_mass),     " mass error fraction ::")
        self.testNear(final_total_enthalpy - self.total_enthalpy, 0.0, (1.0E-16 + tolerance * self.total_enthalpy), " enthalpy error fraction ::")
        self.testNear(final_total_mass_N2  - self.total_mass_N2,  0.0, (1.0E-16 + tolerance * self.total_mass_N2),  " mass N2 error fraction ::")
        self.testNear(final_total_mass_O2  - self.total_mass_O2,  0.0, (1.0E-16 + tolerance * self.total_mass_O2),  " mass O2 error fraction ::")
-       self.testNear(abs((final_total_mass_H2O-self.total_mass_H2O) + (final_total_mass_WATER - self.total_mass_WATER)), 0.0, 
+       self.testNear(abs((final_total_mass_H2O-self.total_mass_H2O) + (final_total_mass_WATER - self.total_mass_WATER)), 0.0,
                                 (1.0E-16 + tolerance * (self.total_mass_WATER+self.total_mass_H2O)), " water evaporation mass error fraction ::")
 
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
@@ -108,7 +108,7 @@ class TestOverflow26(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid26.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid26.netNodes[node]
     # Getter for node fluid
@@ -123,4 +123,3 @@ class TestOverflow26(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

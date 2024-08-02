@@ -46,7 +46,7 @@ typedef struct TestGunsGasTurbineFractions {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Union for TestGunsGasTurbine GUNNS network mass fractions as scalars and as an array.
-///           The array is used as an argument in the PolyFluidInputData constructor. 
+///           The array is used as an argument in the PolyFluidInputData constructor.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 union TestGunsGasTurbineMassFractions {
     TestGunsGasTurbineFractions scalar;
@@ -59,19 +59,19 @@ union TestGunsGasTurbineMassFractions {
 class TestGunsGasTurbine;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    TestGunsGasTurbine GUNNS Network Config Data 
+/// @brief    TestGunsGasTurbine GUNNS Network Config Data
 ///
-/// @details  GUNNS Manager configuration data class for the TestGunsGasTurbine Network. 
+/// @details  GUNNS Manager configuration data class for the TestGunsGasTurbine Network.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class TestGunsGasTurbineConfigData
 {
     public:
-	    /// @brief   Enumeration of the number of internal constituent fluids in the TestGunsGasTurbine Network.
+        /// @brief   Enumeration of the number of internal constituent fluids in the TestGunsGasTurbine Network.
         enum {N_INTERNAL_FLUIDS = 1};
         // Network fluid configurations
         static FluidProperties::FluidType netInternalFluidTypes[TestGunsGasTurbineConfigData::N_INTERNAL_FLUIDS]; /**< (--) trick_chkpnt_io(**) Network internal fluid types array */
         // Solver configuration data
-        GunnsConfigData                   netSolver;        /**< (--) trick_chkpnt_io(**) Network solver config data */ 
+        GunnsConfigData                   netSolver;        /**< (--) trick_chkpnt_io(**) Network solver config data */
         // Spotter configuration data
         GunnsDriveShaftSpotterConfigData    DriveShaft; /**< (--)  DriveShaft config data */
         // Links configuration data
@@ -97,13 +97,13 @@ class TestGunsGasTurbineConfigData
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    TestGunsGasTurbine GUNNS Network Input Data 
+/// @brief    TestGunsGasTurbine GUNNS Network Input Data
 ///
-/// @details  GUNNS Manager input data class for the TestGunsGasTurbine Network. 
+/// @details  GUNNS Manager input data class for the TestGunsGasTurbine Network.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class TestGunsGasTurbineInputData
 {
-	public:
+    public:
         // Internal network fluids
         TestGunsGasTurbineMassFractions  DefaultFluidStateFractions; /**< (--) trick_chkpnt_io(**) Fluid mass fractions */
         PolyFluidInputData                DefaultFluidState; /**< (--) trick_chkpnt_io(**) Fluid input data */
@@ -132,12 +132,12 @@ class TestGunsGasTurbineInputData
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    TestGunsGasTurbine Network
 ///
-/// @details  GUNNS Manager class for the TestGunsGasTurbine Network. 
+/// @details  GUNNS Manager class for the TestGunsGasTurbine Network.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class TestGunsGasTurbine
 {
         TS_MAKE_SIM_COMPATIBLE(TestGunsGasTurbine);
-	public:
+    public:
         /// @brief   Enumeration of the TestGunsGasTurbine Network nodes.
         enum Nodes
         {
@@ -171,7 +171,7 @@ class TestGunsGasTurbine
         PolyFluidConfigData               netInternalFluidConfig;                              /**<    (--) trick_chkpnt_io(**) Network internal fluid config */
         // Network Spotters
         GunnsDriveShaftSpotter    DriveShaft; /**< (--)  DriveShaft instance */
-	    // Network links
+        // Network links
         GunnsFluidPotential SourcePotential; /**< (--) SourcePotential link instance */
         GunnsFluidPotential ExitPotential; /**< (--) ExitPotential link instance */
         GunnsGasTurbine Turbine1; /**< (--) Turbine1 link instance */
@@ -186,7 +186,7 @@ class TestGunsGasTurbine
         TestGunsGasTurbine& operator =(const TestGunsGasTurbine& rhs);
 };
 
-/// @}  
+/// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param   iGUNNS_N2   (--) Mass fraction of the GUNNS_N2 constituent in the composite fluid

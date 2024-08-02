@@ -548,7 +548,7 @@ void UtGunnsFluidDistributed2WayBus::testDemandLimit()
     const double timestep           = 0.1;
     const double demandSideP        = 100000.0;  // ~1 atm, dP = 1%
     double csOverCd     = 1.25; // default moding capacitance ratio upper limit
-    double gainLimit    = 1.5 * powf(0.75, 4); // default demand filter constants A & B
+    double gainLimit    = 1.5 * std::pow(0.75, 4); // default demand filter constants A & B
     double expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     double expectedNdot = expectedGain * (demandSideP - tArticle->mInData.mSource) / timestep
                         / (1.0 / tArticle->mOutData.mCapacitance + 1.0 / tArticle->mInData.mCapacitance);
@@ -579,7 +579,7 @@ void UtGunnsFluidDistributed2WayBus::testDemandLimit()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGain, actualGain, FLT_EPSILON);
 
     tArticle->mLoopLatency = 200;
-    gainLimit    = 1.5 * powf(0.75, 100);
+    gainLimit    = 1.5 * std::pow(0.75, 100);
     expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     expectedNdot = expectedGain * (demandSideP - tArticle->mInData.mSource) / timestep
                  / (1.0 / tArticle->mOutData.mCapacitance + 1.0 / tArticle->mInData.mCapacitance);
@@ -593,7 +593,7 @@ void UtGunnsFluidDistributed2WayBus::testDemandLimit()
     tArticle->mInData.mCapacitance  = 1.15;
     tArticle->mLoopLatency          = 2;
     csOverCd     = 1.15;
-    gainLimit    = 1.5 * powf(0.75, 2);
+    gainLimit    = 1.5 * std::pow(0.75, 2);
     expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     expectedNdot = expectedGain * (demandSideP - tArticle->mInData.mSource) / timestep
                  / (1.0 / tArticle->mOutData.mCapacitance + 1.0 / tArticle->mInData.mCapacitance);

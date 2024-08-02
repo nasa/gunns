@@ -20,7 +20,7 @@ PROGRAMMERS:
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "core/GunnsBasicNode.hh"
-#include <math.h>
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    SolarString Config Data

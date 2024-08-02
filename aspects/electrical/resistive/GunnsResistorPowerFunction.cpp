@@ -176,7 +176,7 @@ void GunnsResistorPowerFunction::validate() const
     }
 
     /// - Issue an error on exponent too close to zero.
-    if (fabs(mExponent) < 0.001) {
+    if (std::fabs(mExponent) < 0.001) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "exponent too near to zero.");
     }
@@ -220,13 +220,12 @@ void GunnsResistorPowerFunction::minorStep(const double dt        __attribute__(
 {
     /// - Link delta-potential is limited to above a minimum for stability in linearization and to
     ///   avoid divide-by-zero below.
-    const double dPLimit = std::max(fabs(mPotentialVector[0] - mPotentialVector[1]),
+    const double dPLimit = std::max(std::fabs(mPotentialVector[0] - mPotentialVector[1]),
                                     mMinLinearizationPotential);
 
     /// - Conductance is the inverse of resistance, limited to valid ranges.  Blockage malfunction
     ///   lowers the conductance.
-    double gLimit  = std::min(mConductanceLimit,
-                              1.0 / std::max(mResistance, 1.0 / mConductanceLimit));
+    double gLimit = 1.0 / std::max(mResistance, 1.0 / mConductanceLimit);
     if (mMalfBlockageFlag) {
         gLimit *= MsMath::limitRange(0.0, (1.0 - mMalfBlockageValue), 1.0);
     }
@@ -249,8 +248,8 @@ void GunnsResistorPowerFunction::minorStep(const double dt        __attribute__(
             ///     i = A*dP + w
             ///     w = i - A*dP
             ///
-            const double current = powf(dPG, expInv);
-            mSystemAdmittance    = expInv * powf(dPG, (expInv - 1.0));
+            const double current = std::pow(dPG, expInv);
+            mSystemAdmittance    = expInv * std::pow(dPG, (expInv - 1.0));
             mSystemSource        = current - mSystemAdmittance * dPLimit;
 
         } else {
@@ -266,7 +265,7 @@ void GunnsResistorPowerFunction::minorStep(const double dt        __attribute__(
             ///     (dP*G)^(1/x) = w = A*dP
             ///     A = (dP*G)^(1/x) / dP
             ///
-            mSystemAdmittance = powf(dPLimit * gLimit, expInv) / dPLimit;
+            mSystemAdmittance = std::pow(dPLimit * gLimit, expInv) / dPLimit;
             mSystemSource     = 0.0;
         }
     } else {
@@ -297,7 +296,7 @@ void GunnsResistorPowerFunction::computeFlows(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsResistorPowerFunction::buildAdmittance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemAdmittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemAdmittance) > 0.0) {
         mAdmittanceMatrix[0]  =  mSystemAdmittance;
         mAdmittanceMatrix[1]  = -mSystemAdmittance;
         mAdmittanceMatrix[2]  = -mSystemAdmittance;
@@ -321,7 +320,7 @@ void GunnsResistorPowerFunction::buildSource()
 void GunnsResistorPowerFunction::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most false quantity leak due to rounding
         ///   error in the solver.
         mFlux = 0.0;

@@ -67,10 +67,10 @@ GunnsFluidHxDynHtcSegment::GunnsFluidHxDynHtcSegment(const GunnsFluidHxDynHtcSeg
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double GunnsFluidHxDynHtcSegment::update(const double mdot, const double degradation)
 {
-    const double fabsMdot = std::min(10.0, fabs(mdot));
+    const double fabsMdot = std::min(10.0, std::fabs(mdot));
     double htc = mCoeff0;
     if (fabsMdot > FLT_EPSILON) {
-        htc += mCoeff1 * powf(fabsMdot, MsMath::limitRange(0.05, mExponent, 20.0));
+        htc += mCoeff1 * std::pow(fabsMdot, MsMath::limitRange(0.05, mExponent, 20.0));
     }
     return MsMath::limitRange(0.0, htc * degradation, mLimit);
 }

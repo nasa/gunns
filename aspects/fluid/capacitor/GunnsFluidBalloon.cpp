@@ -400,7 +400,7 @@ void GunnsFluidBalloon::processVolumeEdit()
 void GunnsFluidBalloon::correctPpRateEdits(const double dt)
 {
     /// - If a partial pressure rate edit is in progress...
-    if (fabs(mFlowRate) > DBL_EPSILON) {
+    if (std::fabs(mFlowRate) > DBL_EPSILON) {
 
         /// - Predict the change in total pressure due to PP rate edits this pass.  Then
         ///   inflatability combined with change in pressure gives expected change in volume.
@@ -472,10 +472,10 @@ double GunnsFluidBalloon::computePressureCorrection()
                        * mNodes[0]->getContent()->getMass() * UnitConversion::UNIV_GAS_CONST_SI
                        / mNodes[0]->getContent()->getMWeight();
         const double bb4ac = b*b - 4.0*a*c;
-        if (fabs(a) > 0.0 and bb4ac > 0.0) {
-            const double solnp = (-b + sqrt(bb4ac)) * 0.5 / a;
-            const double solnm = (-b - sqrt(bb4ac)) * 0.5 / a;
-            if (fabs(solnp) < fabs(solnm)) {
+        if (std::fabs(a) > 0.0 and bb4ac > 0.0) {
+            const double solnp = (-b + std::sqrt(bb4ac)) * 0.5 / a;
+            const double solnm = (-b - std::sqrt(bb4ac)) * 0.5 / a;
+            if (std::fabs(solnp) < std::fabs(solnm)) {
                 mPressureCorrectionGain = solnp;
             } else {
                 mPressureCorrectionGain = solnm;

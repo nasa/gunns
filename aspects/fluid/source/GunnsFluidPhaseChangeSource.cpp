@@ -351,7 +351,7 @@ void GunnsFluidPhaseChangeSource::step(const double dt __attribute__((unused)))
         ///   already above the saturation temperature and is boiling, which reduces the input power
         ///   needed to produce mass flow.  However, we limit mDh + mL > 0 to avoid dividing by zero
         ///   or mass flow direction opposite the power sign.
-        mFlowRate = mPower / fmax(mDh + mL, FLT_EPSILON);
+        mFlowRate = mPower / std::max(mDh + mL, static_cast<double>(FLT_EPSILON));
 
     } else {
         /// - Assuming the exit liquid is saturated, find the saturation temperature at its current
@@ -365,13 +365,13 @@ void GunnsFluidPhaseChangeSource::step(const double dt __attribute__((unused)))
         ///   converted from kJ/kg to J/kg.
         mL = gasProperties->getHeatOfVaporization(mTsat) * UnitConversion::UNIT_PER_KILO;
         /// - Calculate resulting mass phase change rate.
-        mFlowRate = mPower / fmax(mDh + mL, FLT_EPSILON);
+        mFlowRate = mPower / std::max(mDh + mL, static_cast<double>(FLT_EPSILON));
     }
 
     /// - Update the source vector.  The gas & liquid molecular weights are the same, as enforced
     ///   during validate.
     mFlux = mFlowRate / gasProperties->getMWeight();
-    if (fabs(mFlowRate) > m100EpsilonLimit) {
+    if (std::fabs(mFlowRate) > m100EpsilonLimit) {
         mSourceVector[0] = -mFlux;
         mSourceVector[1] =  mFlux;
     } else {

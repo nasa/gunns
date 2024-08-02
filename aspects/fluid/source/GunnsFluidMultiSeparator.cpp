@@ -558,7 +558,7 @@ void GunnsFluidMultiSeparator::step(const double dt __attribute__((unused)))
     /// - Build the link admittance matrix.  This is the same as a regular fluid conductor with
     ///   the through-flow conductance between ports 0 and 1, except the matrix is larger because
     ///   of the separated fluid exit ports.
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]           =  mSystemConductance;
         mAdmittanceMatrix[1]           = -mSystemConductance;
         mAdmittanceMatrix[mNumPorts]   = -mSystemConductance;
@@ -620,7 +620,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
     /// - Set bulk flow port flow directions.
     mPortDirections[0] = NONE;
     mPortDirections[1] = NONE;
-    if (fabs(mFlux) > DBL_EPSILON) {
+    if (std::fabs(mFlux) > DBL_EPSILON) {
         mPortDirections[upstreamPort]   = SOURCE;
         mPortDirections[downstreamPort] = SINK;
     }
@@ -637,7 +637,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
     /// - mSepBufferExit is the flow that was removed from the bulk flow last pass, reflected
     ///   in the source vector this pass, and added to the exit ports this pass.
     for (int i=0; i<mNumSepTypes; ++i) {
-        mSepBufferThru[i] = mSepFraction[i] * fabs(mFlux)
+        mSepBufferThru[i] = mSepFraction[i] * std::fabs(mFlux)
                 * mNodes[upstreamPort]->getOutflow()->getMoleFraction(mSepIndex[i]);
         if (mSepBufferExit[i] > DBL_EPSILON) {
             mPortDirections[mSepPort[i]] = SOURCE;
@@ -661,7 +661,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
 void GunnsFluidMultiSeparator::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;
@@ -691,10 +691,10 @@ void GunnsFluidMultiSeparator::transportFlows(const double dt __attribute__((unu
         }
     }
 
-    const double flux = fabs(mFlux);
+    const double flux = std::fabs(mFlux);
     if (flux > DBL_EPSILON) {
         mInternalFluid->setState(mNodes[upstreamPort]->getOutflow());
-        mNodes[upstreamPort]->collectOutflux(fabs(mFlowRate));
+        mNodes[upstreamPort]->collectOutflux(std::fabs(mFlowRate));
 
         /// - Move trace compounds from the bulk fluid to their exit nodes.
         GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();

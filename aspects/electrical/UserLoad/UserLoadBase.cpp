@@ -188,7 +188,7 @@ UserLoadBase::~UserLoadBase()
 void UserLoadBase::tokenize(std::vector<std::string>& theStringVector,
                             const std::string&        theString,
                             const std::string&        theDelimiter) {
-    size_t start = 0, end = 0;
+    std::size_t start = 0, end = 0;
 
     while (end != std::string::npos) {
         end=theString.find(theDelimiter, start);

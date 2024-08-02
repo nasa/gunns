@@ -27,7 +27,7 @@ PROGRAMMERS:
 
 #include "Sor.hh"
 #include <cmath>
-//#include <stdio.h>
+//#include <cstdio>
 
 /// @details  This particular value of DBL_EPSILON * DBL_EPSILON is chosen because Gunns
 ///           conditions its matrix with a minimum value of DBL_EPSILON * 1.0E-15.

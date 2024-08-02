@@ -144,12 +144,12 @@ double SorbateProperties::computeLoadingEquil(const double pp, const double temp
     double result = 0.0;
     if (0.0 != mTothE and pp >= FLT_EPSILON) {
         const double EoverT = MsMath::limitRange(0.0, mTothE / temperature, 100.0);
-        const double expT   = exp(EoverT);
+        const double expT   = std::exp(EoverT);
         const double a      = mTothA0 * expT;
         const double b      = mTothB0 * expT;
               double tT     = MsMath::limitRange(-100.0, mTothT0 + mTothC0 / temperature, 100.0);
                      tT     = MsMath::innerLimit(-0.1, tT, 0.1);
-        const double denom  = powf(1.0 + powf(b * pp, tT), 1.0 / tT);
+        const double denom  = std::pow(1.0 + std::pow(b * pp, tT), 1.0 / tT);
         result = a * pp / std::max(denom, DBL_EPSILON);
     }
     return result;

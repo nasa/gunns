@@ -199,5 +199,5 @@ void GunnsElectShort::minorStep(const double dt, const int minorStep __attribute
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectShort::updateState(const double dt __attribute__((unused)))
 {
-    mEffectiveConductivity = mShort.computeShort(fabs(mPotentialVector[0] - mPotentialVector[1]));
+    mEffectiveConductivity = mShort.computeShort(std::fabs(mPotentialVector[0] - mPotentialVector[1]));
 }

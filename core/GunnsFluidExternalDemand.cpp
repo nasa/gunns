@@ -407,22 +407,22 @@ void GunnsFluidExternalDemand::updateState(const double dt)
     ///   our demand and the supply pressure.  Cut off average demand below a certain amount to
     ///   avoid dirty zeroes whem mFlux is zero.
     mAvgDemand       = 0.5 * (mAvgDemand + mFlux);
-    if (fabs(mAvgDemand) < DBL_EPSILON) {
+    if (std::fabs(mAvgDemand) < DBL_EPSILON) {
         mAvgDemand = 0.0;
     }
 
     mAvgSupplyDeltaP = -mAvgSupplyP;
     mAvgSupplyP      = 0.5 * (mAvgSupplyP + mSourcePressure);
     mAvgSupplyDeltaP += mAvgSupplyP;
-    if (fabs(mAvgSupplyP) < DBL_EPSILON) {
+    if (std::fabs(mAvgSupplyP) < DBL_EPSILON) {
         mAvgSupplyP = 0.0;
     }
 
     /// - Update our estimate of the supply network's effective capacitance:  C = I dt / dP
-    if (fabs(mAvgSupplyDeltaP) > mFilterMinDeltaP) {
+    if (std::fabs(mAvgSupplyDeltaP) > mFilterMinDeltaP) {
         mEstimatedCapacitance = (1.0 - mFilterCapacitanceGain) * mEstimatedCapacitance
                               + mFilterCapacitanceGain * (-mAvgDemand * dt / mAvgSupplyDeltaP);
-        if (fabs(mEstimatedCapacitance) < DBL_EPSILON) {
+        if (std::fabs(mEstimatedCapacitance) < DBL_EPSILON) {
             mEstimatedCapacitance = 0.0;
         }
     }

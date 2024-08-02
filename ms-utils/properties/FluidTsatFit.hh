@@ -93,8 +93,7 @@ class FluidTsatFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double FluidTsatFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return (mB - sqrt(mB2 - mC4 * (mA - log10(x)))) * mC2;
+    return (mB - std::sqrt(mB2 - mC4 * (mA - std::log10(x)))) * mC2;
 }
 
 #endif
-

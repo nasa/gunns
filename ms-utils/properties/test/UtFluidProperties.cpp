@@ -766,7 +766,7 @@ void UtFluidProperties::testHeTable()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;
@@ -825,7 +825,7 @@ void UtFluidProperties::testXeTable()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;
@@ -879,7 +879,7 @@ void UtFluidProperties::testN2Table()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;
@@ -933,7 +933,7 @@ void UtFluidProperties::testO2Table()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;
@@ -987,7 +987,7 @@ void UtFluidProperties::testH2Table()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;
@@ -1041,7 +1041,7 @@ void UtFluidProperties::testWaterPvtTable()
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
+            if (std::fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
                 maxI  = i;

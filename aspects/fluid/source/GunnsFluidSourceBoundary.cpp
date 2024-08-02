@@ -322,7 +322,7 @@ void GunnsFluidSourceBoundary::computeFlows(const double dt __attribute__((unuse
     }
 
     /// - Set port flow directions and schedule flow from source nodes.
-    if (fabs(mFlux) > DBL_EPSILON) {
+    if (std::fabs(mFlux) > DBL_EPSILON) {
         mPortDirections[0] = SINK;
     } else {
         mPortDirections[0] = NONE;
@@ -366,7 +366,7 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
                     static_cast<GunnsFluidNode*>(mNodes[0])->collectTc(i, mOverrideTcFlowRates[i]);
                 }
             }
-        } else if (mTraceCompoundsOnly and fabs(mFlowRate) > DBL_EPSILON) {
+        } else if (mTraceCompoundsOnly and std::fabs(mFlowRate) > DBL_EPSILON) {
             /// - In TC-only mode, TC's are given directly to/from the node's via its collectTc
             ///   function.
             for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
@@ -444,7 +444,7 @@ void GunnsFluidSourceBoundary::transportFluid(const bool forcedOutflow __attribu
     ///   with a negative flow rate.
     ///
     /// - In TC-only mode, TC flows to/from the node were transported in transportFlows..
-    if (not mTraceCompoundsOnly and (fabs(mFlowRate) > m100EpsilonLimit)) {
+    if (not mTraceCompoundsOnly and (std::fabs(mFlowRate) > m100EpsilonLimit)) {
         mNodes[0]->collectInflux (mFlowRate, mInternalFluid);
     }
 }

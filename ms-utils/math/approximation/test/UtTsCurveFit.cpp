@@ -213,7 +213,7 @@ void UtTsCurveFit::testExponential()
     const double x = +13.0;
     const double minX = +10.0;
     const double maxX = +1000.0;
-    const double expected = exp(a + b / x + c / (x * x));
+    const double expected = std::exp(a + b / x + c / (x * x));
 
     mArticle = new ExponentialFit(a, b, c, minX, maxX);
 
@@ -259,7 +259,7 @@ void UtTsCurveFit::testPower()
     const double x = 316.0;
     const double minX = 315.0;
     const double maxX = 317.0;
-    const double expected = a * pow(b, x);
+    const double expected = a * std::pow(b, x);
 
     mArticle = new PowerFit(a, b, minX, maxX);
 
@@ -353,7 +353,7 @@ void UtTsCurveFit::testSutherlandFit()
     const double minX = +99.0;
     const double x = +100.0;
     const double maxX = +101.0;
-    const double expected = a * pow(x, 1.5) / (b + x);
+    const double expected = a * std::pow(x, 1.5) / (b + x);
 
     mArticle = new SutherlandFit(a, b, minX, maxX);
 

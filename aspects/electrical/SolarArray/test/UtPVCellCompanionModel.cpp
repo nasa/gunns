@@ -10,7 +10,7 @@
 ***************************************************************************************************/
 #include "UtPVCellCompanionModel.hh"
 #include "software/exceptions/TsInitializationException.hh"
-#include <math.h>
+#include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtPVCellCompanionModel class.

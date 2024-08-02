@@ -19,7 +19,7 @@ PROGRAMMERS
 #include "aspects/electrical/SolarArray/SolarArray.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "math/MsMath.hh"
-#include <string.h>
+#include <cstring>
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -461,7 +461,7 @@ void SolarArray::step(const double dt)
         for (int sect = 0; sect < mNumSections; sect++) {
             mPercentInsolation += mSections[sect].mSunIntensity
                                 * mSections[sect].mSolarPowerOnSection
-                                * sin(mSections[sect].mSunAngleFromHorizontal)
+                                * std::sin(mSections[sect].mSunAngleFromHorizontal)
                                 / mSectionArea;
         }
         mPercentInsolation *= 100.0 / (mReferenceInsolation * mNumSections);

@@ -498,14 +498,14 @@ double GunnsFluidDistributed2WayBus::computeDemandLimit(const double timestep,
             /// - Limited exponent for the lag gain:
             const int exponent = std::min(100, std::max(1, mLoopLatency));
             /// - Stability filter 'lag gain' imposes limit on demand flow as latency increases.
-            const double lagGain = std::min(1.0, mDemandFilterConstA * powf(mDemandFilterConstB, exponent));
+            const double lagGain = std::min(1.0, mDemandFilterConstA * std::pow(mDemandFilterConstB, exponent));
             /// - Limited capacitance ratio for the gain:
             const double csOverCd = std::min(mModingCapacitanceRatio, std::max(1.0, mInData.mCapacitance / mOutData.mCapacitance));
             /// - Stability filter 'gain' further limits the demand flow as Supply-side capacitance
             ///   approaches Demand-side capacitance.
             gain = lagGain + (1.0 - lagGain) * (csOverCd - 1.0) * 4.0;
             /// - Demand flow rate limit.
-            ndotLimit = gain * fabs(demandSidePressure - mInData.mSource)
+            ndotLimit = gain * std::fabs(demandSidePressure - mInData.mSource)
                       / (timestep * (1.0 / mOutData.mCapacitance + 1.0 / mInData.mCapacitance));
         }
     }

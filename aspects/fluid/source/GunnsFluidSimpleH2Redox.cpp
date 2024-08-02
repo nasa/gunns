@@ -310,7 +310,7 @@ void GunnsFluidSimpleH2Redox::step(const double dt __attribute__((unused)))
         mH2MassRate *= mEfficiency;
     }
 
-    if (mTrippedOff or fabs(mH2MassRate) < m100EpsilonLimit) {
+    if (mTrippedOff or std::fabs(mH2MassRate) < m100EpsilonLimit) {
         /// - Zero all reaction rates if the reactor is tripped off or insufficient H2 rate.
         zeroReactionRates();
 
@@ -394,7 +394,7 @@ void GunnsFluidSimpleH2Redox::transportFlows(const double dt __attribute__((unus
     mH2OFluid->setTemperature(mNodes[0]->getOutflow()->getTemperature());
     mO2Fluid->setTemperature(mNodes[1]->getOutflow()->getTemperature());
 
-    if (fabs(mH2MassRate) >= m100EpsilonLimit) {
+    if (std::fabs(mH2MassRate) >= m100EpsilonLimit) {
         /// - Transport node flows.
         mNodes[0]->collectInflux(mH2MassRate,  mH2Fluid);
         mNodes[0]->collectInflux(mH2OMassRate, mH2OFluid);

@@ -593,7 +593,7 @@ void UtGunnsFluidMultiSeparator::testStep()
     //printf("\n%e %e\n", tNodes[tPort0].getContent()->getDensity(), tNodes[tPort0].getContent()->getMWeight());
     const double expectedRhoIn =  1.13976; // from print statement above
     const double expectedMwIn  = 27.521;   // from print statement above
-    const double expectedA     = expectedG * sqrt(1000.0 * 0.5 * expectedRhoIn / (p0 - p1))
+    const double expectedA     = expectedG * std::sqrt(1000.0 * 0.5 * expectedRhoIn / (p0 - p1))
                                / expectedMwIn;
     const double flux = expectedA * (p0 - p1);
     const double mdot = flux * expectedMwIn;
@@ -713,7 +713,7 @@ void UtGunnsFluidMultiSeparator::testComputeFlows()
     //printf("\n%e %e\n", tNodes[tPort0].getContent()->getDensity(), tNodes[tPort0].getContent()->getMWeight());
     const double expectedRhoIn =  1.13976; // from print statement above
     const double expectedMwIn  = 27.521;   // from print statement above
-    const double expectedA     = expectedG * sqrt(1000.0 * 0.5 * expectedRhoIn / (p0 - p1))
+    const double expectedA     = expectedG * std::sqrt(1000.0 * 0.5 * expectedRhoIn / (p0 - p1))
                                / expectedMwIn;
     tArticle->mAdmittanceMatrix[0] =  expectedA;
     tArticle->mAdmittanceMatrix[1] = -expectedA;
@@ -831,7 +831,7 @@ void UtGunnsFluidMultiSeparator::testTransportFlows()
     const double expectedRhoIn =  1.13976; // from testComputeFlows()
     const double expectedMwIn  = 27.521;   // from testComputeFlows()
     const double expectedDp    = p0 - p1;
-    const double expectedA     = expectedG * sqrt(1000.0 * 0.5 * expectedRhoIn / expectedDp)
+    const double expectedA     = expectedG * std::sqrt(1000.0 * 0.5 * expectedRhoIn / expectedDp)
                                / expectedMwIn;
     tArticle->mAdmittanceMatrix[0] =  expectedA;
     tArticle->mAdmittanceMatrix[1] = -expectedA;

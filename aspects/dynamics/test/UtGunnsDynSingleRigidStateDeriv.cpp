@@ -341,12 +341,12 @@ void UtGunnsDynSingleRigidStateDeriv::testUpdate()
     /// @test F/m = a ==> F = ma.
     double FM[6];
     GunnsDynUtils::multiplyMV(FM, tArticle->mAdmittanceMatrix, tArticle->mPotentialVector, 6);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[0], FM[0], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[0]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[1], FM[1], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[1]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[2], FM[2], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[2]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[3], FM[3], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[3]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[4], FM[4], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[4]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[5], FM[5], 2.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[5]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[0], FM[0], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[0]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[1], FM[1], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[1]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[2], FM[2], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[2]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[3], FM[3], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[3]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[4], FM[4], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[4]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[5], FM[5], 2.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[5]));
 
     // TODO test change to inertia matrix
 
@@ -394,12 +394,12 @@ void UtGunnsDynSingleRigidStateDeriv::testUpdateCmOffset()
     /// @test F/m = a ==> F = ma.
     double FM[6];
     GunnsDynUtils::multiplyMV(FM, tArticle->mAdmittanceMatrix, tArticle->mPotentialVector, 6);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[0], FM[0], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[0]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[1], FM[1], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[1]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[2], FM[2], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[2]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[3], FM[3], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[3]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[4], FM[4], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[4]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[5], FM[5], 10.0 * DBL_EPSILON * fabs(tArticle->mSourceVector[5]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[0], FM[0], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[0]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[1], FM[1], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[1]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[2], FM[2], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[2]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[3], FM[3], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[3]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[4], FM[4], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[4]));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVector[5], FM[5], 10.0 * DBL_EPSILON * std::fabs(tArticle->mSourceVector[5]));
 
     UT_PASS;
 }

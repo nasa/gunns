@@ -127,8 +127,8 @@ void UtGunnsFluidUtils::testAdmittance()
 
     /// - Calculate expected link admittance, with default pressure exponent (0.5).
     double effectiveConductivity = 1.0;
-    double expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
+    double expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
 
     /// - Get link admittance and verify.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -150,8 +150,8 @@ void UtGunnsFluidUtils::testAdmittance()
     fluid3.setPressure(pressure2);
     density2  = fluid3.getDensity();
     molWeight = 0.5 * (tFluid1->getMWeight() + fluid3.getMWeight());
-    expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
+    expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
                                  GunnsFluidUtils::computeAdmittance(effectiveConductivity,
                                                                     1.0,
@@ -174,7 +174,7 @@ void UtGunnsFluidUtils::testAdmittance()
 
     /// - Test for pressure exponent configured to 0.75.
     expectedAdmittance = effectiveConductivity;
-    expectedAdmittance *= powf( 0.5 * (density1 + density2) * 1000.0 * (pressure1 - pressure2), 0.75);
+    expectedAdmittance *= std::pow( 0.5 * (density1 + density2) * 1000.0 * (pressure1 - pressure2), 0.75);
     expectedAdmittance = expectedAdmittance / (pressure1 - pressure2) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
                                  GunnsFluidUtils::computeAdmittance(effectiveConductivity,
@@ -189,8 +189,8 @@ void UtGunnsFluidUtils::testAdmittance()
     fluid3.resetState();
     density2  = fluid3.getDensity();
     molWeight = tFluid1->getMWeight();
-    expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / pressure1) / molWeight;
+    expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / pressure1) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fluid3.getDensity(), 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fluid3.getMWeight(), 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -231,8 +231,8 @@ void UtGunnsFluidUtils::testLowDpAdmittance()
 
     /// - Calculate expected link admittance.
     double effectiveConductivity = 1.0;
-    double expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (1.0)) / molWeight;
+    double expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (1.0)) / molWeight;
 
     /// - Get link admittance and verify.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -404,7 +404,7 @@ void UtGunnsFluidUtils::testComputeIsentropicTemperature()
     double gamma                = tFluid1->getAdiabaticIndex();
     double initialT             = tFluid1->getTemperature();
 
-    double finalT = initialT * pow(Pratio, ((gamma - 1.0) / gamma));
+    double finalT = initialT * std::pow(Pratio, ((gamma - 1.0) / gamma));
     finalT = initialT + expansionScaleFactor * (finalT - initialT);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(finalT,
@@ -422,7 +422,7 @@ void UtGunnsFluidUtils::testComputeIsentropicTemperature()
     gamma                = tFluid1->getAdiabaticIndex();
     initialT             = tFluid1->getTemperature();
 
-    finalT = initialT * pow(Pratio, ((gamma - 1.0) / gamma));
+    finalT = initialT * std::pow(Pratio, ((gamma - 1.0) / gamma));
     finalT = initialT + expansionScaleFactor * (finalT - initialT);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(finalT,
@@ -463,7 +463,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     double desiredMdot = 1.0;
     double dP = tFluid1->getPressure() - tFluid2->getPressure();
     double avgDensity = 0.5 * (tFluid1->getDensity() + tFluid2->getDensity());
-    double expectedConductivity = desiredMdot / sqrt(dP * 1000.0 * avgDensity);
+    double expectedConductivity = desiredMdot / std::sqrt(dP * 1000.0 * avgDensity);
     double minLinearizationP = 1.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
@@ -492,7 +492,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
                                  FLT_EPSILON);
 
     /// - Test with pressure exponent 0.75.
-    expectedConductivity = desiredMdot / powf(dP * 1000.0 * avgDensity, 0.75);
+    expectedConductivity = desiredMdot / std::pow(dP * 1000.0 * avgDensity, 0.75);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -503,7 +503,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
 
     /// - Test using a negative desired flow rate
     desiredMdot = -1.0;
-    expectedConductivity = fabs(desiredMdot) / sqrt(dP * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(dP * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -514,7 +514,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     /// - Test using a reverse pressure gradient
     desiredMdot = 1.0;
     dP = tFluid1->getPressure() - tFluid2->getPressure();
-    expectedConductivity = fabs(desiredMdot) / sqrt(fabs(dP) * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(std::fabs(dP) * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -536,7 +536,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     tFluid2->setPressure(tFluid1->getPressure() - 0.5);
     dP = tFluid1->getPressure() - tFluid2->getPressure();
     avgDensity = 0.5 * (tFluid1->getDensity() + tFluid2->getDensity());
-    expectedConductivity = fabs(desiredMdot) / sqrt(minLinearizationP * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(minLinearizationP * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -559,7 +559,7 @@ void UtGunnsFluidUtils::testPredictExpansionScaleFactor()
     double pressureRatio = tFluid2->getPressure() / tFluid1->getPressure();
     double supplyT = tFluid1->getTemperature();
     double gamma   = tFluid1->getAdiabaticIndex();
-    double expectedFactor = -desiredDT / (supplyT * (pow(pressureRatio, (gamma-1.0)/gamma) - 1.0));
+    double expectedFactor = -desiredDT / (supplyT * (std::pow(pressureRatio, (gamma-1.0)/gamma) - 1.0));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFactor,
                                  GunnsFluidUtils::predictExpansionScaleFactor(desiredDT,
                                                                               tFluid1,

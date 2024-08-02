@@ -77,7 +77,7 @@ class FluidHvapFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double FluidHvapFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * exp(-mAlpha * x) * pow((1.0 - x), mBeta);
+    return mA * std::exp(-mAlpha * x) * std::pow((1.0 - x), mBeta);
 }
 
 #endif

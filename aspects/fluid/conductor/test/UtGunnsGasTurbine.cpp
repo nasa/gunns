@@ -733,7 +733,7 @@ void UtGunnsGasTurbine::testUpdateState()
     double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
     double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
-    double expectedCorrectedSpeed= expectedImpellerSpeed/sqrt(sourceTemp/tReferenceTemp); // 5893.04
+    double expectedCorrectedSpeed= expectedImpellerSpeed/std::sqrt(sourceTemp/tReferenceTemp); // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed;
 
     tArticle->updateState(tTimeStep);
@@ -831,7 +831,7 @@ void UtGunnsGasTurbine::testUpdateFluid()
     double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
     double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
-    double expectedCorrectedSpeed= expectedImpellerSpeed / sqrt(sourceTemp / tReferenceTemp) ; // 5893.04
+    double expectedCorrectedSpeed= expectedImpellerSpeed / std::sqrt(sourceTemp / tReferenceTemp) ; // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed ;
 
     double expectedPressDrop  = -43.31437 ;

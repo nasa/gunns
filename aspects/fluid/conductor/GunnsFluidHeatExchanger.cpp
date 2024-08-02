@@ -315,7 +315,7 @@ void GunnsFluidHeatExchanger::updateSegments(const double dt, const double flowR
     mTotalEnergyGain = 0.0;
 
     /// - Skip if mass flow rate or time step are too small.
-    if (fabs(flowRate) > DBL_EPSILON && dt > DBL_EPSILON) {
+    if (std::fabs(flowRate) > DBL_EPSILON && dt > DBL_EPSILON) {
 
         /// - Set up indexing based on flow direction.
         int start    = 0;

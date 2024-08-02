@@ -355,7 +355,7 @@ void GunnsFluidEvaporation::updateVaporRate(const double dt)
                 ///   vapor potential, then reduced by the link's blockage malfunction.  Limited to
                 ///   positive values so this link can't condense.
                 double mdot_gas = std::max(mPotentialDrop, 0.0) * mEvaporationCoeff
-                                * powf(mLiquidPoolMass, mPoolMassExponent);
+                                * std::pow(mLiquidPoolMass, mPoolMassExponent);
                 if (mMalfBlockageFlag) {
                     mdot_gas *= (1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0));
                 }

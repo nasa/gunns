@@ -141,7 +141,7 @@ void UtGunnsDynUtils::testNormalizeV()
 
     /// @test a success result.
     double vec3[3] = {3.0, 4.0, 5.0};
-    const double vec3Mag = sqrt(9.0 + 16.0 + 25.0);
+    const double vec3Mag = std::sqrt(9.0 + 16.0 + 25.0);
     const double normVec3[3] = {vec3[0] / vec3Mag, vec3[1] / vec3Mag, vec3[2] / vec3Mag};
     CPPUNIT_ASSERT_NO_THROW(GunnsDynUtils::normalizeV(vec3));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(normVec3[0], vec3[0], DBL_EPSILON);

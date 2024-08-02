@@ -1056,7 +1056,7 @@ void ThermalNetwork::editCapacitanceGroups()
         mCapEditScaleFactor[group] = std::max(mCapEditScaleFactor[group], DBL_EPSILON);
         mCapEditScalePrev[group]   = std::max(mCapEditScalePrev[group],   DBL_EPSILON);
 
-        if ( DBL_EPSILON < fabs(mCapEditScalePrev[group] - mCapEditScaleFactor[group]) )
+        if ( DBL_EPSILON < std::fabs(mCapEditScalePrev[group] - mCapEditScaleFactor[group]) )
         {
             const double ratio = mCapEditScaleFactor[group] / mCapEditScalePrev[group];
             mCapEditScalePrev[group] = mCapEditScaleFactor[group];

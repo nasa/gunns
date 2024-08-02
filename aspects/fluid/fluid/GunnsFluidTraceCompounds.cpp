@@ -700,7 +700,7 @@ void GunnsFluidTraceCompounds::flowIn(const GunnsFluidTraceCompounds& source,
 void GunnsFluidTraceCompounds::flowIn(const double* rates, const double dt)
 {
     for (int i = 0; i < mConfig->mNTypes; ++i) {
-        mMass[i] = fmax(0.0, mMass[i] + rates[i] * dt);
+        mMass[i] = std::max(0.0, mMass[i] + rates[i] * dt);
     }
     updateMoleFractions();
 }

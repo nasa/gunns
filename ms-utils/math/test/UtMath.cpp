@@ -355,7 +355,7 @@ void UtMath::testProtectedAsin()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within upper limit
-    expected  = asin(+1.0 - 2.0 * FLT_EPSILON);
+    expected  = std::asin(+1.0 - 2.0 * FLT_EPSILON);
     returned  = MsMath::protectedAsin(+1.0 - 2.0 * FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
@@ -365,7 +365,7 @@ void UtMath::testProtectedAsin()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = asin(-1.0 + 2.0 * FLT_EPSILON);
+    expected  = std::asin(-1.0 + 2.0 * FLT_EPSILON);
     returned  = MsMath::protectedAsin(-1.0 + 2.0 * FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
@@ -400,7 +400,7 @@ void UtMath::testProtectedAcos()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within upper limit
-    expected  = acos(+1.0 - 2.0 * FLT_EPSILON);
+    expected  = std::acos(+1.0 - 2.0 * FLT_EPSILON);
     returned  = MsMath::protectedAcos(+1.0 - 2.0 * FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
@@ -410,7 +410,7 @@ void UtMath::testProtectedAcos()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = acos(-1.0 + 2.0 * FLT_EPSILON);
+    expected  = std::acos(-1.0 + 2.0 * FLT_EPSILON);
     returned  = MsMath::protectedAcos(-1.0 + 2.0 * FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
@@ -440,12 +440,12 @@ void UtMath::testProtectedSqrt()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = sqrt(FLT_EPSILON);
+    expected  = std::sqrt(static_cast<double>(FLT_EPSILON));
     returned  = MsMath::protectedSqrt(FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
-    expected  = sqrt(0.0);
+    expected  = std::sqrt(0.0);
     returned  = MsMath::protectedSqrt(0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
@@ -470,13 +470,13 @@ void UtMath::testProtectedLog10()
     std::cout << "\n.Math Test 08: Protected Log 10 Tests.......................................";
 
     /// @test for argument well within lower limit
-    double expected  = log10(+100.0);
+    double expected  = std::log10(+100.0);
     double returned  = MsMath::protectedLog10(+100.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = log10(FLT_EPSILON);
-    returned  = MsMath::protectedLog10(FLT_EPSILON);
+    expected  = std::log10(static_cast<double>(FLT_EPSILON));
+    returned  = MsMath::protectedLog10(static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
@@ -505,12 +505,12 @@ void UtMath::testProtectedLog()
     std::cout << "\n.Math Test 09: Protected Log Tests..........................................";
 
     /// @test for argument well within lower limit
-    double expected  = log(+100.0);
+    double expected  = std::log(+100.0);
     double returned  = MsMath::protectedLog(+100.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = log(FLT_EPSILON);
+    expected  = std::log(static_cast<double>(FLT_EPSILON));
     returned  = MsMath::protectedLog(FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 

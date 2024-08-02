@@ -315,8 +315,8 @@ void GunnsGasFan::initialize(const GunnsGasFanConfigData&  configData,
         }
 
         /// - Calculate Specific Speed
-        mSpecificSpeed = mReferenceSpeed / UnitConversion::SEC_PER_MIN_PER_2PI * sqrt(mReferenceQBep)
-                       * pow(UnitConversion::KPA_PER_PA * mReferenceDensity / pressureBep, 0.75);
+        mSpecificSpeed = mReferenceSpeed / UnitConversion::SEC_PER_MIN_PER_2PI * std::sqrt(mReferenceQBep)
+                       * std::pow(UnitConversion::KPA_PER_PA * mReferenceDensity / pressureBep, 0.75);
         mSpecificSpeed = MsMath::limitRange(0.2, mSpecificSpeed, 5.0);
         const double frac = (mSpecificSpeed      - mSpecificSpeedRadial)
                           / (mSpecificSpeedAxial - mSpecificSpeedRadial);
@@ -326,7 +326,7 @@ void GunnsGasFan::initialize(const GunnsGasFanConfigData&  configData,
         if(defineCurve){
             for(int i = 0; i < 6; i++){
                 mReferenceCoeffs[i] = mRefCoeffsRadial[i] + frac * (mRefCoeffsAxial[i] - mRefCoeffsRadial[i]);
-                mReferenceCoeffs[i] *= pressureBep / pow(mReferenceQBep, double(i));
+                mReferenceCoeffs[i] *= pressureBep / std::pow(mReferenceQBep, double(i));
             }
         }
 
@@ -366,7 +366,7 @@ void GunnsGasFan::initialize(const GunnsGasFanConfigData&  configData,
 
     /// - Initialize the system constant somewhere in the ballpark of fan performance boundaries
     ///   to kick-start the flow on first pass.
-    mSystemConstant     = mReferenceQ / sqrt(std::max(DBL_EPSILON, mReferenceCoeffs[0]));
+    mSystemConstant     = mReferenceQ / std::sqrt(std::max(DBL_EPSILON, mReferenceCoeffs[0]));
 
     /// - Initialize remaining state data.
     mWallHeatFlux       = 0.0;
@@ -521,7 +521,7 @@ void GunnsGasFan::updateFluid(const double dt __attribute__((unused)), const dou
     /// - This version of power is only the useful power imparted to the flow downstream, and does
     ///   not include power wasted to aero inefficiencies or friction.
     } else {
-        mImpellerPower = UnitConversion::PA_PER_KPA * fabs(mVolFlowRate) * mSourcePressure;
+        mImpellerPower = UnitConversion::PA_PER_KPA * std::fabs(mVolFlowRate) * mSourcePressure;
     }
 
     /// - Shaft torque opposes motor spin so has opposite sign.  Motor speed units are converted to
@@ -570,7 +570,7 @@ void GunnsGasFan::computeSourcePressure()
         const double speedFactor   = mImpellerSpeed / mReferenceSpeed;
         for (int order=0; order<6; ++order) {
             mAffinityCoeffs[order] = mReferenceCoeffs[order] * densityFactor
-                                                             * pow(speedFactor, 2.0 - order);
+                                                             * std::pow(speedFactor, 2.0 - order);
         }
 
         /// - Estimate system conductivity based on last-pass flow rate & pressure.  We assume the
@@ -582,7 +582,7 @@ void GunnsGasFan::computeSourcePressure()
         /// - Min/max limits are set to avoid locking up the pressure, and the result is
         ///   filtered for further stability as needed.
         const double gSys = std::max(mReferenceQ * speedFactor * 0.0001, mVolFlowRate)
-                          / sqrt(MsMath::limitRange(DBL_EPSILON, mSourcePressure, mAffinityCoeffs[0]));
+                          / std::sqrt(MsMath::limitRange(DBL_EPSILON, mSourcePressure, mAffinityCoeffs[0]));
 
         mSystemConstant = mFilterGain * gSys + (1.0 - mFilterGain) * mSystemConstant;
 

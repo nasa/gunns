@@ -134,14 +134,14 @@ double TsSurfaceHeatFlux::findDirectFlux(
     double radianceMag = V_MAG(givenSourceVector);
 
     /// - find the angle between the source vector and the surface normal using a dot product
-    double angleBetween = acos(   V_DOT(givenSourceVector, givenSurfaceNormal)
+    double angleBetween = std::acos(   V_DOT(givenSourceVector, givenSurfaceNormal)
                                     /  (radianceMag * V_MAG(givenSurfaceNormal))    );
 
 
     /// - if the surface normal points toward the source, calculate the direct flux
     if (angleBetween < UnitConversion::PI_OVER_2) {
 
-        directFlux = fabs(radianceMag * cos(angleBetween));
+        directFlux = std::fabs(radianceMag * std::cos(angleBetween));
 
     /// - if the surface normal points away from the source, set directFlux = 0
     } else {
@@ -280,7 +280,7 @@ double TsSurfaceHeatFlux::heatFlux(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 double TsSurfaceHeatFlux::V_MAG(double* vect)
 {
-    return ( sqrt( (((vect[0] < 0 ? -vect[0] : vect[0]) < DBL_EPSILON) ? 0.0 : vect[0]*vect[0]) + \
+    return ( std::sqrt( (((vect[0] < 0 ? -vect[0] : vect[0]) < DBL_EPSILON) ? 0.0 : vect[0]*vect[0]) + \
                    (((vect[1] < 0 ? -vect[1] : vect[1]) < DBL_EPSILON) ? 0.0 : vect[1]*vect[1]) + \
                    (((vect[2] < 0 ? -vect[2] : vect[2]) < DBL_EPSILON) ? 0.0 : vect[2]*vect[2]) ) );
 }

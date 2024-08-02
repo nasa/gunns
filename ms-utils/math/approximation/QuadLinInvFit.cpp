@@ -104,7 +104,7 @@ void QuadLinInvFit::init(const double a,    const double b,    const double c,
     const double flt_epsilon = static_cast<double>(FLT_EPSILON);
     if (discrim > flt_epsilon) {
         // Either check that both real roots are sufficiently outside valid range
-        const double arg = 0.5 * sqrt(discrim);
+        const double arg = 0.5 * std::sqrt(discrim);
         TS_GENERIC_IF_ERREX((minX <= -d + arg + flt_epsilon && -d + arg - flt_epsilon <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
         TS_GENERIC_IF_ERREX((minX <= -d - arg + flt_epsilon && -d - arg - flt_epsilon <= maxX), TsInitializationException,

@@ -23,7 +23,7 @@ const double  TsNoise::R2        =  0.27846;
 ///           desired standard deviation for the new transformed probability distribution function.
 const double  TsNoise::SIGMA_INV = 1.0 / 4.417173413469;
 const double  TsNoise::DENOM_INV = 1.0 / (static_cast<double>(RAND_MAX) + 2.0);
-const double  TsNoise::NUM       = sqrt(2.0 / exp(1.0));
+const double  TsNoise::NUM       = std::sqrt(2.0 / std::exp(1.0));
 const int     TsNoise::LOOP_MAX  = 50;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,16 +62,16 @@ double TsNoise::getNoise()
 
         const double v = NUM * (2.0 * z - 1.0);
         const double x = u - S;
-        const double y = fabs(v) - T;
+        const double y = std::fabs(v) - T;
 
         /// - Compute candidate from two uniform random variates.
         const double q = x * x + y * (A * y - B * x);
 
         /// - Compute noise if point is within acceptance area
         //    As defined, u cannot equal zero.
-        if ((q < R1) || ((q < R2) && (v * v < -4.0 * u * u * log(u)))) {
+        if ((q < R1) || ((q < R2) && (v * v < -4.0 * u * u * std::log(u)))) {
             const double noise = SIGMA_INV * v / u;
-            if (fabs(noise) <= 1.0) {
+            if (std::fabs(noise) <= 1.0) {
                 /// - Return Gaussian noise when algorithm succeeds.
                 return noise;
             }

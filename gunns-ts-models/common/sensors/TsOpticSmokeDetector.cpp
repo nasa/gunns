@@ -16,7 +16,7 @@
   ((Jose A. Perez) (L3-Comm) (Mar 23, 2012) (TS21) (Initial))
  )
  **************************************************************************************************/
-#include <float.h>
+#include <cfloat>
 #include "TsOpticSmokeDetector.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "simulation/hs/TsHsMsg.hh"

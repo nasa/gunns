@@ -392,7 +392,7 @@ void GunnsFluidCondensingHx::updateHeatExchanger(const double dt __attribute__((
             ///   argument of 100 to the exp function below.
             double limitHtc  = std::min(mSegmentHtc, 100.0 * mDot * cpAvg);
             double htcMdotCp = limitHtc / (mDot * cpAvg);
-            double tOut      = mSegmentTemperature[i] + exp(-htcMdotCp) * (tIn - mSegmentTemperature[i]);
+            double tOut      = mSegmentTemperature[i] + std::exp(-htcMdotCp) * (tIn - mSegmentTemperature[i]);
             double qSensible = limitHtc * (tIn - tOut) / htcMdotCp;
             mSegmentHeat[i]  = 0.0;
 
@@ -444,7 +444,7 @@ void GunnsFluidCondensingHx::updateHeatExchanger(const double dt __attribute__((
                     ///   condensation.
                     limitHtc                = std::min(mSegmentHtc, 100.0 * mDot * (cpLatent + cpDew));
                     htcMdotCp               = limitHtc / (mDot * (cpLatent + cpDew));
-                    tCondense               = tSeg + exp(-htcMdotCp) * (tDew - tSeg);
+                    tCondense               = tSeg + std::exp(-htcMdotCp) * (tDew - tSeg);
                 }
 
                 /// - Now that the segment exit temperature is known, calculate the heats.

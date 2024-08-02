@@ -71,7 +71,7 @@ class PowerFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double PowerFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * pow(mB, x);
+    return mA * std::pow(mB, x);
 }
 
 #endif

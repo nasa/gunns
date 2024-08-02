@@ -29,7 +29,7 @@ PROGRAMMERS:
 
 // System includes
 #include <sys/time.h>
-#include <stdio.h>
+#include <cstdio>
 
 /// @brief Provides intersect functions for a line segment against primitive 3D shapes
 class Time

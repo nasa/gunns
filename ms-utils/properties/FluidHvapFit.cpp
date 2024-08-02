@@ -88,11 +88,11 @@ void FluidHvapFit::init(const double a,
     mBeta  = beta;
 
     /// - Throw a TsInitializationException exception on magnitude of alpha too large.
-    TS_GENERIC_IF_ERREX(fabs(alpha) > 50.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(std::fabs(alpha) > 50.0, TsInitializationException,
                         "Invalid Input Argument", "magnitude of alpha > 50.");
 
     /// - Throw a TsInitializationException exception on magnitude of beta too large.
-    TS_GENERIC_IF_ERREX(fabs(beta) > 50.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(std::fabs(beta) > 50.0, TsInitializationException,
                         "Invalid Input Argument", "magnitude of beta > 50.");
 
     /// - Set the initialization complete flag.

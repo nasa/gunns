@@ -33,7 +33,7 @@
 #include <cfloat>
 #include <string>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include "SwitchCardElect.hh"
 #include "math/MsMath.hh"
 #include "simulation/hs/TsHsMsg.hh"
@@ -624,7 +624,7 @@ void SwitchCardElect::step(const double dt) {
             lSwitchConductance = mSwitch[i].getConductance();
 
             // if there's a big enough change in the two-port switch conductance, flag to recalculate admittance matrix
-            if (fabs(mTwoPortSwitchActiveConductance[lPortAssigned-1]-lSwitchConductance) > mLoadChangeTolerance) {
+            if (std::fabs(mTwoPortSwitchActiveConductance[lPortAssigned-1]-lSwitchConductance) > mLoadChangeTolerance) {
                 mTwoPortSwitchActiveConductance[lPortAssigned-1] = lSwitchConductance;
                 mAdmittanceUpdate = true;
             }
@@ -669,7 +669,7 @@ void SwitchCardElect::step(const double dt) {
     }
 
     // if there's a big enough change in the resistive loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
         mActiveResLoadsConductance = mResLoadsConductance;
         mAdmittanceUpdate = true;
     }
@@ -691,7 +691,7 @@ void SwitchCardElect::step(const double dt) {
     }
 
     // if there's a big enough change in the constant power loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
         mActiveCPowerLoadsConductance = mCPowerLoadsConductance;
         mAdmittanceUpdate = true;
     }
@@ -702,7 +702,7 @@ void SwitchCardElect::step(const double dt) {
     // add in a little bit to the admittance matrix for the load from the power supply itself, if applicable
     if (mBusVoltage > 0.1) {
         double powerSupplyConductance = (mPowerSupplyLoad / (mBusVoltage * mBusVoltage));
-        if (fabs(mPowerSupplyConductance - powerSupplyConductance) > mLoadChangeTolerance) {
+        if (std::fabs(mPowerSupplyConductance - powerSupplyConductance) > mLoadChangeTolerance) {
             mPowerSupplyConductance = powerSupplyConductance ;
             mAdmittanceUpdate = true;
         }

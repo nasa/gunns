@@ -402,7 +402,7 @@ void GunnsOptimMonteCarlo::parseDataRow(std::vector<double>& data, const std::st
 {
     std::string s = values;
     std::string delimiter = ",";
-    size_t pos = 0;
+    std::size_t pos = 0;
     std::string token;
     std::vector<std::string> tokens;
     while ((pos = s.find(delimiter)) != std::string::npos) {

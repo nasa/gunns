@@ -983,7 +983,7 @@ void UtThermalNetwork::testUpdate()
         if (false == isPotentialFound)
         {
             /// - If no potential was found on the node, make sure the temperature has changed some.
-            if (tTolerance > fabs(final-initial) )
+            if (tTolerance > std::fabs(final-initial) )
             {
                 /// - Print values and test a failure.
                 TEST_HS("Node name: " << tArticle->pNodes[i].getName());

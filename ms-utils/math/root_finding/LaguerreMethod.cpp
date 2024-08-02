@@ -72,7 +72,7 @@ int LaguerreMethod::solve(std::complex<double>& x, std::complex<double>* coeffs,
         std::complex<double> g  = d / b;
         std::complex<double> g2 = g*g;
         std::complex<double> h  = g2 - 2.0 * f / b;
-        std::complex<double> sq = sqrt(double(m-1) * (double(m)*h - g2));
+        std::complex<double> sq = std::sqrt(double(m-1) * (double(m)*h - g2));
         std::complex<double> gp = g + sq;
         std::complex<double> gm = g - sq;
         double abp = std::abs(gp);

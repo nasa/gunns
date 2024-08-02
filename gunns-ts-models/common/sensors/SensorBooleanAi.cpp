@@ -232,7 +232,7 @@ bool SensorBooleanAi::sense(const double timeStep,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void SensorBooleanAi::processInput()
 {
-    mTruthInput = (fabs(mTruthInputAnalog - mTarget) <= mTolerance);
+    mTruthInput = (std::fabs(mTruthInputAnalog - mTarget) <= mTolerance);
 
     /// - Call the base class processInput method to do any other transformation that the boolean
     ///   sensor normally does.

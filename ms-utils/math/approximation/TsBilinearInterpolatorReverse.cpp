@@ -159,8 +159,8 @@ double TsBilinearInterpolatorReverse::evaluate(const double x, const double z)
             break;
         } else {
             /// - Set y to the nearest of the z points, in case a solution is never found.
-            const double zHeadD = fabs(z - zHead);
-            const double zTailD = fabs(z - zTail);
+            const double zHeadD = std::fabs(z - zHead);
+            const double zTailD = std::fabs(z - zTail);
             if (zHeadD < zDelta) {
                 y = mY[mJ+1];
                 zDelta = zHeadD;

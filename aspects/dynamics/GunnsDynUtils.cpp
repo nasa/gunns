@@ -376,7 +376,7 @@ void GunnsDynUtils::MtoQ(double* qA, const double* mA)
 {
     const double diags = mA[0] + mA[4] + mA[8];
     if (diags > -1.0) {
-        qA[0] = 0.5  * sqrt(1.0 + diags);
+        qA[0] = 0.5  * std::sqrt(1.0 + diags);
         qA[1] = 0.25 * (mA[7] - mA[5]) / qA[0];
         qA[2] = 0.25 * (mA[2] - mA[6]) / qA[0];
         qA[3] = 0.25 * (mA[3] - mA[1]) / qA[0];
@@ -394,10 +394,10 @@ void GunnsDynUtils::normalizeQ(double* q)
 {
     double factor;
     const double mag2 = dotV(q, q, 4);
-    if (fabs(1.0 - mag2) < quatNormTolerance) {
+    if (std::fabs(1.0 - mag2) < quatNormTolerance) {
         factor = 2.0 / (1.0 + mag2);
     } else {
-        factor = 1.0 / sqrt(mag2);
+        factor = 1.0 / std::sqrt(mag2);
     }
     q[0] *= factor;
     q[1] *= factor;
@@ -461,7 +461,7 @@ double GunnsDynUtils::magV(const double* v, const unsigned int size)
     for (unsigned int i=0; i<size; ++i) {
         result += v[i]*v[i];
     }
-    return sqrt(result);
+    return std::sqrt(result);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

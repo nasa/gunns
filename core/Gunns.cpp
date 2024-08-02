@@ -1152,7 +1152,7 @@ bool Gunns::checkSystemConvergence(const int minorStep)
     int lastNonConvergingNode = -1;
     for (int node = 0; node < mNetworkSize; ++node) {
 
-        mNodesConvergence[node] = fabs(mMinorPotentialVector[node] - mPotentialVector[node]);
+        mNodesConvergence[node] = std::fabs(mMinorPotentialVector[node] - mPotentialVector[node]);
         if (mNodesConvergence[node] > mConvergenceTolerance) {
             lastNonConvergingNode = node;
 
@@ -1487,7 +1487,7 @@ void Gunns::handleSolve(CholeskyLdu* solver, double* A, double* w, double* p, co
 inline void Gunns::cleanPotentialVector()
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        if (fabs(mPotentialVector[node]) < DBL_EPSILON) {
+        if (std::fabs(mPotentialVector[node]) < DBL_EPSILON) {
             mPotentialVector[node] = 0.0;
         }
     }
@@ -1544,7 +1544,7 @@ void Gunns::computeNetworkCapacitances(const double timeStep)
             ///   potential.  The perturbed node potential was temporarily stored in the node in
             ///   perturbNetworkCapacitances(), and we overwrite that with the new capacitance
             ///   value.
-            const double deltaPotential = fabs(mNodes[node]->getNetworkCapacitance()
+            const double deltaPotential = std::fabs(mNodes[node]->getNetworkCapacitance()
                                              - mPotentialVector[node]);
             if (deltaPotential > DBL_EPSILON) {
                 mNodes[node]->setNetworkCapacitance(timeStep * fluxPerturbartion / deltaPotential);
@@ -1618,7 +1618,7 @@ void Gunns::conditionAdmittanceMatrix()
             rowSum += mAdmittanceMatrix[index];
         }
 
-        if (fabs(rowSum) < DBL_EPSILON) {
+        if (std::fabs(rowSum) < DBL_EPSILON) {
             const int diagonal = row*mNetworkSize+row;
             mAdmittanceMatrix[diagonal] += std::max(mAdmittanceMatrix[diagonal], DBL_EPSILON) * 1.0E-15;
         }

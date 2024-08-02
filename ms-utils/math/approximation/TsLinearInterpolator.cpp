@@ -100,7 +100,7 @@ void TsLinearInterpolator::validateOrdered(const int n, const double x[])
         TS_GENERIC_IF_ERREX(((x[i] <= x[i + 1]) && (x[i + 2] <= x[i + 1])), TsInitializationException,
                             "Invalid Input Argument", "independent variable (x) array not strictly ordered.");
         /// - Throw an exception if the difference between independent variable (x) array values aren't large enough.
-        TS_GENERIC_IF_ERREX(((fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
+        TS_GENERIC_IF_ERREX(((std::fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
                             "Invalid Input Argument", "difference between independent variable (x) array values not large enough.");
     }
 }
@@ -236,5 +236,3 @@ inline double TsLinearInterpolator::evaluate(const double x, const double y __at
     /// - Return the linearly interpolated value.
     return mZ[mI] + (mZ[mI+1] - mZ[mI]) * (x - mX[mI]) / (mX[mI+1] - mX[mI]);
 }
-
-

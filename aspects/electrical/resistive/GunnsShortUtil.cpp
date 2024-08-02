@@ -152,29 +152,29 @@ double GunnsShortUtil::computeShort(const double voltage)
 {
     if (mMalfConstantPowerFlag) {
         /// - Conductance of the constant power short is P=IV, I=VG, G=P/V^2.
-        mShortConductance = fabs(mMalfConstantPowerValue) / fmax(voltage*voltage, DBL_EPSILON);
+        mShortConductance = std::fabs(mMalfConstantPowerValue) / std::max(voltage*voltage, DBL_EPSILON);
 
     } else if (mMalfConstantCurrentFlag) {
         /// - Conductance of the constant current short is G=I/V.
-        mShortConductance = fabs(mMalfConstantCurrentValue) / fmax(fabs(voltage), DBL_EPSILON);
+        mShortConductance = std::fabs(mMalfConstantCurrentValue) / std::max(std::fabs(voltage), DBL_EPSILON);
 
     } else if (mMalfInitialPowerFlag) {
         /// - Conductance of the initial power short is only updated when the desired power
         ///   value changes.
-        if (fabs(mMalfInitialPowerValue) != mPreviousPower) {
-            mShortConductance = fabs(mMalfInitialPowerValue) / fmax(voltage*voltage, DBL_EPSILON);
+        if (std::fabs(mMalfInitialPowerValue) != mPreviousPower) {
+            mShortConductance = std::fabs(mMalfInitialPowerValue) / std::max(voltage*voltage, DBL_EPSILON);
         }
 
     } else if (mMalfInitialCurrentFlag) {
         /// - Conductance of the initial current short is only updated when the desired
         ///   current value changes.
-        if (fabs(mMalfInitialCurrentValue) != mPreviousCurrent) {
-            mShortConductance = fabs(mMalfInitialCurrentValue) / fmax(fabs(voltage), DBL_EPSILON);
+        if (std::fabs(mMalfInitialCurrentValue) != mPreviousCurrent) {
+            mShortConductance = std::fabs(mMalfInitialCurrentValue) / std::max(std::fabs(voltage), DBL_EPSILON);
         }
 
     } else if (mMalfResistanceFlag) {
         /// - Conductance of the resistance short is G=1/R.
-        mShortConductance = 1.0 / fmax(mMalfResistanceValue, DBL_EPSILON);
+        mShortConductance = 1.0 / std::max(mMalfResistanceValue, DBL_EPSILON);
 
     } else {
         /// - Reset the short conductance when all malfunctions are off.

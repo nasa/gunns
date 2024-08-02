@@ -383,16 +383,16 @@ void GunnsFluidAdsorber::updateFluid(const double dt, const double flowRate __at
         /// - Skip sorbtion with the atmosphere when the mass flow rate is negligible.
         updateTemperature(dt);
         const double efficiency = computeEfficiency();
-        const double rate       = fabs(mFlowRate);
+        const double rate       = std::fabs(mFlowRate);
         if (mDesorbtionCycle) {
             desorb(dt, rate, efficiency);
         } else {
             adsorb(dt, rate, efficiency);
         }
 
-        if (fabs(mSorbtionFlowRate) > m100EpsilonLimit) {
+        if (std::fabs(mSorbtionFlowRate) > m100EpsilonLimit) {
             /// - Update sorbtion fluid mass and temperature.
-            mSorbtionFluid->setMass(mGasIndex, fabs(mMass));
+            mSorbtionFluid->setMass(mGasIndex, std::fabs(mMass));
             mSorbtionFluid->updateMass();
             mSorbtionFluid->setTemperature(mFluidTemperature);
 
@@ -443,7 +443,7 @@ void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double
         for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
             double adsorption_efficiency = mTcEfficiency[i];
             if (mTcMaxAdsorbedMass[i] > DBL_EPSILON) {
-                adsorption_efficiency *= std::fmax(0.0, (mTcMaxAdsorbedMass[i] - mTcAdsorbedMass[i]) / mTcMaxAdsorbedMass[i]);
+                adsorption_efficiency *= std::max(0.0, (mTcMaxAdsorbedMass[i] - mTcAdsorbedMass[i]) / mTcMaxAdsorbedMass[i]);
             }
             if (adsorption_efficiency > DBL_EPSILON) {
                 /// - We don't bother limiting the adsorption rate to what would exceed the max
@@ -472,7 +472,7 @@ void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double
 void GunnsFluidAdsorber::desorb(const double dt, const double rate __attribute__((unused)), const double efficiency)
 {
     /// - Compute the mass desorbed this cycle subject to rate, rate efficiency and availability.
-    mMass              = -fmax(fmin(mAdsorbedMass, -efficiency * mDesorbtionRate * dt), 0.0);
+    mMass              = -std::max(std::min(mAdsorbedMass, -efficiency * mDesorbtionRate * dt), 0.0);
     /// - Update the mass in the adsorber.
     mAdsorbedMass     +=  mMass;
     /// - Compute the desorbtion mass flow rate.

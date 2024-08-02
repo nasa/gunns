@@ -412,7 +412,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     double expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
     double expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
     double expectedVolts   =  tCellVoltageLoaded * tNumCells;
-    double expectedHeat    = fabs(expectedH2mole) * 4.86e7;
+    double expectedHeat    = std::fabs(expectedH2mole) * 4.86e7;
     double expectedW[2]    = {expectedH2mole + expectedH2Omole, expectedO2mole};
     CPPUNIT_ASSERT_EQUAL        (false,           tArticle->mTrippedOff);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2mass,  tArticle->mH2MassRate,         DBL_EPSILON);
@@ -452,7 +452,7 @@ void UtGunnsFluidSimpleH2Redox::testStep()
     expectedO2mass  =  expectedO2mole  * 31.9988;    // MW of O2
     expectedH2Omass =  expectedH2Omole * 18.0153;    // MW of H2O
     expectedVolts   =  tCellVoltageLoaded * tNumCells;
-    expectedHeat    =  fabs(expectedH2mole) * -4.86e7;
+    expectedHeat    =  std::fabs(expectedH2mole) * -4.86e7;
     expectedW[0]    =  expectedH2mole + expectedH2Omole;
     expectedW[1]    =  expectedO2mole;
     CPPUNIT_ASSERT_EQUAL        ( false,           tArticle->mTrippedOff);

@@ -1318,8 +1318,8 @@ void UtGunns::testLinearStepExceptions()
     //    zero on a diagonal.
     /// - Expect a TsNumericalException for forward/backwards substitution error.
 //    tLink.mAdmittanceMatrix[0] = 1.0;
-//    tLink.mAdmittanceMatrix[1] =-sqrt(0.01+DBL_EPSILON);
-//    tLink.mAdmittanceMatrix[2] =-sqrt(0.01+DBL_EPSILON);
+//    tLink.mAdmittanceMatrix[1] =-std::sqrt(0.01+DBL_EPSILON);
+//    tLink.mAdmittanceMatrix[2] =-std::sqrt(0.01+DBL_EPSILON);
 //    tLink.mAdmittanceMatrix[3] = 0.01;
 //    tLink.mAdmittanceUpdate = true;
 //    CPPUNIT_ASSERT_THROW(tNetwork.step(), TsNumericalException);
@@ -2185,11 +2185,11 @@ void UtGunns::testSolveIslands2()
 
     tNetwork.setIslandMode(Gunns::OFF);
     for (int exp1=-15; exp1<16; ++exp1) {
-        tConductor1.setDefaultConductivity(powf(10.0, exp1));
+        tConductor1.setDefaultConductivity(std::pow(10.0, exp1));
         for (int exp2=-15; exp2<16; ++exp2) {
-            tConductor2.setDefaultConductivity(powf(10.0, exp2));
+            tConductor2.setDefaultConductivity(std::pow(10.0, exp2));
             for (int exp3=-15; exp3<17; ++exp3) {
-                tConductor3.setDefaultConductivity(powf(10.0, exp3));
+                tConductor3.setDefaultConductivity(std::pow(10.0, exp3));
                 if (16 == exp3) tConductor3.setDefaultConductivity(0.0);
                 CPPUNIT_ASSERT_NO_THROW(tNetwork.step(tDeltaTime));
 // for debugging test failure:
@@ -2204,11 +2204,11 @@ void UtGunns::testSolveIslands2()
 
     tNetwork.setIslandMode(Gunns::SOLVE);
     for (int exp1=-15; exp1<16; ++exp1) {
-        tConductor1.setDefaultConductivity(powf(10.0, exp1));
+        tConductor1.setDefaultConductivity(std::pow(10.0, exp1));
         for (int exp2=-15; exp2<16; ++exp2) {
-            tConductor2.setDefaultConductivity(powf(10.0, exp2));
+            tConductor2.setDefaultConductivity(std::pow(10.0, exp2));
             for (int exp3=-15; exp3<17; ++exp3) {
-                tConductor3.setDefaultConductivity(powf(10.0, exp3));
+                tConductor3.setDefaultConductivity(std::pow(10.0, exp3));
                 if (16 == exp3) tConductor3.setDefaultConductivity(0.0);
                 CPPUNIT_ASSERT_NO_THROW(tNetwork.step(tDeltaTime));
 // for debugging test failure:

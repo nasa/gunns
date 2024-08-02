@@ -197,7 +197,7 @@ void GunnsFluidAccumGas::buildGasConductance()
 {
     /// - Compute system conductance using effective conductivity.
     double gasSystemConductance = MsMath::limitRange(0.0, mGasEffectiveConductivity, mConductanceLimit);
-    if (fabs(mAdmittanceMatrix[0] - gasSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - gasSystemConductance) > 0.0) {
         /// - Set mAdmittanceMatrix[0] to flow between port 0 node and accumulator gas chamber.
         mAdmittanceMatrix[0]   =  gasSystemConductance;
         mAdmittanceUpdate = true;
@@ -458,7 +458,7 @@ void GunnsFluidAccumGas::updateCapacitance()
         ///   computed liquid capacitance. If mKSpring <=  DBL_EPSILON (no spring), use
         ///   computed capacitance.
         if (mSpringCoeff0 > DBL_EPSILON || mSpringCoeff1 > DBL_EPSILON ||mSpringCoeff2 > DBL_EPSILON) {
-            mLiqCapacitance = fmin(liqCapacitance, mSpringCapacitance);
+            mLiqCapacitance = std::min(liqCapacitance, mSpringCapacitance);
         } else {
             mLiqCapacitance = liqCapacitance;
         }

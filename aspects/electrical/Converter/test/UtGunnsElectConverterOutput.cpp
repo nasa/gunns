@@ -575,7 +575,7 @@ void UtGunnsElectConverterOutput::testMinorStep()
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
 
         /// @test    Step and minorStep (CURRENT mode) with input voltage from the input link.
-        expectedI = fmax(0.0, expectedW - tArticle->mPotentialVector[0] * expectedG);
+        expectedI = std::max(0.0, expectedW - tArticle->mPotentialVector[0] * expectedG);
         expectedR = 1.0;
         expectedG = FLT_EPSILON;
         setpoint  = 2.0;
@@ -597,7 +597,7 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tArticle->mPotentialVector[0] = nodeV;
         expectedI = expectedW - tArticle->mPotentialVector[0] * expectedG;
         expectedR = tArticle->mPotentialVector[0] / expectedI;
-        expectedW = (1.0 - tMalfBlockageValue) * sqrt(setpoint / expectedR);
+        expectedW = (1.0 - tMalfBlockageValue) * std::sqrt(setpoint / expectedR);
         tArticle->step(0.0);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);

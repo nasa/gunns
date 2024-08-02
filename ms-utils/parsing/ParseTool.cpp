@@ -76,8 +76,8 @@ void ParseTool::validateFile(const char* fileName)
 
     /// - Create temporary char* for string duplication. The dirname() method below cannot take an
     ///   argument that is const.
-    char* tempName = new char [strlen(fileName) + 1];
-    strcpy(tempName, fileName);
+    char* tempName = new char [std::strlen(fileName) + 1];
+    std::strcpy(tempName, fileName);
 
     /// - Determine if the file exists and we have the permissions to access both it and the
     ///   directory. To do this we used the access() function, which returns zero if successful.

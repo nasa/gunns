@@ -251,9 +251,9 @@ char* TsMemoryManager::tsStrdup(char* str, void* addr_var, const std::string nam
    char * allocation;
    int extent;
 
-   extent = (int)strlen(str)+1;
+   extent = (int)std::strlen(str)+1;
    allocation = (char*)alloc_type(extent, tsAllocSpec("char", name, addr_var));
-   return (strcpy(allocation, str));
+   return (std::strcpy(allocation, str));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,9 +271,9 @@ char* TsMemoryManager::tsStrdupExt(char* str, void* var, void* addr_var, const s
    char * allocation;
    int extent;
 
-   extent = (int)strlen(str)+1;
+   extent = (int)std::strlen(str)+1;
    allocation = (char*)TMM_declare_ext_var_1d(var, tsAllocSpec("char", name, addr_var), extent);
-   return (strcpy(allocation, str));
+   return (std::strcpy(allocation, str));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

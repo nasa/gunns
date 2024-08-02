@@ -8,7 +8,7 @@
  )
 **************************************************************************************************/
 
-#include <math.h>
+#include <cmath>
 
 #include "UtEpsTripMgr.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -326,4 +326,3 @@ void UtEpsTripMgr::testTripTiming() {
 
     std::cout << "... Pass";
 }
-

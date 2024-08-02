@@ -76,7 +76,7 @@ class ExponentialFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double ExponentialFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return exp(mA + (mB + mC / x) / x);
+    return std::exp(mA + (mB + mC / x) / x);
 }
 
 #endif

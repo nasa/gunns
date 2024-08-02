@@ -470,7 +470,7 @@ void UtGunnsFluidEvaporation::testStepLiquid()
     const double expectedSpringCoeff2 = 0.0;
     const double expectedMpool        = tAccum.getUsableMass();
     const double expectedMdot         = tVaporPotential * tEvaporationCoeff
-                                      * powf(expectedMpool, tPoolMassExponent);
+                                      * std::pow(expectedMpool, tPoolMassExponent);
     const double expectedPwr          = 0.0;
     const double expectedFlux         = expectedMdot / gasProps->getMWeight();
 
@@ -540,7 +540,7 @@ void UtGunnsFluidEvaporation::testStepBoth()
     const double expectedSpringCoeff2 = 0.0;
     const double expectedMpool        = tAccum.getUsableMass();
     const double expectedMdot         = expectedDp * tEvaporationCoeff
-                                      * powf(expectedMpool, tPoolMassExponent);
+                                      * std::pow(expectedMpool, tPoolMassExponent);
     const double expectedPwr          = expectedMdot * 1000.0
                                       * gasProps->getHeatOfVaporization(tFluidInput1->mTemperature);
     const double expectedFlux         = expectedMdot / gasProps->getMWeight();
@@ -582,12 +582,12 @@ void UtGunnsFluidEvaporation::testComputeFlows()
     const double expectedDp         = pSat - ppH2O;
     const double expectedMpool      = tAccum.getUsableMass();
     const double expectedMdot       = expectedDp * tEvaporationCoeff
-                                    * powf(expectedMpool, tPoolMassExponent);
+                                    * std::pow(expectedMpool, tPoolMassExponent);
     const double expectedPwr        = expectedMdot * 1000.0
                                     * gasProps->getHeatOfVaporization(tFluidInput1->mTemperature);
     const double expectedFlux       = expectedMdot / gasProps->getMWeight();
-    const double expectedQ          = expectedMdot / tNodes[1].getOutflow()->getMassFraction(1)
-                                    / tNodes[1].getOutflow()->getDensity();
+    const double expectedQ          = expectedMdot / (tNodes[1].getOutflow()->getMassFraction(1)
+                                    * tNodes[1].getOutflow()->getDensity());
     const double expectedPtotal     = tFluidInput1->mPressure;
     const double expectedT          = tFluidInput1->mTemperature;
     const double expectedMdotLiquid = expectedFlux * tNodes[0].getOutflow()->getMWeight();

@@ -26,8 +26,8 @@ LIBRARY DEPENDENCIES:
  (tinyxml.o))
 */
 
-#include <ctype.h>
-#include <stddef.h>
+#include <cctype>
+#include <cstddef>
 
 #include "tinyxml.hh"
 #include "tinyxmlparser.hh"
@@ -512,7 +512,7 @@ const char* TiXmlBase::GetEntity( const char* p, char* value, int* length, TiXml
 	{
 		if ( strncmp( entity[i].str, p, entity[i].strLength ) == 0 )
 		{
-			assert( strlen( entity[i].str ) == entity[i].strLength );
+			assert( std::strlen( entity[i].str ) == entity[i].strLength );
 			*value = entity[i].chr;
 			*length = 1;
 			return ( p + entity[i].strLength );
@@ -628,7 +628,7 @@ const char* TiXmlBase::ReadText(	const char* p,
 		}
 	}
 	if ( p && *p )
-		p += strlen( endTag );
+		p += std::strlen( endTag );
 	return p;
 }
 
@@ -982,7 +982,7 @@ void TiXmlElement::StreamIn (std::istream * in, TIXML_STRING * tag)
 				// Early out if we find the CDATA id.
 				if ( c == '[' && tag->size() >= 9 )
 				{
-					size_t len = tag->size();
+					std::size_t len = tag->size();
 					const char* start = tag->c_str() + len - 9;
 					if ( strcmp( start, "<![CDATA[" ) == 0 ) {
 						assert( !closingTag );
@@ -1349,7 +1349,7 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		document->SetError( TIXML_ERROR_PARSING_COMMENT, p, data, encoding );
 		return 0;
 	}
-	p += strlen( startTag );
+	p += std::strlen( startTag );
 
 	// [ 1475201 ] TinyXML parses entities in comments
 	// Oops - ReadText doesn't work, because we don't want to parse the entities.
@@ -1377,7 +1377,7 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		++p;
 	}
 	if ( p && *p )
-		p += strlen( endTag );
+		p += std::strlen( endTag );
 
 	return p;
 }
@@ -1478,7 +1478,7 @@ void TiXmlText::StreamIn( std::istream * in, TIXML_STRING * tag )
 		in->get();	// "commits" the peek made above
 
 		if ( cdata && c == '>' && tag->size() >= 3 ) {
-			size_t len = tag->size();
+			std::size_t len = tag->size();
 			if ( (*tag)[len-2] == ']' && (*tag)[len-3] == ']' ) {
 				// terminator of cdata.
 				return;
@@ -1511,7 +1511,7 @@ const char* TiXmlText::Parse( const char* p, TiXmlParsingData* data, TiXmlEncodi
 			document->SetError( TIXML_ERROR_PARSING_CDATA, p, data, encoding );
 			return 0;
 		}
-		p += strlen( startTag );
+		p += std::strlen( startTag );
 
 		// Keep all the white space, ignore the encoding, etc.
 		while (	   p && *p

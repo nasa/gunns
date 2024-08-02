@@ -234,7 +234,7 @@ void GunnsFluidBalancedPrv::step(const double dt)
     if (mMalfPressureBiasFlag) {
         mRegulatedPressure += mMalfPressureBiasValue;
     }
-    mRegulatedPressure = fmin(mRegulatedPressure, mPotentialVector[0]);
+    mRegulatedPressure = std::min(mRegulatedPressure, mPotentialVector[0]);
 
     double flt_epsilon = static_cast<double>(FLT_EPSILON);
     /// - Update exit-side molar conductance.

@@ -395,11 +395,11 @@ double UtSorbantProperties::computeExpectedLoadingEquil(const double tothA, cons
         const double tothE, const double tothT, const double tothC, const double pp, const double T) const
 {
     const double EoverT = MsMath::limitRange(0.0, tothE / T, 100.0);
-    const double expT   = exp(EoverT);
+    const double expT   = std::exp(EoverT);
     const double a      = tothA * expT;
     const double b      = tothB * expT;
           double tT     = MsMath::limitRange(-100.0, tothT + tothC / T, 100.0);
                  tT     = MsMath::innerLimit(-0.1, tT, 0.1);
-    const double denom  = powf(1.0 + powf(b * pp, tT), 1.0 / tT);
+    const double denom  = std::pow(1.0 + std::pow(b * pp, tT), 1.0 / tT);
     return(a * pp / std::max(denom, DBL_EPSILON));
 }

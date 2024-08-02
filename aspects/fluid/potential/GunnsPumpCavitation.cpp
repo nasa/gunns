@@ -138,9 +138,9 @@ void GunnsPumpCavitation::update(double&                           pumpSource,
     ///   bubbles over the desired duration.
     mDuration = std::max(mDuration, DBL_EPSILON);
     if (fullCavitation) {
-        mCavitationFraction += 2.0 * sqrt(std::max(mCavitationFraction, 0.01)) * dt/mDuration;
+        mCavitationFraction += 2.0 * std::sqrt(std::max(mCavitationFraction, 0.01)) * dt/mDuration;
     } else {
-        mCavitationFraction -= 2.0 * sqrt(1.0 - std::min(mCavitationFraction, 0.99)) * dt/mDuration;
+        mCavitationFraction -= 2.0 * std::sqrt(1.0 - std::min(mCavitationFraction, 0.99)) * dt/mDuration;
     }
     mCavitationFraction = MsMath::limitRange(0.0, mCavitationFraction, 1.0);
     pumpSource *= 1.0 - mCavitationFraction;

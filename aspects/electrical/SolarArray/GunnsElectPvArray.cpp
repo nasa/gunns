@@ -629,7 +629,7 @@ void GunnsElectPvArray::loadAtPower(const double power, const bool shortSide)
         ///   open-circuit side and - root for short-circuit side.
         const double bb4ac = source*source - 4.0*admittance*power;
         if (bb4ac > 0.0) {
-            mTerminal.mVoltage     = std::max(DBL_EPSILON, 0.5 * (source + rootSign * sqrt(bb4ac))
+            mTerminal.mVoltage     = std::max(DBL_EPSILON, 0.5 * (source + rootSign * std::sqrt(bb4ac))
                                                            / admittance);
             mTerminal.mPower       = power;
             mTerminal.mCurrent     = mTerminal.mPower / mTerminal.mVoltage;

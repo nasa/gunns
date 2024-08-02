@@ -66,7 +66,7 @@ void GunnsGasFanCurve::improveRoot(double& realRoot, double* realCoeffs, double 
         }
         mIterLaguerre = LaguerreMethod::solve(root, coeffs, 6);
 
-        if (MsMath::isInRange(0.0, root.real(), maxQ) and fabs(root.imag()) < DBL_EPSILON) {
+        if (MsMath::isInRange(0.0, root.real(), maxQ) and std::fabs(root.imag()) < DBL_EPSILON) {
             realRoot = root.real();
 
         } else try {
@@ -106,7 +106,7 @@ double GunnsGasFanCurve::evaluate(const double q)
     double result = 0.0;
     for(int order = 0; order < 6; order ++){
         if (mCoeffs) {
-            result += mCoeffs[order]*pow(q , order) ;
+            result += mCoeffs[order]*std::pow(q , order) ;
         }
     }
     return result;

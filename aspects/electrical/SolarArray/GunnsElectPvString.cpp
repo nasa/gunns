@@ -540,7 +540,7 @@ double GunnsElectPvStringInputData::rampPhotoFlux(const double time, const doubl
     double rampFunction = 1.0;
     if (mMalfPhotoFluxRampTime > 0.0) {
         const double timeFraction = MsMath::limitRange(0.0, time / mMalfPhotoFluxRampTime, 1.0);
-        rampFunction = 0.5 * (1.0 + sin(UnitConversion::PI_UTIL * (timeFraction - 0.5)));
+        rampFunction = 0.5 * (1.0 + std::sin(UnitConversion::PI_UTIL * (timeFraction - 0.5)));
     }
     return outValue + rampFunction * (mMalfPhotoFluxMagnitude - outValue);
 }
@@ -877,7 +877,7 @@ void GunnsElectPvString::loadAtPower(const double power, const bool shortSide)
         }
         const double bb4ac = qb*qb - 4.0*qa*qc;
         if (bb4ac > 0.0 and qa < 0.0) {
-            mTerminal.mCurrent     = 0.5 * (sign * sqrt(bb4ac) - qb) / qa;
+            mTerminal.mCurrent     = 0.5 * (sign * std::sqrt(bb4ac) - qb) / qa;
             mTerminal.mPower       = power;
             mTerminal.mVoltage     = mTerminal.mPower / mTerminal.mCurrent;
             mTerminal.mConductance = mTerminal.mCurrent / mTerminal.mVoltage;

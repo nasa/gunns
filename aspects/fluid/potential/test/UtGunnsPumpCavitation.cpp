@@ -223,7 +223,7 @@ void UtGunnsPumpCavitation::testUpdate()
     CPPUNIT_ASSERT(true == tArticle->mMalfFullCavitationFlag);
     CPPUNIT_ASSERT(1.0  == tArticle->mMalfFullCavitationDuration);
     tArticle->mCavitationElapsedTime          = 0.0;
-    double expectedFraction = 2.0 * sqrt(0.01) * 0.1;
+    double expectedFraction = 2.0 * std::sqrt(0.01) * 0.1;
     double expectedSource   = (1.0 - expectedFraction) * pumpSource;
     tArticle->update(pumpSource, 0.1, &tNode, FluidProperties::GUNNS_WATER);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.1,              tArticle->mCavitationElapsedTime, DBL_EPSILON);
@@ -234,7 +234,7 @@ void UtGunnsPumpCavitation::testUpdate()
     /// - Test full cavitation malf with partial cavitation included.
     tArticle->mMalfPartialCavitationAmplitude = 10.0;
     pumpSource                                = 100.0;
-    expectedFraction += 2.0 * sqrt(expectedFraction) * 0.1;
+    expectedFraction += 2.0 * std::sqrt(expectedFraction) * 0.1;
     expectedSource    = (1.0 - expectedFraction) * pumpSource;
     tArticle->update(pumpSource, 0.1, &tNode, FluidProperties::GUNNS_WATER);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.2,              tArticle->mCavitationElapsedTime, DBL_EPSILON);
@@ -250,7 +250,7 @@ void UtGunnsPumpCavitation::testUpdate()
     CPPUNIT_ASSERT(0.0   == tArticle->mMalfFullCavitationDuration);
     tArticle->mCavitationFraction             = 0.5;
     pumpSource                                = 100.0;
-    expectedFraction = 0.5 - 2.0 * sqrt(1.0 - 0.5) * 0.1;
+    expectedFraction = 0.5 - 2.0 * std::sqrt(1.0 - 0.5) * 0.1;
     expectedSource   = (1.0 - expectedFraction) * pumpSource;
     tArticle->update(pumpSource, 0.1, &tNode, FluidProperties::GUNNS_WATER);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,              tArticle->mCavitationElapsedTime, DBL_EPSILON);
@@ -265,7 +265,7 @@ void UtGunnsPumpCavitation::testUpdate()
     tArticle->mCavitationFraction             = 0.0;
     pumpSource                                = 100.0;
     tNode.setPotential(0.0);
-    expectedFraction = 2.0 * sqrt(0.01) * 0.1;
+    expectedFraction = 2.0 * std::sqrt(0.01) * 0.1;
     expectedSource   = (1.0 - expectedFraction) * pumpSource;
     tArticle->update(pumpSource, 0.1, &tNode, FluidProperties::GUNNS_WATER);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.1,              tArticle->mCavitationElapsedTime, DBL_EPSILON);

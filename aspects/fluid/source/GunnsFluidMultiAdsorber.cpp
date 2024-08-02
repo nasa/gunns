@@ -332,7 +332,7 @@ void GunnsFluidMultiAdsorber::updateFluid(const double dt, const double flowRate
         ///   sorbant material, and desorptions are endothermic, pulling heat from the material.
         mWallHeatFlux += mSorptionHeat;
 
-        if (fabs(fluidAdsorptionRate) > m100EpsilonLimit) {
+        if (std::fabs(fluidAdsorptionRate) > m100EpsilonLimit) {
 
             /// - Reset the internal fluid state.
             mSorptionFluid->resetState();

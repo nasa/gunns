@@ -468,7 +468,7 @@ void GunnsFluidPressureSensitiveValve::step(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidPressureSensitiveValve::buildConductance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mSystemConductance;
         mAdmittanceMatrix[2]   =  0.0;

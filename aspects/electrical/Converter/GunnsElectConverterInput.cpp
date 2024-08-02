@@ -261,7 +261,7 @@ void GunnsElectConverterInput::validate(const GunnsElectConverterInputConfigData
 {
     /// - Issue an error on backwards trip limits.
     if ( (configData.mInputUnderVoltageTripLimit > configData.mInputOverVoltageTripLimit) and
-         (configData.mInputOverVoltageTripLimit != 0.0) ) {
+         (configData.mInputOverVoltageTripLimit != 0.0F) ) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "input under-voltage trip limit > over-voltage limit.");
     }
@@ -301,13 +301,13 @@ void GunnsElectConverterInput::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  dt  (s)  Integration time step.
+/// @param[in]  dt  (s)  Integration time step (unused).
 ///
 /// @details  First step in a non-linear network.  We clear the overloaded state from last pass so
 ///           it can be re-checked this pass.  Update sensors with the timestep to advance their
 ///           drift malfunction.  Then call minorStep for the main update functions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConverterInput::step(const double dt)
+void GunnsElectConverterInput::step(const double dt __attribute__((unused)))
 {
     /// - Process user commands to dynamically re-map ports.
     processUserPortCommand();
@@ -452,12 +452,13 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         mInputVoltageValid = false;
     } else if (0 == convergedStep) {
         /// - We only check for solution rejection and state change after the network has converged.
-        ///   Until it has converged, we assume hte input voltage is valid.
+        ///   Until it has converged, we assume the input voltage is valid.
         mInputVoltageValid = true;
     } else {
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVin = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);
+        float sensedVin = static_cast<float>(
+            MsMath::limitRange(static_cast<double>(-FLT_MAX), mPotentialVector[0], static_cast<double>(FLT_MAX)));
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
         ///   integrated.  This is because we don't have the time-step in this function, and we must

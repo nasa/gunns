@@ -380,7 +380,7 @@ void GunnsFluidExternalDemand::processOutputs()
     ///   node's contents is stuffed with the supply node's contents every pass, so we have to look
     ///   at the inflows into the demand node to get the real properties of the fluid leaving the
     ///   demand network.
-    if (mFlowRate < -m100EpsilonLimit && sum > FLT_EPSILON) {
+    if (mFlowRate < -m100EpsilonLimit && sum > static_cast<double>(FLT_EPSILON)) {
         mDemandTemperature = mNodes[1]->getInflow()->getTemperature();
         mFlowRate          = mNodes[1]->getInflow()->getMWeight() * mFlux;
     }

@@ -663,7 +663,7 @@ double GunnsFluidDistributedIf::outputCapacitance()
     double capacitance = mNodes[0]->getNetworkCapacitance() - mSuppliedCapacitance;
 
     /// - For each other interface link that we know about, calculate and subtract its effective
-    ///   capacitance at our node.  This is the capacitance that it supplied to its own node, 
+    ///   capacitance at our node.  This is the capacitance that it supplied to its own node,
     ///   reduced at our node by the resistances and capacitances in the network between the nodes.
     ///   The reduction is the increase in the other node potential over the increase in our node
     ///   potential when a flow source added at our node; these are intermediate values output by

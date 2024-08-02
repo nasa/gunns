@@ -232,7 +232,7 @@ void GunnsFluidSource::step(const double dt)
 ///           Mole flow rate (mFlux) is already calculated in the step method as the input to the
 ///           system of equations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSource::computeFlows(const double dt)
+void GunnsFluidSource::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
 

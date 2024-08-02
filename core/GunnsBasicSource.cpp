@@ -197,7 +197,7 @@ void GunnsBasicSource::step(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details Computes the flows across the link
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsBasicSource::computeFlows(const double)
+void GunnsBasicSource::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
     computePower();

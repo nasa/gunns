@@ -138,11 +138,11 @@ double GunnsFluidUtils::computeAdmittance(const double     conductivity,
         double mdot = conductivity; // mass flow rate (kg/s), will complete below
         const double limitExp = MsMath::limitRange(0.5, exponent, 1.0);
         if (0.5 == limitExp) {
-            mdot *= sqrt(avgDensity * dP_Pa);
+            mdot *= std::sqrt(avgDensity * dP_Pa);
         } else if (1.0 == limitExp) {
             mdot *= avgDensity * dP_Pa;
         } else {
-            mdot *= powf(avgDensity * dP_Pa, limitExp);
+            mdot *= std::pow(avgDensity * dP_Pa, limitExp);
         }
         /// - Convert mdot (kg/s) to mole rate (kgmol/s) and linearize to admittance (kgmol/s/kPa).
         return mdot / dP_lin / useMW;
@@ -181,8 +181,8 @@ double GunnsFluidUtils::computeCapacitance(const PolyFluid* fluid,
     /// rather than mCapacitance; mCapacitance is kept for insight.
     /// \endverbatim
     double p = fluid->getPressure();
-    if (p < FLT_EPSILON) {
-        p = FLT_EPSILON;
+    if (p < static_cast<double>(FLT_EPSILON)) {
+        p = static_cast<double>(FLT_EPSILON);
     }
     const double p1 = p * 0.999;
     const double p2 = p * 1.001;
@@ -286,11 +286,11 @@ double GunnsFluidUtils::predictConductivity(const double     mdot,
             conductivity = fabs(mdot);
             const double limitExp = MsMath::limitRange(0.5, exponent, 1.0);
             if (0.5 == limitExp) {
-                conductivity /= sqrt(UnitConversion::PA_PER_KPA * dP * avgDensity);
+                conductivity /= std::sqrt(UnitConversion::PA_PER_KPA * dP * avgDensity);
             } else if (1.0 == limitExp) {
                 conductivity /= (UnitConversion::PA_PER_KPA * dP * avgDensity);
             } else {
-                conductivity /= powf(UnitConversion::PA_PER_KPA * dP * avgDensity, limitExp);
+                conductivity /= std::pow(UnitConversion::PA_PER_KPA * dP * avgDensity, limitExp);
             }
         }
     }
@@ -1150,7 +1150,7 @@ bool GunnsFluidUtils::normalizeArray(double* fractions, const int size)
         fractionsSum += fractions[i];
     }
 
-    if (fabs(fractionsSum - 1.0) > FLT_EPSILON) {
+    if (std::fabs(fractionsSum - 1.0) > static_cast<double>(FLT_EPSILON)) {
         if (fractionsSum > 0.0) {
             for (int i = 0; i < size; ++i) {
                 fractions[i] /= fractionsSum;

@@ -120,7 +120,7 @@ class GunnsBasicSource : public GunnsBasicLink
         virtual void step(const double dt);
 
         /// @brief Calculates flow across the link
-        virtual void computeFlows(const double);
+        virtual void computeFlows(const double dt);
 
         /// @brief Sets the flux demand
         void setFluxDemand(const double toFlux);

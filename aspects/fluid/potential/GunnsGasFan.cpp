@@ -504,7 +504,7 @@ void GunnsGasFan::updateFluid(const double dt __attribute__((unused)), const dou
     ///   plus wasted power due to aerodynamic inefficiencies, bearing & seal friction, etc.  This
     ///   equation is an empirical observation of typical pump/fan performance as a function of
     ///   best efficiency, flow rate and pump specific speed.
-    if (mSpecificSpeed > 0.0 and mImpellerSpeed > FLT_EPSILON) {
+    if (mSpecificSpeed > 0.0 and mImpellerSpeed > static_cast<double>(FLT_EPSILON)) {
         const double speedRatio    = mImpellerSpeed / mReferenceSpeed;
         const double affinityQ     = mReferenceQBep * speedRatio;
         const double densityFactor = mNodes[0]->getOutflow()->getDensity() / mReferenceDensity;
@@ -527,7 +527,7 @@ void GunnsGasFan::updateFluid(const double dt __attribute__((unused)), const dou
     /// - Shaft torque opposes motor spin so has opposite sign.  Motor speed units are converted to
     ///   r/s to relate to torque in N*m and power in Watts.  Torque on the shaft is zero if the
     ///   drive ratio is zero, i.e. impeller is disconnected from the motor.
-    if (mMotorSpeed > FLT_EPSILON and mDriveRatio > DBL_EPSILON) {
+    if (mMotorSpeed > static_cast<double>(FLT_EPSILON) and mDriveRatio > DBL_EPSILON) {
         mImpellerTorque = -mImpellerPower * UnitConversion::SEC_PER_MIN_PER_2PI / mMotorSpeed;
     } else {
         mImpellerTorque = 0.0;
@@ -561,7 +561,7 @@ void GunnsGasFan::computeSourcePressure()
     const double sourceDensity = mNodes[sourcePort]->getOutflow()->getDensity();
 
     /// - The impeller generates no pressure if it is stopped or there is no fluid.
-    if (mImpellerSpeed > FLT_EPSILON and sourceDensity > FLT_EPSILON) {
+    if (mImpellerSpeed > static_cast<double>(FLT_EPSILON) and sourceDensity > static_cast<double>(FLT_EPSILON)) {
 
         /// - Scale fan curve coefficients based on speed and density.  This implements the Affinity
         ///   Laws in the polynomial as:

@@ -161,12 +161,12 @@ void GunnsResistiveLoad::initialize(const GunnsResistiveLoadConfigData& configDa
 {
     /// - Initialize the parent class.
     GunnsElectricalResistor::initialize(configData, inputData, networkLinks, port0, port1);
-    
+
     /// - Reset init flag.
     mInitFlag = false;
     /// - Initialize Switch Utility for use in this Resistive Load model.
     mLoadSwitchConfig.init(configData.mLoadSwitchResistance, true, true, configData.mUnderVoltageLimit, false, 0, configData.mTripPriority);
-    mLoadSwitchInput.init(inputData.mMalfBlockageFlag, inputData.mMalfBlockageValue, inputData.mInitialSwitchPosition, configData.mPosTripLimit, configData.mNegTripLimit);
+    mLoadSwitchInput.init(inputData.mMalfBlockageFlag, static_cast<int>(inputData.mMalfBlockageValue), inputData.mInitialSwitchPosition, configData.mPosTripLimit, configData.mNegTripLimit);
     mLoadSwitch.initialize(mLoadSwitchConfig, mLoadSwitchInput, mName, 0);
 
     /// - Initialize class attributes.
@@ -216,7 +216,7 @@ void GunnsResistiveLoad::updateState(const double dt)
     if (!mLoadSwitch.isClosed())
     {
         /// - Set resistance to very large value to effectively prevent any flow if switch is open
-        mResistance = 1.0E12; 
+        mResistance = 1.0E12;
         mVoltage = 0.0;
     }else if (mSwitchPrevClosed == false && mLoadSwitch.isClosed())
     {
@@ -226,7 +226,7 @@ void GunnsResistiveLoad::updateState(const double dt)
         mResistance = mLoadConfigResistance;
         //mResistance = 100.0;
     }
-    
+
     mSwitchPrevClosed = mLoadSwitch.isClosed();
     /// - Call parent class state update routine
     GunnsElectricalResistor::updateState(dt);

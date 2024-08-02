@@ -257,13 +257,13 @@ void GunnsFluidHeatExchanger::validate(const GunnsFluidHeatExchangerConfigData& 
     }
 
     /// - Throw an exception if default heat transfer coefficient < FLT_EPSILON.
-    if (inputData.mHeatTransferCoefficient < FLT_EPSILON) {
+    if (inputData.mHeatTransferCoefficient < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Default heat transfer coefficient < FLT_EPSILON.");
     }
 
     /// - Throw an exception if default initial segment temperature < FLT_EPSILON.
-    if(inputData.mInitialSegmentTemperature < FLT_EPSILON) {
+    if(inputData.mInitialSegmentTemperature < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Default initial segment temperature < FLT_EPSILON.");
     }
@@ -356,7 +356,7 @@ void GunnsFluidHeatExchanger::updateSegments(const double dt, const double flowR
 ///           internal fluid.  If the override temperature value is zero, nothing is done.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidHeatExchanger::applyTemperatureOverride() {
-    if (FLT_EPSILON < mTemperatureOverride) {
+    if (static_cast<double>(FLT_EPSILON) < mTemperatureOverride) {
         mInternalFluid->setTemperature(mTemperatureOverride);
     }
 }

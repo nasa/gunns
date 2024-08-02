@@ -265,7 +265,7 @@ void GunnsFluidJumper::restartModel()
 /// @details  Updates the jumper's conductivity based on the plug connection states and whether the
 ///           plugs are self-sealing.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidJumper::updateState(const double)
+void GunnsFluidJumper::updateState(const double dt __attribute__((unused)))
 {
     updatePlugs();
 

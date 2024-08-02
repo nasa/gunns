@@ -5,8 +5,8 @@ PURPOSE:
     method.  It may be advantageous to use if matrix A is
     sparse but of no particular pattern.  If a particular pattern
     is known, other  methods may converge quicker.  If the system
-    is too large then a Choleski method may be better. 
-        
+    is too large then a Choleski method may be better.
+
 REQUIREMENTS:
 - (TBD)
 
@@ -79,10 +79,10 @@ bool Sor::isPositiveDefinite(      double* A,
 /// @param[in]     maxitr (--) The limit on the number of SOR iterations this call may perform.
 /// @param[in]     convg  (--) The delta in {x} between iterations below which the solution is
 ///                            considered converged.
-///        
+///
 /// @returns       int    (--) The number of iterations this solution took if it converged, or -1 if
 ///                            it did not converge.
-/// 
+///
 /// @details  Uses the SOR method to solve the system [A]{x} = {B} for {x}, given an initial
 ///           estimate for {x} from the caller.  The caller can specify
 ///
@@ -100,15 +100,16 @@ int Sor::solve(      double* x,
                const float   Wt,
                const int     maxitr,
                const double  convg)
-{    
+{
+    const double Wt_dbl = static_cast<double>(Wt);
     int k=1;
-    
+
 //    printf("----------------- in SOR --------------\n");
-    
+
     /* k is the number of iterations, pop out if max iterations is exceeded */
     while (k < maxitr) {         /* compute trial solutions  */
-    
-//        printf("---- Iteration %d ----\n", k+1);  
+
+//        printf("---- Iteration %d ----\n", k+1);
 
         /* init p_i again, in general it will be a pointer to A[i,0]  */
 	double* p_i = A;
@@ -116,7 +117,7 @@ int Sor::solve(      double* x,
         for (int i=0; i<n; i++, p_i += n) {    /* set pointer to beginning of matrix row */
             double lterm = 0.0;
             double hterm = 0.0;
-            
+
             /* this part consists of solns already computed */
             if (i > 0) {
                 for(int j=0; j<i; ++j) {
@@ -124,7 +125,7 @@ int Sor::solve(      double* x,
                 }
             }
 //            printf("for %d term, lterm = %e\n", i, lterm);
-            
+
             /* this part consists of solns computed last iteration */
             if (i < n-1) {
                 for(int j=i+1; j<n; ++j) {
@@ -134,21 +135,21 @@ int Sor::solve(      double* x,
 //            printf("for %d term, hterm = %e\n", i, hterm);
 
             /* now compute the new trial solution term */
-            double eterm = (1.0-Wt)*(x[i]) + (Wt/(*(p_i + i)))*(-lterm - hterm + B[i]);  /* extra parens to stop parsing error */
-            esum += fabs(eterm - x[i]);
+            double eterm = (1.0-Wt_dbl)*(x[i]) + (Wt_dbl/(*(p_i + i)))*(-lterm - hterm + B[i]);  /* extra parens to stop parsing error */
+            esum += std::fabs(eterm - x[i]);
             x[i] = eterm;
 //            printf("x[%d] = %e\n", i, x[i]);
         }
-        
+
         /* to see error iteration by iteration */
 //        printf("error = %e\n", esum);
-        
+
         /* test if finished or revise the trial solution and continue */
         if (esum < convg*n) {
-//            printf("-------- finished SOR, error = %f--------------\n", esum); 
-            return (k); 
+//            printf("-------- finished SOR, error = %f--------------\n", esum);
+            return (k);
         }
-            
+
         k++;  /* another iteration */
     }
 //    printf("------------- too many iterations in SOR --------------\n");

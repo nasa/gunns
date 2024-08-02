@@ -222,20 +222,20 @@ void GunnsFluidNode::validate()
     }
 
     /// - Throw exception on pressure < FLT_EPSILON.
-    if (mContent.getPressure() < FLT_EPSILON) {
+    if (mContent.getPressure() < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has insufficient initial pressure.");
     }
 
     /// - Throw exception on temperature < FLT_EPSILON.
-    if (mContent.getTemperature() < FLT_EPSILON) {
+    if (mContent.getTemperature() < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has insufficient initial temperature.");
     }
 
     /// - Throw exception on %mass error > FLT_EPSILON.
     computeMassError();
-    if (mMassError > FLT_EPSILON) {
+    if (mMassError > static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has excessive initial mass error.");
     }
@@ -271,7 +271,7 @@ void GunnsFluidNode::restart()
     ///   in this case do we reset the mass.
     const double checkpointError = mMassError;
     computeMassError();
-    if (fabs(mMassError - checkpointError) > FLT_EPSILON) {
+    if (std::fabs(mMassError - checkpointError) > static_cast<double>(FLT_EPSILON)) {
         GUNNS_WARNING("restarting mass.");
         updateMass();
         mMassError = 0.0;
@@ -422,8 +422,8 @@ double GunnsFluidNode::computeThermalCapacitance()
     /// PolyFluid class.
     /// \endverbatim
     double t = mContent.getTemperature();
-    if (t < FLT_EPSILON) {
-        t = FLT_EPSILON;
+    if (t < static_cast<double>(FLT_EPSILON)) {
+        t = static_cast<double>(FLT_EPSILON);
     }
     const double t1 = t * 0.999;
     const double t2 = t * 1.001;

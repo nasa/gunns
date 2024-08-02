@@ -190,13 +190,13 @@ void MonoFluid::validate()
     }
 
     /// - Throw  exception if temperature too small.
-    if (mTemperature < FLT_EPSILON) {
+    if (mTemperature < static_cast<double>(FLT_EPSILON)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Temperature < FLT_EPSILON.",
                         TsInitializationException, "Invalid Input Data", "MonoFluid");
     }
 
     /// - Throw  exception if pressure too small.
-    if (mPressure < FLT_EPSILON) {
+    if (mPressure < static_cast<double>(FLT_EPSILON)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Pressure < FLT_EPSILON.",
                         TsInitializationException, "Invalid Input Data", "MonoFluid");
     }

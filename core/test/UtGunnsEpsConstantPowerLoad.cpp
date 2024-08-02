@@ -147,7 +147,7 @@ void EpsConstantPowerLoad::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Updates the link's effective conductivity during the time step
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::updateState(const double) {
+void EpsConstantPowerLoad::updateState(const double dt __attribute__((unused))) {
     double deltaPotential = getDeltaPotential();
 
     if (deltaPotential > mMinimumVoltageLimit) {

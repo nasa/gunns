@@ -314,7 +314,7 @@ void GunnsFluidConductor::buildConductance()
 ///
 /// @details  Computes the flow rate across this link and schedules flow demand from source nodes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidConductor::computeFlows(const double dt)
+void GunnsFluidConductor::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
 

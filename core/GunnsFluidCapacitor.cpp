@@ -298,7 +298,7 @@ void GunnsFluidCapacitor::step(const double dt)
 ///
 /// @details  Computes the flow rate across this link and schedules flow demand from source nodes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidCapacitor::computeFlows(const double dt)
+void GunnsFluidCapacitor::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
     mFlux = mPotentialDrop * mAdmittanceMatrix[0] - mSourceVector[0];

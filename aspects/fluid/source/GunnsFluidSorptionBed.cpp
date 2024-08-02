@@ -817,7 +817,7 @@ void GunnsFluidSorptionBed::initialize(const GunnsFluidSorptionBedConfigData& co
         mVolume += mSegments[i].mVolume;
     }
 
-    /// - Allocate and intialize the adsorption totals arrays.
+    /// - Allocate and initialize the adsorption totals arrays.
     const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
     TS_NEW_PRIM_ARRAY_EXT(mAdsorptionFluidRates, nFluids, double, mName + ".mAdsorptionFluidRates");
     TS_NEW_PRIM_ARRAY_EXT(mAdsorbedFluidMasses,  nFluids, double, mName + ".mAdsorbedFluidMasses");

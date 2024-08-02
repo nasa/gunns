@@ -50,14 +50,14 @@
 class SolarSectionConfigData{
 
 public:
-    
+
     ///@brief Default Configuration Data Constructor
     SolarSectionConfigData(const int numStrings                           = 0,
-        		           const SolarStringConfigData& stringConfigData  = 0);
+                           const SolarStringConfigData& stringConfigData  = 0);
 
     ///@brief Default Configuration Data destructor
     virtual ~SolarSectionConfigData();
-        
+
     int mNumStrings;                                   /**< (--) trick_chkpnt_io(**) the number of strings per section*/
     SolarStringConfigData mSolarStringConfigData;      /**< (--) trick_chkpnt_io(**) configuration data for this section's solar strings.*/
 
@@ -77,7 +77,7 @@ private:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class SolarSectionInputData{
 public:
-    
+
     ///@brief Default Configuration Data Constructor
     SolarSectionInputData(const bool isShadowed                      = false,
                           const SolarStringInputData& strigInputData = 0);
@@ -107,7 +107,7 @@ private:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class SolarSection
 {
-        	TS_MAKE_SIM_COMPATIBLE(SolarSection);
+            TS_MAKE_SIM_COMPATIBLE(SolarSection);
 
 public:
         /// @name    Embedded objects.
@@ -115,7 +115,7 @@ public:
         /// @details Embedded objects are public to allow access from the Trick events processor.
         SolarString* mStrings;        /**< (--) trick_chkpnt_io(**) pointer to array of strings belonging to this section */
         /// @}
-        
+
         ///@brief Default Constructor
         SolarSection();
         ///@brief Default destructor
@@ -125,7 +125,7 @@ public:
         ///@brief updates the section based on the most recent current and voltage
         void update(const bool isMinor, const double sectionCurrent, const double sectionVoltage);
 
-        /// @brief setter to pass in fake orbit paramaters ( sun angle and intensity) from solar array model
+        /// @brief setter to pass in fake orbit parameters ( sun angle and intensity) from solar array model
         void setFakeOrbitParms(const bool flag, const double Angle, const double intensity, const bool backlit);
 
         /// @brief function to reset the fake orbit flag if needed
@@ -137,7 +137,7 @@ public:
         }
 
         /// @details This is the amount of solar power hitting the surface of the section. Units are Watts. This comes from
-        ///          the JEOD Solar Radiation Pressure model. 
+        ///          the JEOD Solar Radiation Pressure model.
         double mSolarPowerOnSection;        /**<    (W) Solar power hitting the surface of the section */
         double mSunAngleFromHorizontal;  /**< (rad) the angle (radians) sun rays makes from 0 degree horizontal to line of site vector Z+ component. Read from ENV. Value passed through solar section. */
         double mSunIntensity;            /**< (--) the intensity of the sun as felt by this cell. Ranges 0 to 1 */
@@ -164,7 +164,7 @@ protected:
 
         ///////////////////////
         /// State variables ///
-        ///////////////////////	
+        ///////////////////////
         bool   mIsShadowed;          /**< (--)  true if both z+ and z- LOS are blocked. This means there are no lines of sight to sun  */
         bool   mIsBackLit;           /**< (--)  Whether this section is being back lit, aka the back of array faces sun. This causes reduces Iphoto */
         int    mNumFailedStrings;    /**< (--)  The number of failed strings                                   */
@@ -177,7 +177,7 @@ protected:
         /// @brief  Allocates the arrays based on the number of sections
         void allocateArrays();
         /// @brief  Deletes allocated memory objects
-        void cleanup();	
+        void cleanup();
 
 private:
 
@@ -250,7 +250,7 @@ public:
     ///@details returns the the source current of string 0 on this section
     ///@returns (amp) the source current of string 0 on this section
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    double getStringIsc(); 
+    double getStringIsc();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ///@details returns the the maximum source current of string 0 on this section

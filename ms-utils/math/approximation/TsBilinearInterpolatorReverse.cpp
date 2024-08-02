@@ -20,7 +20,7 @@ TsBilinearInterpolatorReverse::TsBilinearInterpolatorReverse()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.

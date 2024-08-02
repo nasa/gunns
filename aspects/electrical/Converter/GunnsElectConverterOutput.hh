@@ -115,7 +115,7 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         /// @brief  Minor step method for non-linear iterations.
         virtual void minorStep(const double dt, const int minorStep);
         /// @brief  Calculates flows across the link.
-        virtual void computeFlows(const double);
+        virtual void computeFlows(const double dt);
         /// @brief  Returns the link's assessment of the network solution.
         virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                          const int absoluteStep);
@@ -190,7 +190,7 @@ class GunnsElectConverterOutput : public GunnsBasicLink
                       const GunnsElectConverterOutputInputData&  inputData) const;
         /// @brief  Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
-        /// @brief  Computes contributions to the sysstem of equations.
+        /// @brief  Computes contributions to the system of equations.
         void computeRegulationSources(double& conductance, double& voltage, double& current);
         /// @brief  Updates the output current of this link.
         void computeFlux();

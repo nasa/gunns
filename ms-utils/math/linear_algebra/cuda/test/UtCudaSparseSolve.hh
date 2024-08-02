@@ -40,6 +40,8 @@ class UtCudaSparseSolve : public CppUnit::TestFixture
         void testSingular();
         /// @brief    Tests for handled underflow during decomposition.
         void testDecompUnderflow();
+        /// @brief    Tests [A]{x} = {b} using decomposition by island vectors.
+        void testDecomposeVector();
         /// @brief    Tests [A]{x} = {b} using decomposition for [A] having positive off-diagonals.
         void testPosOffDiagSolution();
         /// @brief    Tests dynamic resizing of the matrix in run-time.
@@ -52,6 +54,7 @@ class UtCudaSparseSolve : public CppUnit::TestFixture
         CPPUNIT_TEST(testUnConditioned);
         CPPUNIT_TEST(testSingular);
         CPPUNIT_TEST(testDecompUnderflow);
+        CPPUNIT_TEST(testDecomposeVector);
         CPPUNIT_TEST(testPosOffDiagSolution);
         CPPUNIT_TEST(testResizing);
         CPPUNIT_TEST_SUITE_END();

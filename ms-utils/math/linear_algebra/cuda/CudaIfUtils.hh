@@ -58,9 +58,9 @@ class CudaIfUtils
 
     protected:
         /// @brief Gets the return code in string format from CUDA cusparse library calls.
-        const char* getCudaReturnString(cusparseStatus_t err);
+        static const char* getCudaReturnString(cusparseStatus_t err);
         /// @brief Gets the return code in string format from CUDA cusolver library calls.
-        const char* getCudaReturnString(cusolverStatus_t err);
+        static const char* getCudaReturnString(cusolverStatus_t err);
 };
 
 /// @}
@@ -106,8 +106,10 @@ inline const char* CudaIfUtils::getCudaReturnString(cusparseStatus_t err)
 
         case CUSPARSE_STATUS_ZERO_PIVOT:
             return "CUSPARSE_STATUS_ZERO_PIVOT";
+
+        default:
+            return "<unknown>";
     }
-    return "<unknown>";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +159,10 @@ inline const char* CudaIfUtils::getCudaReturnString(cusolverStatus_t err)
 
         case CUSOLVER_STATUS_INVALID_LICENSE:
             return "CUSOLVER_STATUS_INVALID_LICENSE";
+
+        default:
+            return "<unknown>";
     }
-    return "<unknown>";
 }
 
 #endif

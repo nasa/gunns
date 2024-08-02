@@ -480,7 +480,7 @@ void PolyFluid::validate()
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mass fractions don't add up to 1.",
                         TsInitializationException, "Invalid Input Data", mName);
-    } else if (error > FLT_EPSILON) {
+    } else if (error > static_cast<double>(FLT_EPSILON)) {
         TsHsMsg msg(TS_HS_WARNING, "GUNNS");
         msg << mName << " normalized mass fractions.";
         hsSendMsg(msg);
@@ -696,7 +696,7 @@ void PolyFluid::setMassAndMassFractions(const double mass, double* massFraction)
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mass fractions don't add up to 1.",
                         TsOutOfBoundsException, "Input Argument Out of Range", mName);
-    } else if (error > FLT_EPSILON) {
+    } else if (error > static_cast<double>(FLT_EPSILON)) {
         TsHsMsg msg(TS_HS_WARNING, "GUNNS");
         msg << mName << " normalized mass fractions.";
         hsSendMsg(msg);
@@ -760,7 +760,7 @@ void PolyFluid::setMoleAndMoleFractions(const double mole, double* moleFraction)
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mole fractions don't add up to 1.",
                         TsOutOfBoundsException, "Input Argument Out of Range", mName);
-    } else if (error > FLT_EPSILON) {
+    } else if (error > static_cast<double>(FLT_EPSILON)) {
         TsHsMsg msg(TS_HS_WARNING, "GUNNS");
         msg << mName << " normalized mass fractions.";
         hsSendMsg(msg);
@@ -1117,7 +1117,7 @@ void PolyFluid::edit(const double temperature, double* partialPressure)
     setTemperature(fmax(0.0, temperature));
 
     /// - Return after setting pressure and temperature if pressure is zero to avoid divide-by zero.
-    if (mPressure < FLT_EPSILON) {
+    if (mPressure < static_cast<double>(FLT_EPSILON)) {
         return;
     }
 

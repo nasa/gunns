@@ -24,7 +24,7 @@ ConverterSensorsConfigData::ConverterSensorsConfigData(
         const SensorAnalogConfigData& outVoltageSensor,
         const SensorAnalogConfigData& outCurrentSensor)
     :
-    ConverterConfigData(standbyPower), 
+    ConverterConfigData(standbyPower),
     outVoltageSensor(outVoltageSensor),
     outCurrentSensor(outCurrentSensor) {}
 
@@ -128,7 +128,7 @@ ConverterSensorsInputData::ConverterSensorsInputData(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in]   that     (--)    CoverterWithSensors object to be copied.
+/// @param[in]   that     (--)    ConverterWithSensors object to be copied.
 ///
 /// @details  Assignment operator for this ConverterSensors configuration data.
 ////////////////////////////////////////////////////////////////////////////////
@@ -224,7 +224,7 @@ void ConverterSensors::initialize(const ConverterSensorsConfigData& configData,
             outCurrentSensorName.c_str());
 
     mInitFlag = converterInit and
-                outVoltageSensor.isInitialized() and 
+                outVoltageSensor.isInitialized() and
                 outCurrentSensor.isInitialized();
 }
 
@@ -262,7 +262,7 @@ void ConverterSensors::step(double timeStep) {
     } else {
         mOutputVoltage = 0.0;
     }
-    
+
     /// -- Compute output current if converter is On
     if (mOutputVoltage > DBL_EPSILON and mConverterOn) {
         mOutputCurrent = mOutputPower / mOutputVoltage;
@@ -375,4 +375,3 @@ void ConverterSensors::setTrips() {
          mOutputOverCurrentTrip = true;
     }
 }
-

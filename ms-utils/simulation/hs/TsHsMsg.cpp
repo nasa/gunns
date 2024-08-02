@@ -75,7 +75,7 @@ void tsHsRegisterSubsys(const int id, const char* subsys)
 
     try {
          //std::cout << id << " " << subsys << " " << SubSysStringVector.size() << std::endl;
-         if(id >= static_cast<const int>(SubSysStringVector.size())) {
+         if(id >= static_cast<int>(SubSysStringVector.size())) {
             SubSysStringVector.resize(id+10, static_cast<const char*>(0) );
          }
          SubSysStringVector.at(id) = subsys;
@@ -396,5 +396,3 @@ void tsHsSendMsgFileLine(const std::string& file, unsigned line, const std::stri
     tsGlobalHsMngr->msg(file, line, function, severity, simsubsys, mtext.c_str());
 #endif
 }
-
-

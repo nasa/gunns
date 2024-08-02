@@ -152,7 +152,7 @@ class GunnsFluidSocket : public GunnsFluidConductor
         /// @brief  Checks the link initialization was complete.
         void checkInitialization() const;
         /// @brief Updates the state of the Fluid Socket.
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

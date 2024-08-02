@@ -212,7 +212,7 @@ void GunnsBasicIslandAnalyzer::analyze()
     if (island) {
 
         /// - Store the number of nodes in the island.
-        mIslandSize = island->size();
+        mIslandSize = static_cast<int>(island->size());
 
         /// - Set search parameters to initial limits.
         mHiPotential       = -1.0E15;

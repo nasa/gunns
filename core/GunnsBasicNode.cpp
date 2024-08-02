@@ -133,7 +133,7 @@ void GunnsBasicNode::validate()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method calculates the net and through flux terms for model insight.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsBasicNode::integrateFlows(const double)
+void GunnsBasicNode::integrateFlows(const double dt __attribute__((unused)))
 {
     mNetFlux = mInfluxRate - mOutfluxRate;
 

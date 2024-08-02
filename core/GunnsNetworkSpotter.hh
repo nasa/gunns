@@ -100,8 +100,8 @@ class GunnsNetworkSpotter
         /// @brief  Default destructor.
         virtual     ~GunnsNetworkSpotter();
         /// @brief  Initializes the GUNNS Network Spotter with configuration and input data.
-        void initialize(const GunnsNetworkSpotterConfigData* configData,
-                        const GunnsNetworkSpotterInputData*  inputData);
+        virtual void initialize(const GunnsNetworkSpotterConfigData* configData,
+                                const GunnsNetworkSpotterInputData*  inputData);
         /// @brief  GUNNS Network Spotter processing performed before the GUNNS solver step.
         virtual void stepPreSolver(const double dt)  = 0;
         /// @brief  GUNNS Network Spotter processing performed after the GUNNS solver step.

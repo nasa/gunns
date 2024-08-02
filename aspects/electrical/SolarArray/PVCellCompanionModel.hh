@@ -74,15 +74,15 @@ public:
         PVCellCompanionModelConfigData(const double vocRef               = 0.0,
                                        const double vmpRef               = 0.0,
                                        const double vocTempCoeff         = 0.0,
-        			                   const double iscRef               = 0.0,
+                                       const double iscRef               = 0.0,
                                        const double impRef               = 0.0,
-        			                   const double iscTempCoeff         = 0.0,
-        		            	       const double iSat                 = 0.0,
-                    			       const double temperatureRef       = 0.0,
-                    			       const double cellDegradation      = 0.0,
-        			                   const double seriesResistance     = 0.0,
-        			                   const double shuntResistance      = 0.0,
-        			                   const double vCritc               = 0.0,
+                                       const double iscTempCoeff         = 0.0,
+                                       const double iSat                 = 0.0,
+                                       const double temperatureRef       = 0.0,
+                                       const double cellDegradation      = 0.0,
+                                       const double seriesResistance     = 0.0,
+                                       const double shuntResistance      = 0.0,
+                                       const double vCritc               = 0.0,
                                        const double backSideIscReduction = 0.0,
                                        const double cellEfficiency       = 0.0, // used only by arrays outside of LEO.
                                        const double cellArea             = 0.0  // used only by arrays outside of LEO.
@@ -93,7 +93,7 @@ public:
 
     //@brief Copy constructor
     PVCellCompanionModelConfigData(const PVCellCompanionModelConfigData& that);
-            
+
     double mVocRef;                /**< (V) trick_chkpnt_io(**) the open circuit voltage reference value.                                     */
     double mVmpRef;                /**< (V) trick_chkpnt_io(**) the voltage max power reference value.                                        */
     double mVocTempCoefficient;    /**< (--) trick_chkpnt_io(**) the open circuit voltage coefficient. see page (XYZ) of (XYZ) document       */
@@ -122,7 +122,7 @@ private:
 /// @details  The purpose of this class is to provide a data structure for the input data.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class PVCellCompanionModelInputData{
-        
+
 public:
 
     ///@brief Default Input Data Constructor
@@ -139,7 +139,7 @@ public:
     bool   mCellPowerMalfunctionIsEnabled;       /**< (--)  trick_chkpnt_io(**) bool represents initial state of cell power malfunction.                                */
     bool   mCellDegradationMalfunctionIsEnabled; /**< (--)  trick_chkpnt_io(**) bool represents the inital state of the cell degradation malfunction                    */
     double mCellDegradationOverrideValue;        /**< (--)  trick_chkpnt_io(**) a double value which overrides default cell degradation when assoicated boolean is true */
-        
+
 private:
         ///@brief Operator = is not available since declared private and not implemented
     PVCellCompanionModelInputData& operator = (const PVCellCompanionModelInputData&);
@@ -185,14 +185,14 @@ private:
     ///@brief constructs the effective conductance of the cell under the latest operating conditions.
     void setupConductance();
     ///@brief constructs the effective source vector of the cell under the latest operating conditions.
-    void setupSourceVector();        
+    void setupSourceVector();
     ///@brief returns a double which is used to apply a degrading effects to cell performance.
     double degrade();
     ///@brief validates the passed in configuration and input data of initializeXYZXYZ
     void validate();
     ///@brief Operator = is not available since declared private and not implemented
     PVCellCompanionModel& operator = (const PVCellCompanionModel&);
-        
+
 protected:
     static const double mMaxDegradation;    /**< (--)  trick_chkpnt_io(**) */
 
@@ -200,8 +200,8 @@ protected:
     /// Curve Reference parameters     ///
     //////////////////////////////////////
     ///These parameters are values that define the shape of the I-V curve. It pins down the edge locations. Most values can be found in solar cell spec sheets.
-    ///Many variables affect the shape of the IV curve, some can be simplified to linear relationships. In this case, we  only need a reference point for the 
-    /// performance of the cell at some starting condition. Then as paramaters change, say the temperature, we can shift the curve in some pre defined manner.
+    ///Many variables affect the shape of the IV curve, some can be simplified to linear relationships. In this case, we  only need a reference point for the
+    /// performance of the cell at some starting condition. Then as parameters change, say the temperature, we can shift the curve in some pre defined manner.
     double mVocRef;               /**< (V) trick_chkpnt_io(**) the open circuit voltage reference point                                          */
     double mVmpRef;               /**< (V) trick_chkpnt_io(**) the voltage at max power reference point.                                         */
     double mVocTempCoefficient;   /**< (--) trick_chkpnt_io(**) the open circuit voltage coefficient. see (ref 2) document                       */
@@ -231,7 +231,7 @@ protected:
 
     ///////////////////////
     /// State variables ///
-    ///////////////////////	
+    ///////////////////////
     double mV;        /**< (V) voltage at the present operating conditions                                                                      */
     double mVlast;    /**< (V) voltage at the last operating conditions                                                                         */
     double mVmp;      /**< (V) the voltage which would give maximum power at the present operating conditions                                   */
@@ -353,5 +353,3 @@ public:
 
 /// @}
 #endif
-
-

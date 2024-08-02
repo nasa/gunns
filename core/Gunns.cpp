@@ -385,7 +385,7 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     }
     clearDebugNode();
 
-    mNumLinks              = linksVector.size();
+    mNumLinks              = static_cast<int>(linksVector.size());
     mDebugDesiredSlice     = 0;
     mDebugDesiredStep      = 0;
     mDebugDesiredNode      = -1;
@@ -707,7 +707,7 @@ inline void Gunns::initializeRestartCommonFunctions()
     mLastDecomposition      = 0;
 
     /// - Reset the worst-case timing mode flag.
-    mWorstCaseTiming        = false;   
+    mWorstCaseTiming        = false;
 
     /// - Reset last-pass mode stats.
     mLastSolverMode         = mSolverMode;
@@ -1008,7 +1008,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
                         /// - Loop over all islands, form a sub-matrix for each island and condition
                         ///   it.  Only decompose islands that contain >1 nodes.
                         for (int island = 0; island < mNetworkSize; ++island) {
-                            const int n = mIslandVectors[island].size();
+                            const int n = static_cast<int>(mIslandVectors[island].size());
                             if ( (0 < n) and (GPU_SPARSE != mGpuMode) ) {
                                 /// - Form sub-matrix for island from the main matrix.
                                 for (int i=0, ij=0; i<n; ++i) {
@@ -1313,7 +1313,7 @@ void Gunns::buildIslands()
     mIslandMaxSize = 0;
     mIslandCount   = 0;
     for (int island = 0; island < mNetworkSize; ++island) {
-        int size = mIslandVectors[island].size();
+        int size = static_cast<int>(mIslandVectors[island].size());
         if (size > 0)              mIslandCount++;
         if (size > mIslandMaxSize) mIslandMaxSize = size;
     }
@@ -1385,7 +1385,7 @@ void Gunns::solveCholesky()
             ///   Both options must solve to a temporary {p} that we then unpack into
             ///   mPotentialVector at the end of all islands.
             for (int island = 0; island < mNetworkSize; ++island) {
-                const int n = mIslandVectors[island].size();
+                const int n = static_cast<int>(mIslandVectors[island].size());
                 /// - Form sub-matrix for island from the main matrix.
                 for (int i=0, ij=0; i<n; ++i) {
                     mSourceVectorIsland[i] = mSourceVector[mIslandVectors[island][i]];

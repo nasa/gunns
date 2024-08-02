@@ -29,7 +29,7 @@ class CommentedTreeBuilder ( ET.XMLTreeBuilder ):
     def __init__ ( self, html = 0, target = None ):
         ET.XMLTreeBuilder.__init__( self, html, target )
         self._parser.CommentHandler = self.handle_comment
-    
+
     def handle_comment ( self, data ):
         self._target.start( ET.Comment, {} )
         self._target.data( data )
@@ -57,7 +57,7 @@ class XmlParser:
             print e
             raise ThermError("Error parsing file: %s" % xmlFile)
         return root
-     
+
     #===============================================================================================
     ## @brief:
     ## Get children from XML element and check for success.
@@ -69,19 +69,19 @@ class XmlParser:
     def getElements(self, parent, tag, raiseErrorIfNotFound=False, info=''):
         if None == tag:
             return []
-        
+
         ## Info format for error reporting.
         format = (tag, parent.tag, info)
-        
+
         ## Get all children under the proper tag.
         children = parent.findall(tag)
 
-        ######### This check is omitted because it takes too long! 
+        ######### This check is omitted because it takes too long!
         ## It is a common mistake to misprint a tag that should have an uppercase letter. For this
-        ## scenario, check for a case-sensitivity issue.   
+        ## scenario, check for a case-sensitivity issue.
         #if len(children) != len(ET.fromstring(ET.tostring(parent).lower()).findall(tag.lower())):
         #    raise ThermError("Inconsistent case. Make sure it's '%s' within <%s> (%s)." % format)
-              
+
         ## If not found...
         if True == raiseErrorIfNotFound and (None == children or len(children) <= 0):
             raise TagNotFound("Cannot find <%s> within <%s> (%s)." % format)
@@ -99,7 +99,7 @@ class XmlParser:
             format = (element.tag, info)
             raise ThermError("No text provided in tag <%s> (%s)." % format )
         return text
-        
+
     #===============================================================================================
     ## @brief:
     ## Get string from xml data and check for success.
@@ -110,15 +110,15 @@ class XmlParser:
     def getChildText(self, parent, tag, info=''):
         children = self.getElements(parent, tag, True, info)
         return self.getText(children[0], info)
-    
+
     #===============================================================================================
-    ## @brief:    
+    ## @brief:
     ## Create a new ElementTree element. If parent provided, the new element will be a SubElement
     ## under the given parent.
     ## @param[in]: tag       string of tag name to find within parent element
     ## @param[in]: parent    ElementTree xml-element to search under
     ## @param[in]: attrDict  dictionary with attributes to give to the element; ex. {"units","K"}
-    def newElement(self, tag, parent=None, attrDict=None):        
+    def newElement(self, tag, parent=None, attrDict=None):
         if None == parent:
             if None == attrDict:
                 return ET.Element(tag)
@@ -128,7 +128,7 @@ class XmlParser:
             if None == attrDict:
                 return ET.SubElement(parent, tag)
             else:
-                return ET.SubElement(parent, tag, attrDict)            
+                return ET.SubElement(parent, tag, attrDict)
     #===============================================================================================
     ## @brief:
     ## Round a value to the given decimal and return its string.
@@ -140,20 +140,20 @@ class XmlParser:
         code = "f"
         try:
             rnd = round(float(val),dec)
-            
+
             ## If the number is large, use scientific notation.
             if abs(rnd) > 1e9:
                 code = "e"
 
             format = "%." + str(dec) + code;
             return (format % rnd)
-        
+
         except ValueError, e:
-            raise ThermError("Cannot be coverted to a float: %s" % val)
-        
+            raise ThermError("Cannot be converted to a float: %s" % val)
+
     #===============================================================================================
     ## @brief:
-    ## 
+    ##
     ## @param[in]: s   floating point value to be rounded
     ## @param[in]: s   decimal places to round/format the given value
     ## @return:    string

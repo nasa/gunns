@@ -199,7 +199,7 @@ void GunnsFluidMultiAdsorber::initialize(const GunnsFluidMultiAdsorberConfigData
     TS_DELETE_ARRAY(mCompounds);
 
     /// - Allocate and initialize the compounds array.
-    mNCompounds = configData.mCompounds.size();
+    mNCompounds = static_cast<unsigned int>(configData.mCompounds.size());
     TS_NEW_CLASS_ARRAY_EXT(mCompounds, static_cast<int>(mNCompounds), GunnsFluidAdsorptionCompound,
                            (), mName + ".mCompounds");
     for (unsigned int i=0; i<mNCompounds; ++i) {

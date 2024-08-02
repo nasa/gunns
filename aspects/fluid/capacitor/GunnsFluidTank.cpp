@@ -277,19 +277,19 @@ void GunnsFluidTank::validate(const GunnsFluidTankConfigData& configData,
     }
 
     /// - Throw an exception on surface area < 0.
-    if (0.0 > configData.mSurfaceArea) {
+    if (0.0F > configData.mSurfaceArea) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "surface area < 0.");
     }
 
     /// - Throw an exception on shell radius < 0.
-    if (0.0 > configData.mShellRadius) {
+    if (0.0F > configData.mShellRadius) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "shell radius < 0.");
     }
 
     /// - Throw an exception on shell temperature < 0.
-    if (0.0 > inputData.mShellTemperature) {
+    if (0.0F > inputData.mShellTemperature) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "shell temperature < 0.");
     }
@@ -330,7 +330,7 @@ void GunnsFluidTank::updateState(const double dt)
     mFlowRate                   = 0.0;
 
     /// Skip if time step too small.
-    if (dt < FLT_EPSILON) {
+    if (dt < static_cast<double>(FLT_EPSILON)) {
         GUNNS_WARNING("time step too small to perform partial pressure rate edit.");
         return;
     }
@@ -478,7 +478,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
     if (mSurfaceArea > FLT_EPSILON && mShellRadius > FLT_EPSILON) {
         mHeatFluxFromShell = mNodes[0]->getContent()->getThermalConductivity()
                            * (mShellTemperature - mNodes[0]->getContent()->getTemperature())
-                           * mSurfaceArea / mShellRadius;
+                           * static_cast<double>(mSurfaceArea / mShellRadius);
         mHeatFluxToShell   = -mHeatFluxFromShell;
     }
 
@@ -488,7 +488,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
         checkEditTemperatureValue();
 
         mEditPressureValue = computeEditTargetPressure();
-        if (mEditPressureValue < FLT_EPSILON) {
+        if (mEditPressureValue < static_cast<double>(FLT_EPSILON)) {
             mEditPressureValue = 0.0;
             for (int i = 0; i < mNConstituents; ++i) {
                 mEditPartialPressureValue[i] =
@@ -504,9 +504,9 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
         ///   cause momentary mass flux in or out of the node as attached nodes come up to the edit
         ///   P - even non-cap nodes do this - so also check for net flux of the node approaching
         ///   zero.
-        if (fabs(mEditTemperatureValue - mNodes[0]->getContent()->getTemperature()) < FLT_EPSILON &&
-            fabs(mEditPressureValue    - mNodes[0]->getPotential()) < FLT_EPSILON &&
-            fabs(mNodes[0]->getNetFlux()) < mEditFluxTarget ) {
+        if (std::fabs(mEditTemperatureValue - mNodes[0]->getContent()->getTemperature()) < static_cast<double>(FLT_EPSILON) &&
+            std::fabs(mEditPressureValue    - mNodes[0]->getPotential()) < static_cast<double>(FLT_EPSILON) &&
+            std::fabs(mNodes[0]->getNetFlux()) < mEditFluxTarget ) {
             mEditTemperaturePartialPressureFlag = false;
             mEditTemperaturePressureFlag        = false;
             mOverrideVector[0]                  = false;
@@ -563,7 +563,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidTank::checkEditTemperatureValue()
 {
-    if (mEditTemperatureValue < FLT_EPSILON) {
+    if (mEditTemperatureValue < static_cast<double>(FLT_EPSILON)) {
         mEditTemperatureValue = mNodes[0]->getContent()->getTemperature();
         GUNNS_WARNING("user attempted temperature edit to zero, using current temperature instead.");
     }

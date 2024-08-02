@@ -50,7 +50,7 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Dynamics Single Rigid-Body Equations of Motion Input Data
 ///
-/// @details  This class defines the input data neeed to initialize a GUNNS Dynamics Single
+/// @details  This class defines the input data needed to initialize a GUNNS Dynamics Single
 ///           Rigid-Body Equations of Motion.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsDynSingleRigidEomInputData

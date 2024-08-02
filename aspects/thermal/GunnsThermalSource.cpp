@@ -173,7 +173,7 @@ void GunnsThermalSource::initialize(const GunnsThermalSourceConfigData& configDa
 {
     /// - Set number of ports based on portsVector parameter.
     ///   This will coincide with the network drawing.
-    mNumPorts = portsVector->size();
+    mNumPorts = static_cast<int>(portsVector->size());
     /// - Declare temporary ports array.
     int ports[mNumPorts];
     /// - Set members of ports array.

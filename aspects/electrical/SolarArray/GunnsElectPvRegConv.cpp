@@ -203,15 +203,15 @@ void GunnsElectPvRegConv::initialize(const GunnsElectPvRegConvConfigData& config
     mSensors.connectOutVoltage(configData.mOutVoltageSensor);
 
     /// - Initialize trip functions.
-    mTrips.mInOverCurrent.initialize(configData.mInOverCurrentTrip,
+    mTrips.mInOverCurrent.initialize(static_cast<float>(configData.mInOverCurrentTrip),
                                      configData.mTripPriority, false);
-    mTrips.mInOverVoltage.initialize(configData.mInOverVoltageTrip,
+    mTrips.mInOverVoltage.initialize(static_cast<float>(configData.mInOverVoltageTrip),
                                      configData.mTripPriority, false);
-    mTrips.mOutOverCurrent.initialize(configData.mOutOverCurrentTrip,
+    mTrips.mOutOverCurrent.initialize(static_cast<float>(configData.mOutOverCurrentTrip),
                                       configData.mTripPriority, false);
-    mTrips.mOutOverVoltage.initialize(configData.mOutOverVoltageTrip,
+    mTrips.mOutOverVoltage.initialize(static_cast<float>(configData.mOutOverVoltageTrip),
                                       configData.mTripPriority, false);
-    mTrips.mOutUnderVoltage.initialize(configData.mOutUnderVoltageTrip,
+    mTrips.mOutUnderVoltage.initialize(static_cast<float>(configData.mOutUnderVoltageTrip),
                                        configData.mTripPriority, false);
 
     /// - Initialize class attributes.
@@ -456,10 +456,10 @@ GunnsBasicLink::SolutionResult GunnsElectPvRegConv::confirmSolutionAcceptable(
     if (convergedStep > 0) {
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVin  = mArray->getTerminal().mVoltage;
-        float sensedIin  = mArray->getTerminal().mCurrent;
-        float sensedVout = mPotentialVector[0];
-        float sensedIout = mFlux;
+        float sensedVin  = static_cast<float>(mArray->getTerminal().mVoltage);
+        float sensedIin  = static_cast<float>(mArray->getTerminal().mCurrent);
+        float sensedVout = static_cast<float>(mPotentialVector[0]);
+        float sensedIout = static_cast<float>(mFlux);
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
         ///   integrated.  This is because we don't have the time-step in this function, and we must

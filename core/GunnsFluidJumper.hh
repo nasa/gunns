@@ -148,7 +148,7 @@ class GunnsFluidJumper : public GunnsFluidConductor
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief Updates the State of the Fluid Jumper.
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
         /// @brief Updates the jumper plugs.
         void updatePlugs();
         /// @brief Checks for duplicate port node assignment.

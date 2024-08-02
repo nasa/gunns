@@ -816,7 +816,7 @@ void GunnsElectPvString::update()
 void GunnsElectPvString::updateBypassedGroups()
 {
     const int numGroups = mConfig->mNumCells / mConfig->mBypassDiodeInterval;
-    int numBypassedGroups = ceil(numGroups * (1.0 - MsMath::limitRange(0.0, mInput->mSourceExposedFraction, 1.0)));
+    int numBypassedGroups = static_cast<int>(std::ceil(static_cast<double>(numGroups) * (1.0 - MsMath::limitRange(0.0, mInput->mSourceExposedFraction, 1.0))));
     if (mMalfCellGroupFlag) {
         mMalfCellGroupValue = MsMath::limitRange(0, mMalfCellGroupValue, numGroups);
         numBypassedGroups   = std::max(numBypassedGroups, mMalfCellGroupValue);

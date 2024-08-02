@@ -68,7 +68,7 @@ void UtConverterSensors::setUp() {
     mInputUnderVoltageLimit                             = 90.0;
     mInOverVoltageTripActive                            = false;
     mInOverVoltageTripActive                            = false;
-    
+
     mOutVoltageSensorConfig.mMaxRange                   = 250.0;
     mOutVoltageSensorConfig.mNominalResolution          = 0.01;
     mOutVoltageSensorConfig.mNominalScale               = 1.0;
@@ -124,7 +124,7 @@ void UtConverterSensors::testConfigAndInput()
 
     /// - Check nominal config construction
     CPPUNIT_ASSERT(mStandbyPower == mConfig->mStandbyPower);
-    
+
 
      /// - Check default config construction
     ConverterSensorsConfigData  defaultConfig;
@@ -635,7 +635,7 @@ void UtConverterSensors::testMalfunctions() {
     mArticle->initialize(*mConfig, *mInput);
     CPPUNIT_ASSERT_EQUAL(true, mArticle->isInitialized());
 
-    /// @test Converter Failed Malfunciton
+    /// @test Converter Failed Malfunction
     mArticle->mMalfConverterFailed = true;
 
     mArticle->setConverterOn(true);
@@ -699,4 +699,3 @@ void UtConverterSensors::testMalfunctions() {
 /*
 //
 */
-

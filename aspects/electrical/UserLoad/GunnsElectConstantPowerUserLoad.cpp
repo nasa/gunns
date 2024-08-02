@@ -113,8 +113,8 @@ GunnsElectConstantPowerUserLoad::~GunnsElectConstantPowerUserLoad()
 ///           exception is thrown.  If they pass, these pointers are stored in the class for later
 ///           use by the initLoad method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConstantPowerUserLoad::initialize(GunnsNetworkSpotterConfigData* configData,
-                                                 GunnsNetworkSpotterInputData*  inputData)
+void GunnsElectConstantPowerUserLoad::initialize(const GunnsNetworkSpotterConfigData* configData,
+                                                 const GunnsNetworkSpotterInputData*  inputData)
 {
     /// - Validate & store config & input data pointers.
     mConfig = validateConfig(configData);
@@ -172,9 +172,9 @@ void GunnsElectConstantPowerUserLoad::initLoad()
 /// @details  Type-casts the base config data class pointer to this spotter's config data type,
 ///           checks for valid type-cast and validates contained data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectConstantPowerUserLoadConfigData* GunnsElectConstantPowerUserLoad::validateConfig(GunnsNetworkSpotterConfigData* config)
+const GunnsElectConstantPowerUserLoadConfigData* GunnsElectConstantPowerUserLoad::validateConfig(const GunnsNetworkSpotterConfigData* config)
 {
-    GunnsElectConstantPowerUserLoadConfigData* result = dynamic_cast<GunnsElectConstantPowerUserLoadConfigData*>(config);
+    const GunnsElectConstantPowerUserLoadConfigData* result = dynamic_cast<const GunnsElectConstantPowerUserLoadConfigData*>(config);
     if (!result) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Bad config data pointer type.");
@@ -193,9 +193,9 @@ GunnsElectConstantPowerUserLoadConfigData* GunnsElectConstantPowerUserLoad::vali
 /// @details  Type-casts the base input data class pointer to this spotter's input data type,
 ///           checks for valid type-cast and validates contained data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectConstantPowerUserLoadInputData* GunnsElectConstantPowerUserLoad::validateInput(GunnsNetworkSpotterInputData* input)
+const GunnsElectConstantPowerUserLoadInputData* GunnsElectConstantPowerUserLoad::validateInput(const GunnsNetworkSpotterInputData* input)
 {
-    GunnsElectConstantPowerUserLoadInputData* result = dynamic_cast<GunnsElectConstantPowerUserLoadInputData*>(input);
+    const GunnsElectConstantPowerUserLoadInputData* result = dynamic_cast<const GunnsElectConstantPowerUserLoadInputData*>(input);
     if (!result) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Bad input data pointer type.");

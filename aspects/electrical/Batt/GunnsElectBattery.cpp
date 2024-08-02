@@ -281,7 +281,7 @@ void GunnsElectBattery::updateState(const double timeStep __attribute__((unused)
     // Divide-by-zero is protected in calculation of resistance.
     mEffectiveConductivity = 1.0 / resistance;
 
-    /// - Link source potential comes from teh cells open-circuit voltage based on their States of
+    /// - Link source potential comes from the cells open-circuit voltage based on their States of
     ///   Charge.  All cells share the same Voc/Soc table.
     if (mCellsInParallel) {
         mSourcePotential = computeParallelVoc();

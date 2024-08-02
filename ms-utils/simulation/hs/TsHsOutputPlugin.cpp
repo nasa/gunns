@@ -183,6 +183,5 @@ TsHsOutputPlugin* TsHsOutputPluginMngr::getPlugin(int id)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned TsHsOutputPluginMngr::numPlugins()
 {
-    return plugins.size();
+    return static_cast<unsigned>(plugins.size());
 }
-

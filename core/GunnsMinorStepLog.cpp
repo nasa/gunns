@@ -12,6 +12,7 @@ LIBRARY DEPENDENCY:
 
 #include <iostream>
 #include <fstream>
+#include <cstddef> // size_t
 #include "GunnsMinorStepLog.hh"
 #include "GunnsBasicNode.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -540,13 +541,13 @@ void GunnsMinorStepLog::validate(const std::string& name, const int networkSize,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsMinorStepLog::initLogHeader()
 {
-    const unsigned int networkSize = mBuffer[0].mPotentialVector.size();
+    const std::size_t networkSize = mBuffer[0].mPotentialVector.size();
     std::ostringstream header;
     header << "Major Step, Minor Step, Decomposition, Solution Result";
-    for (unsigned int node = 0; node < networkSize; ++node) {
+    for (std::size_t node = 0; node < networkSize; ++node) {
         header << ", Potential Vector [" << node << "]";
     }
-    for (unsigned int node = 0; node < networkSize; ++node) {
+    for (std::size_t node = 0; node < networkSize; ++node) {
         header << ", Node Convergence [" << node << "]";
     }
     for (unsigned int link = 0; link < mBuffer[0].mLinksData.size(); ++link) {
@@ -577,7 +578,7 @@ std::string GunnsMinorStepLog::renderOutput()
 {
     std::string output = "";
     if (not mIsRecording) {
-        const unsigned int networkSize = mBuffer[0].mPotentialVector.size();
+        const std::size_t networkSize = mBuffer[0].mPotentialVector.size();
         std::ostringstream data;
         data << mLogHeader;
         /// - Loop over the number valid steps from the tail to the head, with wrap-around.
@@ -585,10 +586,10 @@ std::string GunnsMinorStepLog::renderOutput()
             const GunnsMinorStepData& frame = headOffset(j);
             data << frame.mMajorStep << ", " << frame.mMinorStep << ", " << frame.mDecomposition
                  << ", " << frame.renderSolutionResult();
-            for (unsigned int node = 0; node < networkSize; ++node) {
+            for (std::size_t node = 0; node < networkSize; ++node) {
                 data << ", " << frame.mPotentialVector[node];
             }
-            for (unsigned int node = 0; node < networkSize; ++node) {
+            for (std::size_t node = 0; node < networkSize; ++node) {
                 data << ", " << frame.mNodesConvergence[node];
             }
             for (unsigned int link = 0; link < mBuffer[0].mLinksData.size(); ++link) {

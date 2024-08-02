@@ -116,7 +116,7 @@ class GunnsFluidConductor : public GunnsFluidLink
                         const int                            port0,
                         const int                            port1);
 
-        /// @brief Default constructor
+        /// @brief Update function
         virtual void step(const double dt);
 
         /// @brief Compute Flows

@@ -1,15 +1,15 @@
-#ifndef TsSimCompatability_EXISTS
-#define TsSimCompatability_EXISTS
+#ifndef TsSimCompatibility_EXISTS
+#define TsSimCompatibility_EXISTS
 /**
-@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY_MACROS  Sim Compatability Macros
-@ingroup   TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY
+@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATIBILITY_MACROS  Sim Compatibility Macros
+@ingroup   TSM_UTILITIES_SOFTWARE_SIM_COMPATIBILITY
 
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @brief
 PURPOSE:
- -(Trick sim compatability and memory interface macros)
+ -(Trick sim compatibility and memory interface macros)
 
 PROGRAMMERS:
  -(

@@ -114,6 +114,7 @@ GunnsFluidSourceBoundary::GunnsFluidSourceBoundary()
     :
     GunnsFluidLink(NPORTS),
     mOverrideMode(false),
+    mOverrideTemperature(0.0),
     mOverrideHeat(0.0),
     mOverrideFlowRates(0),
     mOverrideTcFlowRates(0),
@@ -389,16 +390,22 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
 /// @param[in] dt   (s)    Unused.
 /// @param[in] mdot (kg/s) Unused.
 ///
-/// @details  When in override mode, updates the internal fluid to match the temperature of the
-///           boundary node's contents, then adds the override heat to the node's extra heat
-///           collection.
+/// @details  When in override mode, updates the internal fluid temperature, then adds the extra
+///           override heat to the node's extra heat collection.  The temperature override is
+///           optional.  If a value > DBL_EPSILON is set, the internal fluid will take that override
+///           temperature.  If it is <= DBL_EPSILON (default), then the internal fluid will take the
+///           temperature of the boundary node's contents.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSourceBoundary::updateFluid(const double dt __attribute__((unused)),
                                            const double mdot __attribute__((unused)))
 {
     if (mOverrideMode) {
         mInternalFluid->setPressure(mNodes[0]->getContent()->getPressure());
-        mInternalFluid->setTemperature(mNodes[0]->getContent()->getTemperature());
+        if (mOverrideTemperature > DBL_EPSILON) {
+            mInternalFluid->setTemperature(mOverrideTemperature);
+        } else {
+            mInternalFluid->setTemperature(mNodes[0]->getContent()->getTemperature());
+        }
         if (mFlipFlowSign) {
             mNodes[0]->collectHeatFlux(-mOverrideHeat);
         } else {

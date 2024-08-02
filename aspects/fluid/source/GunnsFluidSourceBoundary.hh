@@ -112,7 +112,8 @@ class GunnsFluidSourceBoundary : public GunnsFluidLink
         ///          The FlowRates arrays are not available to be set until after initialize is
         ///          called, since they are allocated in that call.
         bool    mOverrideMode;        /**< (1)                        Flow uses the override properties instead of the input data properties. */
-        double  mOverrideHeat;        /**< (W)                        Total heat added to node in the bulk fluid heat advection when in override mode. */
+        double  mOverrideTemperature; /**< (K)                        Temperature of the bulk fluid when in override mode. */
+        double  mOverrideHeat;        /**< (W)                        Additional heat added to node beyond the bulk fluid heat advection when in override mode. */
         double* mOverrideFlowRates;   /**< (kg/s) trick_chkpnt_io(**) Mass flow rate of each bulk fluid constituent when in override mode. */
         double* mOverrideTcFlowRates; /**< (kg/s) trick_chkpnt_io(**) Mass flow rate of each trace compounds when in override mode. */
         /// @}

@@ -577,26 +577,26 @@ void UtPowerBusElect::testSteppedBusInputCurrentFlowsToLoadsCorrectly()
 }
 
 void UtPowerBusElect::testPositveFluxComputeFlows(){
-	tObject->mPotentialVector[0] = 120.0;
-	UtPowerBusElect::stepTheModel();
-	tObject->computeFlows(0.1);
+    tObject->mPotentialVector[0] = 120.0;
+    UtPowerBusElect::stepTheModel();
+    tObject->computeFlows(0.1);
 
-	//test input current
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(14.4,tObject->mFlux,tTolerance);
+    //test input current
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(14.4,tObject->mFlux,tTolerance);
 
-	//test Potential Drop
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(120,tObject->mPotentialDrop,tTolerance);
-	CPPUNIT_ASSERT_EQUAL(false, tObject->mSealed);
+    //test Potential Drop
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(120,tObject->mPotentialDrop,tTolerance);
+    CPPUNIT_ASSERT_EQUAL(false, tObject->mSealed);
 
     std::cout << "...........................................Passed \n";
 }
 
 void UtPowerBusElect::testSteppedIsNonLinear(){
-	//this test is here mostly for line coverage
+    //this test is here mostly for line coverage
 
-	CPPUNIT_ASSERT_EQUAL(true, tObject->isNonLinear());
+    CPPUNIT_ASSERT_EQUAL(true, tObject->isNonLinear());
 
-	std::cout << "...........................................Passed \n";
+    std::cout << "...........................................Passed \n";
 
 }
 

@@ -36,7 +36,7 @@ const double DrawElect::batterySocVocVoc[3] = {0.0, 100.0, 120.0};
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the DrawElect Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 DrawElectConfigData::DrawElectConfigData(const std::string& name, DrawElect* network)
@@ -122,7 +122,7 @@ DrawElect::DrawElect(const std::string& name)
     netNodes(),
     netConfig(name, this),
     netInput(this),
-    // Data Tables 
+    // Data Tables
     batterySocVoc(batterySocVocSoC, batterySocVocVoc, 3, 0.0, 1.0),
     // Spotters
     converterSenseVout(),

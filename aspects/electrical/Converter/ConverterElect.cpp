@@ -23,8 +23,8 @@
 #include "math/MsMath.hh"
 #include "aspects/electrical/EpsMacros.hh"
 
-/// @details    -- Minimum Conductance 
-const double  ConverterElect::MIN_CONDUCTANCE = 1.0e-5; 
+/// @details    -- Minimum Conductance
+const double  ConverterElect::MIN_CONDUCTANCE = 1.0e-5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @verbatim
 ///                                   _____________
@@ -635,5 +635,3 @@ GunnsBasicLink::SolutionResult ConverterElect::confirmSolutionAcceptable (
        return GunnsBasicLink::DELAY;
     }
 }
-
-

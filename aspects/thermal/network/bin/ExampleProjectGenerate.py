@@ -60,10 +60,10 @@ tIcdTrickSeq = "P_PTCS "
 if __name__ == "__main__":
     print "\n======================================================================"
     print thisScript
-    
+
     ## Instantiate ThermAspectConfig object.
     thermAspectConfig = ThermAspectConfig()
-    
+
     ## Name of top-level script that creates the ThermAspectBuilder that creates this object.
     thermAspectConfig.cCallingScript = thisScript
     ## Path to repository home.
@@ -73,16 +73,16 @@ if __name__ == "__main__":
     ## Set ICD file
     thermAspectConfig.cIcdFile = tIcdFile
     ## Set enumeration header file.
-    thermAspectConfig.cEnumFile = tEnumFile   
+    thermAspectConfig.cEnumFile = tEnumFile
     ## Set symbol_loading module and files to read.
     thermAspectConfig.cSymFiles = tSymFiles
-    
+
     ## Loop through all individual networks.
     for network in tNetworks:
-        
+
         ## Instantiate IndivNetworkConfig object.
         indivNetworkConfig = IndivNetworkConfig()
-        
+
         ## Uniform ICD variables
         ## Name of sim system
         indivNetworkConfig.cIcdSettings.mSys = tIcdSys
@@ -90,14 +90,14 @@ if __name__ == "__main__":
         indivNetworkConfig.cIcdSettings.mBus = tIcdBus
         ## Name of icd trick sequence, or P-value.
         indivNetworkConfig.cIcdSettings.mTrickSeq = tIcdTrickSeq
-        
+
         ## Name (abbreviation) of network to be built
         indivNetworkConfig.cNetwork = network
-        
+
         ## Boolean to determine if the mass of structural nodes should be adjusted to match a
         ## total-mass expected value.
         indivNetworkConfig.cIsMassAdjustable = True
-    
+
         #Files to read ............................................
         ## Path and file name of Thermal Aspect Registry file.
         indivNetworkConfig.cRegisFile = tRegisPath % network
@@ -130,8 +130,8 @@ if __name__ == "__main__":
         ## Path and file name of HtrRegistry file.
         indivNetworkConfig.cHtrFile = tHtrPath % network
         ## Path and file name of ThermalPanel registry/config file.
-        indivNetworkConfig.cPanFile = tPanPath % network     
-        
+        indivNetworkConfig.cPanFile = tPanPath % network
+
         #Files to generate ........................................
         ## Path and file name of Node configuration file.
         indivNetworkConfig.cNodeFile = tNodePath % network
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         indivNetworkConfig.cEtcFile = tEtcPath % network
         ## Path and file name of TrickView file. Each network produces its own TrickView file.
         indivNetworkConfig.cTvFile = tTvPath % network
-        
+
         ## Nullify unneeded files in the MT network
         if 'trussMt' == network:
             indivNetworkConfig.cEtcFile = None
@@ -151,25 +151,25 @@ if __name__ == "__main__":
         ## Nullify unneeded files in COL and JEM network
         if 'col' == network or 'jem' == network:
             indivNetworkConfig.cHtrFile = None
-            
+
         ## Nullify unneeded files in the HX network.
         if 'hx' == network:
             indivNetworkConfig.cTdFile = None
             indivNetworkConfig.cHtrFile = indivNetworkConfig.cHtrFile.replace('HtrRegis','SrcRegis')
             indivNetworkConfig.cPanFile = None
-            
+
             ## Change the HX to operate at a higher rate
             indivNetworkConfig.cIcdSettings.mPtcsRate = "HX_RATE"
-            
+
         ## Append the newly-constructed mIndivNetworkConfig to the list of network configs.
         thermAspectConfig.cListNetworkConfigs.append(indivNetworkConfig)
-    
+
     try:
         ## Instantiate, initialize, and execute the ThermAspectBuilder.
         builder = ThermAspectBuilder()
         builder.initialize(thermAspectConfig)
         builder.execute()
-    
+
     except Exception, e:
         ## Build error message, checking first to see if colors are enabled.
         if sys.stdout.isatty():
@@ -180,5 +180,5 @@ if __name__ == "__main__":
             print "ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!",
         print e
         print "Building of PTCS networks has FAILED.\n"
-        
+
     print "======================================================================"

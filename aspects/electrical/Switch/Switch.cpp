@@ -118,7 +118,7 @@ void SwitchConfigData::init(const double defaultSwitchResistance,
     mIsTwoPortSwitch = isTwoPortSwitch;
     mPortAssigned = portAssigned;
     mTripPriority = tripPriority;
-    mPortsAreReversed = reversed; 
+    mPortsAreReversed = reversed;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

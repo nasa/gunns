@@ -32,18 +32,18 @@
 #include "core/GunnsBasicCapacitor.hh"
 #include <string>
 
-/*		Example of what a 4x4 network looks like
+/*      Example of what a 4x4 network looks like
  *              ENV             ENV2
  *                \             /
  *                 X---X- -X---X        (Row 0)
- * 	               |   |   |   |
- *                 |   |   |   |
- *                 |   |   |   |
- *                 X---X- -X---X   	    (Row 1)
  *                 |   |   |   |
  *                 |   |   |   |
  *                 |   |   |   |
- *                 X---X- -X---X   	    (Row 2)
+ *                 X---X- -X---X        (Row 1)
+ *                 |   |   |   |
+ *                 |   |   |   |
+ *                 |   |   |   |
+ *                 X---X- -X---X        (Row 2)
  *                 |   |   |   |
  *                 |   |   |   |
  *                 |   |   |   |
@@ -51,18 +51,18 @@
  *                /             \
  *              GND             GND
  *
- *		Where X is a capacitive node, and O is an "environment temperature" node.
- *		Capacitive nodes are connected together by conductor links in an NxN grid.
- *		The environment temperature node is controlled by a potential link to ground.
- *		There is another "leak" conductor to Ground on the other side of the grid opposite the
- *		environment node.
+ *      Where X is a capacitive node, and O is an "environment temperature" node.
+ *      Capacitive nodes are connected together by conductor links in an NxN grid.
+ *      The environment temperature node is controlled by a potential link to ground.
+ *      There is another "leak" conductor to Ground on the other side of the grid opposite the
+ *      environment node.
  *
  *      Vertically down the middle, the conductors connecting the left & right halves of the grid
  *      are by default given zero conductance, splitting the left & right halves into islands.
  *
- *		Nodes are numbered 0 through (N*N). The zero index node is the upper-left X in the grid,
- *		attached to the 0 node.  The (N*N)-1 node is the bottom right of the grid attached to GND.
- *		The N*N node is the 0 node.
+ *      Nodes are numbered 0 through (N*N). The zero index node is the upper-left X in the grid,
+ *      attached to the 0 node.  The (N*N)-1 node is the bottom right of the grid attached to GND.
+ *      The N*N node is the 0 node.
  */
 
 //TODO support options to split the node grid in half for analyzing islands speeds.  Will need

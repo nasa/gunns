@@ -89,7 +89,7 @@ class TestOverflow41(Test):
        final_total_mass_H2O = cdra13H2O_mass + cdra23H2O_mass
        final_total_mass_CO2 = cdra13CO2_mass + cdra23CO2_mass
        final_temperature    = self.nodeTemperature(0)
-       
+
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
           mass_N2  = mass * self.nodeMassFraction(node, "GUNNS_N2")
@@ -120,7 +120,7 @@ class TestOverflow41(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid41.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid41.netNodes[node]
     # Getter for node fluid

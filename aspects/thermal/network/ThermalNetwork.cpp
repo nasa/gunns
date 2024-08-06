@@ -85,7 +85,7 @@ ThermalNetworkConfigData::~ThermalNetworkConfigData()
 /// @details    Constructs this ThermalNetwork input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ThermalNetworkInputData::ThermalNetworkInputData(std::string thermInputFile,
-		                                         std::string radInputFile)
+                                                 std::string radInputFile)
     :
     iThermInputFile(thermInputFile),
     iInputRadFile(radInputFile)

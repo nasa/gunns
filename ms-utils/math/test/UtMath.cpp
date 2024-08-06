@@ -1005,33 +1005,32 @@ void UtMath::testFastPow()
     double expected = 0.0;
     double returned = MsMath::fastPow(base, exp);
     CPPUNIT_ASSERT_EQUAL(expected, returned);
-    
+
     base = 16.0;
     expected = 32.0;
     returned = MsMath::fastPow(base, exp);
     CPPUNIT_ASSERT_EQUAL(expected, returned);
-    
+
     exp = -1.25;
     expected = 0.03125;
     returned = MsMath::fastPow(base, exp);
-    CPPUNIT_ASSERT_EQUAL(expected, returned); 
-    
+    CPPUNIT_ASSERT_EQUAL(expected, returned);
+
     base = -4.0;
     exp = 0;
     expected = 1.0;
     returned = MsMath::fastPow(base, exp);
-    CPPUNIT_ASSERT_EQUAL(expected, returned);    
-    
+    CPPUNIT_ASSERT_EQUAL(expected, returned);
+
     exp = 2.0;
     expected = 16.0;
     returned = MsMath::fastPow(base, exp);
-    CPPUNIT_ASSERT_EQUAL(expected, returned); 
-    
+    CPPUNIT_ASSERT_EQUAL(expected, returned);
+
     exp = -5.0;
     expected = -0.0009765625;
     returned = MsMath::fastPow(base, exp);
-    CPPUNIT_ASSERT_EQUAL(expected, returned);          
-    
+    CPPUNIT_ASSERT_EQUAL(expected, returned);
+
     std::cout << "Pass";
-}    
-    
+}

@@ -2,11 +2,11 @@
 @defgroup  TSM_UTILITIES_SIMULATION_HS                      Health and Status Logging
 @ingroup   TSM_UTILITIES_SIMULATION
 @brief TS21 Common Utilities Health and Status Logging
- 
+
 @defgroup  TSM_UTILITIES_SIMULATION_TIMER                   Timer (C)
 @ingroup   TSM_UTILITIES_SIMULATION
 @brief TS21 Common Utilities Timer (C)
- 
+
 @dir ts-models/utilities/simulation/hs                         Health and Status Logging
 @dir ts-models/utilities/simulation/timer                      Timer (C)
 */

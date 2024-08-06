@@ -37,7 +37,7 @@ float   * name##_mMalfDriftRate;                \
 bool    * name##_mMalfNoiseFlag;                \
 float   * name##_mMalfNoiseScale;               \
 bool    * name##_mMalfResolutionFlag;           \
-float   * name##_mMalfResolutionValue;        
+float   * name##_mMalfResolutionValue;
 
 /// @details generate the params mapping for SensorAnalog
 /// @param name   (--) prefix to sensor (with underscores)
@@ -58,8 +58,8 @@ name##_mMalfDriftRate       = &target.mMalfDriftRate;           \
 name##_mMalfNoiseFlag       = &target.mMalfNoiseFlag;           \
 name##_mMalfNoiseScale      = &target.mMalfNoiseScale;          \
 name##_mMalfResolutionFlag  = &target.mMalfResolutionFlag;      \
-name##_mMalfResolutionValue = &target.mMalfResolutionValue;        
-                
+name##_mMalfResolutionValue = &target.mMalfResolutionValue;
+
 
 /// @details macro defines param mappign variables for  SensorBooleanBi or SensorBooleanAi
 /// @param name (--) prefix to sensor
@@ -87,4 +87,3 @@ name##_mMalfFailToValue   = &target.mMalfFailToValue;
 
 
 #endif // SensorMalfunctionMacros_EXISTS
-

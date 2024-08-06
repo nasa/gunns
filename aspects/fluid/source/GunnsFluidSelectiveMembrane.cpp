@@ -473,7 +473,7 @@ void GunnsFluidSelectiveMembrane::computeFlows(const double dt __attribute__((un
             mPortDirections[2] = SINK;
         }
     }
-    
+
     if (mFlux > DBL_EPSILON) {
         mNodes[upstreamPort]->scheduleOutflux(mFlux);
     } else if (mFlux < -DBL_EPSILON) {
@@ -484,7 +484,7 @@ void GunnsFluidSelectiveMembrane::computeFlows(const double dt __attribute__((un
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  dt  (s)  unused.
 ///
-/// @details  transports flow-thru path and membrane flows between nodes and adds heat of phase 
+/// @details  transports flow-thru path and membrane flows between nodes and adds heat of phase
 ///           change when present.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSelectiveMembrane::transportFlows(const double dt __attribute__((unused)))

@@ -91,7 +91,7 @@ trick.mc_set_enabled(1)
 #import multiprocessing
 #for i in range(multiprocessing.cpu_count()):
 #    trick.mc_add_slave("localhost")
-    
+
 # Sets the total number of Slave runs to perform.
 # Must call this after you've set the optimizer config data above!
 trick.mc_set_num_runs(mc.monteCarlo.mOptimizer.getNumRuns())

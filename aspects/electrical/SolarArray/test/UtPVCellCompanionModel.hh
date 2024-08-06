@@ -54,7 +54,7 @@ class UtPVCellCompanionModel : public CppUnit::TestFixture {
     CPPUNIT_TEST(testInitializationWithLessThanZeroVCritThrowsInitException);
     CPPUNIT_TEST(testInitializationWithGreaterThanOneBackSideReduxThrowsInitException);
     CPPUNIT_TEST(testInitializationWithLessThanZeroDegradationThrowsInitException);
-    CPPUNIT_TEST(testInitializationWithGreaterThanOneDegradationThrowsInitException);   
+    CPPUNIT_TEST(testInitializationWithGreaterThanOneDegradationThrowsInitException);
   //TEST UPDATE===================================================================
     CPPUNIT_TEST(testNominalUpdate);
     CPPUNIT_TEST(testUpdateHandlesBadSunAngleNicely);

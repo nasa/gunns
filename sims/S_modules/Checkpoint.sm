@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "software/SimCompatibility/TsSimCompatibility.hh"
 //##include "sims/networks/fluid/test/TestFluidNetwork.hh"
 //##include "sims/networks/basic/test/TestBasicNetwork.hh"
@@ -18,13 +18,13 @@ class CheckpointSimObject: public Trick::SimObject
 //        double d4;    /**< ** (--) a double, not visible in TV,           not saved in checkpoint, not read from checkpoint, not zeroed in restart */
 //        double d5;    /**<    (--) a double */
 
-        // this might be a good way to do pointers, even though we waste time & space writing them to checkpoints, they're safe & old checkpoints can't screw them up        
+        // this might be a good way to do pointers, even though we waste time & space writing them to checkpoints, they're safe & old checkpoints can't screw them up
 //        double* po1;  /**< *o (--) a pointer to double, can't set pointed to value in TV, saved in checkpoint as &checkpointTest.d1,    not read from checkpoint, not zeroed in restart */
 //        double* po2;  /**< *o (--) a pointer to double, can't set pointed to value in TV, saved in checkpoint as &checkpointTest.d2,    not read from checkpoint, not zeroed in restart */
 //        double* po3;  /**< *o (--) a pointer to double, can't set pointed to value in TV, saved in checkpoint as &checkpointTest.d3,    not read from checkpoint, not zeroed in restart */
 //        double* po4;  /**< *o (--) a pointer to double, can't set pointed to value in TV, saved in checkpoint as &checkpointTest + 120, not read from checkpoint, not zeroed in restart */
 //        double* po5;  /**< *o (--) a pointer to double, can't set pointed to value in TV, saved in checkpoint as &checkpointTest.d5,    not read from checkpoint, not zeroed in restart */
-        
+
         // this is a very bad way to do pointers
 //        double* pi1;  /**< *i (--) a pointer to double, sets pointed-to value in TV, not saved in checkpoint, zeroed (null pointer) in restart if not in checkpoint, which kills sim if displayed on TV at the time */
 //        double* pi2;  /**< *i (--) same */
@@ -34,25 +34,25 @@ class CheckpointSimObject: public Trick::SimObject
 
         // this way will break pointers from old checkpoints
 //        double* pio1; /**<    (--) a pointer to double, sets pointed-to value in TV, saved in checkpoint as &checkpointTest.d1, zeroed (null pointer) in restart if not in checkpoint, which kills sim if displayed on TV at the time */
-                
+
 //        double* da;   /**<    (--) array of doubles, dynamically allocated.  Can set values via TV.    Writes values to trick_anon_local and assigns pointer to that array on restart */
 //        double* dai;  /**< *i (--) array of doubles, dynamically allocated.  Can set values via TV.    Writes values to trick_anon_local but doesn't assign pointer to that array on restart, pointer is nulled on restart */
 //        double* dao;  /**< *o (--) array of doubles, dynamically allocated.  Can't set values via TV.  Writes values to trick_anon_local and assigns pointer to that array on restart, but pointer is garbaged on restart */
-        
+
 //        double* dan;  /**< ** (--) array of doubles, new'd. */
 //        double* danio;/**< *i (--) pointer to dan. */
-        
+
         // *o for a pointer to an object that shouldn't change objects from a datastore, or any constant term that users should never set in run or should not be read from datastore.
-        
+
         // ** and new/delete for dynamic array that shouldn't be datastored.  If want visibility, assign another *i pointer to it, but must re-assign it in restart jobs.
         //    allows you to set values via TV.  Can't use *io or *o because it causes checkpoint errors.  But if we're going to have restart job anyway, might as well keep
         //    trick memory macro's and use *i or *o to control access, and rebuild them in restart job.
-        
+
         // what about an array of pointers to objects, where we want the objects' states to be datastored but not the array of pointers?  Then same thing as above, ** and new/delete.
-        
+
         // what about an array of objects?  We want the objects' states to be datastored but not the array size or which objects are in the array.  Same thing, ** and new/delete the
         // array type as the objects, not pointers.  If want visibility, then must have another *i pointer in the restart job.
-        
+
 //        char* mName;                      /**< (--) Name of the object for messaging */
 //        GunnsBasicNode   node0;           /**< (--) a node object */
 //        GunnsBasicNode   node1;           /**< (--) a node object */
@@ -62,15 +62,15 @@ class CheckpointSimObject: public Trick::SimObject
 //        GunnsBasicConductor   link1;           /**< (--) a link object */
 //        GunnsBasicConductor   link2;           /**< (--) a link object */
 //        GunnsBasicLink** mLinks;          /**< (--) Pointers to the network links */
-        
-        
+
+
 //        TestFluidNetwork testFluidNetwork; /**< (--) GUNNS fluid network */
 //        TestBasicNetwork testBasicNetwork; /**< (--) GUNNS basic network */
         CabinFluid   cabinFluid;      /**< (--) GUNNS fluid network */
         EmuFluid     emuFluid;        /**< (--) GUNNS fluid network */
         ItcsLabFluid itcsLabFluid;    /**< (--) GUNNS fluid network */
         ArsFluid     arsFluid;        /**< (--) GUNNS fluid network */
-        
+
         CheckpointSimObject()
             :
 //            node0(),
@@ -83,7 +83,7 @@ class CheckpointSimObject: public Trick::SimObject
             emuFluid("emuFluid"),
             itcsLabFluid("itcsLabFluid"),
             arsFluid("arsFluid")
-            
+
         {
 
 //            ("initialization")      initialize();
@@ -108,7 +108,7 @@ class CheckpointSimObject: public Trick::SimObject
             ("restart")             arsFluid.restart("arsFluid");
             (ECLSS_LO, "scheduled") arsFluid.update(ECLSS_LO);
         }
-        
+
         virtual ~CheckpointSimObject()
         {
 //            TS_DELETE_ARRAY(mLinks);
@@ -119,7 +119,7 @@ class CheckpointSimObject: public Trick::SimObject
 //            TS_DELETE_ARRAY(dai);
 //            TS_DELETE_ARRAY(da);
         }
-        
+
 /*        void initialize() {
             d1 = 1.0;
             d2 = 2.0;
@@ -155,7 +155,7 @@ class CheckpointSimObject: public Trick::SimObject
             dao[2] = 3.0;
             dao[3] = 4.0;
             dao[4] = 5.0;
-            
+
             dan = new double[5];
             dan[0] = 1.0;
             dan[1] = 2.0;
@@ -163,7 +163,7 @@ class CheckpointSimObject: public Trick::SimObject
             dan[3] = 4.0;
             dan[4] = 5.0;
             danio = dan;
-              
+
             TS_STRDUP(mName, "checkpointTest.mName");
 //            TS_NEW_CLASS_POINTER_ARRAY(mNodes, 3, GunnsBasicNode);
 //            mNodes[0] = &node0;
@@ -174,13 +174,13 @@ class CheckpointSimObject: public Trick::SimObject
             mLinks[1] = &link1;
             mLinks[2] = &link2;
             } */
-            
+
 //        void update() {d5 = d4;}
 
 //        void restart() {
 //            danio = dan;
 //        }
-        
+
     private:
         // Assignment operator unavailable since declared private and not implemented.
         CheckpointSimObject operator = (const CheckpointSimObject &);

@@ -31,7 +31,7 @@ FluidProperties::FluidType GunnsMcModelFluidConfigData::netInternalFluidTypes[Gu
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the GunnsMcModelFluid Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsMcModelFluidConfigData::GunnsMcModelFluidConfigData(const std::string& name, GunnsMcModelFluid* network)
@@ -99,7 +99,7 @@ GunnsMcModelFluid::GunnsMcModelFluid(const std::string& name)
     netInput(this),
     netFluidProperties(),
     netInternalFluidConfig(&netFluidProperties, netConfig.netInternalFluidTypes, GunnsMcModelFluidConfigData::N_INTERNAL_FLUIDS),
-    // Data Tables 
+    // Data Tables
     // Spotters
     // Links
     conductor1(),

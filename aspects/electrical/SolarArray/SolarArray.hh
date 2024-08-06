@@ -321,7 +321,7 @@ private:
     void fakeOrbit(const double dt);
 
     /// @brief Function to dynamically calculate the cell reference current so that the
-    ///        cells produce current that is actually a function of the solar flux 
+    ///        cells produce current that is actually a function of the solar flux
     ///        magnitude, cell area, and cell performance.
     void updateNonLeoArray();
 

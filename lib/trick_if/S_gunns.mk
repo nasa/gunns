@@ -28,16 +28,16 @@ GUNNS_TRICK_IF := $(GUNNS_HOME)/lib/trick_if/libgunns.o
 # generate all of the io_* and py_* code as usual.
 ifeq ($(wildcard $(TRICK_HOME)/share/trick/makefiles/trickify.mk),)
     # GUNNS trickified lib is not being included because this version of Trick doesn't support it.
-    
+
 else ifeq ($(wildcard $(GUNNS_TRICK)),)
     # GUNNS trickified lib is not being included because GUNNS_TRICK is missing.
-    
+
 else ifeq ($(wildcard $(GUNNS_TRICK_IF)),)
     # GUNNS trickified lib is not being included because GUNNS_TRICK_IF is missing.
-    
+
 else
     $(info GUNNS trickified lib $(GUNNS_TRICK_IF) is being included.)
-    
+
     # Tell Trick to expect io_* and py_* code for these headers, but not to generate it itself.
     TRICK_EXT_LIB_DIRS += :$(GUNNS_HOME)/core:$(GUNNS_HOME)/aspects:$(GUNNS_HOME)/ms-utils:$(GUNNS_HOME)/gunns-ts-models
 
@@ -55,7 +55,7 @@ else
     else ifeq ($(TRICK_HOST_TYPE), Darwin)
         TRICK_USER_LINK_LIBS += -Wl,-force_load $(GUNNS_TRICK_IF)
     endif
-    
+
     # Link in the model library.
     TRICK_USER_LINK_LIBS += $(GUNNS_TRICK)
 endif

@@ -131,7 +131,7 @@ void UtSimBusQutils::testIsPulseHigh()
     bool expectedBool = false;
     CPPUNIT_ASSERT_EQUAL(expectedBool,
                                  SimBusQutils::isPulseHigh(tQueueBool, tExtractionSize));
-    
+
     /// - Set just one boolean to true in boolean array
     tQueueBool[tExtractionSize - 1] = true;
 
@@ -141,4 +141,3 @@ void UtSimBusQutils::testIsPulseHigh()
 
     std::cout << "... Pass";
 }
-

@@ -114,7 +114,7 @@ class TestOverflow27(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid27.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid27.netNodes[node]
     # Getter for node fluid
@@ -129,4 +129,3 @@ class TestOverflow27(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

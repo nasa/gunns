@@ -41,11 +41,11 @@ const double FetSwitch::mConductanceLimit = 1.0E15;
 /// @details  Constructs the FetSwitchElect Configuration data
 /////////////////////////////////////////////////////////////////////////////////////////////////
 FetSwitchConfigData::FetSwitchConfigData(           const double fetOnResistance,
-		                                              const double fetOffResistance,
-		                                              const double diodeReverseResistance,
-		                                              const double diodeForwardResistance,
-		                                              const bool overCurrentProtection,
-		                                              const double overCurrentLimit)
+                                                      const double fetOffResistance,
+                                                      const double diodeReverseResistance,
+                                                      const double diodeForwardResistance,
+                                                      const bool overCurrentProtection,
+                                                      const double overCurrentLimit)
     :
     mFetOnResistance(fetOnResistance),
     mFetOffResistance(fetOffResistance),
@@ -132,7 +132,7 @@ void FetSwitchInputData::init (const bool switchMalfFlag,
                                const int switchMalf,
                                const bool switchCmd ) {
 
-	mSwitchMalfFlag = switchMalfFlag;
+    mSwitchMalfFlag = switchMalfFlag;
     mSwitchMalf = switchMalf;
     mSwitchCmd = switchCmd;
 }
@@ -188,7 +188,7 @@ FetSwitch::~FetSwitch() {
 
 
 void FetSwitch::initialize(const FetSwitchConfigData& configData,
-		                    const FetSwitchInputData& inputData)
+                            const FetSwitchInputData& inputData)
 {
     mFetOnResistance = configData.mFetOnResistance;
     mFetOffResistance = configData.mFetOffResistance;
@@ -252,8 +252,8 @@ void FetSwitch::updateSwitchFlow(double current) {
     }
 
     if ((0 == switchMalf) &&
-    	(current > mOverCurrentLimit) &&
-    	(mOverCurrentProtection)){
+        (current > mOverCurrentLimit) &&
+        (mOverCurrentProtection)){
 
         mCurrent = 0;
         mFetState = false;
@@ -280,11 +280,11 @@ double FetSwitch::getCurrent()
 }
 
 bool FetSwitch::getDiodeReverseBias(){
-	return mDiodeReverseBias;
+    return mDiodeReverseBias;
 }
 
 void FetSwitch::setDiodeReverseBias(bool diodeReverseBias){
-	mDiodeReverseBias = diodeReverseBias;
+    mDiodeReverseBias = diodeReverseBias;
 }
 
 double FetSwitch::getConductance(){
@@ -317,7 +317,7 @@ double FetSwitch::getConductance(){
 
 
 double FetSwitch::getPowerDissipation(){
-	return mPowerDissipation;
+    return mPowerDissipation;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

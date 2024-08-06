@@ -59,7 +59,7 @@ class TestOverflow39(Test):
        mass_H2  = - reactorH2_mass
 
        for node in range(0,self.getNumNodes()):
-          mass     = self.nodeMass(node) 
+          mass     = self.nodeMass(node)
           mass_N2  = mass * self.nodeMassFraction(node, "GUNNS_N2")
           mass_O2  = mass * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O = mass * self.nodeMassFraction(node, "GUNNS_H2O")
@@ -109,7 +109,7 @@ class TestOverflow39(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid39.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid39.netNodes[node]
     # Getter for node fluid
@@ -124,4 +124,3 @@ class TestOverflow39(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

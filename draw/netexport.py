@@ -168,7 +168,7 @@ def cleanLabel(object):
         object.attrib['label'] = clean_label
         return True
     return False
-    
+
 # Returns as a string the given link's or spotter's config or input data constructor body
 # for loading vectors.
 # Note this works for links and spotters.
@@ -205,7 +205,7 @@ def getPortMap(port_map):
     for index in range(1, len(port_map)):
         result = result + ', ' + str(port_map[index])
     return result
-    
+
 # Formats the link port map for its initialize call.
 def getPortMapInitialize(port_map):
     result = ''
@@ -326,7 +326,7 @@ def getPortNode(port, nodes, gnds):
         if source == node.attrib['id'] or target == node.attrib['id']:
             return node
     return None
-    
+
 # Returns the name string of the link that is connected to this port.
 # If there is no link connected, then returns the connected node and
 # number.  If there is no node connected then returns ''
@@ -612,7 +612,7 @@ if options.downloads:
             root.withdraw()
             if TKMBOX.askokcancel("netexport.py", "Use the newer version in ~/Downloads?"):
                 inputPathFile = download_pathfile
-            
+
 print('\nProcessing ' + inputFile + '...')
 
 # Save backup copy of input file.
@@ -808,7 +808,7 @@ for an_object in objects:
     elif None != gunns_tag and an_object != netConfig[0] and not isDescendant(an_object, netConfig[0], objects_and_cells):
         if 'Dox' != gunns_tag.attrib['type']:
             print('    ' + console.warn('GUNNS ' + an_object.attrib['About'] + ' ' + an_object.attrib['label'] + ' is not a child of the network container, will be ignored.'))
-                    
+
 # Check for required or conflicting objects.
 if not (basic_network or fluid_network):
     sys.exit(console.abort('there are no regular nodes.'))
@@ -891,7 +891,7 @@ for spotter in spotters:
     gunns_attr = link.find('./gunns').attrib
     if 'customLib' in gunns_attr:
         customLibs.append(gunns_attr['customLib'])
-            
+
 # Build the list of custom root paths from the environment variable.
 customPaths = []
 if 0 < len(customLibs):
@@ -1067,7 +1067,7 @@ for subNetIf in subNetIfs:
     ifKeysUpdated = False
     isDuplicateOf = None
     ifNodes, ifKeysUpdated = keyContainedNodes(subNetIf, numberedNodes, gndNodes, objects_and_cells)
-    
+
     # Determine if this interface box is an identical duplicate of another.
     for otherSubNetIf in subNetIfs:
         if otherSubNetIf is subNetIf:
@@ -1077,7 +1077,7 @@ for subNetIf in subNetIfs:
         if isDuplicateSubNetIf(subNetIf, ifNodes, otherSubNetIf, otherIfNodes):
             isDuplicateOf = otherSubNetIf
             break
-    
+
     duplicateElems = subNetIf.findall('./gunnsSubnetIfDuplicate')
     if isDuplicateOf is None:
         # If this is not a duplicate, then clean out any old duplicates information.
@@ -1096,19 +1096,19 @@ for subNetIf in subNetIfs:
             for duplicateElem in duplicateElems[1:]:
                 subNetIf.remove(duplicateElem)
             subNetUpdated = True
-            
+
         # In duplicates, we delete any old connection information.
         oldConnections = subNetIf.findall('./gunnsSubnetIfConnection')
         for oldConnection in oldConnections:
             subNetIf.remove(oldConnection)
             subNetUpdated = True
-    
+
     if subNetUpdated:
         updatedSubNetIfLabels.append(subNetIf.attrib['label'])
         subNetUpdated = False
     if ifKeysUpdated:
         updatedSubNetIfKeys.append(subNetIf.attrib['label'])
-        
+
     # List all ports in the network connecting to Ground nodes in this interface or any duplicates of this interface.
     ifPorts = []
     for port in ports:
@@ -1150,7 +1150,7 @@ for subNetIf in subNetIfs:
             newElement.attrib['Port'] = ifPort[2]
             newElement.attrib['Key']  = ifPort[3]
             subNetUpdated = True
-            
+
     # For a sub-network interface box that isn't a duplicate, prune old connections from its xml
     # that aren't in the drawing anymore, and flag update.  We don't need to to this for duplicate
     # interface boxes since all their connections have already been remove above.
@@ -1175,7 +1175,7 @@ for subNetIf in subNetIfs:
 
     if subNetUpdated:
         updatedSubNetIfLabels.append(usingSubNetIf.attrib['label'])
-        
+
     # Update the node count element or add one if it is missing.
     oldNodeCount = subNetIf.find('./gunnsSubnetIfNodeCount')
     if oldNodeCount is None:
@@ -1193,17 +1193,17 @@ for subNetIf in subNetIfs:
         elif nodeCount != int(oldNodeCount.attrib['count']):
             oldNodeCount.set('count', str(nodeCount))
             updatedSubNetIfsNodeCount = True
-        
+
 # Output notifications about updated drawing contents in the subnet interfaces.
 if updatedSubNetIfsNodeCount:
     print('    ' + console.note('updated network node count in the sub-network interfaces.'))
     contentsUpdated = True
-    
+
 # Loop over the list (ignoring duplicates) of interface labels.
 for label in set(updatedSubNetIfLabels):
     print('    ' + console.note('updated connections to sub-network interface: ' + label + '.'))
     contentsUpdated = True
-    
+
 for label in set(updatedSubNetIfKeys):
     print('    ' + console.note('updated interface node keys in sub-network interface: ' + label + '.'))
     contentsUpdated = True

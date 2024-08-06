@@ -98,14 +98,14 @@ class TestFluidNetwork(Test):
         self.testLogNear('testSimObject.fluid.netNodes[1].mContent.mPressure', initP[nodeNames["Node 1"]], tolP, 0.0, " Data log Node 1 initial pressure ::")
         self.testLogNear('testSimObject.fluid.netNodes[0].mContent.mPressure', finalP[nodeNames["Node 0"]], tolP, 2.9, " Data log Node 0 final pressure ::")
         self.testLogNear('testSimObject.fluid.netNodes[1].mContent.mPressure', finalP[nodeNames["Node 1"]], tolP, 2.9, " Data log Node 1 final pressure ::")
-    
+
     def tearDownChecks(self):
         """Overrides base class, calls log data check functions"""
         self.checkLogData()
-        
+
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
-    # Getter for node 
+    # Getter for node
     def node(self,nodeName):
         return testSimObject.fluid.netNodes[nodeNames[nodeName]]
     # Getter for node fluid

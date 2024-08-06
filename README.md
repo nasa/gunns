@@ -7,11 +7,11 @@ GUNNS is a set of generic C++ math models that combines nodal circuit analysis a
 ### GunnsDraw, the Network Design GUI
 
 Networks can be drawn up with a [Draw.io](https://www.draw.io) drawing, from which run-time C++ code is auto-generated that can be built into simulations.  This is called 'GunnsDraw'.  GunnsDraw includes custom Draw.io shapes for the generic physical components and Python scripts to auto-generate the run-time C++ code.
-  
+
 ### Extensible
 
-GUNNS is designed to be extensible and flexible.  It is written with object-oriented polymorphic interfaces between the network solver, links, nodes, and other extensible object types.  This allows users to develop new classes to model things that the GUNNS baseline doesn't cover.  Users can create custom GunnsDraw shapes by taking advantage of Draw.io shapes' extensible XML schema.  
-  
+GUNNS is designed to be extensible and flexible.  It is written with object-oriented polymorphic interfaces between the network solver, links, nodes, and other extensible object types.  This allows users to develop new classes to model things that the GUNNS baseline doesn't cover.  Users can create custom GunnsDraw shapes by taking advantage of Draw.io shapes' extensible XML schema.
+
 GUNNS can also be extended to model other domains besides the above flow systems, as it can solve systems of the general form [A]{x} = {b} where [A] is a symmetric positive semi-definite matrix.  This is demonstrated in an included simple 6-DOF rigid body dynamics equations of motion model.
 
 ### Simulation Environment and Glue Code Not Included
@@ -48,4 +48,3 @@ Copyright © 2024 United States Government as represented by the Administrator o
 No Warranty: THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT DOCUMENTATION, IF PROVIDED, WILL CONFORM TO THE SUBJECT SOFTWARE. THIS AGREEMENT DOES NOT, IN ANY MANNER, CONSTITUTE AN ENDORSEMENT BY GOVERNMENT AGENCY OR ANY PRIOR RECIPIENT OF ANY RESULTS, RESULTING DESIGNS, HARDWARE, SOFTWARE PRODUCTS OR ANY OTHER APPLICATIONS RESULTING FROM USE OF THE SUBJECT SOFTWARE. FURTHER, GOVERNMENT AGENCY DISCLAIMS ALL WARRANTIES AND LIABILITIES REGARDING THIRD-PARTY SOFTWARE, IF PRESENT IN THE ORIGINAL SOFTWARE, AND DISTRIBUTES IT "AS IS."
 
 Waiver and Indemnity: RECIPIENT AGREES TO WAIVE ANY AND ALL CLAIMS AGAINST THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT. IF RECIPIENT'S USE OF THE SUBJECT SOFTWARE RESULTS IN ANY LIABILITIES, DEMANDS, DAMAGES, EXPENSES OR LOSSES ARISING FROM SUCH USE, INCLUDING ANY DAMAGES FROM PRODUCTS BASED ON, OR RESULTING FROM, RECIPIENT'S USE OF THE SUBJECT SOFTWARE, RECIPIENT SHALL INDEMNIFY AND HOLD HARMLESS THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT, TO THE EXTENT PERMITTED BY LAW. RECIPIENT'S SOLE REMEDY FOR ANY SUCH MATTER SHALL BE THE IMMEDIATE, UNILATERAL TERMINATION OF THIS AGREEMENT.
-

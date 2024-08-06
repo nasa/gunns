@@ -66,7 +66,7 @@ ChemicalCompound::Type DrawFluidExtrasConfigData::reactorCompounds[DrawFluidExtr
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the DrawFluidExtras Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 DrawFluidExtrasConfigData::DrawFluidExtrasConfigData(const std::string& name, DrawFluidExtras* network)
@@ -148,7 +148,7 @@ DrawFluidExtras::DrawFluidExtras(const std::string& name)
     netInput(this),
     netFluidProperties(),
     netInternalFluidConfig(&netFluidProperties, netConfig.netInternalFluidTypes, DrawFluidExtrasConfigData::N_INTERNAL_FLUIDS, &netConfig.netTcConfig),
-    // Data Tables 
+    // Data Tables
     // Spotters
     tankVolumeMonitor(netNodeList, tank),
     // Jumper Plugs

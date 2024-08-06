@@ -43,11 +43,11 @@ class FetSwitchConfigData
 
         /// @brief Default Fet Switch Configuration Data Constructor
         FetSwitchConfigData(     const double fetOnResistance = .001,
-        		                  const double fetOffResistance = 100000000,
-        		                  const double diodeReverseResistance = 100000000,
-        		                  const double diodeForwardResistance =.01,
-        		                  const bool overCurrentProtection = false,
-        		                  const double overCurrentLimit = 4.4);
+                                  const double fetOffResistance = 100000000,
+                                  const double diodeReverseResistance = 100000000,
+                                  const double diodeForwardResistance =.01,
+                                  const bool overCurrentProtection = false,
+                                  const double overCurrentLimit = 4.4);
 
 
         /// @brief Fet Switch Configuration Data Initialize
@@ -92,13 +92,13 @@ class FetSwitchInputData
 
         /// @brief Default Fet Switch Input Data Constructor
         FetSwitchInputData(const bool switchMalfFlag = false,
-		                   const int switchMalf = 0,
-		                   const bool switchCmd = true);
+                           const int switchMalf = 0,
+                           const bool switchCmd = true);
 
         /// @brief Fet Switch Input Data Initialize
          void init (const bool switchMalfFlag,
- 		            const int switchMalf,
- 		            const bool switchCmd );
+                     const int switchMalf,
+                     const bool switchCmd );
 
         /// @brief Default Fet Switch Input DataDestructor
         virtual ~FetSwitchInputData();
@@ -132,7 +132,7 @@ class FetSwitch
         FetSwitch();
         virtual ~FetSwitch();
         void initialize(const FetSwitchConfigData& configData,
-        		        const FetSwitchInputData& inputData);
+                        const FetSwitchInputData& inputData);
         void updateSwitchState();
         void updateSwitchFlow(double current);
         double getCurrent();

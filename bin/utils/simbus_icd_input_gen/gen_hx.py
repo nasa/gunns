@@ -18,9 +18,9 @@ from argparse import *
 ### This allows this code to be used on either side of the heat exchanger. It does not check for appropriate variable names.
 ##############################################################################################################################################################
 def format_and_output_hx(vars):
-    
+
     #Test input call: python3 icdhelper.py -hx ihab sim_bus atcs_ihab itcs1CabHx ATCS_RATE IHabSubSystemsSimObject ihab_subsystems tcs.thermal.hx.cabinHx1 tcs.fluid.itcs1.CabHX CabHX 2 0
-    
+
     system = vars[0]
     bus = vars[1]
     subsystem = vars[2]
@@ -33,21 +33,21 @@ def format_and_output_hx(vars):
     fluidSideComponentName = vars[9]
     numSegs = int(vars[10])
     heatFluxIndex = vars[11]
-    
-    
-    # First, we will output fluxes 
+
+
+    # First, we will output fluxes
     outStr = ''
     for i in range(0,numSegs):
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Flux\tWRITE\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidSideName + '.mSegEnergyGain[' + i + ']\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Flux\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + thermalSideVarName + 'Seg' + i + '.mExternalHeatFlux[' + heatFluxIndex + ']\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
-    
+
     outStr += '\n'
-    
+
     #Next we will do temperatures
     for i in range(0,numSegs):
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Temp\tWRITE\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + thermalSideVarName + 'Seg' + i + '.mTemperature\tdouble\t(K)\t' + fluidSideComponentName + ' Segment ' + i + ' Temperature\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Temp\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidSideName + '.mSegTemperature[' + i + ']\tdouble\t(K)\t' + fluidSideComponentName + ' Segment ' + i + ' Temperature\n'
-    
+
     print(outStr)
 
 
@@ -56,9 +56,9 @@ def format_and_output_hx(vars):
 ### The rhx is assumed to be cross-flow.
 ############################################################################################################################################################################
 def format_and_output_rhx(vars):
-    
+
     #Test input call: python3 icdhelper.py -rhx ihab sim_bus atcs_ihab itcs1RegenHx ATCS_RATE IHabSubSystemsSimObject ihab_subsystems tcs.thermal.hx.cabinHx1 tcs.fluid.itcs1.regenHXCold tcs.fluid.itcs1.regenHXHot regenHX 2
-    
+
     system = vars[0]
     bus = vars[1]
     subsystem = vars[2]
@@ -71,26 +71,26 @@ def format_and_output_rhx(vars):
     fluidHotSideName = vars[9]
     fluidSideComponentName = vars[10]
     numSegs = int(vars[11])
-    
+
     # By default
     j= numSegs -1-i
-    
-    # First, we will output fluxes 
+
+    # First, we will output fluxes
     outStr = ''
     for i in range(0,numSegs):
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'ColdFlux\tWRITE\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidColdSideName + '.mSegEnergyGain[' + i + ']\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'ColdFlux\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + thermalSideVarName + 'Seg' + i + '.mExternalHeatFlux[0]\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'HotFlux\tWRITE\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidHotSideName + '.mSegEnergyGain[' + j + ']\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'HotFlux\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + thermalSideVarName + 'Seg' + i + '.mExternalHeatFlux[1]\tdouble\t(W)\t' + fluidSideComponentName + ' Segment ' + i + ' Flux\n'
-    
+
     outStr += '\n'
-    
+
     #Next we will do temperatures
     for i in range(0,numSegs):
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Temp\tWRITE\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + thermalSideVarName + 'Seg' + i + '.mTemperature\tdouble\t(K)\t' + fluidSideComponentName + ' Segment ' + i + ' Temperature\n'
         outStr += 'xxxx\t' + system + '\t' + system + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Temp\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidColdSideName + '.mSegTemperature[' + i + ']\tdouble\t(K)\t' + fluidSideComponentName + ' Segment ' + i + ' Temperature\n'
         outStr += 'xxxx\t' + system + '\t' + bus + '\t' + subsystem + '\t' + variableNamePrefix + 'Seg' + i + 'Temp\tREAD\t' + rateName + '\t' + simObjectType + ' ' + simObjectName + '\t' + fluidHotSideName + '.mSegTemperature[' + j + ']\tdouble\t(K)\t' + fluidSideComponentName + ' Segment ' +i + ' Temperature\n'
-    
+
     print(outStr)
 
 
@@ -143,6 +143,6 @@ args = parser.parse_args()
 #Switch based on argument type. Add more types by adding an argument (see above) and the relative output string definition.
 if args.hx:
     format_and_output_hx(args.hx)
-    
+
 elif args.rhx:
     format_and_output_rhx(args.rhx)

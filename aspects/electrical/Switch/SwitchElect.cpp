@@ -157,10 +157,10 @@ void SwitchElect::updateState(const double timeStep __attribute__((unused))) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]   timeStep  (s)  time step
-/// @details  Method for saving dt 
+/// @details  Method for saving dt
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void SwitchElect::computeFlows(const double timeStep) {
-    mTimeStep = timeStep; 
+    mTimeStep = timeStep;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,9 +180,9 @@ GunnsBasicLink::SolutionResult SwitchElect::confirmSolutionAcceptable(
       updateFlux(mTimeStep, mFlux); // nothing really done here. Kept the same gunnsBasicConductor
       computePower();
       transportFlux();
-      
+
       mVoltage = mPotentialVector[0];
-      mCurrent = mFlux; 
+      mCurrent = mFlux;
       mSwitch.updateSwitchFlow(mCurrent, mCurrent,  mVoltage,  convergedStep, false);
 
       if (mSwitch.isWaitingToTrip() ){
@@ -275,4 +275,3 @@ double SwitchElect::getSwitchOutputVoltage() {
 double SwitchElect::getSwitchInputVoltage() {
     return mSwitch.getInputVolts();
 }
-

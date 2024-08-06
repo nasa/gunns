@@ -51,18 +51,18 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
     # get the file path from that string by stripping off the leading whitespace and #include
     for line in fsources:
         classpath = line.strip().lstrip('#include ').strip('"')
-        
+
         #skip if the extension is not hh. We're only testing C++ classes
         if classpath is not '':
             if 'hh' == os.path.basename(classpath).split('.')[1]:
                 classtype = os.path.basename(classpath).split('.')[0]
-            
+
                 #skip of the class type is in the class ignore list
                 if classtype not in class_ignore_list:
                     print("\n\n-=#=-=#=-=#=-=#=-=#=-")
                     print("Testing ", classpath, ":")
                     testtype(classpath)
-            
+
 # Scan the output file for errors, output overall pass/fail
 outputfile = os.environ["GUNNS_HOME"]+"/sims/SIM_class_test_compile/test_all_output_errors"
 if os.path.isfile(outputfile):
@@ -78,7 +78,7 @@ else:
     print('test_all_output_errors file is missing!')
     print('TEST FAILED')
     sys.exit(1)
-    
+
 print("-=#=-=#=-=#=-=#=-=#=-")
 print('TEST PASSED')
 sys.exit(0)

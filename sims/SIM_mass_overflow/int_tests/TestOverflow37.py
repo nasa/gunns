@@ -30,7 +30,7 @@ class TestOverflow37(Test):
     total_mass_O2  = 0.0
     total_mass_H2O = 0.0
     total_mass_WATER = 0.0
-    total_mass_ICE = 0.0 
+    total_mass_ICE = 0.0
 
     def __init__(self, testName, testStartMessage, testFinishMessage):
        """ Class constructor that overrides its parent class constructor"""
@@ -76,7 +76,7 @@ class TestOverflow37(Test):
        final_total_mass     = 0.0
        final_total_mass_H2O = 0.0
        final_total_mass_WATER = 0.0
-       final_total_mass_vaporization = 0.0 
+       final_total_mass_vaporization = 0.0
 
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
@@ -105,7 +105,7 @@ class TestOverflow37(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid37.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid37.netNodes[node]
     # Getter for node fluid
@@ -124,4 +124,3 @@ class TestOverflow37(Test):
     def accumFluids(self):
         return [massOverflow.fluid37.accum0.getInternalFluid(),
                 massOverflow.fluid37.accum2.getInternalFluid()]
-

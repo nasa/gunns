@@ -51,11 +51,11 @@ class TestOverflow34(Test):
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
           enthalpy = mass * self.nodeEnthalpy(node)
-          mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")         
+          mass_WATER = mass * self.nodeMassFraction(node, "GUNNS_WATER")
 
           self.total_mass     = self.total_mass     + mass
           self.total_enthalpy = self.total_enthalpy + enthalpy
-          self.total_mass_WATER = self.total_mass_WATER + mass_WATER 
+          self.total_mass_WATER = self.total_mass_WATER + mass_WATER
 
        for fluid in self.accumFluids():
           self.total_mass     = self.total_mass + fluid.getMass()
@@ -98,7 +98,7 @@ class TestOverflow34(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid34.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid34.netNodes[node]
     # Getter for node fluid
@@ -117,4 +117,3 @@ class TestOverflow34(Test):
     def accumFluids(self):
         return [massOverflow.fluid34.accum0.getInternalFluid(),
                 massOverflow.fluid34.accum2.getInternalFluid()]
-

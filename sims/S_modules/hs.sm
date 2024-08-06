@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 //=============================================================================
 // SIM_OBJECT: hs
 // This sim object creates a manager for the Health and Status messaging system
@@ -23,7 +23,7 @@
 //##include <iostream>
 //##include "simulation/hs/TsHsMsg.hh"
 
-class HsSimObject : public Trick::SimObject 
+class HsSimObject : public Trick::SimObject
 {
 public:
 

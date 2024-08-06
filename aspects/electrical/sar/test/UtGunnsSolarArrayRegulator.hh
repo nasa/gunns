@@ -52,7 +52,7 @@ class UtGunnsSolarArrayRegulator: public CppUnit::TestFixture
             VACUUM = 2,
             N_NODES = 3
         };
-        
+
         UtGunnsSolarArrayRegulator();
         virtual ~UtGunnsSolarArrayRegulator();
         void tearDown();

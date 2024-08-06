@@ -41,8 +41,8 @@
 /// @details  Constructs the FetSwitchElect Configuration data
 /////////////////////////////////////////////////////////////////////////////////////////////////
 FetSwitchElectConfigData::FetSwitchElectConfigData( const std::string name,
-		                                    GunnsNodeList*   nodes,
-		                                    const FetSwitchConfigData& config)
+                                                    GunnsNodeList*   nodes,
+                                                    const FetSwitchConfigData& config)
     :
     GunnsBasicLinkConfigData(name, nodes),
     mSwitchConfigData (config)
@@ -103,7 +103,7 @@ FetSwitchElect::~FetSwitchElect() {
 
 
 void FetSwitchElect::initialize(const FetSwitchElectConfigData& configData,
-	                         const FetSwitchElectInputData& inputData,
+                                 const FetSwitchElectInputData& inputData,
                                  std::vector<GunnsBasicLink*>&   networkLinks,
                                  const int  port0,
                                  const int  port1){
@@ -194,8 +194,3 @@ GunnsBasicLink::SolutionResult FetSwitchElect::confirmSolutionAcceptable(const i
 
     return result;
 }
-
-
-
-
-

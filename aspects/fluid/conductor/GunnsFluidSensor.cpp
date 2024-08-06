@@ -162,7 +162,7 @@ void GunnsFluidSensor::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSensor::transportFlows(const double dt)
 {
-    GunnsFluidConductor::transportFlows(dt); 
+    GunnsFluidConductor::transportFlows(dt);
     updateSensedValues();
 }
 

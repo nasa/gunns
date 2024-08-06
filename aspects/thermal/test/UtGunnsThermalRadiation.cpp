@@ -57,7 +57,7 @@ void UtGunnsThermalRadiation::tearDown()
 void UtGunnsThermalRadiation::setUp()
 {
     /// - Declare the standard Gunns Link test data
-	tLinkName             = "Test Thermal Radiation";
+    tLinkName             = "Test Thermal Radiation";
     tNodeList.mNumNodes   = 2;
     tNodeList.mNodes      = tNodes;
     tDefaultConductivity  = 0.5;

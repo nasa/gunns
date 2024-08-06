@@ -239,7 +239,7 @@ void UtGunnsFluidSocket::testNominalInitialization()
     tArticle->mSystemConductance     = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEffectiveConductivity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSystemConductance,     DBL_EPSILON);
 

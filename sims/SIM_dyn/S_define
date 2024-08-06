@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 #define P_LOG P1
 #define DYN_RATE   0.01
 #define HS_RATE    1.0

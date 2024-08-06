@@ -130,10 +130,10 @@ void UtTsInterpolator::testTsBilinear()
     int n = 3;
 
     double Z[15] = {200, 400, 900,
-    		        1600, 2500, 2600,
-    		        2700, 2800, 2900,
-    		        3000, 3100, 3200,
-    		        3300, 3400, 3500};
+                    1600, 2500, 2600,
+                    2700, 2800, 2900,
+                    3000, 3100, 3200,
+                    3300, 3400, 3500};
     const double minX = +10;
     const double maxX = +50;
     const double minY = +11;
@@ -283,63 +283,63 @@ void UtTsInterpolator::testTsLinearException()
 
 void UtTsInterpolator::testTsBilinearException()
 {
-	std::cout << "\n Interpolator 4.1: Bilinear Unordered X Array Initialization Exception  ";
+    std::cout << "\n Interpolator 4.1: Bilinear Unordered X Array Initialization Exception  ";
 
-	double X[5] = {7, 2, 10, 50, 60};
-	double Y[3] = {11, 22, 33};
-	int m = 5;
-	int n = 3;
+    double X[5] = {7, 2, 10, 50, 60};
+    double Y[3] = {11, 22, 33};
+    int m = 5;
+    int n = 3;
 
-	double Z[15] = {200, 400, 900, 1600, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300,
-			3400, 3500};
-	double minX = -1000.0;
-	double maxX = +1000.0;
-	const double minY = -1000.0;
-	const double maxY = +1000.0;
+    double Z[15] = {200, 400, 900, 1600, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300,
+            3400, 3500};
+    double minX = -1000.0;
+    double maxX = +1000.0;
+    const double minY = -1000.0;
+    const double maxY = +1000.0;
 
-	// Unordered X array values decrease then increase
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	delete mArticle;
+    // Unordered X array values decrease then increase
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    delete mArticle;
 
-	// Unordered X array values are equal
-	X[1] = 10;
+    // Unordered X array values are equal
+    X[1] = 10;
 
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	delete mArticle;
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    delete mArticle;
 
-	// Unordered X array values increase then decrease
-	double X2[5] = {7, 8, 20, 10, 60};
-	double Y2[3] = {11, 22, 33};
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X2, Y2, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	std::cout << "... Pass.";
-	delete mArticle;
+    // Unordered X array values increase then decrease
+    double X2[5] = {7, 8, 20, 10, 60};
+    double Y2[3] = {11, 22, 33};
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X2, Y2, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    std::cout << "... Pass.";
+    delete mArticle;
 
-	std::cout << "\n Interpolator 4.2: Bilinear Y Array Initialization Exception            ";
+    std::cout << "\n Interpolator 4.2: Bilinear Y Array Initialization Exception            ";
 
-	double X3[5] = {10, 20, 30, 40, 50};
-	double Y3[3] = {22, 2, 11};
+    double X3[5] = {10, 20, 30, 40, 50};
+    double Y3[3] = {22, 2, 11};
 
-	// Unordered Y array values decrease then increase
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X3, Y3, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	delete mArticle;
+    // Unordered Y array values decrease then increase
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X3, Y3, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    delete mArticle;
 
-	// Unordered Y array values are equal
-	Y3[1] = 22;
+    // Unordered Y array values are equal
+    Y3[1] = 22;
 
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X3, Y3, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	delete mArticle;
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X3, Y3, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    delete mArticle;
 
-	// Unordered Y array values increase then decrease
-	double X4[5] = {10, 20, 30, 40, 50};
-	double Y4[3] = {11, 44, 33};
-	CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X4, Y4, Z, m, n, minX, maxX, minY, maxY),
-			TsInitializationException);
-	std::cout << "... Pass.";
+    // Unordered Y array values increase then decrease
+    double X4[5] = {10, 20, 30, 40, 50};
+    double Y4[3] = {11, 44, 33};
+    CPPUNIT_ASSERT_THROW(mArticle = new TsBilinearInterpolator(X4, Y4, Z, m, n, minX, maxX, minY, maxY),
+            TsInitializationException);
+    std::cout << "... Pass.";
     delete mArticle;
 
     std::cout << "\n Interpolator 4.3: Bilinear X Array Table Range Exception               ";
@@ -364,44 +364,44 @@ void UtTsInterpolator::testTsBilinearException()
 
 void UtTsInterpolator::testInvalidRangeExceptions()
 {
-	std::cout << "\n Interpolator 5:   Invalid Range Exceptions                             ";
+    std::cout << "\n Interpolator 5:   Invalid Range Exceptions                             ";
 
-	double X[5] = {100, 200, 300, 400, 600};
-	double Y[3] = {75, 600, 1100};
-	double x = 502;
-	double y = 25;
-	int m = 5;
-	int n = 3;
+    double X[5] = {100, 200, 300, 400, 600};
+    double Y[3] = {75, 600, 1100};
+    double x = 502;
+    double y = 25;
+    int m = 5;
+    int n = 3;
 
-	double Z[15] = {200, 400, 900,
-			1600, 2500, 2600,
-			2700, 2800, 2900,
-			3000, 3100, 3200,
-			3300, 3400, 3500};
-	double Z2[5] = {400,500,600,700,800};
+    double Z[15] = {200, 400, 900,
+            1600, 2500, 2600,
+            2700, 2800, 2900,
+            3000, 3100, 3200,
+            3300, 3400, 3500};
+    double Z2[5] = {400,500,600,700,800};
 
-	const double minX = +100.0;
-	const double maxX = +500.0;
-	const double minY = +75.0;
-	const double maxY = +500.0;
+    const double minX = +100.0;
+    const double maxX = +500.0;
+    const double minY = +75.0;
+    const double maxY = +500.0;
 
-	mArticle = new TsLinearInterpolator(X, Z2, m, minX, maxX);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x), TsOutOfBoundsException);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(-x), TsOutOfBoundsException);
-	delete mArticle;
+    mArticle = new TsLinearInterpolator(X, Z2, m, minX, maxX);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x), TsOutOfBoundsException);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(-x), TsOutOfBoundsException);
+    delete mArticle;
 
-	mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,y), TsOutOfBoundsException);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(-x,y), TsOutOfBoundsException);
-	delete mArticle;
-	x = 100;
-	y = 750;
+    mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,y), TsOutOfBoundsException);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(-x,y), TsOutOfBoundsException);
+    delete mArticle;
+    x = 100;
+    y = 750;
 
-	mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,y), TsOutOfBoundsException);
-	CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,-y), TsOutOfBoundsException);
+    mArticle = new TsBilinearInterpolator(X, Y, Z, m, n, minX, maxX, minY, maxY);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,y), TsOutOfBoundsException);
+    CPPUNIT_ASSERT_THROW(mArticle->getExceptional(x,-y), TsOutOfBoundsException);
 
-	std::cout << "... Pass";
+    std::cout << "... Pass";
 }
 
 void UtTsInterpolator::testEmptyConstructors()

@@ -133,9 +133,9 @@ ConstantPowerLoadInputData::~ConstantPowerLoadInputData()
 /// @details   Default Constant Power User Load Electrical Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ConstantPowerLoad::ConstantPowerLoad():
-		 UserLoadBase(),
-		 mPowerNormal(0.0),
-		 mPowerStandby(0.0)
+         UserLoadBase(),
+         mPowerNormal(0.0),
+         mPowerStandby(0.0)
 {
     // nothing to do
 }

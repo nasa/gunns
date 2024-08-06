@@ -129,7 +129,7 @@ void UtGunnsFluidSeparatorGas::setUp()
     tNodes[1].initialize("UtNode2", tFluidConfig);
     tNodes[0].getContent()->initialize(*tFluidConfig, *tFluidInput0);
     tNodes[1].getContent()->initialize(*tFluidConfig, *tFluidInput1);
-    
+
     tNodes[0].resetFlows();
     tNodes[1].resetFlows();
 
@@ -320,13 +320,13 @@ void UtGunnsFluidSeparatorGas::testNominalInitialization()
     tArticle->mSeparationRate   = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mLiquidMassError);
     CPPUNIT_ASSERT(0.0 == tArticle->mLiquidDeltaP);
     CPPUNIT_ASSERT(0.0 == tArticle->mRelativeHumidity);
     CPPUNIT_ASSERT(0.0 == tArticle->mSeparationRate);
-    
-    UT_PASS;    
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

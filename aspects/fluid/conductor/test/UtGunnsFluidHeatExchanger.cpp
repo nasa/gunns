@@ -451,12 +451,12 @@ void UtGunnsFluidHeatExchanger::testTemperatures()
     article.updateFluid(mTimeStep, mFlowRate);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(280.0,   article.getFluid()->getTemperature(), DBL_EPSILON);
 
-    ///@test      Outflow fluid temperature 
+    ///@test      Outflow fluid temperature
     mInputData->mInitialSegmentTemperature = 300.0;
     mNodes[0].getOutflow()->setTemperature(10.0);
     article.updateFluid(mTimeStep, mFlowRate);
     CPPUNIT_ASSERT(mNodes[0].getOutflow()->getTemperature()!= mNodes[0].getContent()->getTemperature());
-    double tempOutflow = article.mInternalFluid->getTemperature()-article.mDeltaTemperature; 
+    double tempOutflow = article.mInternalFluid->getTemperature()-article.mDeltaTemperature;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tempOutflow,mNodes[0].getOutflow()->getTemperature(),
                                                              DBL_EPSILON);
 

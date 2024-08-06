@@ -310,7 +310,7 @@ void GunnsElectIps::restartModel()
 /// @details  Called in Minor Step 1
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectIps::step(const double TimeStep) {
-    (void)TimeStep; // get rid of unused parameter compiler 
+    (void)TimeStep; // get rid of unused parameter compiler
     updateInputConductance();
     updateAdmittance();
 }
@@ -320,7 +320,7 @@ void GunnsElectIps::step(const double TimeStep) {
 /// @details  Called in minor steps greater than 1
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectIps::minorStep(const double TimeStep, const int minorStep) {
-    (void)minorStep; // get rid of unused parameter compiler 
+    (void)minorStep; // get rid of unused parameter compiler
     step(TimeStep);
 }
 
@@ -556,7 +556,7 @@ void GunnsElectIps::updateAdmittance(){
 /// @param  [in]  TimeStep  --  Time delta
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectIps::computeFlows(const double TimeStep) {
-    (void)TimeStep; // get rid of unused parameter compiler 
+    (void)TimeStep; // get rid of unused parameter compiler
     mVoltageSwitches = 0;
 
     /// - Drive base class flux and power terms.  Total power and current drawn by this IPS from all

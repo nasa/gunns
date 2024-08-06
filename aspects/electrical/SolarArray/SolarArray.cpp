@@ -27,23 +27,23 @@ PROGRAMMERS
 /// @param[in] name                  (--) Link name
 /// @param[in] nodes                 (--) Network nodes array
 /// @param[in] numSections           (--) Number of sections the array is split into
-/// @param[in] numString             (--) the number of strings per section                                           
-/// @param[in] numCells;                   (--) number of cells that this solar string has                                  
-/// @param[in]  blockingDiodeVoltageDrop; (V) the voltage drop across the diode at end of string                            
-/// @param[in]  bipassDiodeVoltageDrop;   (V) the voltage drop across each bipass diode.                                    
-/// @param[in]  bipassDiodeInterval;         (--) the number of cells per ever one bipass diode                               
-/// @param[in]  vocRef;                   (V) the open circuit voltage reference value.                                     
-/// @param[in]  vmpRef;                   (V) the voltage max power reference value.                                        
-/// @param[in]  vocTempCoefficient;       (--) the open circuit voltage coefficient. see page (XYZ) of (XYZ) document       
-/// @param[in]  iscRef;                   (amp) the source current reference value.                                         
-/// @param[in]  impRef;                   (amp) the max power current reference value.                                      
-/// @param[in]  iscTempCoefficient;       (--) the source current temperature coefficient. see page (XYZ) of (XYZ) document 
-/// @param[in]  isat;                     (amp) the saturation current of the cell. aka "Dark Current"                      
-/// @param[in]  temperatureRef;           (K)  the temperature at which the reference values were recorded.                 
-/// @param[in]  cellDegradation;          (--) the percent amount to degrade cell by. This accounts for age, damage, etc    
-/// @param[in]  rs;                       (ohm) the cell series resistance                                                  
-/// @param[in]  rsh;                      (ohm) the cell shunt resistance                                                  
-/// @param[in]  vCrit;                    (--) a value multiplier for voc, after Vcrit*mVoc, model  apply damping to dV     
+/// @param[in] numString             (--) the number of strings per section
+/// @param[in] numCells;                   (--) number of cells that this solar string has
+/// @param[in]  blockingDiodeVoltageDrop; (V) the voltage drop across the diode at end of string
+/// @param[in]  bipassDiodeVoltageDrop;   (V) the voltage drop across each bipass diode.
+/// @param[in]  bipassDiodeInterval;         (--) the number of cells per ever one bipass diode
+/// @param[in]  vocRef;                   (V) the open circuit voltage reference value.
+/// @param[in]  vmpRef;                   (V) the voltage max power reference value.
+/// @param[in]  vocTempCoefficient;       (--) the open circuit voltage coefficient. see page (XYZ) of (XYZ) document
+/// @param[in]  iscRef;                   (amp) the source current reference value.
+/// @param[in]  impRef;                   (amp) the max power current reference value.
+/// @param[in]  iscTempCoefficient;       (--) the source current temperature coefficient. see page (XYZ) of (XYZ) document
+/// @param[in]  isat;                     (amp) the saturation current of the cell. aka "Dark Current"
+/// @param[in]  temperatureRef;           (K)  the temperature at which the reference values were recorded.
+/// @param[in]  cellDegradation;          (--) the percent amount to degrade cell by. This accounts for age, damage, etc
+/// @param[in]  rs;                       (ohm) the cell series resistance
+/// @param[in]  rsh;                      (ohm) the cell shunt resistance
+/// @param[in]  vCrit;                    (--) a value multiplier for voc, after Vcrit*mVoc, model  apply damping to dV
 /// @param[in]  backSideIscReduction;     (--) The percentage Isc drops by when the cell is back lit onl. Ranges from 0 to 1
 /// @details  Constructs the SolarArray Config data
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ SolarArrayConfigData::SolarArrayConfigData(const std::string name,
         const double cellEfficiency           ,
         const double cellArea)
      :
-    GunnsBasicLinkConfigData(name, nodes), 
+    GunnsBasicLinkConfigData(name, nodes),
     mNumSections(numSections),
     mSectionArea(0.0),
     mNumStrings(numStrings),
@@ -94,22 +94,22 @@ SolarArrayConfigData::SolarArrayConfigData(const std::string name,
     mBackSideIscReduction(backSideIscReduction),
     mCellEfficiency(cellEfficiency),
     mCellArea(cellArea),
-    mSectionConfigData(SolarSectionConfigData(mNumStrings, SolarStringConfigData(mNumCells, 
-                                                              mBlockingDiodeVoltageDrop , 
-                                                              mBipassDiodeVoltageDrop ,  
-                                                              mBipassDiodeInterval , 
-                                                              PVCellCompanionModelConfigData(mVocRef , 
-                                                                                             mVmpRef , 
-                                                                                             mVocTempCoefficient , 
+    mSectionConfigData(SolarSectionConfigData(mNumStrings, SolarStringConfigData(mNumCells,
+                                                              mBlockingDiodeVoltageDrop ,
+                                                              mBipassDiodeVoltageDrop ,
+                                                              mBipassDiodeInterval ,
+                                                              PVCellCompanionModelConfigData(mVocRef ,
+                                                                                             mVmpRef ,
+                                                                                             mVocTempCoefficient ,
                                                                                              mIscRef ,
-                                                                                             mImpRef , 
-                                                                                             mIscTempCoefficient , 
-                                                                                             mIsat , 
-                                                                                             mTemperatureRef , 
-                                                                                             mCellDegradation,  
-                                                                                             mRs, 
-                                                                                             mRsh, 
-                                                                                             mVCrit ,  
+                                                                                             mImpRef ,
+                                                                                             mIscTempCoefficient ,
+                                                                                             mIsat ,
+                                                                                             mTemperatureRef ,
+                                                                                             mCellDegradation,
+                                                                                             mRs,
+                                                                                             mRsh,
+                                                                                             mVCrit ,
                                                                                              mBackSideIscReduction,
                                                                                              mCellEfficiency,
                                                                                              mCellArea))))
@@ -145,22 +145,22 @@ SolarArrayConfigData::SolarArrayConfigData(const SolarArrayConfigData& that):
     mBackSideIscReduction(that.mBackSideIscReduction),
     mCellEfficiency(that.mCellEfficiency),
     mCellArea(that.mCellArea),
-    mSectionConfigData(SolarSectionConfigData(that.mNumStrings, SolarStringConfigData(that.mNumCells, 
-                                                              that.mBlockingDiodeVoltageDrop , 
-                                                              that.mBipassDiodeVoltageDrop ,  
-                                                              that.mBipassDiodeInterval , 
-                                                              PVCellCompanionModelConfigData(that.mVocRef , 
-                                                                                             that.mVmpRef , 
-                                                                                             that.mVocTempCoefficient , 
+    mSectionConfigData(SolarSectionConfigData(that.mNumStrings, SolarStringConfigData(that.mNumCells,
+                                                              that.mBlockingDiodeVoltageDrop ,
+                                                              that.mBipassDiodeVoltageDrop ,
+                                                              that.mBipassDiodeInterval ,
+                                                              PVCellCompanionModelConfigData(that.mVocRef ,
+                                                                                             that.mVmpRef ,
+                                                                                             that.mVocTempCoefficient ,
                                                                                              that.mIscRef ,
-                                                                                             that.mImpRef , 
-                                                                                             that.mIscTempCoefficient , 
-                                                                                             that.mIsat , 
-                                                                                             that.mTemperatureRef , 
-                                                                                             that.mCellDegradation,  
-                                                                                             that.mRs, 
-                                                                                             that.mRsh, 
-                                                                                             that.mVCrit ,  
+                                                                                             that.mImpRef ,
+                                                                                             that.mIscTempCoefficient ,
+                                                                                             that.mIsat ,
+                                                                                             that.mTemperatureRef ,
+                                                                                             that.mCellDegradation,
+                                                                                             that.mRs,
+                                                                                             that.mRsh,
+                                                                                             that.mVCrit ,
                                                                                              that.mBackSideIscReduction))))
 {
     //Nothing to do
@@ -169,7 +169,7 @@ SolarArrayConfigData::SolarArrayConfigData(const SolarArrayConfigData& that):
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Destructs the SolarArray Config Data Object
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-SolarArrayConfigData::~SolarArrayConfigData() 
+SolarArrayConfigData::~SolarArrayConfigData()
 {
     //Nothing to do
 }
@@ -236,7 +236,7 @@ SolarArrayInputData::SolarArrayInputData(const SolarArrayInputData& that)
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Destructs the SolarArray Input Data Object
 ///////////////////////////////////////////////////////////////////////////////////////////////
-SolarArrayInputData::~SolarArrayInputData() 
+SolarArrayInputData::~SolarArrayInputData()
 {
     //Nothing to do
 }
@@ -449,7 +449,7 @@ void SolarArray::step(const double dt)
 
     mArrayVoltage = std::min(mMaxPossibleVoltage, mArrayVoltage);     // keep the array voltage from being more than the max the array can generate
     mArrayCurrent = std::max(0.0, mArrayCurrent);                     // keep the array putting out current only
-    
+
     mPercentInsolation = 0.0;
     if (mIsInLeo) {
         if (lMaxPossibleCurrent >= DBL_EPSILON){
@@ -666,7 +666,7 @@ void SolarArray::fakeOrbit(const double dt) {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Function to dynamically calculate the cell reference current so that the
-///           cells produce current that is actually a function of the solar flux 
+///           cells produce current that is actually a function of the solar flux
 ///           magnitude, cell area, and cell performance.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void SolarArray::updateNonLeoArray()
@@ -678,7 +678,7 @@ void SolarArray::updateNonLeoArray()
             if(mSections[secNum].mSolarPowerOnSection < mMinimumSolarPower){
                 mSections[secNum].mStrings[stringNum].mRefCell.setIscRef(0.0);
             }else{
-                // Cell reference current calculation 
+                // Cell reference current calculation
                 double refCellEfficiency = mSections[secNum].mStrings[stringNum].mRefCell.getCellEfficiency();
                 double refCellVoc = mSections[secNum].mStrings[stringNum].mRefCell.getVoc();
                 double refCellArea = mSections[secNum].mStrings[stringNum].mRefCell.getCellArea();

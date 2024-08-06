@@ -73,7 +73,7 @@ jobs:
         do
           echo "${added_modified_file}" >> class_test_list.py
         done
-        # This keeps in the repo as an existing, but empty file, so cat won't error if 
+        # This keeps in the repo as an existing, but empty file, so cat won't error if
         # above doesn't add any files
         echo "class_test_list.py:"
         cat class_test_list.py
@@ -88,4 +88,3 @@ jobs:
         export TS_MODELS_HOME="${GUNNS_HOME}/gunns-ts-models"
         cd sims/SIM_class_test_compile
         python3 ./test_list.py
-        

@@ -19,7 +19,7 @@ unset allOneLine;
 unset ADDR;
 
 # Global env exclusion list -- these will be not absorbed from tcsh env
-included=1; 
+included=1;
 excludeList[0]='module=';
 excludeList[1]='DISPLAY';
 excludeList[2]='TERM';
@@ -50,7 +50,7 @@ function isNotInExcludeList {
            break
        fi
     done
-} 
+}
 # Get the full environment from a tcsh shell that sourced the bin/cshrc, then
 # add quotes to the env lines so that var=bleh blah becomes var="bleh blah"
 # and replace every line ending with a ? as a delimeter
@@ -79,7 +79,7 @@ for line in "${ADDR[@]}"; do
        if [[ $included == 1 ]]; then
           #echo "STORING line $line"
           bashExportLines[j]="export $line"
-          j=`expr $j + 1` 
+          j=`expr $j + 1`
        fi
    fi
 

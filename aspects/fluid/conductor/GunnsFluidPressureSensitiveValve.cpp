@@ -526,7 +526,7 @@ void GunnsFluidPressureSensitiveValve::computeFlows(const double dt __attribute_
 ///
 /// @return         void
 ///
-/// @details        Updates final flow properties across this GUNNS Fluid Pressure Sensitive Valve   
+/// @details        Updates final flow properties across this GUNNS Fluid Pressure Sensitive Valve
 ///                 Link and transports fluid from source to sink nodes
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidPressureSensitiveValve::transportFlows(const double dt)

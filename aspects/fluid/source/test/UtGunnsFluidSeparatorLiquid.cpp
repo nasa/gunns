@@ -301,13 +301,13 @@ void UtGunnsFluidSeparatorLiquid::testNominalInitialization()
     article.mTuneDeltaT            = 1.0;
 
     article.restartModel();
-    
+
     CPPUNIT_ASSERT(0.0 == article.mEffectiveConductivity);
     CPPUNIT_ASSERT(0.0 == article.mSystemConductance);
     CPPUNIT_ASSERT(0.0 == article.mTuneMassFlow);
     CPPUNIT_ASSERT(0.0 == article.mTuneVolFlow);
     CPPUNIT_ASSERT(0.0 == article.mTuneDeltaT);
-   
+
     UT_PASS;
 }
 

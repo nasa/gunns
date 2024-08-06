@@ -132,7 +132,7 @@ class GunnsFluidPhaseChangeConductor : public  GunnsFluidConductor
         double                     mEfficiency;      /**<    (--) trick_chkpnt_io(**) Optional phase change heat efficiency. */
         double                     mWallHeatFlux;    /**<    (W)                      Phase change heat flux from fluid to wall. */
         double                     mWallTemperature; /**<    (W)                      Wall temperature. */
-        
+
         /// @brief  Validates the initialization inputs of this Phase Change Conductor.
         void validate(const GunnsFluidPhaseChangeConductorConfigData& configData,
                       const GunnsFluidPhaseChangeConductorInputData&  inputData) const;

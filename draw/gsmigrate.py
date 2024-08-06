@@ -105,7 +105,7 @@ def getStyle(shape, key, default):
         if key == style.split('=')[0]:
             return style.split('=')[1]
     return default
-    
+
 # Returns a string with the shape's mxCell's style value, with the
 # given key's value replaced with the given value.  If the key wasn't
 # in the source style, it is added along with the value to the end.
@@ -354,7 +354,7 @@ def findGsCell(elem, name):
         if name == cell.attrib['N']:
             return cell
     return None
-    
+
 # Searches the XML element (usually from Visio) for a Cell element with N attribute
 # equal to the given name, and returns that Cell element's 'V' attribute value.
 # Returns None if no match is found.
@@ -363,7 +363,7 @@ def findGsCellValue(elem, name):
     if cell is not None:
         return cell.attrib['V']
     return None
-    
+
 # Searches the XML element (usually a Shape element from Visio) for a sub-element
 # named Section with an attribute N='Property'.  If found, we return all 'Row'
 # sub-elements of that Section.  If not found, return None.
@@ -426,12 +426,12 @@ class GsShapeGeometry:
     a     = 0.0  # angle
     flipX = False
     flipY = False
-    
+
     # Inits this GsShapeGeometry with values from the given GunnShow shape.
     def __init__(self, shape):
         self.x = float(findGsCellValue(shape, 'PinX'))
         self.y = float(findGsCellValue(shape, 'PinY'))
-        
+
         try:
             self.w = float(findGsCellValue(shape, 'Width'))
         except TypeError:
@@ -442,7 +442,7 @@ class GsShapeGeometry:
                 self.w = float(findGsCellValue(shape, 'TxtWidth')) / 10.0
             except TypeError:
                 self.w = 0.0
-            
+
         try:
             self.h = float(findGsCellValue(shape, 'Height'))
         except TypeError:
@@ -452,22 +452,22 @@ class GsShapeGeometry:
                 self.h = float(findGsCellValue(shape, 'TxtHeight'))
             except TypeError:
                 self.h = 0.0
-                
+
         try:
             self.a = math.degrees(-float(findGsCellValue(shape, 'Angle')))
         except TypeError:
             self.a = 0.0
-            
+
         try:
             self.flipX = bool(int(findGsCellValue(shape, 'FlipX')))
         except TypeError:
             self.flipX = False
-            
+
         try:
             self.flipY = bool(int(findGsCellValue(shape, 'FlipY')))
         except TypeError:
             self.flipY = False
-            
+
         return
 
 # Returns the value of the GS property name from the given GD shape, or None if not found.
@@ -601,7 +601,7 @@ for shape in gs_shapes:
 
         # Shape properties
         props = findGsShapeProperties(shape)
-        
+
         # Net Config
         if layers['Title'] == layer_id:
             name   = ''
@@ -612,7 +612,7 @@ for shape in gs_shapes:
                 elif prop.attrib['N'].startswith('CD_') and 'Del' not in prop.attrib:
                     config.append(findGsCellValue(prop, 'Value'))
             netConfig.append((name, config))
-            
+
         # Net Nodes
         elif layers['Node'] == layer_id:
             gs_id  = shape.attrib['ID']
@@ -655,7 +655,7 @@ for shape in gs_shapes:
             config     = []
             propsName  = []
             geom       = GsShapeGeometry(shape)
-            
+
             # Determine the link instance name.
             instanceName = findGsInstanceName(props)
             if instanceName is None:
@@ -672,7 +672,7 @@ for shape in gs_shapes:
                         subtype = os.path.splitext(value)[0]
                         codePath, linkClass = os.path.split(subtype)
                         break
-                    
+
             # Some links don't have a ModelPath property or a Value inside ModelPath.  In this case we have
             # to determine the link class from the GunnShow documentation hyperlink, and we'll figure out the
             # source code path (subtype) later.  Find Shape/Section with N="Actions", then Row N="Docs", then Cell N="Menu".
@@ -690,7 +690,7 @@ for shape in gs_shapes:
             if linkClass is None:
                 sys.exit(console.abort('link name ' + instanceName + ', ID ' + str(gs_id) + ', class cannot be determined.'))
             propsName.append('ModelPath')
-                    
+
             # Make a copy of the GunnsDraw master shape for this link class.
             # We can't look for the subtype because we don't always have the subtype from the Visio data.
             gd_masterShape = copy.deepcopy(shapeLibs.getLinkClassShapeMaster(allShapeMasters, linkClass))
@@ -702,9 +702,9 @@ for shape in gs_shapes:
 
             # Copy config & input data values from the GunnShow properties into the GunnsDraw shape.
             searchCopyConfigInputData(props, gd_masterShape)
-            
+
             netLinks.append((instanceName, subtype, geom.x, geom.y, geom.w, geom.h, geom.a, geom.flipX, geom.flipY, gd_masterShape, gs_id))
-            
+
             # Special case for jumper as they're on their own layer, and we need to save their 'plug type' values for later.
             # TODO upgrade to handle custom jumper/plug links with more or less than 2 plugs.
             if 'Jumper' in layers and layers['Jumper'] == layer_id:
@@ -753,7 +753,7 @@ for shape in gs_shapes:
             internal     = 'False'
             constituents = []
             propsName    = []
-            
+
             # Determine the instance name.
             instanceName = findGsInstanceName(props)
             if instanceName is None:
@@ -763,7 +763,7 @@ for shape in gs_shapes:
             if instanceName is None:
                 sys.exit(console.abort('fluid config ID ' + str(gs_id) + ', instance name cannot be determined.'))
             propsName.append('InstanceName')
- 
+
             for prop in props:
                 # Ignore duplicated properties with names that we've already processed.
                 if prop.attrib['N'] not in propsName:
@@ -793,7 +793,7 @@ for shape in gs_shapes:
             if instanceName is None:
                 sys.exit(console.abort('fluid state ID ' + str(gs_id) + ', instance name cannot be determined.'))
             propsName.append('InstanceName')
- 
+
             for prop in props:
                 # Ignore duplicated properties with names that we've already processed.
                 if prop.attrib['N'] not in propsName:
@@ -856,7 +856,7 @@ for shape in gs_shapes:
             inputData  = []
             args       = []
             propsName  = []
-            
+
             # Determine the instance name.
             instanceName = findGsInstanceName(props)
             if instanceName is None:
@@ -1001,7 +1001,7 @@ for shape in gs_shapes:
             halignDict = {'0':'left', '1':'center', '2':'right', '3':'left'}
             valign = valignDict['1']
             halign = halignDict['1']
-            
+
             sections = shape.findall('Section')
             for section in sections:
                 if 'Paragraph' == section.attrib['N']:
@@ -1079,7 +1079,7 @@ if gs_fluid:
     nodeSubtype = 'Fluid'
 else:
     nodeSubtype = 'Basic'
-    
+
 # These dictionaries map the GunnShow Shape ID with our GunnsDraw object XML elements
 nodeIdMap = {}
 linkIdMap = {}
@@ -1195,7 +1195,7 @@ for link in netLinks:
     mxcell_attr['style'] = setStyle(linkShape, 'flipH', str(int(flipX)))
     mxcell_attr['style'] = setStyle(linkShape, 'flipV', str(int(flipY)))
     # location
-    gd_x = -0.5 * float(mxcellgeom_attr['width']) + link[2] * zoom 
+    gd_x = -0.5 * float(mxcellgeom_attr['width']) + link[2] * zoom
     gd_y = -0.5 * float(mxcellgeom_attr['height']) + (gs_PageHeight - link[3]) * zoom
     if migrate_map:
         # Rotate the bias by the total rotation of the link.
@@ -1246,7 +1246,7 @@ for shape in netConnectors:
         # Ignore a floating connector that has the same begin & end point, continue with next connector.
         print('    ' + console.warn('ignored connector ID ' + str(shape_id) + ', it has same begin & end points in GunnShow drawing near (' + str(int(gs_endX/0.03937)) + ', ' + str(int(gs_endY/0.03937)) + ').'))
         continue
-         
+
     gd_beginXY = [zoom * gs_beginX, zoom * (gs_PageHeight - gs_beginY)]
     gd_endXY   = [zoom * gs_endX,   zoom * (gs_PageHeight - gs_endY)]
     # loop over the gs_connects, find them what have 'FromSheet' matching this shape's gs_id
@@ -1297,7 +1297,7 @@ for shape in netConnectors:
     if link is None:
         print('    ' + console.warn('ignored connector ID ' + shape_id + ' between coordinates (' + str(int(gs_endX/0.03937)) + ', ' + str(int(gs_endY/0.03937)) + ') and (' + str(int(gs_beginX/0.03937)) + ', ' + str(int(gs_beginY/0.03937)) + '), has no link connected.'))
         continue
-        
+
     if nodeBegins:
         node_end = 'source'
         link_end = 'target'
@@ -1479,7 +1479,7 @@ for shape in netConnectors:
         mxcell_attr['style'] = setStyle(portShape, 'exitX', str(exitX))
     if exitY is not None:
         mxcell_attr['style'] = setStyle(portShape, 'exitY', str(exitY))
-    
+
     # Omit the port from the drawing if it's connected to Ground and not a required port of the link.
     if ground is not None and str(portNum) not in link.find('gunns').attrib['reqPorts'].split(','):
         pass
@@ -1641,5 +1641,5 @@ print('  ...complete!')
 if not options.keepVisio:
     shutil.rmtree(outputPath)
     print('Deleted working folder ' + outputPath + '/.')
-    
+
 quit();

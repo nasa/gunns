@@ -369,7 +369,7 @@ void PowerBusElect::step(const double dt)
 /// @details  Method for updating the link for the network - non-linear link
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void PowerBusElect::minorStep(const double dt, const int minorStep __attribute__((unused))) {
-	step(dt);
+    step(dt);
 }
 
 
@@ -379,7 +379,7 @@ void PowerBusElect::minorStep(const double dt, const int minorStep __attribute__
 /// @details  Method for computing the flows across the link
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
-	mBusVoltage = mPotentialVector[0];
+    mBusVoltage = mPotentialVector[0];
     mFlux = mAdmittanceMatrix[0] * mBusVoltage;
 
     // use the total current to figure out the power used for all the device
@@ -388,7 +388,7 @@ void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
 
     //transport flux method for a one port link
     if (mFlux > 0.0 && mNodeMap[0] != getGroundNodeIndex()) {
-    	mNodes[0]->collectOutflux(mFlux);
+        mNodes[0]->collectOutflux(mFlux);
     } //else if (mNodeMap[0] == getGroundNodeIndex()){
 //        std::cout<<"PowerBusElect::computeFlows - node is connected to ground" << std::endl;
  //   }

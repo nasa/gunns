@@ -66,7 +66,7 @@ void UtGunnsThermalPhaseChangeBattery::tearDown()
 void UtGunnsThermalPhaseChangeBattery::setUp()
 {
     /// - Declare the standard Gunns Link test data.
-	tName                          = "tArticle";
+    tName                          = "tArticle";
     tNodeList.mNumNodes            = 2;
     tNodeList.mNodes               = tNodes;
     tPort0                         = 0;

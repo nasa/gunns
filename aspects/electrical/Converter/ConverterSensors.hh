@@ -21,7 +21,7 @@
 
  LIBRARY DEPENDENCY:
  ((ConverterSensors.o))
- 
+
  PROGRAMMERS:
  ((Chetan Patel) (JETS) (May 2013) (Initial prototype)
   (Sheena Judson Miller) (JETS) (July 2013) (Added Sensor functionality)
@@ -123,7 +123,7 @@ class ConverterSensors : public Converter {
 
     void cmdConverterOn(const bool converterOn);
 
-    /// @brief Method to set converter to be on/off. 
+    /// @brief Method to set converter to be on/off.
     void setConverterOn(const bool converterOn);
 
     /// @brief Method to set output power supplied by the converter.

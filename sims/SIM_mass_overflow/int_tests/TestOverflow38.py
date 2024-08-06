@@ -53,12 +53,12 @@ class TestOverflow38(Test):
     def checkNodesInitState(self):
        source1_mass    = massOverflow.fluid38.sbound1.getFlowRate() * 0.0125
        source2_mass    = massOverflow.fluid38.sbound2.getFlowRate() * 0.0125
-       self.total_mass     = - (source1_mass + source2_mass) 
+       self.total_mass     = - (source1_mass + source2_mass)
        self.total_mass_N2  = - (source1_mass) * self.nodeMassFraction(1, "GUNNS_N2")
        self.total_mass_O2  = - (source2_mass) * self.nodeMassFraction(2, "GUNNS_O2")
        self.total_mass_H2O = - (source1_mass) * self.nodeMassFraction(1, "GUNNS_H2O")
        self.total_mass_CO2 = - (source2_mass) * self.nodeMassFraction(2, "GUNNS_CO2")
-        
+
        for node in range(0,self.getNumNodes()):
           mass     = self.nodeMass(node)
     #      enthalpy = mass * self.nodeEnthalpy(node)
@@ -79,7 +79,7 @@ class TestOverflow38(Test):
     def checkNodesFinalState(self):
        source1_mass    = massOverflow.fluid38.sbound1.getFlowRate() * 11.0
        source2_mass    = massOverflow.fluid38.sbound2.getFlowRate() * 11.0
-       final_total_mass     = - (source1_mass + source2_mass) 
+       final_total_mass     = - (source1_mass + source2_mass)
        final_total_mass_N2  = - (source1_mass) * self.nodeMassFraction(1, "GUNNS_N2")
        final_total_mass_O2  = - (source2_mass) * self.nodeMassFraction(2, "GUNNS_O2")
        final_total_mass_H2O = - (source1_mass) * self.nodeMassFraction(1, "GUNNS_H2O")
@@ -114,7 +114,7 @@ class TestOverflow38(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid38.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid38.netNodes[node]
     # Getter for node fluid
@@ -129,4 +129,3 @@ class TestOverflow38(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

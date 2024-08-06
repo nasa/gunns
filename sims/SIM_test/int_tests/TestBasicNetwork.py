@@ -80,17 +80,16 @@ class TestBasicNetwork(Test):
     def checkLogData(self):
         self.testLogEqual('testSimObject.elect.netSolver.mConvergenceFailCount', 0, 3.0, " Data log convergence fail count ::")
         self.testLogLT('testSimObject.elect.netSolver.mAvgDecompositionCount', 0.5, 3.0, " Data log average decomposition count ::")
-    
+
     def tearDownChecks(self):
         """Overrides base class, calls log data check functions"""
         self.checkLogData()
-        
+
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
-    # Getter for node 
+    # Getter for node
     def node(self,nodeName):
         return testSimObject.elect.netNodes[basicNodeNames[nodeName]]
     # Getter for node potential
     def nodePotential(self,nodeName):
         return self.node(nodeName).getPotential()
-

@@ -188,7 +188,7 @@ void GunnsFluidLink::restartModel()
 /// @param[in] toPort        (--) The port the fluid is transported into (default to 1)
 ///
 /// @details  This function adds the link's flow to the node's collection terms.
-///              
+///
 ///           Flow is defined positive going from the fromPort to the toPort, so a positive flow
 ///           will add mass to port 1 and remove from port 0 (using default port arguments).
 ///

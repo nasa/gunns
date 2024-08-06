@@ -1,5 +1,5 @@
 #ifndef UtGunnsElectIps_EXISTS
-#define	UtGunnsElectIps_EXISTS
+#define UtGunnsElectIps_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup UT_GUNNS_ELECT_IPS    Internal Power Supply Link Unit Test

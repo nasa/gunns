@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "sims/networks/fluid/test/distributedIf/DistributedIfFluid.hh"
 ##include "sims/networks/fluid/test/distributedIf/DistributedIfFluidLiquid.hh"
 ##include "sims/networks/fluid/test/distributedIf/DistributedIfFluidAccum.hh"
@@ -16,11 +16,11 @@ class TestDistributedIfSimObject: public Trick::SimObject
         DistributedIfFluidLiquid         fluidLiquid2;           /**< (--) GUNNS fluid network - liquid accumulator test (straight simbus connections) */
         DistributedIfFluidAccum          fluidLiquidAccum;       /**< (--) GUNNS fluid network - liquid accumulator test (uses lag buffer to simulate HLA) */
         DistributedIfFluidAccum          fluidLiquidAccum2;      /**< (--) GUNNS fluid network - liquid accumulator test (straight simbus connections) */
-	GunnsFluidDistributedIfLagBuffer lagBuffer;              /**< (--) Lag buffer */
-	GunnsFluidDistributedIfLagBuffer lagBufferLiquidSupply;  /**< (--) Lag buffer for liquid fluid network supply side */
-	GunnsFluidDistributedIfLagBuffer lagBufferLiquidReturn;  /**< (--) Lag buffer for liquid fluid network return side */
-	GunnsFluidDistributedIfLagBuffer lagBufferLiquidAccum;   /**< (--) Lag buffer for liquid fluid Accum network */
-        
+        GunnsFluidDistributedIfLagBuffer lagBuffer;              /**< (--) Lag buffer */
+        GunnsFluidDistributedIfLagBuffer lagBufferLiquidSupply;  /**< (--) Lag buffer for liquid fluid network supply side */
+        GunnsFluidDistributedIfLagBuffer lagBufferLiquidReturn;  /**< (--) Lag buffer for liquid fluid network return side */
+        GunnsFluidDistributedIfLagBuffer lagBufferLiquidAccum;   /**< (--) Lag buffer for liquid fluid Accum network */
+
         TestDistributedIfSimObject(int thread_id_fluid = 0)
             :
             threadIdFluid(thread_id_fluid),
@@ -32,8 +32,8 @@ class TestDistributedIfSimObject: public Trick::SimObject
             fluidLiquidAccum2("testDistributedIf.fluidLiquidAccum2"),
             lagBuffer(),
             lagBufferLiquidSupply(),
-	    lagBufferLiquidReturn(),
-	    lagBufferLiquidAccum()
+            lagBufferLiquidReturn(),
+            lagBufferLiquidAccum()
         {
             ("initialization")                       fluid.initialize();
             ("initialization")                       fluid2.initialize();
@@ -62,9 +62,9 @@ class TestDistributedIfSimObject: public Trick::SimObject
             CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquidAccum.update(ECLSS_LO);
             CthreadIdFluid   (ECLSS_LO, "scheduled") fluidLiquidAccum2.update(ECLSS_LO);
         }
-        
+
         virtual ~TestDistributedIfSimObject() { /* nothing to do */ }
-        
+
     private:
         // Copy constructor unavailable since declared private and not implemented.
         TestDistributedIfSimObject(const TestDistributedIfSimObject&);

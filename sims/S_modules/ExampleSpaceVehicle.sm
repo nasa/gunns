@@ -1,6 +1,6 @@
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 ##include "sims/networks/example_space_vehicle/ExamplePowerElect.hh"
 ##include "sims/networks/example_space_vehicle/ExamplePassiveThermal.hh"
 ##include "sims/networks/example_space_vehicle/ExampleHxThermal.hh"
@@ -52,9 +52,9 @@ class ExampleSpaceVehicleSimObject: public Trick::SimObject
             CthreadIdFluid  (MODELS_10HZ, "scheduled") coolantLoopFluid.update(MODELS_10HZ);
             CthreadIdElect  (MODELS_10HZ, "scheduled") signal.step(MODELS_10HZ);
         }
-        
+
         virtual ~ExampleSpaceVehicleSimObject() { /* nothing to do */ }
-        
+
     private:
         // Copy constructor unavailable since declared private and not implemented.
         ExampleSpaceVehicleSimObject(const ExampleSpaceVehicleSimObject&);

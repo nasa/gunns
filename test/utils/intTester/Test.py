@@ -77,7 +77,7 @@ class Test(object):
 
     def setLogFileName(self, filename):
         self.testLogFileName = filename
-        
+
     def loadLogFile(self):
         """Loads self.testLogData with a matrix (list of lists) by [column][row] of
            the log file's data, including log headers in the 0th row.  Does nothing,
@@ -98,7 +98,7 @@ class Test(object):
                         self.testLogData[col][row] = rows[row][col]
         except IOError:
             pass
-        
+
     def tearDownChecks(self):
         """Overidden by the derived test class to perform checks at the end of the test.  This is the best place
            to do tests on the logged data.  Logged data checks have some advantages over the normal Trick event-based
@@ -108,7 +108,7 @@ class Test(object):
            - test can check how a variable trends over time, instead of just checking the value at a specific time.
         """
         pass
-    
+
     def tearDown(self):
         """A test tear down function that is intended to be run after
            each test procedure has been run. This function should be used to
@@ -167,21 +167,21 @@ class Test(object):
 
     def getLogVariables(self):
         return self.testLogVariables
-    
+
     def lookupLogColumn(self, name):
         """Returns the column number containing data for the given variable name, else None."""
         for col in range(0, self.testLogDataNumCols):
             if name in self.testLogData[col][0]:
                  return col
         return None
-    
+
     def lookupLogRow(self, time):
         """Returns the first row with time value >= the given time, else None."""
         for row in range(1, self.testLogDataNumRows):
             if float(self.testLogData[0][row]) >= time:
                 return row
         return None
-    
+
     def lookupLog(self, name, time):
         """Combines lookupLogRow and lookupLogColumn and returns the data value as a float, else None."""
         col = self.lookupLogColumn(name)
@@ -189,7 +189,7 @@ class Test(object):
         if col is not None and row is not None:
             return self.testLogData[col][row]
         return None
-    
+
     # Set of test comparison operations that wrap Trick's built in unit-test
     # functionality. They output an xml test report that can be read by
     # CI. These require Trick13.

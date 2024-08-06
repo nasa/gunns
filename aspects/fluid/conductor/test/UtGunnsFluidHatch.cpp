@@ -409,7 +409,7 @@ void UtGunnsFluidHatch::testNominalInitialization()
     article.mConductiveHeatFlux = 1.0;
 
     article.restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,article.mDiffusiveFlowRate,DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,article.mConductiveHeatFlux,DBL_EPSILON);
 
@@ -1072,4 +1072,3 @@ void UtGunnsFluidHatch::testRestart()
 
     UT_PASS_LAST;
 }
-

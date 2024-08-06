@@ -33,7 +33,7 @@ FluidProperties::FluidType DrawFluidConfigData::netInternalFluidTypes[DrawFluidC
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the DrawFluid Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 DrawFluidConfigData::DrawFluidConfigData(const std::string& name, DrawFluid* network)
@@ -99,7 +99,7 @@ DrawFluid::DrawFluid(const std::string& name)
     netInput(this),
     netFluidProperties(),
     netInternalFluidConfig(&netFluidProperties, netConfig.netInternalFluidTypes, DrawFluidConfigData::N_INTERNAL_FLUIDS),
-    // Data Tables 
+    // Data Tables
     // Spotters
     tankVolumeMonitor(netNodeList, tank),
     // Links

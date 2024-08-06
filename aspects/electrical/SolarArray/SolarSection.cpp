@@ -49,7 +49,7 @@ SolarSectionConfigData::SolarSectionConfigData(const SolarSectionConfigData& tha
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Destructs the SolarSection Config Data Object
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-SolarSectionConfigData::~SolarSectionConfigData() 
+SolarSectionConfigData::~SolarSectionConfigData()
 {
     //Nothing to do
 }
@@ -82,7 +82,7 @@ SolarSectionInputData::SolarSectionInputData(const SolarSectionInputData& that):
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Destructs the SolarSection Input Data Object
 ///////////////////////////////////////////////////////////////////////////////////////////////
-SolarSectionInputData::~SolarSectionInputData() 
+SolarSectionInputData::~SolarSectionInputData()
 {
     //Nothing to do
 }
@@ -193,7 +193,7 @@ void SolarSection::update(const bool isMinor, const double sectionCurrent, const
     mGeq                 = 0.0;
     mIeq                 = 0.0;
 
-    //If both sides blocked, then the section is shadowed     
+    //If both sides blocked, then the section is shadowed
     if (!mZPlusLOSIsClear && !mZMinusLOSIsClear)
     {
         mIsShadowed = true;
@@ -269,13 +269,13 @@ void SolarSection::setSunIntensity(const double intensity) {
 double SolarSection::getRefCellVoc(){
   double highestVoc = 0.0;
   double voc = 0.0;
-  for (int i = 0; i < mNumStrings; i++){   
+  for (int i = 0; i < mNumStrings; i++){
      voc = mStrings[i].getRefCellVoc();
      if(voc > highestVoc){
          highestVoc = voc;
      }
   }
-  
+
   return highestVoc;
 }
 

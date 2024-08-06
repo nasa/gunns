@@ -626,12 +626,12 @@ void UtGunnsFluidEvaporation::testComputeFlows()
 
     /// - Confirm correct source port allocation with forward flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with forward flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
     tArticle->transportFlows(tTimeStep);
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mVolFlowRate,                        DBL_EPSILON);
 
     tArticle->step(tTimeStep);
@@ -640,7 +640,7 @@ void UtGunnsFluidEvaporation::testComputeFlows()
 
     /// - Confirm correct source port allocation with reverse flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with reverse flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
 
@@ -650,7 +650,7 @@ void UtGunnsFluidEvaporation::testComputeFlows()
 
     /// - Confirm correct source port allocation with no flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with no flow (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 
@@ -662,7 +662,7 @@ void UtGunnsFluidEvaporation::testComputeFlows()
     tArticle->transportFlows(tTimeStep);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getOutflow()->getTemperature(),tArticle->mEvaporationFluid->getTemperature(),DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowRate, tNodes[1].getInflux(), DBL_EPSILON); 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowRate, tNodes[1].getInflux(), DBL_EPSILON);
     double Fractions[3];
     Fractions[0] = 0.5;
     Fractions[1] = 0.5;
@@ -672,9 +672,9 @@ void UtGunnsFluidEvaporation::testComputeFlows()
     tNodes[0].getContent()->setMassAndMassFractions(0.0,tFractions);
     tArticle->mFlux = 1.0;
     tArticle->transportFlows(tTimeStep);
-    
+
     double tempLiqFlowRate = tArticle->mFlux * tNodes[0].getOutflow()->getMWeight();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempLiqFlowRate, tNodes[0].getOutflux(), DBL_EPSILON); 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempLiqFlowRate, tNodes[0].getOutflux(), DBL_EPSILON);
 
     std::cout << "... Pass";
 }

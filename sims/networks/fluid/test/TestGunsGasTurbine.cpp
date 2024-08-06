@@ -1,7 +1,7 @@
 
 /**
 @file
-@brief TestGunsGasTurbine Network implementation. 
+@brief TestGunsGasTurbine Network implementation.
 
  LIBRARY DEPENDENCY:
  (
@@ -32,7 +32,7 @@ FluidProperties::FluidType TestGunsGasTurbineConfigData::netInternalFluidTypes[T
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name             (--) Name of the network for H&S messages.
 /// @param[in] network          (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the TestGunsGasTurbine Network Config Data
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 TestGunsGasTurbineConfigData::TestGunsGasTurbineConfigData(const std::string& name, TestGunsGasTurbine* network)
@@ -47,7 +47,7 @@ TestGunsGasTurbineConfigData::TestGunsGasTurbineConfigData(const std::string& na
     LoadFan(name + ".LoadFan", &network->netNodeList,1, 0.5, 1.19, 4000, 0.375, -24.6528, 1167.09, -21093.2, 168250, -549729, 0, 0, 0.5, 1.0, 0.1, 0.1, 2E-6),
     stubBool(true)
 {
-	// Nothing to do
+    // Nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ TestGunsGasTurbineConfigData::TestGunsGasTurbineConfigData(const std::string& na
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 TestGunsGasTurbineConfigData::~TestGunsGasTurbineConfigData()
 {
-	// Nothing to do
+    // Nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ TestGunsGasTurbineInputData::TestGunsGasTurbineInputData(TestGunsGasTurbine* net
     LoadFan(false, 0.0, 0, 0, 300),
     stubBool(true)
 {
-	// Nothing to do
+    // Nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,13 +83,13 @@ TestGunsGasTurbineInputData::TestGunsGasTurbineInputData(TestGunsGasTurbine* net
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 TestGunsGasTurbineInputData::~TestGunsGasTurbineInputData()
 {
-	// Nothing to do
+    // Nothing to do
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name  (--)  Name of the network for H&S messages.
 ///
-/// @return   void  
+/// @return   void
 /// @details  Default constructs the TestGunsGasTurbine Network. All input and config objects are
 ///           constructed with argument values and the network, node and link objects are default
 ///           constructed.
@@ -128,15 +128,15 @@ TestGunsGasTurbine::~TestGunsGasTurbine()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name  (--) Name of the network for H&S messages.
 ///
-/// @return   void  
+/// @return   void
 ///
 /// @details  Initialization task for the TestGunsGasTurbine Network. The network, node,
-///           and link objects are initialized with their config and input data objects. 
+///           and link objects are initialized with their config and input data objects.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void TestGunsGasTurbine::initialize(const std::string& name)
 {
     try{
-	/// - Initialize the nodes. Catch any exceptions and terminate
+    /// - Initialize the nodes. Catch any exceptions and terminate
     netNodes[0].initialize(name + ".Node0", &netInternalFluidConfig, &netInput.DefaultFluidState);
     netNodes[1].initialize(name + ".Node1", &netInternalFluidConfig, &netInput.DefaultFluidState);
     netNodes[2].initialize(name + ".Node2", &netInternalFluidConfig, &netInput.DefaultFluidState);
@@ -157,10 +157,10 @@ void TestGunsGasTurbine::initialize(const std::string& name)
     Fan1.initialize(netConfig.Fan1, netInput.Fan1, netLinks, Node0, Node1);
     Heater.initialize(netConfig.Heater, netInput.Heater, netLinks, VACUUM, Node2);
     LoadFan.initialize(netConfig.LoadFan, netInput.LoadFan, netLinks, Node1, Node2);
-    
+
     /// - Initialize the spotters.
     DriveShaft.initialize(&netConfig.DriveShaft, &netInput.DriveShaft);
-   
+
         /// - Initialize the solver. Catch any exceptions and send a fatal H&S message.
         netSolver.initialize(netConfig.netSolver, netLinks);
 
@@ -183,7 +183,7 @@ void TestGunsGasTurbine::initialize(const std::string& name)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   void 
+/// @return   void
 ///
 /// @details  Restart task for the TestGunsGasTurbine Network.
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +192,7 @@ void TestGunsGasTurbine::restart()
     try {
         /// - Restart the solver.  Catch any exceptions and send a non-fatal H&S error.
         netSolver.restart();
-        
+
     } catch (const std::exception& e) {
         /// - Send an H&S error message and return on unexpected exception derived from std::exception.
         TsHsMsg msg(TS_HS_ERROR, "GUNNS");
@@ -209,7 +209,7 @@ void TestGunsGasTurbine::restart()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]   timeStep    (s)   Integration time step
 ///
-/// @return   void  
+/// @return   void
 ///
 /// @details  Update task for the TestGunsGasTurbine Network.
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,14 +219,14 @@ void TestGunsGasTurbine::update(const double timeStep)
 
         /// - Step network spotters prior to solver step.
         DriveShaft.stepPreSolver(timeStep);
- 
+
 
         /// - Step the solver.  Catch any exceptions and send a non-fatal H&S error.
         netSolver.step(timeStep);
 
         /// - Step network spotters after solver step.
         DriveShaft.stepPostSolver(timeStep);
- 
+
     } catch (const std::exception& e) {
         /// - Send an H&S error message and return on unexpected exception derived from std::exception.
         TsHsMsg msg(TS_HS_ERROR, "GUNNS");
@@ -239,4 +239,3 @@ void TestGunsGasTurbine::update(const double timeStep)
         hsSendMsg(msg);
     }
 }
-

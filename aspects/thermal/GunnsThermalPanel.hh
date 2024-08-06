@@ -181,7 +181,7 @@ class GunnsThermalPanel : public GunnsThermalSource
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsThermalPanel::getIncidentFlux() const
 {
-	return mIncidentHeatFluxPerArea;
+    return mIncidentHeatFluxPerArea;
 }
 
 #endif

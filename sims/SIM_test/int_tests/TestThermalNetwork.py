@@ -61,17 +61,16 @@ class TestThermalNetwork(Test):
     # Check log data function
     def checkLogData(self):
         self.testLogNear('testSimObject.thermal.netSolver.mAvgDecompositionCount', 1.0, 0.1, 3.0, " Data log average decomposition count ::")
-    
+
     def tearDownChecks(self):
         """Overrides base class, calls log data check functions"""
         self.checkLogData()
-        
+
     """ This is where you setup all your getters/setters for the parameters you need for int testing.
     """
-    # Getter for node 
+    # Getter for node
     def node(self,nodeName):
         return testSimObject.thermal.netNodes[thermalNodeNames[nodeName]]
     # Getter for node potential
     def nodePotential(self,nodeName):
         return self.node(nodeName).getPotential()
-

@@ -78,7 +78,7 @@ class UtGunnsResistiveLoad: public CppUnit::TestFixture
         /// --     Link Electrical Efficiency
         double                         mElectricalEfficiency;
 
-        /// --     Resistive Load Under Voltage 
+        /// --     Resistive Load Under Voltage
         double                         mUnderVoltageLimit;
 
         /// --     Resistive Load Switch Resistance

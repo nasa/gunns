@@ -566,7 +566,7 @@ void SwitchCardElect::step(const double dt) {
     } else {
         // this switchcard *does* have an IPS, so ask it if power is OK
         mTlmPowerSupplyValid = mPowerSupply->isPowerSupplyOn();
-    
+
         //Bus Fault  -- PRB0044564 Bus fault in the wrong place.  Can't put it on the power supply for DCSUs/MBSUs
         // because it doesn't reflect on the input switch then.
 //        if (mMalfBusFault != mLastBusFault ) {
@@ -969,7 +969,7 @@ void SwitchCardElect::computeFlows(const double dt) {
            if (mUndervoltTrip && !atLeastOneRpcStillTripped) {
                 mUndervoltTrip = false;
            }
-        } 
+        }
 
         // add in the power supply load if applicable
         mInputCurrent += (mPowerSupplyConductance * mBusVoltage);

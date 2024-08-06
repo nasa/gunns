@@ -279,7 +279,7 @@ void UtGunnsFluidConductor::testStep()
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
-    mArticle->step(mTimeStep); 
+    mArticle->step(mTimeStep);
 
     /// - Conductor should always have a positive admittance and zero potential
     CPPUNIT_ASSERT(mArticle->mAdmittanceMatrix[0] > 0.0);
@@ -306,23 +306,23 @@ void UtGunnsFluidConductor::testComputeFlows()
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
     mArticle->step(mTimeStep);
-    mArticle->computeFlows(mTimeStep); 
+    mArticle->computeFlows(mTimeStep);
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[1]);
 
     mArticle->transportFlows(mTimeStep);
-   
+
     /// - Conductance Link should have zero flow rate because the potential vector is zero
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mFlowRate, mTolerance);
 
     /// - Confirm mVolFlowRate is zero with a zero potential vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mVolFlowRate, mTolerance);
 
-    /// - Set up positive flow (0-->1) potential vector 
+    /// - Set up positive flow (0-->1) potential vector
     mArticle->mPotentialVector[0] = 0.8;
     mArticle->computeFlows(mTimeStep);
 
@@ -331,40 +331,40 @@ void UtGunnsFluidConductor::testComputeFlows()
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[0].getScheduledOutflux(),mArticle->mFlux,DBL_EPSILON);
 
-    mArticle->transportFlows(mTimeStep);  
-        
+    mArticle->transportFlows(mTimeStep);
+
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), DBL_EPSILON);
-    
+
     /// - Conductance Link should have positive flow rate because the port 0 potential vector is positive
     CPPUNIT_ASSERT(mArticle->mFlowRate > 0.0);
 
     mArticle->mPotentialVector[0] = -0.6;
     mArticle->computeFlows(mTimeStep);
 
-    /// - Molar flux should be less than zero because the port 0 potential vector is negative   
+    /// - Molar flux should be less than zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( mArticle->mFlux < 0.0);
 
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[1].getScheduledOutflux(),- mArticle->mFlux,DBL_EPSILON);
-    
+
     mArticle->transportFlows(mTimeStep);
 
     /// - Confirm correct source port selection with negative potential Vector (TrasportFlows)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, mArticle->determineSourcePort(mArticle->mFlux, 0, 1),
                                                             DBL_EPSILON);
 
     /// - Conductance Link should have negative flow rate because the port 0 potential vector is negative
@@ -443,7 +443,7 @@ void UtGunnsFluidConductor::testComputeFlowsWithInternalFluid()
 
    /// - Internal Fluid should be at same temperature as outflow with zero Expansion Scale Factor
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[0].getOutflow()->getTemperature(),mArticle->
-                                                 getInternalFluid()->getTemperature(),mTolerance); 
+                                                 getInternalFluid()->getTemperature(),mTolerance);
 
     mNodes[0].resetFlows();
     mNodes[1].resetFlows();
@@ -460,7 +460,7 @@ void UtGunnsFluidConductor::testComputeFlowsWithInternalFluid()
     mNodes[1].getContent()->setPressure(689.475);
 
     /// - Check to ensure that content and outflow conditions are different
-    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getPressure() != 
+    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getPressure() !=
                                                  mNodes[1].getContent()-> getPressure());
 
     mArticle->transportFlows(mTimeStep);
@@ -471,7 +471,7 @@ void UtGunnsFluidConductor::testComputeFlowsWithInternalFluid()
 
    /// - Internal Fluid should be at same temperature as outflow with zero Expansion Scale Factor
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[1].getOutflow()->getTemperature(),mArticle->
-                                                getInternalFluid()->getTemperature(),mTolerance); 
+                                                getInternalFluid()->getTemperature(),mTolerance);
 
     mNodes[0].resetFlows();
     mNodes[1].resetFlows();

@@ -5,7 +5,7 @@
 
 /* @copyright Copyright 2019 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 #ifndef __DEFAULT_TRICK_SYS__
 #define __DEFAULT_TRICK_SYS__
 
@@ -383,4 +383,3 @@ InstrumentationSimObject instruments ;
 UnitTestSimObject utest ;
 
 #endif
-

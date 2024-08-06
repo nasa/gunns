@@ -707,13 +707,13 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlows()
 
     /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[1]);
 
     /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[2]);
-    
+
     /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[3]);
 
@@ -730,13 +730,13 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlows()
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct Sink port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[1]);
 
     /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[2]);
-    
+
     /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[3]);
 
@@ -747,7 +747,7 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlows()
 
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), DBL_EPSILON);
-    
+
     /// - Conductance Link should have positive flow rate because the port 0 potential vector is positive
     CPPUNIT_ASSERT(mArticle->mFlowRate > 0.0);
 
@@ -756,24 +756,24 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlows()
 
     /// - Confirm correct sink port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[1]);
 
     /// - Confirm correct null port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[2]);
-    
+
     /// - Confirm correct null port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[3]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[1].getScheduledOutflux(), -mArticle->mFlux,DBL_EPSILON);
-    
+
     mArticle->transportFlows(mTimeStep);
 
     /// - Confirm correct source port selection with negative potential Vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), DBL_EPSILON);
-    
+
     /// - Conductance Link should have negative flow rate because the port 0 potential vector is negative
     CPPUNIT_ASSERT(mArticle->mFlowRate < 0.0);
 
@@ -834,14 +834,14 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlowsWithInternalFluid()
                                                                    mArticle->mThermalDiameter,
                                                                    mArticle->mThermalSurfaceArea,
                                                                    mArticle->mWallTemperature);
- 
+
     /// - Internal Fluid should be at same pressure as outflow with zero Expansion Scale Factor
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[0].getOutflow()->getPressure(),
             mArticle->getInternalFluid()->getPressure(),mTolerance);
 
     /// - Internal Fluid should be at same temperature as outflow with zero Expansion Scale Factor
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempWallHeatFlux, mArticle->mWallHeatFlux, 0.01); 
-   
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempWallHeatFlux, mArticle->mWallHeatFlux, 0.01);
+
     mNodes[0].resetFlows();
     mNodes[1].resetFlows();
 
@@ -857,7 +857,7 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlowsWithInternalFluid()
     mNodes[1].getContent()->setPressure(689.475);
 
     /// - Check to ensure that content and outflow conditions are different
-    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getPressure() != 
+    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getPressure() !=
                                                  mNodes[1].getContent()-> getPressure());
 
     mArticle->transportFlows(mTimeStep);
@@ -869,14 +869,14 @@ void UtGunnsFluidPressureSensitiveValve::testComputeFlowsWithInternalFluid()
                                                                    mArticle->mThermalDiameter,
                                                                    mArticle->mThermalSurfaceArea,
                                                                    mArticle->mWallTemperature);
- 
+
     /// - Internal Fluid should be at same pressure as outflow with zero Expansion Scale Factor
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mNodes[1].getOutflow()->getPressure(),mArticle->getInternalFluid()->
                                                  getPressure(),mTolerance);
 
     /// - Internal Fluid should be at same temperature as outflow with zero Expansion Scale Factor
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempWallHeatFlux, mArticle->mWallHeatFlux, 0.01); 
-   
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tempWallHeatFlux, mArticle->mWallHeatFlux, 0.01);
+
     mNodes[0].resetFlows();
     mNodes[1].resetFlows();
 
@@ -911,7 +911,7 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3);
-    
+
     mNodes[0].setPotential(mNodes[0].getOutflow()->getPressure());
     mNodes[1].setPotential(mNodes[1].getOutflow()->getPressure());
     mArticle->mPotentialVector[0] = mNodes[0].getPotential();

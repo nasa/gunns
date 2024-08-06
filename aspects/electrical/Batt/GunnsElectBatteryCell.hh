@@ -125,7 +125,7 @@ class GunnsElectBatteryCell
         virtual ~GunnsElectBatteryCell();
         /// @brief   Electrical Battery Cell Model initialize method.
         void   initialize(const GunnsElectBatteryCellConfigData& configData,
-        		          const GunnsElectBatteryCellInputData&  inputData,
+                          const GunnsElectBatteryCellInputData&  inputData,
                           const std::string&                     name);
         /// @brief   Updates the cell state in response to inputs.
         void   updateSoc(const double current, const double timeStep, TsLinearInterpolator* socVocTable);

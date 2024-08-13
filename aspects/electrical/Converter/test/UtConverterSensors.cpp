@@ -69,16 +69,16 @@ void UtConverterSensors::setUp() {
     mInOverVoltageTripActive                            = false;
     mInOverVoltageTripActive                            = false;
 
-    mOutVoltageSensorConfig.mMaxRange                   = 250.0;
-    mOutVoltageSensorConfig.mNominalResolution          = 0.01;
-    mOutVoltageSensorConfig.mNominalScale               = 1.0;
-    mOutVoltageSensorConfig.mNominalNoiseScale          = 0.555;
+    mOutVoltageSensorConfig.mMaxRange                   = 250.0F;
+    mOutVoltageSensorConfig.mNominalResolution          = 0.01F;
+    mOutVoltageSensorConfig.mNominalScale               = 1.0F;
+    mOutVoltageSensorConfig.mNominalNoiseScale          = 0.555F;
     mOutVoltageSensorConfig.mNoiseFunction              = TsNoise::getNoise;
 
-    mOutCurrentSensorConfig.mMaxRange                   = 100.0;
-    mOutCurrentSensorConfig.mNominalResolution          = 0.01;
-    mOutCurrentSensorConfig.mNominalScale               = 1.0;
-    mOutCurrentSensorConfig.mNominalNoiseScale          = 0.225;
+    mOutCurrentSensorConfig.mMaxRange                   = 100.0F;
+    mOutCurrentSensorConfig.mNominalResolution          = 0.01F;
+    mOutCurrentSensorConfig.mNominalScale               = 1.0F;
+    mOutCurrentSensorConfig.mNominalNoiseScale          = 0.225F;
     mOutCurrentSensorConfig.mNoiseFunction              = TsNoise::getNoise;
 
     mConfig                 = new ConverterSensorsConfigData(mStandbyPower,

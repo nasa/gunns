@@ -415,7 +415,7 @@ void UtGunnsGasFan::testNominalInitialization()
 
     const double expectedPbep = 1000.0 * pressureBep * tReferenceQBep / tBestEfficiency;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPbep,   article.mReferencePowerBep,  1E-4);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tReferenceQ,    article.mReferenceQ,         FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tReferenceQ,    article.mReferenceQ,         static_cast<double>(FLT_EPSILON));
 
     /// @test    Terms initialized from input data.
     CPPUNIT_ASSERT(tMotorSpeed        == article.mMotorSpeed);
@@ -423,7 +423,7 @@ void UtGunnsGasFan::testNominalInitialization()
 
     /// @test    Initialized state data.
     const double expectedSysG = tReferenceQ / std::sqrt(tReferenceCoeff0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSysG, article.mSystemConstant, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSysG, article.mSystemConstant, static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(0.0 == article.mWallHeatFlux);
     CPPUNIT_ASSERT(0.0 == article.mImpellerTorque);
     CPPUNIT_ASSERT(0.0 == article.mImpellerSpeed);
@@ -597,7 +597,7 @@ void UtGunnsGasFan::testInitializationExceptions()
     tConfigData->mReferenceQBep   = 0.0;
 
     /// @test    Initialization exception on invalid input data: mBlockage < 0.
-    tInputData->mMalfBlockageValue = -FLT_EPSILON;
+    tInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mMalfBlockageValue = tBlockage;
@@ -731,7 +731,7 @@ void UtGunnsGasFan::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff0,        tArticle->mAffinityCoeffs[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff2,        tArticle->mAffinityCoeffs[2], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSystemConst,   tArticle->mSystemConstant,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceQ,       tArticle->mSourceQ,           FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceQ,       tArticle->mSourceQ,           static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceP,       tArticle->mSourcePressure,    0.000001);
 
     /// @test    Outputs at free-flow condition (max flow rate, zero pressure).
@@ -740,7 +740,7 @@ void UtGunnsGasFan::testUpdateState()
     tArticle->updateState(tTimeStep);
     expectedSourceQ           = tReferenceQ * expectedSpeedFactor;
     expectedSourceP           = 0.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceQ,       tArticle->mSourceQ,           FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceQ,       tArticle->mSourceQ,           static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceP,       tArticle->mSourcePressure,    0.000001);
 
     /// @test    Outputs at dead-head condition (zero flow rate, max pressure).
@@ -754,7 +754,7 @@ void UtGunnsGasFan::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceP,       tArticle->mSourcePressure,    0.01);
 
     /// @test    Outputs when fluid density near zero.
-    tNodes[0].getContent()->setPressure(FLT_EPSILON * 0.1);
+    tNodes[0].getContent()->setPressure(static_cast<double>(FLT_EPSILON) * 0.1);
     tNodes[0].resetFlows();
     tArticle->mVolFlowRate    = 0.06;
     tArticle->updateState(tTimeStep);

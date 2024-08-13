@@ -533,12 +533,12 @@ void UtMonoFluid::testConstructionExceptions()
             TsInitializationException);
     } {
         /// @test constructor for exception on temperature too small
-        MonoFluidInputData initData(FLT_EPSILON / 2.0, mPressure, mFlowRate, mMass);
+        MonoFluidInputData initData(static_cast<double>(FLT_EPSILON) / 2.0, mPressure, mFlowRate, mMass);
         CPPUNIT_ASSERT_THROW(new FriendlyMonoFluid(mProperties->getProperties(mType), initData),
             TsInitializationException);
     } {
         /// @test constructor for exception on pressure too small
-        MonoFluidInputData initData(mTemperature, FLT_EPSILON / 2.0, mFlowRate, mMass);
+        MonoFluidInputData initData(mTemperature, static_cast<double>(FLT_EPSILON) / 2.0, mFlowRate, mMass);
         CPPUNIT_ASSERT_THROW(new FriendlyMonoFluid(mProperties->getProperties(mType), initData),
             TsInitializationException);
     }
@@ -561,12 +561,12 @@ void UtMonoFluid::testInitializationExceptions()
             TsInitializationException);
     } {
         /// @test initialize for exception on temperature too small
-        MonoFluidInputData initData(FLT_EPSILON / 2.0, mPressure, mFlowRate, mMass);
+        MonoFluidInputData initData(static_cast<double>(FLT_EPSILON) / 2.0, mPressure, mFlowRate, mMass);
         FriendlyMonoFluid article;
         CPPUNIT_ASSERT_THROW(article.initialize(mProperties->getProperties(mType), initData), TsInitializationException);
     } {
         /// @test initialize for exception on pressure too small
-        MonoFluidInputData initData(mTemperature, FLT_EPSILON / 2.0, mFlowRate, mMass);
+        MonoFluidInputData initData(mTemperature, static_cast<double>(FLT_EPSILON) / 2.0, mFlowRate, mMass);
         FriendlyMonoFluid article;
         CPPUNIT_ASSERT_THROW(article.initialize(mProperties->getProperties(mType), initData), TsInitializationException);
     }

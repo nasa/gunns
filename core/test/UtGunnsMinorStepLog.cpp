@@ -290,8 +290,8 @@ void UtGunnsMinorStepLog::testInitialize()
     CPPUNIT_ASSERT(GunnsMinorStepLog::PAUSED == tArticle->mState);
     CPPUNIT_ASSERT(true                      == tArticle->mIsRecording);
     CPPUNIT_ASSERT(tLogSteps                 == tArticle->mBuffer.size());
-    CPPUNIT_ASSERT(tNetworkSize              == tArticle->mBuffer[0].mPotentialVector.size());
-    CPPUNIT_ASSERT(tNumLinks                 == tArticle->mBuffer[0].mLinksData.size());
+    CPPUNIT_ASSERT(tNetworkSize              == static_cast<int>(tArticle->mBuffer[0].mPotentialVector.size()));
+    CPPUNIT_ASSERT(tNumLinks                 == static_cast<int>(tArticle->mBuffer[0].mLinksData.size()));
     CPPUNIT_ASSERT(tLogSteps                 == tArticle->mSize);
     CPPUNIT_ASSERT(tLogSteps - 1             == tArticle->mHeadIndex);
     CPPUNIT_ASSERT(0                         == tArticle->mNumValidSteps);
@@ -464,7 +464,7 @@ void UtGunnsMinorStepLog::testRecord()
 
     /// @test record functions don't record when recording isn't enabled.
     int index = tLogSteps - 1;
-    CPPUNIT_ASSERT(index == tArticle->mHeadIndex);
+    CPPUNIT_ASSERT(index == static_cast<int>(tArticle->mHeadIndex));
     double potentials[2] = {200.0, 300.0};
     tArticle->recordPotential(potentials);
     CPPUNIT_ASSERT(0.0 == tArticle->mBuffer[index].mPotentialVector[0]);
@@ -499,7 +499,7 @@ void UtGunnsMinorStepLog::testRecord()
 
     /// @test record functions when recording is enabled.
     index = 0;
-    CPPUNIT_ASSERT(index == tArticle->mHeadIndex);
+    CPPUNIT_ASSERT(index == static_cast<int>(tArticle->mHeadIndex));
     tArticle->recordPotential(potentials);
     CPPUNIT_ASSERT(potentials[0] == tArticle->mBuffer[index].mPotentialVector[0]);
     CPPUNIT_ASSERT(potentials[1] == tArticle->mBuffer[index].mPotentialVector[1]);

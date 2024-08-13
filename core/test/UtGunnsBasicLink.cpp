@@ -387,10 +387,10 @@ void UtGunnsBasicLink::testModifiers()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(minLinearP, mArticle->mMinLinearizationPotential, mTolerance);
 
     /// @test that the network name gets set
-    char* name = new char[strlen(mLinkName.c_str())+1];
-    strcpy(name, mLinkName.c_str());
+    char* name = new char[std::strlen(mLinkName.c_str())+1];
+    std::strcpy(name, mLinkName.c_str());
 
-    for (int i=0; i<strlen(mLinkName.c_str())+1; ++i) {
+    for (std::size_t i=0; i<std::strlen(mLinkName.c_str())+1; ++i) {
         CPPUNIT_ASSERT(name[i] == mArticle->mName[i]);
     }
     delete [] name;

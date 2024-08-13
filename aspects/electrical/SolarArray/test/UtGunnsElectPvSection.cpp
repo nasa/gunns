@@ -137,8 +137,8 @@ void UtGunnsElectPvSection::testConfig()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tRefSourceFluxMagnitude,     tConfigData->mRefSourceFluxMagnitude,                 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBlockingDiodeVoltageDrop,   tConfigData->mStringConfig.mBlockingDiodeVoltageDrop, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBypassDiodeVoltageDrop,     tConfigData->mStringConfig.mBypassDiodeVoltageDrop,   0.0);
-    CPPUNIT_ASSERT(tBypassDiodeInterval == tConfigData->mStringConfig.mBypassDiodeInterval);
-    CPPUNIT_ASSERT(tNumCells            == tConfigData->mStringConfig.mNumCells);
+    CPPUNIT_ASSERT(tBypassDiodeInterval == static_cast<int>(tConfigData->mStringConfig.mBypassDiodeInterval));
+    CPPUNIT_ASSERT(tNumCells            == static_cast<int>(tConfigData->mStringConfig.mNumCells));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSurfaceArea,             tConfigData->mStringConfig.mCellConfig.mSurfaceArea,             0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellEfficiency,              tConfigData->mStringConfig.mCellConfig.mEfficiency,              0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSeriesResistance,        tConfigData->mStringConfig.mCellConfig.mSeriesResistance,        0.0);

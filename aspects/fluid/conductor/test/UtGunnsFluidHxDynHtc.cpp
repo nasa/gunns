@@ -353,7 +353,7 @@ void UtGunnsFluidHxDynHtc::testHtc()
 
     /// @test    Test segment heat transfer coefficients with no malfunction.
     double mdot            = 2.0;
-    double expectedHtc     = (tHtcCoeff0 + tHtcCoeff1 * std::pow(mdot, tHtcExponent)) / tNumSegs;
+    double expectedHtc     = (tHtcCoeff0 + tHtcCoeff1 * std::pow(mdot, tHtcExponent)) / static_cast<double>(tNumSegs);
     tArticle->mMalfHxDegradeFlag = false;
     tArticle->mFlowRate          = mdot;
     tArticle->computeHeatTransferCoefficient();

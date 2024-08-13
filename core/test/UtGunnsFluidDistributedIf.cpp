@@ -753,7 +753,7 @@ void UtGunnsFluidDistributedIf::testStep()
     tArticle->mSourcePressure       = 100.0;
     const double timestep           = 0.1;
     double csOverCd     = 1.25; // default moding capacitance ratio upper limit
-    double gainLimit    = 1.5 * std::pow(0.75, 4); // default demand filter connstants A & B
+    double gainLimit    = 1.5 * std::pow(0.75, 4.0); // default demand filter connstants A & B
     double expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     double conductance  = expectedGain * 1.0 / timestep;
     double expectedG    = conductance; // mDemandOption is set in config data
@@ -789,7 +789,7 @@ void UtGunnsFluidDistributedIf::testStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,    tArticle->mEffectiveConductivity, DBL_EPSILON);
 
     tArticleInterface->mLoopLatency = 200;
-    gainLimit    = 1.5 * std::pow(0.75, 100);
+    gainLimit    = 1.5 * std::pow(0.75, 100.0);
     expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     conductance  = expectedGain * 0.9 / timestep;
     expectedG    = conductance;
@@ -802,7 +802,7 @@ void UtGunnsFluidDistributedIf::testStep()
     tArticleInterface->mInData.mCapacitance  = 1.15;
     tArticleInterface->mLoopLatency          = 2;
     csOverCd     = 1.15;
-    gainLimit    = 1.5 * std::pow(0.75, 2);
+    gainLimit    = 1.5 * std::pow(0.75, 2.0);
     expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     conductance  = expectedGain * 1.15 / timestep;
     expectedG    = conductance;
@@ -816,7 +816,7 @@ void UtGunnsFluidDistributedIf::testStep()
     tArticleInterface->mInData.mCapacitance  = 1.0;
     tArticleInterface->mLoopLatency          = 4;
     csOverCd     = 1.25;
-    gainLimit    = 1.5 * std::pow(0.75, 4);
+    gainLimit    = 1.5 * std::pow(0.75, 4.0);
     expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     conductance  = expectedGain * 1.0 / timestep;
     expectedG    = 1.0 / (1.0 / conductance + timestep / 0.5);

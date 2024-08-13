@@ -124,10 +124,10 @@ void UtGunnsSolarArrayRegulator::setUp()
     tRegulatedVoltageHighLimit         =  131.2;
 
     // sensor configuration/input
-    tOutVoltageUpperLimit              =  140.0;
-    tOutCurrentUpperLimit              =  125.0;
-    tOutVoltageNoiseScale              =   2.80;
-    tOutCurrentNoiseScale              =   3.75;
+    tOutVoltageUpperLimit              =  140.0F;
+    tOutCurrentUpperLimit              =  125.0F;
+    tOutVoltageNoiseScale              =   2.80F;
+    tOutCurrentNoiseScale              =   3.75F;
 
     // input data
     tmalfBlockageFlag                  =  false;
@@ -162,10 +162,10 @@ void UtGunnsSolarArrayRegulator::setUp()
     tTolerance          = 1.0e-08;
 
     // sensor config data
-    tOutVoltageSensorConfig = new SensorAnalogConfigData(0.0, tOutVoltageUpperLimit, 0.0, 0.0, 1.0, tOutVoltageNoiseScale,
-                                                         0.001, 0, UnitConversion::NO_CONVERSION);
-    tOutCurrentSensorConfig = new SensorAnalogConfigData(-125.0, tOutCurrentUpperLimit, 0.0, 0.0, 1.0, tOutCurrentNoiseScale,
-                                                         0.001, 0, UnitConversion::NO_CONVERSION);
+    tOutVoltageSensorConfig = new SensorAnalogConfigData(0.0F, tOutVoltageUpperLimit, 0.0F, 0.0F, 1.0F, tOutVoltageNoiseScale,
+                                                         0.001F, 0, UnitConversion::NO_CONVERSION);
+    tOutCurrentSensorConfig = new SensorAnalogConfigData(-125.0F, tOutCurrentUpperLimit, 0.0F, 0.0F, 1.0F, tOutCurrentNoiseScale,
+                                                         0.001F, 0, UnitConversion::NO_CONVERSION);
 
     // sensor input data
     tOutVoltageSensorInput  = new SensorAnalogInputData(true, 0.0);

@@ -548,7 +548,7 @@ void UtGunnsFluidDistributed2WayBus::testDemandLimit()
     const double timestep           = 0.1;
     const double demandSideP        = 100000.0;  // ~1 atm, dP = 1%
     double csOverCd     = 1.25; // default moding capacitance ratio upper limit
-    double gainLimit    = 1.5 * std::pow(0.75, 4); // default demand filter constants A & B
+    double gainLimit    = 1.5 * std::pow(0.75, 4.0); // default demand filter constants A & B
     double expectedGain = gainLimit + (1.0 - gainLimit) * (csOverCd - 1.0) * 4.0;
     double expectedNdot = expectedGain * (demandSideP - tArticle->mInData.mSource) / timestep
                         / (1.0 / tArticle->mOutData.mCapacitance + 1.0 / tArticle->mInData.mCapacitance);

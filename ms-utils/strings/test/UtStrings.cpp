@@ -56,9 +56,9 @@ void UtStrings::testFloatToString()
     std::cout << "-----------------------------------------------------------------------------";
     std::cout << "\n Strings Test 01: testFloatToString ..........................";
 
-    float convert    = 3.14159;
-    float minValue   = 0.0;
-    float maxValue   = 4.0;
+    double convert    = 3.14159;
+    double minValue   = 0.0;
+    double maxValue   = 4.0;
     std::string expected = "3";
     CPPUNIT_ASSERT_EQUAL(expected, Strings::floatToString(convert, 0, minValue, maxValue));
 
@@ -92,9 +92,9 @@ void UtStrings::testIntToString()
 {
     std::cout << "\n Strings Test 01: testIntToString ............................";
 
-    float convert    = 3;
-    float minValue   = 0;
-    float maxValue   = 1234;
+    int convert    = 3;
+    int minValue   = 0;
+    int maxValue   = 1234;
     std::string expected = "3";
     CPPUNIT_ASSERT_EQUAL(expected, Strings::intToString(convert, minValue, maxValue));
 

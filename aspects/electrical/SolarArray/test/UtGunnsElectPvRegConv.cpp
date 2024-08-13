@@ -300,11 +300,11 @@ void UtGunnsElectPvRegConv::testNominalInitialization()
     /// @test    Trips package.
     GunnsBasicLink::SolutionResult result;
     CPPUNIT_ASSERT(false                    == tArticle->mTrips.isTripped());
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverVoltage.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverCurrent.checkForTrip(result, tInOverCurrentTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverVoltage.checkForTrip(result, tOutOverVoltageTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverCurrent.checkForTrip(result, tOutOverCurrentTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutUnderVoltage.checkForTrip(result, tOutUnderVoltageTrip - 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverVoltage.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverCurrent.checkForTrip(result, static_cast<float>(tInOverCurrentTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverVoltage.checkForTrip(result, static_cast<float>(tOutOverVoltageTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverCurrent.checkForTrip(result, static_cast<float>(tOutOverCurrentTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutUnderVoltage.checkForTrip(result, static_cast<float>(tOutUnderVoltageTrip - 0.01), tTripPriority));
 
     /// @test    Nominal state data.
     CPPUNIT_ASSERT(GunnsElectPvRegConv::OFF == tArticle->mState);
@@ -723,10 +723,10 @@ void UtGunnsElectPvRegConv::testConfirmSolutionAcceptable()
     tArticle->mStateUpmodeLatch = false;
     tArticle->mPotentialVector[0] = 1.0e4;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM  == tArticle->confirmSolutionAcceptable(0, 2));
-    CPPUNIT_ASSERT(0.0 == tArticle->mSensors.mOutVoltage->getSensedOutput());
-    CPPUNIT_ASSERT(0.0 == tArticle->mSensors.mOutCurrent->getSensedOutput());
-    CPPUNIT_ASSERT(0.0 == tArticle->mSensors.mInVoltage->getSensedOutput());
-    CPPUNIT_ASSERT(0.0 == tArticle->mSensors.mInCurrent->getSensedOutput());
+    CPPUNIT_ASSERT(0.0F == tArticle->mSensors.mOutVoltage->getSensedOutput());
+    CPPUNIT_ASSERT(0.0F == tArticle->mSensors.mOutCurrent->getSensedOutput());
+    CPPUNIT_ASSERT(0.0F == tArticle->mSensors.mInVoltage->getSensedOutput());
+    CPPUNIT_ASSERT(0.0F == tArticle->mSensors.mInCurrent->getSensedOutput());
     tArticle->minorStep(0.0, 3);
     tArticle->mStateUpmodeLatch = false;
     tArticle->mPotentialVector[0] = 1.0;
@@ -742,13 +742,13 @@ void UtGunnsElectPvRegConv::testConfirmSolutionAcceptable()
     double actualSensedIin    = tArticle->mSensors.mInCurrent->getSensedOutput();
     double actualSensedVout   = tArticle->mSensors.mOutVoltage->getSensedOutput();
     double actualSensedIout   = tArticle->mSensors.mOutCurrent->getSensedOutput();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, FLT_EPSILON * expectedSensedVout);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, static_cast<double>(FLT_EPSILON) * expectedSensedVout);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, static_cast<double>(FLT_EPSILON));
 
     /// @test    Trips occur on prioritized converged minor step.
-    CPPUNIT_ASSERT(tOutOverCurrentTrip < tArticle->mSensors.mOutCurrent->getSensedOutput());
+    CPPUNIT_ASSERT(tOutOverCurrentTrip < static_cast<double>(tArticle->mSensors.mOutCurrent->getSensedOutput()));
     CPPUNIT_ASSERT(false == tArticle->mTrips.isTripped());
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT     == tArticle->confirmSolutionAcceptable(2, 4));
     CPPUNIT_ASSERT(GunnsElectPvRegConv::OFF   == tArticle->mState);
@@ -780,7 +780,7 @@ void UtGunnsElectPvRegConv::testConfirmSolutionAcceptable()
     tArray->mSections[2].setSourceExposedFraction(1.0);
     tArray->step(0.0);
 
-    tArticle->mTrips.mOutOverCurrent.initialize(0.1, tTripPriority, false);
+    tArticle->mTrips.mOutOverCurrent.initialize(0.1F, tTripPriority, false);
     tArticle->mState = GunnsElectPvRegConv::REG;
     double outputVolts = expectedVreg - 1.0e-8;
     tArticle->mPotentialVector[0] = outputVolts;

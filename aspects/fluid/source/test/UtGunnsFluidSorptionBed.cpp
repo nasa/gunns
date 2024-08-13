@@ -524,7 +524,7 @@ void UtGunnsFluidSorptionBed::testInitializationExceptions()
     UT_RESULT;
 
     /// @test exception thrown on bed wall temperature out of range.
-    tInputData->mWallTemperature = -FLT_EPSILON;
+    tInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mWallTemperature = tWallTemperature;
@@ -537,8 +537,8 @@ void UtGunnsFluidSorptionBed::testInitializationExceptions()
     tInputData->mLoading.at(0).mSegment = savedSegment;
 
     /// @test exception thrown on segment loading's loading value out of range.
-    const unsigned int savedLoading = tInputData->mLoading.at(0).mLoading;
-    tInputData->mLoading.at(0).mLoading = -FLT_EPSILON;
+    const unsigned int savedLoading = static_cast<unsigned int>(tInputData->mLoading.at(0).mLoading);
+    tInputData->mLoading.at(0).mLoading = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mLoading.at(0).mLoading = savedLoading;
@@ -712,7 +712,7 @@ void UtGunnsFluidSorptionBed::testBedSorbateUpdateLoading()
         tArticle->mSegments[0].mSorbates[1].updateLoading(tTimeStep, influx, 999.9);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     tArticle->mSegments[0].mSorbates[1].mLoadingRate,     100.0 * DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedLoading,  tArticle->mSegments[0].mSorbates[1].mLoading,         100.0 * DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFraction, tArticle->mSegments[0].mSorbates[1].mLoadingFraction, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFraction, tArticle->mSegments[0].mSorbates[1].mLoadingFraction, static_cast<double>(FLT_EPSILON));
     } {
         /// @test nominal equilibrium loading < loading, desorb rate not limited.
         const double loading          = 1.25 * loadingEquil;

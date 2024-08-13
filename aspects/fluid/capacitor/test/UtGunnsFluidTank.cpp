@@ -117,7 +117,7 @@ void UtGunnsFluidTank::setUp()
     mInputData            = new GunnsFluidTankInputData(false, 0.0,
                                                         mVolume,
                                                         mFluidInput0,
-                                                        mShellTemperature,
+                                                        static_cast<float>(mShellTemperature),
                                                         mBiasHeatFlux);
 
     /// - Define the nominal port mapping.
@@ -171,7 +171,7 @@ void UtGunnsFluidTank::testConfigAndInput()
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(mFluidInput0          == mInputData->mInitialFluidState);
     CPPUNIT_ASSERT(mVolume               == mInputData->mInitialVolume);
-    CPPUNIT_ASSERT(mShellTemperature     == mInputData->mShellTemperature);
+    CPPUNIT_ASSERT(mShellTemperature     == static_cast<double>(mInputData->mShellTemperature));
     CPPUNIT_ASSERT(mBiasHeatFlux         == mInputData->mBiasHeatFlux);
 
     /// @test    Configuration data default construction.
@@ -182,15 +182,15 @@ void UtGunnsFluidTank::testConfigAndInput()
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mDpdtFilterGain);
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mThermalDampingMass);
     CPPUNIT_ASSERT(1.0E-6                == defaultConfig.mEditFluxTarget);
-    CPPUNIT_ASSERT(0.0                   == defaultConfig.mSurfaceArea);
-    CPPUNIT_ASSERT(0.0                   == defaultConfig.mShellRadius);
+    CPPUNIT_ASSERT(0.0F                  == defaultConfig.mSurfaceArea);
+    CPPUNIT_ASSERT(0.0F                  == defaultConfig.mShellRadius);
 
     /// @test    Input data default construction.
     GunnsFluidTankInputData defaultInput;
     CPPUNIT_ASSERT(0                     == defaultInput.mInitialFluidState);
     CPPUNIT_ASSERT(0.0                   == defaultInput.mInitialVolume);
-    CPPUNIT_ASSERT(0.0                   == defaultInput.mShellTemperature);
-    CPPUNIT_ASSERT(0.0                   == defaultInput.mBiasHeatFlux);
+    CPPUNIT_ASSERT(0.0F                  == defaultInput.mShellTemperature);
+    CPPUNIT_ASSERT(0.0F                  == defaultInput.mBiasHeatFlux);
 
     /// @test    Configuration data copy construction.
     GunnsFluidTankConfigData copyConfig(*mConfigData);
@@ -207,7 +207,7 @@ void UtGunnsFluidTank::testConfigAndInput()
     GunnsFluidTankInputData copyInput(*mInputData);
     CPPUNIT_ASSERT(mFluidInput0          == copyInput.mInitialFluidState);
     CPPUNIT_ASSERT(mVolume               == copyInput.mInitialVolume);
-    CPPUNIT_ASSERT(mShellTemperature     == copyInput.mShellTemperature);
+    CPPUNIT_ASSERT(mShellTemperature     == static_cast<double>(copyInput.mShellTemperature));
     CPPUNIT_ASSERT(mBiasHeatFlux         == copyInput.mBiasHeatFlux);
 
     UT_PASS;
@@ -329,7 +329,7 @@ void UtGunnsFluidTank::testAccessors()
     /// @test    Set up a heat flux from the tank shell, which will normally come from the sim bus,
     ///          and verify the getHeatFlux method.
     mArticle->mHeatFluxFromShell = 1.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 + mBiasHeatFlux,     mArticle->getHeatFlux(), 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 + static_cast<double>(mBiasHeatFlux),     mArticle->getHeatFlux(), 0.0);
 
     /// @test    Get Dpdt.
     mArticle->mDpdt = 4.0;
@@ -339,7 +339,7 @@ void UtGunnsFluidTank::testAccessors()
     double tempBiasHeatFlux = mArticle->mBiasHeatFlux;
     mArticle->mBiasHeatFlux = 2.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, mArticle->getBiasHeatFlux(),   0.0);
-    mArticle->mBiasHeatFlux = tempBiasHeatFlux;
+    mArticle->mBiasHeatFlux = static_cast<float>(tempBiasHeatFlux);
 
     /// @test    Get Partial Pressure.
     mArticle->mPartialPressure[0] = 5.0;
@@ -350,66 +350,66 @@ void UtGunnsFluidTank::testAccessors()
     /// @test    Set temperature edit.
     mArticle->editTemperature(true, 290.0);
     CPPUNIT_ASSERT(true  == mArticle->mEditTemperatureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, static_cast<double>(FLT_EPSILON));
 
     /// @test    Reset temperature edit.
     mArticle->editTemperature();
     CPPUNIT_ASSERT(false == mArticle->mEditTemperatureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, static_cast<double>(FLT_EPSILON));
 
     /// @test    Set temperature and total pressure edit.
     mArticle->editTemperaturePressure(true, 290.0, 90.0);
     CPPUNIT_ASSERT(true  == mArticle->mEditTemperaturePressureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 90.0, mArticle->mEditPressureValue,    FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 90.0, mArticle->mEditPressureValue,    static_cast<double>(FLT_EPSILON));
 
     /// @test    Reset temperature and total pressure edit.
     mArticle->editTemperaturePressure();
     CPPUNIT_ASSERT(false == mArticle->mEditTemperaturePressureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 90.0, mArticle->mEditPressureValue,    FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue, static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 90.0, mArticle->mEditPressureValue,    static_cast<double>(FLT_EPSILON));
 
     /// @test    Set temperature and partial pressures edit.
     double pp[N_FLUIDS] = {70.0, 30.0};
     mArticle->editTemperaturePartialPressure(true, 290.0, pp);
     CPPUNIT_ASSERT(true  == mArticle->mEditTemperaturePartialPressureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Reset temperature and partial pressures edit.
     mArticle->editTemperaturePartialPressure();
     CPPUNIT_ASSERT(false == mArticle->mEditTemperaturePartialPressureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Temperature & partial pressures edit method does nothing to the temperature if no
     ///          value is supplied, and nothing to the partial pressures if no partial pressure
     ///          array is supplied.
     mArticle->editTemperaturePartialPressure(true, 0.0, 0);
     CPPUNIT_ASSERT(true  == mArticle->mEditTemperaturePartialPressureFlag);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0, mArticle->mEditTemperatureValue,        static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[0], static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 30.0, mArticle->mEditPartialPressureValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Set partial pressure rates edit.
     mArticle->editPartialPressureRate(FluidProperties::GUNNS_O2, true, 70.0, 1.0);
     CPPUNIT_ASSERT(true  == mArticle->mEditPartialPressureRateFlag[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Partial pressure rate edit method does nothing if no constituent supplied.
     mArticle->editPartialPressureRate();
     CPPUNIT_ASSERT(true  == mArticle->mEditPartialPressureRateFlag[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Reset partial pressure rates edit for the constituent.
     mArticle->editPartialPressureRate(FluidProperties::GUNNS_O2);
     CPPUNIT_ASSERT(false == mArticle->mEditPartialPressureRateFlag[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 70.0, mArticle->mEditPartialPressureValue[1],     static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, mArticle->mEditPartialPressureRateValue[1], static_cast<double>(FLT_EPSILON));
 
     /// @test    Exception thrown on invalid fluid type arg to partial pressure rate edit.
     CPPUNIT_ASSERT_THROW(mArticle->editPartialPressureRate(FluidProperties::GUNNS_AMMONIA),
@@ -750,7 +750,7 @@ void UtGunnsFluidTank::testEditPartialPressureRate()
     double targetPartialPressure               = mArticle->mNodes[0]->getContent()->
                                                  getPartialPressure(FluidProperties::GUNNS_O2) +
                                                  mArticle->mEditPartialPressureRateValue[1] *
-                                                 mTimeStep + FLT_EPSILON;
+                                                 mTimeStep + static_cast<double>(FLT_EPSILON);
     mArticle->mEditPartialPressureValue[1]     = targetPartialPressure;
     mArticle->mEditPartialPressureRateFlag[1]  = true;
 
@@ -773,13 +773,13 @@ void UtGunnsFluidTank::testEditPartialPressureRate()
                         - expectedMdot / expectedMW;
 
     /// @test    Check outputs.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(283.0, mArticle->mInternalFluid->getTemperature(),  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, mArticle->mInternalFluid->getMWeight(), FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, mArticle->mFlowRate,                  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(283.0, mArticle->mInternalFluid->getTemperature(),  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, mArticle->mInternalFluid->getMWeight(), static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, mArticle->mFlowRate,                  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,   mNodes[0].mExpansionScaleFactor,             0.0);
     CPPUNIT_ASSERT(true == mArticle->mEditPartialPressureRateFlag[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, mArticle->mSourceVector[0],           FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mSourceVector[1],           FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, mArticle->mSourceVector[0],           static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          mArticle->mSourceVector[1],           static_cast<double>(FLT_EPSILON));
 
     // - Mimic the remaining steps that the Gunns solver will take prior to the next pass through
     //   our test article.
@@ -812,7 +812,7 @@ void UtGunnsFluidTank::testEditPartialPressureRate()
     targetPartialPressure                      = mArticle->mNodes[0]->getContent()->
                                                  getPartialPressure(FluidProperties::GUNNS_N2) -
                                                  mArticle->mEditPartialPressureRateValue[0] *
-                                                 mTimeStep - FLT_EPSILON;
+                                                 mTimeStep - static_cast<double>(FLT_EPSILON);
     mArticle->mEditPartialPressureValue[0]     = targetPartialPressure;
     mArticle->mEditPartialPressureRateFlag[0]  = true;
 
@@ -824,9 +824,9 @@ void UtGunnsFluidTank::testEditPartialPressureRate()
     mArticle->step(mTimeStep);
 
     /// @test    Check outputs.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(283.0, mArticle->mInternalFluid->getTemperature(),  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, mArticle->mInternalFluid->getMWeight(), FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, mArticle->mFlowRate,                  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(283.0, mArticle->mInternalFluid->getTemperature(),  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, mArticle->mInternalFluid->getMWeight(), static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMdot, mArticle->mFlowRate,                  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,   mNodes[0].mExpansionScaleFactor,             0.0);
     CPPUNIT_ASSERT(true == mArticle->mEditPartialPressureRateFlag[0]);
 
@@ -913,13 +913,13 @@ void UtGunnsFluidTank::testInitializationExceptions()
     mConfigData->mEditFluxTarget = mEditFluxTarget;
 
     /// @test    Initialization exception on surface area < 0.
-    mConfigData->mSurfaceArea = -0.01;
+    mConfigData->mSurfaceArea = -0.01F;
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mSurfaceArea = mSurfaceArea;
 
     /// @test    Initialization exception on shell radius < 0.
-    mConfigData->mShellRadius = -0.01;
+    mConfigData->mShellRadius = -0.01F;
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mShellRadius = mShellRadius;
@@ -932,10 +932,10 @@ void UtGunnsFluidTank::testInitializationExceptions()
     mInputData->mInitialFluidState = mFluidInput0;
 
     /// @test    Initialization exception on shell temperature < 0.
-    mInputData->mShellTemperature = -0.01;
+    mInputData->mShellTemperature = -0.01F;
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
-    mInputData->mShellTemperature = mShellTemperature;
+    mInputData->mShellTemperature = static_cast<float>(mShellTemperature);
 
     UT_PASS;
 }
@@ -1035,9 +1035,9 @@ void UtGunnsFluidTank::testOwnShellFlux()
     /// - Initialize default test article with nominal initialization data.
     /// - Shell radius = (3/4 * V/pi)^1/3.  We hard-code the pi product as a redundant check on the
     ///   pi constant used by the test article.
-    mShellRadius = std::pow(2.35619449019 * mVolume, (1.0/3.0));
+    mShellRadius = static_cast<float>(std::pow(2.35619449019 * mVolume, (1.0/3.0)));
     /// - Shell surface area = 4 pi r^2
-    mSurfaceArea = 12.5663706144 * mShellRadius* mShellRadius;
+    mSurfaceArea = 12.5663706144F * mShellRadius* mShellRadius;
     mConfigData->mShellRadius = mShellRadius;
     mConfigData->mSurfaceArea = mSurfaceArea;
     mInputData->mBiasHeatFlux = 0.0;
@@ -1047,8 +1047,8 @@ void UtGunnsFluidTank::testOwnShellFlux()
     mArticle->computeFlows(0.0);
     mArticle->transportFlows(0.0);
 
-    const double expectedFlux = mSurfaceArea * mNodes[0].getContent()->getThermalConductivity() *
-            (mShellTemperature - mFluidInput0->mTemperature) / mShellRadius;
+    const double expectedFlux = static_cast<double>(mSurfaceArea) * mNodes[0].getContent()->getThermalConductivity() *
+            (mShellTemperature - mFluidInput0->mTemperature) / static_cast<double>(mShellRadius);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, mArticle->getHeatFlux(),     1.0E-6);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, mArticle->mHeatFluxToShell,  1.0E-6);
@@ -1076,8 +1076,8 @@ void UtGunnsFluidTank::testModifiers()
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mBiasHeatFlux, mArticle->mBiasHeatFlux, 1.0E-6);
 
-    mArticle->setBiasHeatFlux(mBiasHeatFlux + 2.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mBiasHeatFlux + 2.0, mArticle->mBiasHeatFlux, 1.0E-6);
+    mArticle->setBiasHeatFlux(mBiasHeatFlux + 2.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mBiasHeatFlux + 2.0F, mArticle->mBiasHeatFlux, 1.0E-6F);
 
     UT_PASS_LAST;
 }

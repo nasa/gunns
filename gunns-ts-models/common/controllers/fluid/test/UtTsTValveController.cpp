@@ -301,14 +301,14 @@ void UtTsTValveController::testInitializationExceptions()
     CPPUNIT_ASSERT(!mArticle->mInitialized);
 
     /// @test  Exception on path A config data valve maximum position < valve minimum position.
-    mConfig->mAPath.mMaxCmdPosition = mConfig->mAPath.mMinCmdPosition - FLT_EPSILON;
+    mConfig->mAPath.mMaxCmdPosition = mConfig->mAPath.mMinCmdPosition - static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(mArticle->initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!mArticle->isInitialized());
     mConfig->mAPath.mMaxCmdPosition = 1.0;
 
     /// @test  Exception on path B input data manual position  > max position.
     mInput->mBPath.mManualPositionFlag  = true;
-    mInput->mBPath.mManualPositionValue = mConfig->mBPath.mMaxCmdPosition + FLT_EPSILON;
+    mInput->mBPath.mManualPositionValue = mConfig->mBPath.mMaxCmdPosition + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(mArticle->initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!mArticle->isInitialized());
     mInput->mBPath.mManualPositionFlag  = false;

@@ -61,11 +61,11 @@ void UtSensorBooleanAi::testConfigData()
     /// - Test default construction of a test config data article.
     SensorBooleanAiConfigData defaultConfig;
     CPPUNIT_ASSERT(false == defaultConfig.mOffValue);
-    CPPUNIT_ASSERT(0.0   == defaultConfig.mTarget);
-    CPPUNIT_ASSERT(0.0   == defaultConfig.mTolerance);
+    CPPUNIT_ASSERT(0.0F  == defaultConfig.mTarget);
+    CPPUNIT_ASSERT(0.0F  == defaultConfig.mTolerance);
 
     /// - Test nominal construction of a test config data article.
-    SensorBooleanAiConfigData nominalConfig(true, 0.9, 0.1);
+    SensorBooleanAiConfigData nominalConfig(true, 0.9F, 0.1F);
     CPPUNIT_ASSERT(true          == nominalConfig.mOffValue);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.9, nominalConfig.mTarget,    FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1, nominalConfig.mTolerance, FLT_EPSILON);
@@ -106,7 +106,7 @@ void UtSensorBooleanAi::testInputData()
     CPPUNIT_ASSERT(false == defaultInput.mMalfPerfectSensor);
     CPPUNIT_ASSERT(false == defaultInput.mTruthInput);
     CPPUNIT_ASSERT(false == defaultInput.mMalfFailToValue);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mTruthInputAnalog);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mTruthInputAnalog);
 
     /// - Test nominal construction of a test input data article.
     SensorBooleanAiInputData nominalInput(true, true, 0.5);
@@ -179,8 +179,8 @@ void UtSensorBooleanAi::testConstruction()
     CPPUNIT_ASSERT(false == tArticle.mSensedOutput);
 
     /// - Test default construction of the test article.
-    CPPUNIT_ASSERT(0.0   == tArticle.mTarget);
-    CPPUNIT_ASSERT(0.0   == tArticle.mTolerance);
+    CPPUNIT_ASSERT(0.0F  == tArticle.mTarget);
+    CPPUNIT_ASSERT(0.0F  == tArticle.mTolerance);
     CPPUNIT_ASSERT(0.0   == tArticle.mTruthInputAnalog);
 
     std::cout << "... Pass";
@@ -194,8 +194,8 @@ void UtSensorBooleanAi::testInitialize()
     std::cout << "\n UtSensorBooleanAi .... 04: testInitialize.............................";
 
     /// - Define nominal config & input data.
-    SensorBooleanAiConfigData nominalConfig(true, 0.9, 0.1);
-    SensorBooleanAiInputData  nominalInput(true, true, 0.89);
+    SensorBooleanAiConfigData nominalConfig(true, 0.9F, 0.1F);
+    SensorBooleanAiInputData  nominalInput(true, true, 0.89F);
 
     /// - Test nominal initialization of the test article base classes.
     CPPUNIT_ASSERT_NO_THROW(tArticle.initialize(nominalConfig, nominalInput, tName.c_str()));
@@ -230,8 +230,8 @@ void UtSensorBooleanAi::testInitializeExceptions()
     std::cout << "\n UtSensorBooleanAi .... 05: testInitializeExceptions...................";
 
     /// - Verify exception is thrown when tolerance is < 0.
-    SensorBooleanAiConfigData nominalConfig(true, 0.9, -0.01);
-    SensorBooleanAiInputData  nominalInput(true, true, 0.89);
+    SensorBooleanAiConfigData nominalConfig(true, 0.9F, -0.01F);
+    SensorBooleanAiInputData  nominalInput(true, true, 0.89F);
     CPPUNIT_ASSERT_THROW(tArticle.initialize(nominalConfig, nominalInput, tName.c_str()),
                          TsInitializationException);
 
@@ -249,8 +249,8 @@ void UtSensorBooleanAi::testAccessors()
     std::cout << "\n UtSensorBooleanAi .... 06: testAccessors..............................";
 
     /// - Set up a test article with nominal config & input data.
-    SensorBooleanAiConfigData nominalConfig(false, 0.9, 0.1);
-    SensorBooleanAiInputData  nominalInput(false, false, 0.5);
+    SensorBooleanAiConfigData nominalConfig(false, 0.9F, 0.1F);
+    SensorBooleanAiInputData  nominalInput(false, false, 0.5F);
     tArticle.initialize(nominalConfig, nominalInput, tName.c_str());
 
     /// - Test the methods to set and get the input truth analog value.
@@ -274,8 +274,8 @@ void UtSensorBooleanAi::testUpdateNominal()
     std::cout << "\n UtSensorBooleanAi .... 07: testUpdateNominal..........................";
 
     /// - Set up a test article with nominal config & input data.
-    SensorBooleanAiConfigData nominalConfig(false, 0.9, 0.1);
-    SensorBooleanAiInputData  nominalInput(true, false, 0.5);
+    SensorBooleanAiConfigData nominalConfig(false, 0.9F, 0.1F);
+    SensorBooleanAiInputData  nominalInput(true, false, 0.5F);
     tArticle.initialize(nominalConfig, nominalInput, tName.c_str());
 
     /// - The following tests verify the output of the sensor when the truth input is in different
@@ -286,7 +286,7 @@ void UtSensorBooleanAi::testUpdateNominal()
     CPPUNIT_ASSERT(false == tArticle.getSensedOutput());
 
     /// - Verify: truth input = target - tolerance (within precision limits).
-    tArticle.setTruthInput(0.8 + FLT_EPSILON);
+    tArticle.setTruthInput(0.8F + FLT_EPSILON);
     tArticle.update(0.0);
     CPPUNIT_ASSERT(true  == tArticle.getSensedOutput());
 
@@ -301,7 +301,7 @@ void UtSensorBooleanAi::testUpdateNominal()
     CPPUNIT_ASSERT(true  == tArticle.getSensedOutput());
 
     /// - Verify: truth input = target + tolerance (within precision limits).
-    tArticle.setTruthInput(1.0 - FLT_EPSILON);
+    tArticle.setTruthInput(1.0F - FLT_EPSILON);
     tArticle.update(0.0);
     CPPUNIT_ASSERT(true  == tArticle.getSensedOutput());
 
@@ -321,12 +321,12 @@ void UtSensorBooleanAi::testSense()
     std::cout << "\n UtSensorBooleanAi .... 08: testSense..................................";
 
     /// - Set up a test article with nominal config & input data.
-    SensorBooleanAiConfigData nominalConfig(false, 0.9, 0.1);
-    SensorBooleanAiInputData  nominalInput(true, false, 0.5);
+    SensorBooleanAiConfigData nominalConfig(false, 0.9F, 0.1F);
+    SensorBooleanAiInputData  nominalInput(true, false, 0.5F);
     tArticle.initialize(nominalConfig, nominalInput, tName.c_str());
 
     /// - Verify: truth input = target - tolerance (within precision limits).
-    CPPUNIT_ASSERT(tArticle.sense(0.0, true, 0.8 + FLT_EPSILON));
+    CPPUNIT_ASSERT(tArticle.sense(0.0, true, 0.8 + static_cast<double>(FLT_EPSILON)));
 
     std::cout << "... Pass.";
     std::cout << "\n--------------------------------------------------------------------------------";

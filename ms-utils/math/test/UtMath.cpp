@@ -106,8 +106,8 @@ void UtMath::testAnglePi()
     returned  = MsMath::anglePi(+2.5 * UnitConversion::PI_UTIL);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
-    expected  = UnitConversion::PI_UTIL - FLT_EPSILON;
-    returned  = MsMath::anglePi(+3.0 * UnitConversion::PI_UTIL - FLT_EPSILON);
+    expected  = UnitConversion::PI_UTIL - static_cast<double>(FLT_EPSILON);
+    returned  = MsMath::anglePi(+3.0 * UnitConversion::PI_UTIL - static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     std::cout << "Pass";
@@ -186,8 +186,8 @@ void UtMath::testAngle2Pi()
     returned  = MsMath::angle2Pi(+3.5 * UnitConversion::PI_UTIL);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
-    expected  = 2.0 * UnitConversion::PI_UTIL - FLT_EPSILON;
-    returned  = MsMath::angle2Pi(+4.0 * UnitConversion::PI_UTIL - FLT_EPSILON);
+    expected  = 2.0 * UnitConversion::PI_UTIL - static_cast<double>(FLT_EPSILON);
+    returned  = MsMath::angle2Pi(+4.0 * UnitConversion::PI_UTIL - static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     std::cout << "Pass";
@@ -250,8 +250,8 @@ void UtMath::testAngle180()
     returned  = MsMath::angle180(+2.5 * 180.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
-    expected  = +1.0 * 180.0 - FLT_EPSILON;
-    returned  = MsMath::angle180(+3.0 * 180.0 - FLT_EPSILON);
+    expected  = +1.0 * 180.0 - static_cast<double>(FLT_EPSILON);
+    returned  = MsMath::angle180(+3.0 * 180.0 - static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     std::cout << "Pass";
@@ -330,8 +330,8 @@ void UtMath::testAngle360()
     returned  = MsMath::angle360(+3.5 * 180.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
-    expected  = 2.0 * 180.0 - FLT_EPSILON;
-    returned  = MsMath::angle360(+4.0 * 180.0 - FLT_EPSILON);
+    expected  = 2.0 * 180.0 - static_cast<double>(FLT_EPSILON);
+    returned  = MsMath::angle360(+4.0 * 180.0 - static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     std::cout << "Pass";
@@ -355,8 +355,8 @@ void UtMath::testProtectedAsin()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within upper limit
-    expected  = std::asin(+1.0 - 2.0 * FLT_EPSILON);
-    returned  = MsMath::protectedAsin(+1.0 - 2.0 * FLT_EPSILON);
+    expected  = std::asin(+1.0 - 2.0 * static_cast<double>(FLT_EPSILON));
+    returned  = MsMath::protectedAsin(+1.0 - 2.0 * static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument well within limits
@@ -365,8 +365,8 @@ void UtMath::testProtectedAsin()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = std::asin(-1.0 + 2.0 * FLT_EPSILON);
-    returned  = MsMath::protectedAsin(-1.0 + 2.0 * FLT_EPSILON);
+    expected  = std::asin(-1.0 + 2.0 * static_cast<double>(FLT_EPSILON));
+    returned  = MsMath::protectedAsin(-1.0 + 2.0 * static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
@@ -400,8 +400,8 @@ void UtMath::testProtectedAcos()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within upper limit
-    expected  = std::acos(+1.0 - 2.0 * FLT_EPSILON);
-    returned  = MsMath::protectedAcos(+1.0 - 2.0 * FLT_EPSILON);
+    expected  = std::acos(+1.0 - 2.0 * static_cast<double>(FLT_EPSILON));
+    returned  = MsMath::protectedAcos(+1.0 - 2.0 * static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument well within limits
@@ -410,8 +410,8 @@ void UtMath::testProtectedAcos()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument just within lower limit
-    expected  = std::acos(-1.0 + 2.0 * FLT_EPSILON);
-    returned  = MsMath::protectedAcos(-1.0 + 2.0 * FLT_EPSILON);
+    expected  = std::acos(-1.0 + 2.0 * static_cast<double>(FLT_EPSILON));
+    returned  = MsMath::protectedAcos(-1.0 + 2.0 * static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
@@ -441,7 +441,7 @@ void UtMath::testProtectedSqrt()
 
     /// @test for argument just within lower limit
     expected  = std::sqrt(static_cast<double>(FLT_EPSILON));
-    returned  = MsMath::protectedSqrt(FLT_EPSILON);
+    returned  = MsMath::protectedSqrt(static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
@@ -451,7 +451,7 @@ void UtMath::testProtectedSqrt()
 
     /// @test for argument just beyond lower limit
     expected  = 0.0;
-    returned  = MsMath::protectedSqrt(-FLT_EPSILON);
+    returned  = MsMath::protectedSqrt(-static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument well beyond lower limit
@@ -486,7 +486,7 @@ void UtMath::testProtectedLog10()
 
     /// @test for argument just beyond lower limit
     expected  = 0.0;
-    returned  = MsMath::protectedLog10(-FLT_EPSILON);
+    returned  = MsMath::protectedLog10(-static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument well beyond lower limit
@@ -511,7 +511,7 @@ void UtMath::testProtectedLog()
 
     /// @test for argument just within lower limit
     expected  = std::log(static_cast<double>(FLT_EPSILON));
-    returned  = MsMath::protectedLog(FLT_EPSILON);
+    returned  = MsMath::protectedLog(static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument at lower limit
@@ -521,7 +521,7 @@ void UtMath::testProtectedLog()
 
     /// @test for argument just beyond lower limit
     expected  = 0.0;
-    returned  = MsMath::protectedLog(-FLT_EPSILON);
+    returned  = MsMath::protectedLog(-static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for argument well beyond lower limit
@@ -564,63 +564,63 @@ void UtMath::testprotectedDiv()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for negative denominator inside non-default threshold with default zero return value
-    den              = -FLT_EPSILON * 0.5;
+    den              = -static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  0.0;
-    returned         =  MsMath::protectedDiv(-1000.0, den, FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(-1000.0, den, static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for negative denominator outside non-default threshold with default zero return value
-    den              = -FLT_EPSILON * 2.0;
-    expected         = -0.5 / FLT_EPSILON;
-    returned         =  MsMath::protectedDiv(1.0, den, FLT_EPSILON);
+    den              = -static_cast<double>(FLT_EPSILON) * 2.0;
+    expected         = -0.5 / static_cast<double>(FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1.0, den, static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator inside non-default threshold with default zero return value
-    den              =  FLT_EPSILON * 0.5;
+    den              =  static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  0.0;
-    returned         =  MsMath::protectedDiv(1000.0, den, FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1000.0, den, static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator outside non-default threshold with default zero return value
-    den              =  FLT_EPSILON * 2.0;
-    expected         = -0.5 / FLT_EPSILON;
-    returned         =  MsMath::protectedDiv(-1.0, den, FLT_EPSILON);
+    den              =  static_cast<double>(FLT_EPSILON) * 2.0;
+    expected         = -0.5 / static_cast<double>(FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(-1.0, den, static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for negative denominator inside non-default threshold with non-default zero return value
-    den              = -FLT_EPSILON * 0.5;
+    den              = -static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  1.0;
-    returned         =  MsMath::protectedDiv(-123456789.0, den, FLT_EPSILON, expected);
+    returned         =  MsMath::protectedDiv(-123456789.0, den, static_cast<double>(FLT_EPSILON), expected);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator inside non-default threshold with non-default zero return value
-    den              =  FLT_EPSILON * 0.5;
+    den              =  static_cast<double>(FLT_EPSILON) * 0.5;
     expected         = -1.0;
-    returned         =  MsMath::protectedDiv(987654321.0, den, FLT_EPSILON, expected);
+    returned         =  MsMath::protectedDiv(987654321.0, den, static_cast<double>(FLT_EPSILON), expected);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator inside negative threshold with default zero return value
-    den              =  FLT_EPSILON * 0.5;
+    den              =  static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  1.0 / den;
-    returned         =  MsMath::protectedDiv(1.0, den, -FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1.0, den, -static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator outside negative threshold with default zero return value
-    den              =  FLT_EPSILON * 2.0;
+    den              =  static_cast<double>(FLT_EPSILON) * 2.0;
     expected         =  1.0 / den;
-    returned         =  MsMath::protectedDiv(1.0, den, -FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1.0, den, -static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for negative denominator inside negative threshold with default zero return value
-    den              = -FLT_EPSILON * 0.5;
+    den              = -static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  1.0 / den;
-    returned         =  MsMath::protectedDiv(1.0, den, -FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1.0, den, -static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     /// @test for positive denominator inside negative threshold with default zero return value
-    den              =  FLT_EPSILON * 0.5;
+    den              =  static_cast<double>(FLT_EPSILON) * 0.5;
     expected         =  1.0 / den;
-    returned         =  MsMath::protectedDiv(1.0, den, -FLT_EPSILON);
+    returned         =  MsMath::protectedDiv(1.0, den, -static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, returned,  m_defaultTolerance);
 
     std::cout << "Pass";

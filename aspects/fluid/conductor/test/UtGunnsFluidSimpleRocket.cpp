@@ -355,7 +355,7 @@ void UtGunnsFluidSimpleRocket::testNominalInitialization()
     const double expectedG  = 1000.0 * tThroatArea / tCharacteristicVelocity;
     const double expectedMW = 21.87156537;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,  tArticle->mDefaultConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(0                      == tArticle->mCombustModel);
 
     /// @test    Nominal input data.
@@ -413,7 +413,7 @@ void UtGunnsFluidSimpleRocket::testCombustionInitialization()
     const double expectedG  = 1000.0 * tThroatArea / tCharacteristicVelocity;
     const double expectedMW = 21.87156537;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,  tArticle->mDefaultConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(0                      != tArticle->mCombustModel);
 
     /// @test    Nominal input data.
@@ -593,7 +593,7 @@ void UtGunnsFluidSimpleRocket::testStep()
     CPPUNIT_ASSERT(false == tArticle->mAdmittanceUpdate);
 
     /// @test   negative pressure gradient.
-    tArticle->mPotentialVector[0] = tNodes[1].getOutflow()->getPressure() - FLT_EPSILON;
+    tArticle->mPotentialVector[0] = tNodes[1].getOutflow()->getPressure() - static_cast<double>(FLT_EPSILON);
     tArticle->mAdmittanceUpdate = false;
     tArticle->step(0.01);
 

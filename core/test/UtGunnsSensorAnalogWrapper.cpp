@@ -19,16 +19,16 @@ UtGunnsSensorAnalogWrapper::UtGunnsSensorAnalogWrapper()
     tName(""),
     tConfig(),
     tInput(),
-    tMinRange(0.0),
-    tMaxRange(0.0),
-    tOffValue(0.0),
-    tNominalBias(0.0),
-    tNominalScale(0.0),
-    tNominalNoiseScale(0.0),
-    tNominalResolution(0.0),
+    tMinRange(0.0F),
+    tMaxRange(0.0F),
+    tOffValue(0.0F),
+    tNominalBias(0.0F),
+    tNominalScale(0.0F),
+    tNominalNoiseScale(0.0F),
+    tNominalResolution(0.0F),
     tNoiseFunction(),
     tUnitConversion(),
-    tNominalNoiseMult(0.0),
+    tNominalNoiseMult(0.0F),
     tPowerFlag(false),
     tTruthInput(0.0),
     tTimeStep()
@@ -62,14 +62,14 @@ void UtGunnsSensorAnalogWrapper::setUp()
 {
     /// - Define nominal config data.
     tName              = "Test Sensor";
-    tMinRange          =  1.0;
-    tMaxRange          = 49.0;
-    tOffValue          =  5.0;
-    tNominalBias       =  0.1;
-    tNominalScale      =  0.99;
-    tNominalNoiseScale =  1.0;
-    tNominalNoiseMult  =  0.01;
-    tNominalResolution =  0.2;
+    tMinRange          =  1.0F;
+    tMaxRange          = 49.0F;
+    tOffValue          =  5.0F;
+    tNominalBias       =  0.1F;
+    tNominalScale      =  0.99F;
+    tNominalNoiseScale =  1.0F;
+    tNominalNoiseMult  =  0.01F;
+    tNominalResolution =  0.2F;
     tNoiseFunction     = UtSensorAnalogNoise::testNoise;
     tUnitConversion    = UnitConversion::NO_CONVERSION;
     tConfig = new GunnsSensorAnalogWrapperConfigData(tName,
@@ -117,13 +117,13 @@ void UtGunnsSensorAnalogWrapper::testConfig()
     /// - Test default config data construction.
     GunnsSensorAnalogWrapperConfigData defaultConfig(tName);
     CPPUNIT_ASSERT(tName                         == tConfig->mName);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mMinRange);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mMaxRange);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mOffValue);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mNominalBias);
-    CPPUNIT_ASSERT(1.0                           == defaultConfig.mSensor.mNominalScale);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mNominalNoiseScale);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mSensor.mNominalResolution);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mMinRange);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mMaxRange);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mOffValue);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mNominalBias);
+    CPPUNIT_ASSERT(1.0F                          == defaultConfig.mSensor.mNominalScale);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mNominalNoiseScale);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mSensor.mNominalResolution);
     CPPUNIT_ASSERT(TsNoise::getNoise             == defaultConfig.mSensor.mNoiseFunction);
     CPPUNIT_ASSERT(UnitConversion::NO_CONVERSION == defaultConfig.mSensor.mUnitConversion);
 
@@ -158,7 +158,7 @@ void UtGunnsSensorAnalogWrapper::testDefaultConstruction()
 
     /// @test state data
     CPPUNIT_ASSERT(""    == tArticle->mName);
-    CPPUNIT_ASSERT(0.0   == tArticle->mSensor.mDrift);
+    CPPUNIT_ASSERT(0.0F  == tArticle->mSensor.mDrift);
     CPPUNIT_ASSERT(false == tArticle->mStepPreSolverFlag);
     CPPUNIT_ASSERT(false == tArticle->mStepPostSolverFlag);
 
@@ -226,7 +226,7 @@ void UtGunnsSensorAnalogWrapper::testInitializeExceptions()
     delete badInput;
 
     /// - Test exception thrown from bad sensor init.
-    tConfig->mSensor.mMinRange = tMaxRange + 1.0;
+    tConfig->mSensor.mMinRange = tMaxRange + 1.0F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(tConfig, tInput), TsInitializationException);
     CPPUNIT_ASSERT(false == tArticle->mInitFlag);
     tConfig->mSensor.mMinRange = tMinRange;

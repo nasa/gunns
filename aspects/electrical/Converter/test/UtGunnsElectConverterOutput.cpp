@@ -101,11 +101,11 @@ void UtGunnsElectConverterOutput::setUp()
                                                                   &tSensorVout,
                                                                   &tSensorIout,
                                                                   tTripPriority,
-                                                                  tOutOverVoltageTrip,
-                                                                  tOutOverCurrentTrip,
+                                                                  static_cast<float>(tOutOverVoltageTrip),
+                                                                  static_cast<float>(tOutOverCurrentTrip),
                                                                   &tInputLink,
                                                                   tEnableLimit,
-                                                                  tOutUnderVoltageTrip);
+                                                                  static_cast<float>(tOutUnderVoltageTrip));
 
     /// - Define the nominal input data.
     tMalfBlockageFlag  = true;
@@ -167,11 +167,11 @@ void UtGunnsElectConverterOutput::testConfig()
     CPPUNIT_ASSERT(&tSensorVout          == tConfigData->mOutputVoltageSensor);
     CPPUNIT_ASSERT(&tSensorIout          == tConfigData->mOutputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority         == tConfigData->mTripPriority);
-    CPPUNIT_ASSERT(tOutOverVoltageTrip   == tConfigData->mOutputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(tOutOverCurrentTrip   == tConfigData->mOutputOverCurrentTripLimit);
+    CPPUNIT_ASSERT(tOutOverVoltageTrip   == static_cast<double>(tConfigData->mOutputOverVoltageTripLimit));
+    CPPUNIT_ASSERT(tOutOverCurrentTrip   == static_cast<double>(tConfigData->mOutputOverCurrentTripLimit));
     CPPUNIT_ASSERT(&tInputLink           == tConfigData->mInputLink);
     CPPUNIT_ASSERT(true                  == tConfigData->mEnableLimiting);
-    CPPUNIT_ASSERT(tOutUnderVoltageTrip  == tConfigData->mOutputUnderVoltageTripLimit);
+    CPPUNIT_ASSERT(tOutUnderVoltageTrip  == static_cast<double>(tConfigData->mOutputUnderVoltageTripLimit));
     CPPUNIT_ASSERT(4                     == tConfigData->mStateFlipsLimit);
 
     /// @test    Configuration data default construction.
@@ -182,11 +182,11 @@ void UtGunnsElectConverterOutput::testConfig()
     CPPUNIT_ASSERT(0                                  == defaultConfig.mOutputVoltageSensor);
     CPPUNIT_ASSERT(0                                  == defaultConfig.mOutputCurrentSensor);
     CPPUNIT_ASSERT(0                                  == defaultConfig.mTripPriority);
-    CPPUNIT_ASSERT(0.0                                == defaultConfig.mOutputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(0.0                                == defaultConfig.mOutputOverCurrentTripLimit);
+    CPPUNIT_ASSERT(0.0F                               == defaultConfig.mOutputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(0.0F                               == defaultConfig.mOutputOverCurrentTripLimit);
     CPPUNIT_ASSERT(0                                  == defaultConfig.mInputLink);
     CPPUNIT_ASSERT(false                              == defaultConfig.mEnableLimiting);
-    CPPUNIT_ASSERT(0.0                                == defaultConfig.mOutputUnderVoltageTripLimit);
+    CPPUNIT_ASSERT(0.0F                               == defaultConfig.mOutputUnderVoltageTripLimit);
     CPPUNIT_ASSERT(4                                  == defaultConfig.mStateFlipsLimit);
 
     /// @test    Configuration data copy construction.
@@ -197,11 +197,11 @@ void UtGunnsElectConverterOutput::testConfig()
     CPPUNIT_ASSERT(&tSensorVout          == copyConfig.mOutputVoltageSensor);
     CPPUNIT_ASSERT(&tSensorIout          == copyConfig.mOutputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority         == copyConfig.mTripPriority);
-    CPPUNIT_ASSERT(tOutOverVoltageTrip   == copyConfig.mOutputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(tOutOverCurrentTrip   == copyConfig.mOutputOverCurrentTripLimit);
+    CPPUNIT_ASSERT(tOutOverVoltageTrip   == static_cast<double>(copyConfig.mOutputOverVoltageTripLimit));
+    CPPUNIT_ASSERT(tOutOverCurrentTrip   == static_cast<double>(copyConfig.mOutputOverCurrentTripLimit));
     CPPUNIT_ASSERT(&tInputLink           == copyConfig.mInputLink);
     CPPUNIT_ASSERT(tEnableLimit          == copyConfig.mEnableLimiting);
-    CPPUNIT_ASSERT(tOutUnderVoltageTrip  == copyConfig.mOutputUnderVoltageTripLimit);
+    CPPUNIT_ASSERT(tOutUnderVoltageTrip  == static_cast<double>(copyConfig.mOutputUnderVoltageTripLimit));
     CPPUNIT_ASSERT(4                     == copyConfig.mStateFlipsLimit);
 
     UT_PASS;
@@ -328,9 +328,9 @@ void UtGunnsElectConverterOutput::testNominalInitialization()
     CPPUNIT_ASSERT(false == tArticle->mOutputOverVoltageTrip .isTripped());
     CPPUNIT_ASSERT(false == tArticle->mOutputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mOutputOverCurrentTrip .isTripped());
-    CPPUNIT_ASSERT(true  == tArticle->mOutputOverVoltageTrip .checkForTrip(result, tOutOverVoltageTrip  + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true  == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, tOutUnderVoltageTrip - 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true  == tArticle->mOutputOverCurrentTrip .checkForTrip(result, tOutOverCurrentTrip  + 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mOutputOverVoltageTrip .checkForTrip(result, static_cast<float>(tOutOverVoltageTrip  + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tOutUnderVoltageTrip - 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mOutputOverCurrentTrip .checkForTrip(result, static_cast<float>(tOutOverCurrentTrip  + 0.01), tTripPriority));
 
     /// @test    Nominal state data.
     CPPUNIT_ASSERT(true  == tArticle->mOutputPowerAvailable);
@@ -464,9 +464,9 @@ void UtGunnsElectConverterOutput::testStep()
 
         /// @test    Reset trips when commanded.
         GunnsBasicLink::SolutionResult result;
-        CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .checkForTrip(result, tOutOverVoltageTrip  + 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, tOutUnderVoltageTrip - 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .checkForTrip(result, tOutOverCurrentTrip  + 0.01, tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .checkForTrip(result, static_cast<float>(tOutOverVoltageTrip  + 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tOutUnderVoltageTrip - 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .checkForTrip(result, static_cast<float>(tOutOverCurrentTrip  + 0.01), tTripPriority));
         CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .isTripped());
@@ -482,9 +482,9 @@ void UtGunnsElectConverterOutput::testStep()
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
 
         /// @test    Trips not reset when not commanded.
-        CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .checkForTrip(result, tOutOverVoltageTrip  + 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, tOutUnderVoltageTrip - 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .checkForTrip(result, tOutOverCurrentTrip  + 0.01, tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .checkForTrip(result, static_cast<float>(tOutOverVoltageTrip  + 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tOutUnderVoltageTrip - 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .checkForTrip(result, static_cast<float>(tOutOverCurrentTrip  + 0.01), tTripPriority));
         CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .isTripped());
@@ -837,12 +837,12 @@ void UtGunnsElectConverterOutput::testAccessors()
     article2.rejectWithLimitState(result, GunnsElectConverterOutput::LIMIT_OC);
     CPPUNIT_ASSERT(1 == article2.mLimitStateFlips);
 
-    CPPUNIT_ASSERT(0.0 == article2.computeVoltageControlSetpoint());
+    CPPUNIT_ASSERT(0.0F == article2.computeVoltageControlSetpoint());
 
     article2.mRegulatorType  = GunnsElectConverterOutput::POWER;
     article2.mLoadResistance = 1.0;
     article2.setSetpoint(1.0);
-    CPPUNIT_ASSERT(1.0 == article2.computeCurrentControlSetpoint());
+    CPPUNIT_ASSERT(1.0F == article2.computeCurrentControlSetpoint());
 
     UT_PASS;
 }
@@ -1054,7 +1054,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     tArticle->mPotentialVector[0]  = 0.1;
     tArticle->mSourceVoltage       = 0.0;
     tArticle->mLimitStateFlips     = 0;
-    double expectedFlux            = std::max(0.0, tSetpoint - 0.1 * FLT_EPSILON);
+    double expectedFlux            = std::max(0.0, tSetpoint - 0.1 * static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
     CPPUNIT_ASSERT(false                               == tArticle->mOutputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_UV == tArticle->mLimitState);
@@ -1188,12 +1188,12 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
 
     /// @test    Rejects due to entering the over-voltage limiting state from over-current limit due
     ///          to excess output voltage.
-    tArticle->mAdmittanceMatrix[0] = FLT_EPSILON;
+    tArticle->mAdmittanceMatrix[0] = static_cast<double>(FLT_EPSILON);
     tArticle->mSourceVector[0]     = tOutOverCurrentTrip;
     tArticle->mPotentialVector[0]  = 200.0;
     tArticle->mLimitStateFlips     = 3;
     tArticle->mInputPowerValid     = true;
-    expectedFlux = tOutOverCurrentTrip - 200.0 * FLT_EPSILON;
+    expectedFlux = tOutOverCurrentTrip - 200.0 * static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_OV == tArticle->mLimitState);
     CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
@@ -1207,7 +1207,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     tArticle->mLimitStateFlips     = 3;
     tArticle->mReverseBiasState    = false;
     tArticle->mInputPowerValid     = true;
-    expectedFlux = tOutOverCurrentTrip - 120.0 * FLT_EPSILON;
+    expectedFlux = tOutOverCurrentTrip - 120.0 * static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
     CPPUNIT_ASSERT(GunnsElectConverterOutput::NO_LIMIT == tArticle->mLimitState);
     CPPUNIT_ASSERT(3                                   == tArticle->mLimitStateFlips);

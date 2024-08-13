@@ -41,8 +41,8 @@ public:
     SensorBooleanAiConfigData mClose;   /**< (--) trick_chkpnt_io(**) CLose sensor config */
 
     SensorVlvOpenCloseConfigData(
-            const SensorBooleanAiConfigData &open  = SensorBooleanAiConfigData(false, 1.0,  0.0001),
-            const SensorBooleanAiConfigData &close = SensorBooleanAiConfigData(false, 0.0,  0.0001));
+            const SensorBooleanAiConfigData &open  = SensorBooleanAiConfigData(false, 1.0F,  0.0001F),
+            const SensorBooleanAiConfigData &close = SensorBooleanAiConfigData(false, 0.0F,  0.0001F));
     virtual ~SensorVlvOpenCloseConfigData();
 
     // ok to use compiler generated copy constructor and operator=

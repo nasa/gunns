@@ -69,10 +69,10 @@ class TestOverflow43(Test):
     # Tests final total fluid quantities in all nodes against the stored values from the start of
     # the test, for conservation of mass & energy.
     def checkNodesFinalState(self):
-       final_total_mass     = 0.0 
+       final_total_mass     = 0.0
       # final_total_enthalpy = - heatProduced
        final_total_mass_N2  = 0.0
-       final_total_mass_O2  = 0.0 
+       final_total_mass_O2  = 0.0
        final_total_mass_H2O = 0.0
        final_total_mass_CO2 = 0.0
        final_total_mass_respiration = 0.0;
@@ -107,7 +107,7 @@ class TestOverflow43(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid43.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid43.netNodes[node]
     # Getter for node fluid
@@ -122,4 +122,3 @@ class TestOverflow43(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

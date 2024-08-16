@@ -23,7 +23,7 @@ class XmlEntryAnalyzer:
     ## Default constructs the object with default, uninitialized members.
     def __init__(self):
         uninitialized = "[not initialized]"
-        
+
         ## An XmlParser() object for getting data from xml elements.
         self.mParser = XmlParser()
         ## An xml entry from a registry file. This object is only associated with a single entry.
@@ -38,21 +38,21 @@ class XmlEntryAnalyzer:
         self.mDescription = uninitialized
         ## Initialization flag.
         self.mIsInitialized = False
-            
-    #===============================================================================================         
+
+    #===============================================================================================
     ## @brief:
     ## Constructs the class using two arguments.
     ## @param[in]: entry    ElementTree xml-element of data from Thermal, Htr, or Panel registry
     ## @param[in]: symMap   dictionary with the definitions of symbols used in the registries
     def initialize(self, entry, symMap={}):
-        
+
         ## An xml entry from a registry file. This object is only associated with a single entry.
         self.mEntry = entry
         ## A dictionary with the definitions of symbols used in the registries
         self.mSymMap = symMap
         ## Name of the Thermal Gunns node/link, as read from the registry entry.
         self.mName = entry.get("name")
-        
+
         ## The node entry must have a name. Raise exception if otherwise.
         if None == self.mName:
             raise ThermError("Must have a name attribute.")
@@ -62,7 +62,7 @@ class XmlEntryAnalyzer:
             self.mDescription = self.mParser.getChildText(entry, "des")
         except TagNotFound:
             self.mDescription = ""
-        
+
     #===============================================================================================
     ## @brief:
     ## Evaluate an expression value based on symbols defined in mSymMap.
@@ -75,13 +75,13 @@ class XmlEntryAnalyzer:
         except (NameError, SyntaxError), e:
             print e,
             raise ThermError("Invalid value: %s (%s)." % (expr, info))
-                       
-        ## Do not accept negative values.   
+
+        ## Do not accept negative values.
         if value < 0:
             raise ThermError("Cannot accept a negative. %s = %f" % (expr, value))
 
         return value
-    #-----------------------------------------------------------------------------------------------    
+    #-----------------------------------------------------------------------------------------------
     ## Reads specific piece of xml data.
     ## @param[in]: element xml-element from which <tag> should be pulled
     ## @param[in]: tag     tag of xml-element of data to read

@@ -1,6 +1,6 @@
 /* @copyright Copyright 2021 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved. */
-           
+
 /* This sim tests that a single C++ class can be built error-free in a Trick sim.
    This sim is built and run by invoking the test_class.sh script.  See comments in that script
    for more info.  This sim is only meant to be built, and not run.  It has no run jobs. */

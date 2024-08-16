@@ -770,7 +770,7 @@ void UtGunnsGasTurbine::testUpdateState()
     tArticle->mFlux = 1.0;
 
     CPPUNIT_ASSERT(tNodes[0].getOutflow()->getPressure()!= tNodes[0].getContent()->getPressure());
-    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!= 
+    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!=
                                            tNodes[0].getContent()->getTemperature());
 
     tArticle->computeFlowRate();
@@ -778,7 +778,7 @@ void UtGunnsGasTurbine::testUpdateState()
             tNodes[0].getOutflow()->getPressure(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(std::max(DBL_EPSILON,tNodes[0].getOutflow()->getTemperature()),
             tNodes[0].getOutflow()->getTemperature(), DBL_EPSILON);
-           
+
     tNodes[1].getContent()->setTemperature(75);
     tNodes[1].getContent()->setPressure(20);
     tNodes[1].resetFlows();
@@ -786,8 +786,8 @@ void UtGunnsGasTurbine::testUpdateState()
     tNodes[1].getContent()->setPressure(100);
 
     CPPUNIT_ASSERT(tNodes[1].getOutflow()->getPressure()!= tNodes[1].getContent()->getPressure());
-    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!= 
-                                           tNodes[1].getContent()->getTemperature()); 
+    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!=
+                                           tNodes[1].getContent()->getTemperature());
 
     tArticle->computeFlowRate();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(std::max(DBL_EPSILON,tNodes[1].getOutflow()->getPressure()),

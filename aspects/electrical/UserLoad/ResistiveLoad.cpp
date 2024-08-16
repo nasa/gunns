@@ -147,8 +147,8 @@ ResistiveLoadInputData::~ResistiveLoadInputData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ResistiveLoad::ResistiveLoad()
     :UserLoadBase(),
-	 mResistanceNormal(1.0E6),
-	 mResistanceStandby(1.0E8),
+     mResistanceNormal(1.0E6),
+     mResistanceStandby(1.0E8),
          mPrintMessageOnce(false)
 {
     // nothing to do
@@ -364,8 +364,3 @@ void ResistiveLoad::computeActualPower() {
 void ResistiveLoad::updateLoad(){
     //update resistance.
 }
-
-
-
-
-

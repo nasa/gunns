@@ -153,7 +153,7 @@ void UtGunnsElectricalResistor::testDefaultConstruction()
 
     /// @test config data
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mResistance,   0.0);
-    
+
     /// @test class member default construction
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mVoltageIn,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mVoltageOut,   0.0);

@@ -57,7 +57,7 @@ massOverflow.fluid35.netConfig.msorb13ad.addCompound(trick.ChemicalCompound.H2O,
 massOverflow.fluid48.netConfig.msorb45de.addCompound(trick.ChemicalCompound.CO2,0.1,0.85,0.0,0.05,0.01,-1.0,True,trick.ChemicalCompound.NO_COMPOUND,True,0.0,0.1,1.0)
 massOverflow.fluid48.netConfig.msorb12ad.addCompound(trick.ChemicalCompound.H2O,0.11,0.75,0.0,0.05,0.01,-1.0,True,trick.ChemicalCompound.NO_COMPOUND,False,1.0,0.0,1.0)
 
-massOverflow.fluid37.sub14.setHeatBalance(-10000.0) 
+massOverflow.fluid37.sub14.setHeatBalance(-10000.0)
 
 # Configure sorbant segments in the GunnsFluidCdraAdsorber links
 massOverflow.fluid41.cdra13.addSegment(0, trick.GunnsFluidCdraAdsorber.ZEO_5A_RK38, 0.0, 0.00216)

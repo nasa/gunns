@@ -74,7 +74,7 @@ class TestOverflow45(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid45.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid45.netNodes[node]
     # Getter for node fluid

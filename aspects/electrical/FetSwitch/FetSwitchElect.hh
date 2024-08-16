@@ -36,12 +36,12 @@ class FetSwitchElectConfigData : public GunnsBasicLinkConfigData
 {
     public:
 
-	   FetSwitchConfigData mSwitchConfigData;  /**< (--) trick_chkpnt_io(**) TODO needs comment */
+       FetSwitchConfigData mSwitchConfigData;  /**< (--) trick_chkpnt_io(**) TODO needs comment */
 
 
        FetSwitchElectConfigData(const std::string name   = "Unnamed Link",
-       		                  GunnsNodeList*   nodes  = 0,
-       		                  const FetSwitchConfigData& config = 0);
+                                GunnsNodeList*   nodes  = 0,
+                                const FetSwitchConfigData& config = 0);
 
         virtual ~FetSwitchElectConfigData();
 
@@ -95,13 +95,13 @@ class FetSwitchElect: public GunnsBasicLink
     public:
         FetSwitchElect() __attribute__ ((deprecated));
         virtual ~FetSwitchElect();
-	    void initialize(const FetSwitchElectConfigData& configData,
-	    		        const FetSwitchElectInputData& inputData,
+        void initialize(const FetSwitchElectConfigData& configData,
+                        const FetSwitchElectInputData& inputData,
                         std::vector<GunnsBasicLink*>&   networkLinks,
                         const int  port0,
                         const int  port1);
         void initializeSwitch(const FetSwitchElectConfigData& configData,
-        		              const FetSwitchElectInputData& inputData);
+                              const FetSwitchElectInputData& inputData);
         virtual void step(double timeStep);
         void updateSwitchState();
         virtual void minorStep(const double timeStep, const int minorStep);

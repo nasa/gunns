@@ -8,7 +8,7 @@ GUNNSDRAWINGS := \
  $(GUNNS_HOME)/sims/networks/example_space_vehicle/ExampleHxThermal.xml \
  $(GUNNS_HOME)/sims/networks/example_space_vehicle/ExamplePassiveThermal.xml \
  $(GUNNS_HOME)/sims/networks/example_space_vehicle/ExamplePowerElect.xml
- 
+
 ####################################################################################################
 # Don't touch the rest of this...
 # Make a list of network class headers from the drawing files.  Note this requires that the exported

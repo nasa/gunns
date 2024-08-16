@@ -50,7 +50,7 @@ class PvArrayRegTestConfigData
 {
     public:
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         GunnsSensorAnalogWrapperConfigData SAR1SensorVin;    /**< (--) trick_chkpnt_io(**) SAR1SensorVin config data. */
         GunnsSensorAnalogWrapperConfigData SAR1SensorVout;    /**< (--) trick_chkpnt_io(**) SAR1SensorVout config data. */
@@ -190,6 +190,6 @@ class PvArrayRegTest : public GunnsNetworkBase
         PvArrayRegTest& operator =(const PvArrayRegTest&);
 };
 
-/// @}  
+/// @}
 
 #endif

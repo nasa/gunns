@@ -294,7 +294,7 @@ void UtGunnsFluidPhaseChangeConductor::testNominalInitialization()
     tArticle->mSystemConductance     = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,tArticle->mEffectiveConductivity,DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,tArticle->mSystemConductance,DBL_EPSILON);
 
@@ -392,16 +392,16 @@ void UtGunnsFluidPhaseChangeConductor::testTransportFluid()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flowRate, tNodes[1].getOutflux(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flowRate, tNodes[0].getInflux(),  DBL_EPSILON);
-    
+
     /// @test    Check difference between content and outflow conditions
     tArticle->step(0.01);
     tArticle->mFlux = 1.0;
     tNodes[0].getContent()->setTemperature(25.0);
     tNodes[0].resetFlows();
     tNodes[0].getContent()->setTemperature(283.0);
-    tArticle->transportFlows(0.1); 
+    tArticle->transportFlows(0.1);
 
-    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!= 
+    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!=
                                     tNodes[0].getContent()->getTemperature());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mGasFluid->getTemperature(),
                                     tNodes[0].getOutflow()->getTemperature(), DBL_EPSILON);
@@ -416,7 +416,7 @@ void UtGunnsFluidPhaseChangeConductor::testTransportFluid()
     tNodes[1].getContent()->setTemperature(300.0);
     tArticle->transportFlows(0.1);
 
-    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!= 
+    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!=
                                     tNodes[1].getContent()->getTemperature());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mLiquidFluid->getTemperature(),
                                     tNodes[1].getOutflow()->getTemperature(), DBL_EPSILON);

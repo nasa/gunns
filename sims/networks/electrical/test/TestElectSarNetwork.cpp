@@ -33,7 +33,7 @@ const double TestElectSarNetwork::BattSocVocTableVOC[3] = {0.0,  12.5,  15.0};
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] name    (--) Name of the network for H&S messages.
 /// @param[in] network (--) Pointer to the main network object.
-/// 
+///
 /// @details  Default constructs the TestElectSarNetwork Network Config Data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 TestElectSarNetworkConfigData::TestElectSarNetworkConfigData(const std::string& name, TestElectSarNetwork* network)
@@ -103,7 +103,7 @@ TestElectSarNetwork::TestElectSarNetwork(const std::string& name)
     netNodes(),
     netConfig(name, this),
     netInput(this),
-    // Data Tables 
+    // Data Tables
     BattSocVocTable(BattSocVocTableSOC, BattSocVocTableVOC, 3, 0.0,  1.0),
     // Spotters
     sarSensorVout(),

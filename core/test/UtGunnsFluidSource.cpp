@@ -193,10 +193,10 @@ void UtGunnsFluidSource::testNominalInitialization()
 
     /// - Default construct and initialize (with nominal data) a test article
     FriendlyGunnsFluidSource article;
-    article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1); 
+    article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
 
     /// - There is currently nothing to validate
-    article.validate(); 
+    article.validate();
 
     /// @test config data
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mInitialFlowDemand, article.mFlowDemand, mTolerance);
@@ -273,12 +273,12 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->step(mTimeStep);
     mArticle->computeFlows(mTimeStep);
 
-    /// - Molar flux should be greater than zero because the port 0 potential vector is positive   
+    /// - Molar flux should be greater than zero because the port 0 potential vector is positive
     CPPUNIT_ASSERT( mArticle->mFlux > 0.0);
 
     /// - Confirm correct source port allocation with postive flow demand (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with positive flow demand (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[1]);
 
@@ -288,7 +288,7 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->transportFlows(mTimeStep);
 
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0, mArticle->determineSourcePort(mArticle->mFlux, 0, 1),
                                                                         DBL_EPSILON);
 
     /// - Since a basic source is a boundary condition the flow rate will be equal to the flow
@@ -300,12 +300,12 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->step(mTimeStep);
     mArticle->computeFlows(mTimeStep);
 
-    /// - Molar flux should be less than zero because the port 0 potential vector is negative   
+    /// - Molar flux should be less than zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( mArticle->mFlux < 0.0);
 
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == mArticle->mPortDirections[1]);
 
@@ -315,7 +315,7 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->transportFlows(mTimeStep);
 
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, mArticle->determineSourcePort(mArticle->mFlux, 0, 1), 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, mArticle->determineSourcePort(mArticle->mFlux, 0, 1),
                                                                         DBL_EPSILON);
 
     /// - Since a basic source is a boundary condition the flow rate will be equal to the flow
@@ -328,12 +328,12 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->step(mTimeStep);
     mArticle->computeFlows(mTimeStep);
 
-    /// - Molar flux should equal zero because the port 0 potential vector is negative   
+    /// - Molar flux should equal zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( mArticle->mFlux == 0.0);
 
    /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == mArticle->mPortDirections[1]);
 
@@ -362,7 +362,7 @@ void UtGunnsFluidSource::testComputeFlows()
     mArticle->step(mTimeStep);
     mArticle->computeFlows(mTimeStep);
     mArticle->transportFlows(mTimeStep);
- 
+
     CPPUNIT_ASSERT(0.0 == mArticle->mVolFlowRate);
 
     std::cout << "... Pass";
@@ -396,7 +396,7 @@ void UtGunnsFluidSource::testComputeFlowsWithInternalFluid()
     mArticle->computeFlows(mTimeStep);
     double fractions[2];
     fractions[0] = 0.1;
-    fractions[1] = 0.9; 
+    fractions[1] = 0.9;
     mNodes[1].getContent()->initialize(*mFluidConfig,(PolyFluidInputData(283.15,        //temperature
                                           689.728,                  //pressure
                                           0.0,                      //flowRate
@@ -404,11 +404,11 @@ void UtGunnsFluidSource::testComputeFlowsWithInternalFluid()
                                           fractions)));               //massFractions);
     mNodes[1].resetFlows();
     fractions[0] = 0.5;
-    fractions[1] = 0.5; 
+    fractions[1] = 0.5;
     mNodes[1].getContent()->setMassAndMassFractions(1.0,fractions);
 
     /// - Check to ensure that content and outflow conditions are different
-    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getMWeight() != 
+    CPPUNIT_ASSERT(mNodes[1].getOutflow()->getMWeight() !=
                                                  mNodes[1].getContent()-> getMWeight());
 
     mArticle->transportFlows(mTimeStep);

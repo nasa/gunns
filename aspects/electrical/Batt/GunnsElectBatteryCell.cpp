@@ -146,8 +146,8 @@ GunnsElectBatteryCell::~GunnsElectBatteryCell()
 /// @details  Initializes this GunnsElectBatteryCell with config and input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectBatteryCell::initialize(const GunnsElectBatteryCellConfigData& configData,
-		                               const GunnsElectBatteryCellInputData&  inputData,
-		                               const std::string&                     name)
+                                       const GunnsElectBatteryCellInputData&  inputData,
+                                       const std::string&                     name)
 {
     /// - Initialize from configuration and input data.
     mResistance                 = configData.mResistance;

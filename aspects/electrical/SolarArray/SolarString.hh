@@ -56,13 +56,13 @@ public:
                           const double bipassDiodeVoltageDrop            = 0.0,
                           const int bipassDiodeInterval                  = 0.0,
                           const PVCellCompanionModelConfigData& refCellConfigData = 0);
-                
+
     ///@brief Default SolarString Configuration Data Destructor
     virtual ~SolarStringConfigData();
 
     //@brief Copy constructor
     SolarStringConfigData(const SolarStringConfigData& that);
-        
+
 private:
         ///@brief Operator = is not available since declared private and not implemented
     SolarStringConfigData& operator = (const SolarStringConfigData&);
@@ -102,7 +102,7 @@ private:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  The  purpose of this class is to provide a data structure for the SolarString
 /////////////////////////////////////////////////////////////////////////////////////////////////
-class SolarString 
+class SolarString
 {
     TS_MAKE_SIM_COMPATIBLE(SolarString);
 
@@ -124,7 +124,7 @@ public:
 
      ///@brief Default SolarStringElect Destructor
      virtual ~SolarString();
-        
+
      ///@brief Initialize method as Gunns network links
      void initialize(const SolarStringConfigData& config, const SolarStringInputData& input);
 

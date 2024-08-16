@@ -39,7 +39,7 @@ def transform_xy(x0, y0):
     y1  = y0 - roty
     len = math.sqrt(x1 * x1 + y1 * y1)
     t1  = math.atan2(y1, x1)
-    
+
     # rotate vector
     t2  = t1 + math.radians(rot)
     x2  = len * math.cos(t2)

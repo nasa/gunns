@@ -138,7 +138,7 @@ bool TsHsConfig::getConfigInfo()
 
    if (mEnvConfigFilePath == 0)
    {
-      // There's no path environment variable set, so apply overrides, if any 
+      // There's no path environment variable set, so apply overrides, if any
       // to the default values provided by the constructor.
       applyPathOverrides();
       return true;
@@ -147,12 +147,12 @@ bool TsHsConfig::getConfigInfo()
    string full_path_file_name = string(mEnvConfigFilePath) + "/" + string(HS_CONFIG_FILE_NAME);
 
    //cout << "full_path_file_name = " << full_path_file_name << endl;
- 
+
    // Attempt to load config file from ${HS_CONFIG_FILE}
 
    // todo: need to reset ios flags here?
    config_file.open(full_path_file_name.c_str(), ios::in);
-   if (config_file)  
+   if (config_file)
    {
       load_status = loadConfigFile(config_file);
       applyPathOverrides();
@@ -170,7 +170,7 @@ bool TsHsConfig::getConfigInfo()
 void TsHsConfig::applyPathOverrides()
 {
       // Override plugin path if environment variables set
- 
+
       if (mEnvTextPluginPath != 0)
       {
          mTextPluginPath = mEnvTextPluginPath;
@@ -194,12 +194,12 @@ bool TsHsConfig::loadConfigFile(ifstream& file)
    if (!file)
    {
       cerr << "TsHsConfig::loadConfigFile file in invalid state\n";
-      return false; 
+      return false;
    }
 
    file >> mOverallBlocking
         >> mTimerSeconds
-        >> mTerminationEnabled 
+        >> mTerminationEnabled
         >> mTerminationSubsystems
         >> mQueueBlockingEnabled
         >> mQueueCapacity;
@@ -210,9 +210,9 @@ bool TsHsConfig::loadConfigFile(ifstream& file)
         return false;
    }
 
-   file >> mTextPluginEnabled 
-        >> mTextPluginBlockingEnabled 
-        >> mTextPluginOverwriteEnabled 
+   file >> mTextPluginEnabled
+        >> mTextPluginBlockingEnabled
+        >> mTextPluginOverwriteEnabled
         >> mTextPluginPath;
 
    if (file.good() == false)
@@ -221,9 +221,9 @@ bool TsHsConfig::loadConfigFile(ifstream& file)
         return false;
    }
 
-   file >> mSqlitePluginEnabled 
-        >> mSqlitePluginBlockingEnabled 
-        >> mSqlitePluginOverwriteEnabled 
+   file >> mSqlitePluginEnabled
+        >> mSqlitePluginBlockingEnabled
+        >> mSqlitePluginOverwriteEnabled
         >> mSqlitePluginPath;
 
    if (file.good() == false)
@@ -282,7 +282,7 @@ void TsHsConfig::dumpConfig() const
 {
    cout << " " << mOverallBlocking
         << " " << mTimerSeconds
-        << " " << mTerminationEnabled 
+        << " " << mTerminationEnabled
         << " '"<< mTerminationSubsystems << "'"
         << " " << mQueueBlockingEnabled
         << " " << mQueueCapacity
@@ -320,4 +320,3 @@ void TsHsConfig::dumpConfig() const
         << " " << mCategoryFilterFatalsEnabled
         << endl;
 }
-

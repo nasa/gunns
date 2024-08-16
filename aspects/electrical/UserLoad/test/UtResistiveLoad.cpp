@@ -103,7 +103,7 @@ void UtResistiveLoad::setUp()
     } catch (TsInitializationException &e) {
         std::cout << "UTResistiveLoad Setup method initialization exception -- failed" << std::endl;
     } /* catch (TsOutOfBoundsException &e) {
-    	std::cout << "UTResistiveLoad Setup method out of bound exception -- failed" << std::endl;
+        std::cout << "UTResistiveLoad Setup method out of bound exception -- failed" << std::endl;
     }*/ catch (...) {
         std::cout << "UTResistiveLoad Setup method catch all exception -- failed" << std::endl;
     }

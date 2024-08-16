@@ -49,16 +49,16 @@ def write_epoch_config(epoch, distribution, inertia, seed):
 # the particles will see the same random numbers every epoch and won't act random.
 def getSimSeed():
     return random.randint(0, 0xffffffff)
-    
+
 def main():
     print("I am a PSO manager script")
-    
+
     # Set the random seed for repeatability.
     random.seed(42)
-    
+
     # Write the configuration file for the 0th epoch
     write_epoch_config(1, INITIAL_DISTR, INERTIA_START, getSimSeed())
-    
+
     # Main epoch loop.
     for epoch in range(1, MAX_EPOCH + 1):
         print("!!!!!!!!!!!!!!!!!!!!!!")
@@ -66,14 +66,14 @@ def main():
         print("!!!!!!!!!!!!!!!!!!!!!!")
         cmd_str = "./S_main* RUN_mc/input_single_epoch.py"
         subprocess.run(cmd_str, shell=True)
-        
+
         # Handle swarm state between epochs.  The first epoch starts the sim with the
         # user-defined initial swarm state, and subsequent epochs use the swarm state file.
         # We must update the inertia weight ramping over the epochs.
         seed = random.randint(0, 0xffffffff)
         inertia = INERTIA_START + (INERTIA_END - INERTIA_START) * epoch / max(1, MAX_EPOCH - 1)
         write_epoch_config(epoch, 'FILE_CONTINUOUS', inertia, getSimSeed())
-        
+
     sys.exit(0)
 
 if __name__ == "__main__":

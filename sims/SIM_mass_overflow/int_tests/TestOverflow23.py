@@ -56,7 +56,7 @@ class TestOverflow23(Test):
            self.total_mass_N2  = self.total_mass_N2  + fluid.getMass() * fluid.getMassFraction(fluidTypes["GUNNS_N2"])
            self.total_mass_O2  = self.total_mass_O2  + fluid.getMass() * fluid.getMassFraction(fluidTypes["GUNNS_O2"])
            self.total_mass_H2O = self.total_mass_H2O + fluid.getMass() * fluid.getMassFraction(fluidTypes["GUNNS_WATER"])
-                       
+
     # Tests final total fluid quantities in all accumulators against the stored values from the
     # start of the test, for conservation of mass & energy.
     def checkFinalState(self):
@@ -65,7 +65,7 @@ class TestOverflow23(Test):
        final_total_mass_N2  = 0.0
        final_total_mass_O2  = 0.0
        final_total_mass_H2O = 0.0
-       
+
        for fluid in self.accumFluids():
            final_total_mass     = final_total_mass     + fluid.getMass()
            final_total_enthalpy = final_total_enthalpy + fluid.getMass() * fluid.getSpecificEnthalpy()

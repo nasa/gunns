@@ -631,7 +631,7 @@ inline double MsMath::fastPow(const double base, const double exp)
     double a;
     double b;
     double pwr;
- 
+
 //  Reduce the size of the exponent by truncation
 //  i.e. b^7.342 = b^7 * b^0.342 = b^num * b^frac_exp
 
@@ -645,7 +645,7 @@ inline double MsMath::fastPow(const double base, const double exp)
 //  don't calc series if exponent is whole number
     if(b > 0.000000001){
 //      set the log of the base
-        a= std::log(std::fabs(base));    
+        a= std::log(std::fabs(base));
 
         b= std::fabs(b*a);
         pwr=1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(
@@ -665,7 +665,7 @@ inline double MsMath::fastPow(const double base, const double exp)
 
 //  get the integer powers of base if needed
     if(num > 0) {
-//      put together the parts of b^x: b*b*b*b*...*b^(frac_exp) 
+//      put together the parts of b^x: b*b*b*b*...*b^(frac_exp)
         for(int k=1;k<num+1;k++) {
             pwr= pwr*std::fabs(base);
         }

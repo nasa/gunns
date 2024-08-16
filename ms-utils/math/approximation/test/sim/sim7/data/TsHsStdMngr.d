@@ -18,7 +18,7 @@ TsHsStdMngr.pluginConfig[TsHsStdMngr::TS_HS_SQLITE].path = "logs/CxTF_Health_and
 TsHsStdMngr.pluginConfig[TsHsStdMngr::TS_HS_TERMINATE].enabled = true;
 /*
  * the path value is used to identity those systems for which TS_HS_FATAL causes sim termination
- *     ex:   
+ *     ex:
  *      TS_hs_msg(TS_HS_FATAL, "ECLSS", "TsInitializationException while updating network.");
  *      would require the value of path to include ECLSS surrounded by valid delimiters.
  *      the valid delimiters are the characters in the following string: ":,; "

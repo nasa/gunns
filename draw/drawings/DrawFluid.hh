@@ -50,7 +50,7 @@ typedef struct DrawFluidFractions {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief  Union for DrawFluid GUNNS network mass fractions as scalars and as an array.
-///         The array is used as an argument in the PolyFluidInputData constructor. 
+///         The array is used as an argument in the PolyFluidInputData constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 union DrawFluidMassFractions {
     DrawFluidFractions scalar;
@@ -74,7 +74,7 @@ class DrawFluidConfigData
         // Network fluid configurations
         static FluidProperties::FluidType netInternalFluidTypes[DrawFluidConfigData::N_INTERNAL_FLUIDS];    /**< (--) trick_chkpnt_io(**) Network internal fluid types array. */
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         GunnsFluidVolumeMonitorConfigData tankVolumeMonitor;    /**< (--) trick_chkpnt_io(**) tankVolumeMonitor config data. */
         // Links configuration data
@@ -176,7 +176,7 @@ class DrawFluid : public GunnsNetworkBase
         DrawFluid& operator =(const DrawFluid&);
 };
 
-/// @}  
+/// @}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  PolyFluidConfigData* (--) Pointer to this network's fluid configuration.

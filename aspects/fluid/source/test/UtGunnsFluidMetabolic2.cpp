@@ -654,7 +654,7 @@ void UtGunnsFluidMetabolic2::testUpdateState()
     tArticle->initialize(*tConfigData, *tInputData, tLinks, 2, 1);
 
     double o2ConsumptionBias =   0.123; //arbitrary
-    double cO2ProductionBias =  -0.156; //arbitrary 
+    double cO2ProductionBias =  -0.156; //arbitrary
     double h2OProductionBias =   0.417; //arbitrary
     double heatProductionBias = 10.333; //arbitrary
 

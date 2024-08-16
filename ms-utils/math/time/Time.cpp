@@ -12,7 +12,7 @@ ASSUMPTIONS AND LIMITATIONS:
     (none)
 
 PROGRAMMERS:
-    ((Dan Jordan) (METECS) (April 2012) 
+    ((Dan Jordan) (METECS) (April 2012)
 ********************************************************************************************/
 
 

@@ -420,7 +420,7 @@ void UtGunnsBasicSuperNetwork::testUpdate()
     pthread_mutex_t* mutex = tArticle->getMutex();
     CPPUNIT_ASSERT(0 == pthread_mutex_trylock(mutex));
     pthread_mutex_unlock(mutex);
-    
+
     UT_PASS;
 }
 

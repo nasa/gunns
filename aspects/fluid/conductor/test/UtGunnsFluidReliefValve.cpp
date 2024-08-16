@@ -903,7 +903,7 @@ void UtGunnsFluidReliefValve::testUpdateStateMalfunction()
     mArticle->mMalfStuckFlag  = false;
     mArticle->setMalfFailTo(true,0.6);
     mArticle->updateState(mTimeStep);
-    
+
     CPPUNIT_ASSERT(mArticle->mPosition == 0.6);
 
     UT_PASS;

@@ -278,7 +278,7 @@ void UtGunnsLiquidDisplacementPump::testNominalInitialization()
     tArticle->mImpellerPower = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mImpellerSpeed);
     CPPUNIT_ASSERT(0.0 == tArticle->mImpellerPower);
 

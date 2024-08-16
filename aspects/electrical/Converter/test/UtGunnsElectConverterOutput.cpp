@@ -623,14 +623,14 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tArticle->mEnabled = false;
         tArticle->minorStep(0.0, 0);
         CPPUNIT_ASSERT(0.0 == tArticle->mAdmittanceMatrix[0]);
-        
+
         /// @test    minorStep when input voltage is zero.
         tInputLink.mPotentialVector[0] = 0.0;
         tArticle->mEnabled             = true;
         tArticle->minorStep(0.0, 0);
         CPPUNIT_ASSERT(0.0  == tArticle->mAdmittanceMatrix[0]);
         CPPUNIT_ASSERT(true == tArticle->mOutputPowerAvailable);
-        
+
     } {
         /// @test    step and minorStep when connected to the Ground node.
         tArticle->mUserPortSelect      = 0;

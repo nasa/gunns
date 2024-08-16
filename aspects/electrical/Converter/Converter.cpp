@@ -422,7 +422,7 @@ void Converter::handleInputTrips(double inVoltage, double inCurrent) {
         mConverterOn = false;
     } else {
         mInputOverCurrentTrip = false;
-    }    
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -447,7 +447,7 @@ void Converter::updateHealthStatus() {
 
     /// -- Check if any trip or  bad efficiency or output disabled occurred
     if (mInputUnderVoltageTrip || mInputOverVoltageTrip ||
-        mOutputOverVoltageTrip || mOutputOverCurrentTrip || 
+        mOutputOverVoltageTrip || mOutputOverCurrentTrip ||
         mOutputOverCurrentFastTrip || mInputOverCurrentTrip ||
         mBadEfficiency) {
         mConverterOn = false;
@@ -470,7 +470,7 @@ void Converter::updateHealthStatus() {
 void Converter::doConversion(double outCurrent) {
     mOutputCurrent = outCurrent;
 
-    // into the following method from the model itself 
+    // into the following method from the model itself
     // Already done at this point
 //    if (!mTripOnSensedValue) {
 //        handleOutputTrips(mOutputVoltage, mOutputCurrent);
@@ -496,7 +496,7 @@ void Converter::doConversion(double outCurrent) {
     }
 
     // If sensor values are used, then input trips will be handled by sensed value passed
-    // into the following method from the model itself 
+    // into the following method from the model itself
     // Already done at this point
     if (!mTripOnSensedValue) {
         handleInputTrips(mInputVoltage,mInputCurrent);

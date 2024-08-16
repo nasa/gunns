@@ -615,11 +615,11 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     double tempMembraneFlux             = tArticle->mMembraneFlowRate / extProps->getMWeight();
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tempMembraneFlux, tNodes[0].getScheduledOutflux() - tArticle->mFlux,DBL_EPSILON);
- 
+
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[2]);
- 
+
     tArticle->transportFlows(tTimeStep);
 
     /// @test Flow-thru and related output.
@@ -652,7 +652,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     fractions[0] = 0.0;
     fractions[1] = 0.5;
     fractions[2] = 0.5;
-    
+
     tNodes[1].getContent()->setMassAndMassFractions(1.0, fractions);
 
     tArticle->mFlux = 1.0;
@@ -739,7 +739,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     fractions[0] = 0.0;
     fractions[1] = 0.5;
     fractions[2] = 0.5;
-    
+
     tNodes[0].getContent()->setMassAndMassFractions(1.0, fractions);
 
     tArticle->computeFlows(tTimeStep);
@@ -763,7 +763,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     fractions[1] = 1.0;
     fractions[2] = 0.0;
     fractions[3] = 0.0;
-    
+
     tNodes[2].getContent()->setMassAndMassFractions(1.0, fractions);
     tNodes[2].resetFlows();
 
@@ -776,7 +776,7 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[2]);
-    
+
     tArticle->transportFlows(tTimeStep);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-tArticle->mMembraneFlowRate, tNodes[2].getOutflux(), DBL_EPSILON);
@@ -787,13 +787,13 @@ void UtGunnsFluidSelectiveMembrane::testComputeFlows()
     fractions[0] = 0.0;
     fractions[1] = 0.5;
     fractions[2] = 0.5;
-    
+
     tNodes[1].getContent()->setMassAndMassFractions(1.0, fractions);
     tNodes[1].resetFlows();
     double tempInternalTemp = tNodes[0].getOutflow()->getTemperature();
-    
+
     tArticle->transportFlows(tTimeStep);
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tempInternalTemp, tArticle->mInternalMembraneFluid->getTemperature(), DBL_EPSILON);
 
     fractions[0] = 0.0;

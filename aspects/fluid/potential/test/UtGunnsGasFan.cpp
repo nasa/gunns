@@ -770,7 +770,7 @@ void UtGunnsGasFan::testUpdateState()
     tNodes[1].getContent()->setPressure(111.0);
     tArticle->mCheckValveActive = true;
     tArticle->updateState(tTimeStep);
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mCheckValvePosition);
 
     UT_PASS;

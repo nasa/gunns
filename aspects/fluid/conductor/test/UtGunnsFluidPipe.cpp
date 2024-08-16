@@ -353,7 +353,7 @@ void UtGunnsFluidPipe::testUpdateState()
                                  mTolerance);
     /// - Check restartModel capabilities
     mArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,mArticle->mEffectiveConductivity,mTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,mArticle->mSystemConductance,mTolerance);
 
@@ -372,7 +372,7 @@ void UtGunnsFluidPipe::testUpdateFluid()
 
     /// @test     Update fluid with positive flowrate.
     mArticle->updateFluid(mTimeStep, mFlowRate);
-    
+
     CPPUNIT_ASSERT(mArticle->mWallTemperature <
                               mArticle->mInternalFluid->getTemperature());
     CPPUNIT_ASSERT(0.0 < mArticle->mWallHeatFlux);
@@ -401,7 +401,7 @@ void UtGunnsFluidPipe::testUpdateFluidNoFLow()
 //    /// @test     Update fluid with zero time step.
 //    mArticle->updateFluid(0.0, mFlowRate);
 //    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPipeHeatFlux, mTolerance);
-  
+
     /// @test     Update fluid with zero flow rate.
     mArticle->updateFluid(mTimeStep, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mWallHeatFlux, mTolerance);

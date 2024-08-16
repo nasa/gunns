@@ -1,16 +1,16 @@
 ##include "math/approximation/test/sim/ApproximationSim.hh"
 
-class ApproximationSimObject: public Trick::SimObject 
+class ApproximationSimObject: public Trick::SimObject
 {
     public:
-        ApproximationSim model;    
-        ApproximationSimObject() { 
+        ApproximationSim model;
+        ApproximationSimObject() {
             ("initialization")  model.initialize();
             (0.01, "scheduled") model.update();
         }
     private:
         // Assignment operator unavailable since declared private and not implemneted.
-        ApproximationSimObject operator =(const ApproximationSimObject &);    
+        ApproximationSimObject operator =(const ApproximationSimObject &);
 };
-    
+
 ApproximationSimObject approximationSim;

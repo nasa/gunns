@@ -80,11 +80,11 @@ class ConverterInputData {
     double mInputUnderVoltageLimit;      /**< (V)     trick_chkpnt_io(**) Input under voltage limit of the converter */
     bool mInOverVoltageTripActive;       /**< (--)    trick_chkpnt_io(**) Input over voltage trip active flag */
     bool mInUnderVoltageTripActive;      /**< (--)    trick_chkpnt_io(**) Input under voltage trip active flag */
-    double mOutputOverCurrentFastLimit;  /**< (amp)   trick_chkpnt_io(**) Output over current fast limit of the converter */  
+    double mOutputOverCurrentFastLimit;  /**< (amp)   trick_chkpnt_io(**) Output over current fast limit of the converter */
     bool mOutOverCurrentFastTripActive;  /**< (--)    trick_chkpnt_io(**) Output over current fast trip active flag */
-    double mInputOverCurrentLimit;    /**< (amp)      trick_chkpnt_io(**) Output over current hardware limit of the converter */  
+    double mInputOverCurrentLimit;    /**< (amp)      trick_chkpnt_io(**) Output over current hardware limit of the converter */
     bool mInputOverCurrentTripActive;  /**< (--)      trick_chkpnt_io(**) Input over current trip active flag */
-    
+
     /// @brief Converter Input Data constructor
     ConverterInputData(const double mInputVoltage            =    0.0,
                        const double mRegulatedVoltage        =    0.0,
@@ -177,34 +177,34 @@ class Converter {
     /// @brief Method to set output over current limit of the converter.
     void setOutputOverCurrentLimit(const double current);
 
-   
+
     /// @brief Method to set output over current trip active function (false bypasses trip event).
     void setOutOverCurrentTripActive(const bool flag);
-  
+
     /// @brief Method to get status of output over current trip event.
     bool isOutputOverCurrentTrip() const;
 
     /// @brief Method to get the output over current limit of the converter.
     double getOutputOverCurrentLimit() const;
-    
-    
-    
+
+
+
       /// @brief Method to set output over current trip state of the converter.
     void setOutputOverCurrentFastTrip(const bool flag);
 
     /// @brief Method to set output over current limit of the converter.
     void setOutputOverCurrentFastLimit(const double current);
 
-   
+
     /// @brief Method to set output over current trip active function (false bypasses trip event).
     void setOutOverCurrentFastTripActive(const bool flag);
-  
+
     /// @brief Method to get status of output over current trip event.
     bool isOutputOverCurrentFastTrip() const;
 
     /// @brief Method to get the output over current limit of the converter.
     double getOutputOverCurrentFastLimit() const;
-    
+
         /// @brief Method to set output over current trip state of the converter.
     void setInputOverCurrentTrip(const bool flag);
 
@@ -212,17 +212,17 @@ class Converter {
     void setInputOverCurrentLimit(const double current);
 
      /// @brief Method to set input over current trip active function (false bypasses trip event).
-    void setInputOverCurrentTripActive(const bool flag); 
+    void setInputOverCurrentTripActive(const bool flag);
 
     /// @brief Method to get status of output over current trip event.
     bool isInputOverCurrentTrip() const;
 
     /// @brief Method to get the output over current limit of the converter.
     double getInputOverCurrentLimit() const;
-    
+
     /// @brief Method to set output over voltage limit of the converter.
     void setOutputOverVoltageLimit(const double voltage);
-    
+
 
     /// @brief Method to set flag to trip on sensed value or truth value.
     /// (true bypasses truth value and uses sensed value). The sensed value need to be provided

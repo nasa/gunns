@@ -53,7 +53,7 @@ class TestElectSarNetworkConfigData
 {
     public:
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         GunnsSensorAnalogWrapperConfigData sarSensorVout;    /**< (--) trick_chkpnt_io(**) sarSensorVout config data. */
         GunnsSensorAnalogWrapperConfigData sarSensorIout;    /**< (--) trick_chkpnt_io(**) sarSensorIout config data. */
@@ -164,6 +164,6 @@ class TestElectSarNetwork : public GunnsNetworkBase
         TestElectSarNetwork& operator =(const TestElectSarNetwork&);
 };
 
-/// @}  
+/// @}
 
 #endif

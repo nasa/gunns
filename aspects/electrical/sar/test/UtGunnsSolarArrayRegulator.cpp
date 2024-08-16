@@ -242,7 +242,7 @@ void UtGunnsSolarArrayRegulator::batterySetup()
     tBatteryConfig = new GunnsBasicPotentialConfigData("Test Battery",
                                                        &tNodeList,
                                                        156.25);        // defaultConductivity
-    
+
     tBatteryInput = new GunnsBasicPotentialInputData(false,            // malfBlockageFlag
                                                      0.0,              // malfBlockageValue
                                                      120.0);           // sourcePotential
@@ -420,7 +420,7 @@ void UtGunnsSolarArrayRegulator::testNominalInitialization()
     FriendlyGunnsSolarArrayRegulator article;
     article.initialize(*tConfigData, *tInputData, tLinks, tPort[0], tPort[1], tPort[2], tPort[3]);
 
-    /// @test config data loaded into model correctly 
+    /// @test config data loaded into model correctly
     CPPUNIT_ASSERT(&tBatteryLink == article.mBattery);
     CPPUNIT_ASSERT(tNominalTrickleChargeRate == article.mDesiredChargeCurrent);
     CPPUNIT_ASSERT(tRegulatedVoltageLowLimit == article.mRegulatedVoltageLowLimit);

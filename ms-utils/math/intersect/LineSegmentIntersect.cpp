@@ -37,7 +37,7 @@ PROGRAMMERS:
     result[1] = v1[1] + (v2[1]-v1[1])*t; \
     result[2] = v1[2] + (v2[2]-v1[2])*t;
 
-// tolerance radius around zero 
+// tolerance radius around zero
 #define EPSILON 0.00001
 
 /// @param p line endpoint 1
@@ -52,7 +52,7 @@ PROGRAMMERS:
 ///        _Real-Time Collision Detection_ by Christer Ericson
 ///        Section 5.3.6
 ///
-///    Credits: 
+///    Credits:
 ///        Christer Ericson's variant of the algorithm by Tomas Möller and Ben Trumbore
 ///        Original Algorithm:
 ///            "Fast, minimum storage ray-triangle intersection"
@@ -63,14 +63,14 @@ PROGRAMMERS:
 ///    causing an intersection detection if and only if the triangle's
 ///    points were specified in ClockWise orientation
 ///    when viewed from the origin of the directed line
-///    segment.  This is useful if triangles are specified 
+///    segment.  This is useful if triangles are specified
 ///    in a standard way and the triangle is a part of a
 ///    continuous mesh.  If this is true, then you can ignore
 ///    all triangles that are facing away from the line segment.
-///    
-///    The "if (d < 0)" branch was added in order to 
+///
+///    The "if (d < 0)" branch was added in order to
 ///    detect intersection regardless of the order
-///    of the points in the triangle and line.  
+///    of the points in the triangle and line.
 ///
 /// @return intersection found is true|false
 bool LineSegmentIntersect::triangle(
@@ -171,7 +171,7 @@ bool LineSegmentIntersect::triangle(
 ///   Algorithm from:
 ///        _Real-Time Collision Detection_ by Christer Ericson
 ///        Section 5.3.7
-///    
+///
 /// @return intersection found is true|false
 bool LineSegmentIntersect::cylinder(
             const double sa[3],
@@ -256,7 +256,7 @@ bool LineSegmentIntersect::cylinder(
             return true;
         }
         else {
-            return false; 
+            return false;
         }
     } else if (md + t * nd > dd) {
 
@@ -339,7 +339,7 @@ bool LineSegmentIntersect::sphere(
 
     if (t < 0.0f) {
         // ray is outside the sphere, with both intersections behind it
-        if (sqrtd < b) { 
+        if (sqrtd < b) {
             return false;
         }
         // ray started inside sphere so clamp t to zero
@@ -370,9 +370,9 @@ bool LineSegmentIntersect::sphere(
 ///
 /// @details
 ///   Algorithm by Robert J. Paul (L-3):
-///     Transform the euclidean space such that the spheroid becomes a unit sphere, 
-///     then perform a sphere intersection check.  The inverse transform can then 
-///     be applied to the intersection point on the sphere to obtain the true 
+///     Transform the euclidean space such that the spheroid becomes a unit sphere,
+///     then perform a sphere intersection check.  The inverse transform can then
+///     be applied to the intersection point on the sphere to obtain the true
 ///     intersection point on the spheroid.
 ///
 /// @return intersection found is true|false

@@ -339,7 +339,7 @@ void UtGunnsFluidLeak::testNominalInitialization()
 
     /// - Check restartModel capabilities
     article.restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,article.mEffectiveConductivity,mTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,article.mSystemConductance,mTolerance);
 

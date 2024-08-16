@@ -106,8 +106,8 @@ class TestOverflow40(Test):
        rca12H2O_mass  = float (massOverflow.fluid40.rca12.mCompounds[1].mAdsorbedMass)
        rca45CO2_mass  = 0.02 - float (massOverflow.fluid40.rca45.mCompounds[0].mAdsorbedMass)
        rca45H2O_mass  = 0.01 - float (massOverflow.fluid40.rca45.mCompounds[1].mAdsorbedMass)
-        
-       final_total_mass_ad      = rca12H2O_mass + rca12CO2_mass 
+
+       final_total_mass_ad      = rca12H2O_mass + rca12CO2_mass
        final_total_mass_N2_ad   = 0.0
        final_total_mass_O2_ad   = 0.0
        final_total_mass_H2O_ad  = rca12H2O_mass
@@ -119,8 +119,8 @@ class TestOverflow40(Test):
        final_total_mass_O2_des  = 0.0
        final_total_mass_H2O_des = - rca45H2O_mass
        final_total_mass_CO2_des = - rca45CO2_mass
-       final_temperature_des    = self.nodeTemperature(4) 
-       
+       final_temperature_des    = self.nodeTemperature(4)
+
        for node in range(0,self.getNumNodes()-3):
           mass_ad     = self.nodeMass(node)
           mass_N2_ad  = mass_ad * self.nodeMassFraction(node, "GUNNS_N2")
@@ -140,7 +140,7 @@ class TestOverflow40(Test):
           mass_O2_des  = mass_des * self.nodeMassFraction(node, "GUNNS_O2")
           mass_H2O_des = mass_des * self.nodeMassFraction(node, "GUNNS_H2O")
           mass_CO2_des = mass_des * self.nodeMassFraction(node, "GUNNS_CO2")
-  
+
           final_total_mass_des     = final_total_mass_des     + mass_des
           final_total_mass_N2_des  = final_total_mass_N2_des  + mass_N2_des
           final_total_mass_O2_des  = final_total_mass_O2_des  + mass_O2_des
@@ -171,7 +171,7 @@ class TestOverflow40(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid40.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid40.netNodes[node]
     # Getter for node fluid

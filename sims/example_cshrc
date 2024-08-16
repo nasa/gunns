@@ -18,7 +18,7 @@ if ( -e "$TRICK_HOME/bin/Trick.cshrc" ) then
     source "$TRICK_HOME/bin/Trick.cshrc"
 endif
 
-# GUNNS_HOME Setup. 
+# GUNNS_HOME Setup.
 setenv GUNNS_HOME `pwd`/..
 setenv TRICK_CFLAGS "$TRICK_CFLAGS -I$GUNNS_HOME"
 # TS_UTILS_HOME Setup
@@ -33,4 +33,3 @@ setenv TRICK_USER_LINK_LIBS "${TRICK_USER_LINK_LIBS} -ltinyxml"
 
 # default TS H&S config file location
 setenv HS_CONFIG_PATH "${GUNNS_HOME}/sims/Modified_data"
-

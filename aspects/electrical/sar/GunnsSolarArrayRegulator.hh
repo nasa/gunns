@@ -81,15 +81,15 @@ class GunnsSolarArrayRegulatorConfigData : public ConverterElectConfigData
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Solar Array Regulator Input Data
 ///
-/// @details  The sole purpose of this class is to provide a data structure for the solar array 
+/// @details  The sole purpose of this class is to provide a data structure for the solar array
 ///           regulator input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsSolarArrayRegulatorInputData : public ConverterElectInputData
 {
     public:
-        double mProportionalGain;         /**< (--)  trick_chkpnt_io(**) Proportional gain for the battery 
+        double mProportionalGain;         /**< (--)  trick_chkpnt_io(**) Proportional gain for the battery
                                                      charge current PD feedback controller. */
-        double mDerivativeGain;           /**< (--)  trick_chkpnt_io(**) Derivative gain for the battery 
+        double mDerivativeGain;           /**< (--)  trick_chkpnt_io(**) Derivative gain for the battery
                                                      charge current PD feedback controller. */
 
         /// @brief    Default constructs this Solar Array Regulator input data.
@@ -130,8 +130,8 @@ class GunnsSolarArrayRegulatorInputData : public ConverterElectInputData
 /// @brief    Solar Array Regulator Class
 ///
 /// @details  The Solar Array Regulator class is designed to provide a simple way to regulate
-///           power bus voltage when you have a solar array, battery, and downstream loads. The link 
-///           regulates its output voltage in order to target a commandable battery trickle charge 
+///           power bus voltage when you have a solar array, battery, and downstream loads. The link
+///           regulates its output voltage in order to target a commandable battery trickle charge
 ///           current in the presenece of downstream loads.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsSolarArrayRegulator : public ConverterElect

@@ -112,7 +112,7 @@ int Sor::solve(      double* x,
 //        printf("---- Iteration %d ----\n", k+1);
 
         /* init p_i again, in general it will be a pointer to A[i,0]  */
-	double* p_i = A;
+        double* p_i = A;
         double esum = 0.0;
         for (int i=0; i<n; i++, p_i += n) {    /* set pointer to beginning of matrix row */
             double lterm = 0.0;
@@ -121,7 +121,7 @@ int Sor::solve(      double* x,
             /* this part consists of solns already computed */
             if (i > 0) {
                 for(int j=0; j<i; ++j) {
-		    lterm += *(p_i + j) * x[j];  /* point to jth element in row i but only first i-1 elements*/
+                    lterm += *(p_i + j) * x[j];  /* point to jth element in row i but only first i-1 elements*/
                 }
             }
 //            printf("for %d term, lterm = %e\n", i, lterm);
@@ -129,7 +129,7 @@ int Sor::solve(      double* x,
             /* this part consists of solns computed last iteration */
             if (i < n-1) {
                 for(int j=i+1; j<n; ++j) {
-		    hterm += *(p_i + j) * x[j];  /* point to jth element in row i but only last i+1 elements */
+                    hterm += *(p_i + j) * x[j];  /* point to jth element in row i but only last i+1 elements */
                 }
             }
 //            printf("for %d term, hterm = %e\n", i, hterm);

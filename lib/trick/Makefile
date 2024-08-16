@@ -61,7 +61,7 @@ CUDAOBJECTS_C := $(addprefix buildroses,$(subst .c,.o,$(CUDASOURCES)))
 CUDAOBJECTS_C := $(filter-out %.opp,$(CUDAOBJECTS_C))
 CUDAOBJDIRS_C := $(sort $(dir $(CUDAOBJECTS_C)))
 
-# Convert the space-separated list of absolute path .cpp's and .c's in SOURCES to a 
+# Convert the space-separated list of absolute path .cpp's and .c's in SOURCES to a
 # newline-separated list of relative path include .hh and .h statements in HEADERS:
 #
 # This defines the suffix for substitution including a newline:

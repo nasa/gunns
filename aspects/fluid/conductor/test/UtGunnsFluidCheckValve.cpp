@@ -576,12 +576,12 @@ void UtGunnsFluidCheckValve::testUpdateStateMalfunction()
     mConfigData->mClosePressure = mClosePressure;
     mConfigData->mOpenPressure  = mOpenPressure;
 
-    /// - Create handle fail to position criteria 
+    /// - Create handle fail to position criteria
     mArticle->mMalfStuckFlag = false;
     mArticle->mMalfFailToFlag = true;
     mArticle->mMalfFailToValue = 0.4;
     mArticle->updateState(mTimeStep);
-    
+
     /// @test     Test <1.0 position setting for handle failure
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4, mArticle->mPosition, 0.0);
 

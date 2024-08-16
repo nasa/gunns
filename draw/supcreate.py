@@ -163,7 +163,7 @@ def add():
     ftypes = [('XML files', '*.xml')]
     newPathFile = TKFILE.askopenfilename(title = "Select a drawing file to add", filetypes = ftypes, initialdir = project.path)
     #newPath, newFile = os.path.split(os.path.abspath(newPathFile))
- 
+
     # Abort if the selected drawing isn't in the project path
     commonPath = os.path.commonprefix([project.path, os.path.abspath(newPathFile)])
     if project.path not in commonPath:
@@ -177,7 +177,7 @@ def add():
 
     newDrawingCountLabel = Label(dcframe, text='1')
     newDrawingCountLabel.pack(side=TOP)
- 
+
     drawings.append(DrawingData(relPathFile))
     drawingNameLabels.append(newDrawingNameLabel)
     drawingCountLabels.append(newDrawingCountLabel)
@@ -395,7 +395,7 @@ for drawing in drawings:
                     elif 'Sub' == gunns.attrib['subtype']:
                         netConfig = an_object
                         break
-                        
+
         if netConfig is None:
             sys.exit(console.abort('a network config wasn\'t found.'))
 
@@ -419,7 +419,7 @@ for drawing in drawings:
                     # This is a nuisance if there are no connections (all reference nodes) by design.  So commenting out for now.
                     #if 0 == len(an_object.findall('./gunnsSubnetIfConnection')):
                     #    print('    ' + console.warn('sub-network inteface container: ' + an_object.attrib['label'] + ' in network type: ' + netConfig.attrib['label'] + ' has no link connections.  Make sure to export the sub-network drawing first.'))
-        
+
         # Make changes to the config before appending:
         # - Add sim variable, super nodes offset, and project-relative source drawing attributes to the visible shape data
         netConfig.attrib['SimVariable']      = 'None'
@@ -446,7 +446,7 @@ for drawing in drawings:
         netConfig.find('mxCell/mxGeometry/mxRectangle').attrib['x'] = '20'
         netConfig.find('mxCell/mxGeometry/mxRectangle').attrib['y'] = str(40 + 40*sub_network_count)
         addElemToSuper(netConfig)
-    
+
         regular_node_types  = ['Basic', 'Fluid']
         numbered_node_types = ['Basic', 'Fluid', 'Reference']
 

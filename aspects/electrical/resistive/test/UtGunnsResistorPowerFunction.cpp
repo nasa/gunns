@@ -348,9 +348,6 @@ void UtGunnsResistorPowerFunction::testStep()
         /// @test    Resistance above maximum.
         tArticle->setResistance(1.0e100);
         tArticle->step(tTimeStep);
-        const double dP        = tNodes[0].getPotential() - tNodes[1].getPotential();
-        const double G         = GunnsBasicLink::m100EpsilonLimit;
-        const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
         CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mAdmittanceMatrix[0]);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
@@ -413,10 +410,6 @@ void UtGunnsResistorPowerFunction::testStep()
         /// @test    Resistance above maximum.
         tArticle->setResistance(1.0e100);
         tArticle->step(tTimeStep);
-        const double dP        = tNodes[0].getPotential() - tNodes[1].getPotential();
-        const double G         = GunnsBasicLink::m100EpsilonLimit;
-        const double expectedA = (1.0 / tExponent) * std::pow(dP * G, (1.0 / tExponent - 1.0));
-        const double expectedW = std::pow(dP * G, (1.0 / tExponent)) - expectedA * dP;
         CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mAdmittanceMatrix[0]);
         CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mSourceVector[1]);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());

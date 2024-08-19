@@ -311,15 +311,9 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
     UT_RESULT;
 
     /// - Initialize default constructed test article with nominal initialization data.
-    GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
+    GunnsElectDistributed2WayBusSupplyData* supply1 __attribute__((unused)) = tArticle->createSupplyData();
     tArticle->initialize(true, 120.0F);
     tArticle->mOutData.mFrameCount = 43;
-
-    GunnsDistributed2WayBusNotification notif;
-    GunnsDistributed2WayBusNotification::NotificationLevel NONE =
-            GunnsDistributed2WayBusNotification::NONE;
-    GunnsDistributed2WayBusNotification::NotificationLevel INFO =
-            GunnsDistributed2WayBusNotification::INFO;
 
     /// @test    Remains in Supply when forced.
     tArticle->mInData.mDemandMode    = true;

@@ -888,8 +888,6 @@ void UtGunnsFluidAccumGas::testMalfBellowsRupture()
     tInputData->mGasFluidInputData->mPressure = 200.0;
     tModel->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
-    double prevGasPressure = tModel->mGasInternalFluid->getPressure();
-
     tNodes[0].setPotential(195.0);
     tNodes[0].getContent()->setPressure(195.0);
     tNodes[0].resetFlows();

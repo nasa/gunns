@@ -671,7 +671,6 @@ void UtGunnsFluidCondensingHxSeparator::testHxFlow()
 
     /// - Define test case expected outputs
     const double caseQtotal[numTests]    = {3053.0,    3340.0,    4403.0,    3545.0,     843.0,   -1435.8,    4704.0,    2205.0,    4000.0,   -2156.3,    4050.0,    15575.0,   15150.0};
-    const double caseQlatent[numTests]   = { 999.0,     998.0,     155.0,     999.0,     155.0,    0.0,       0.0,       1141.0,    1275.0,   -720.6,     2000.0,    13500.0,   13225.0};
     const double caseQsensible[numTests] = {2054.0,    2342.0,    4248.0,    2546.0,     688.0,   -1435.8,    4704.0,    1064.0,    2725.0,   -1435.7,    2050.0,    2075.0,    1925.0};
     const double caseCondense[numTests]  = {4.019e-4,  4.019e-4,  6.3e-5,    4.019e-4,  6.3e-5,    0.0,       0.0,       4.6e-4,    5.5e-4,   -2.94e-4,   7.6729e-4, 5.737E-3,  5.62E-3};
     const double caseExitT[numTests]     = {280.20556, 280.42778, 280.92778, 279.87222, 279.15,    306.6,     250.0,     280.0,     279.04772, 306.6,     273.4,     285.5,     295.5};

@@ -223,8 +223,6 @@ void UtGunnsBasicCapacitor::testStep()
     }
 
     /// - Test a capacitance edit
-    const double capacitance = mArticle->mCapacitance;
-
     mArticle->editCapacitance(true, 2.0);
     mArticle->step(mTimeStep);
 

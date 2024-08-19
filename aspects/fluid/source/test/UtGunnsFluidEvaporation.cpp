@@ -583,8 +583,6 @@ void UtGunnsFluidEvaporation::testComputeFlows()
     const double expectedMpool      = tAccum.getUsableMass();
     const double expectedMdot       = expectedDp * tEvaporationCoeff
                                     * std::pow(expectedMpool, tPoolMassExponent);
-    const double expectedPwr        = expectedMdot * 1000.0
-                                    * gasProps->getHeatOfVaporization(tFluidInput1->mTemperature);
     const double expectedFlux       = expectedMdot / gasProps->getMWeight();
     const double expectedQ          = expectedMdot / (tNodes[1].getOutflow()->getMassFraction(1)
                                     * tNodes[1].getOutflow()->getDensity());

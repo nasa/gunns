@@ -537,7 +537,7 @@ inline bool GunnsElectConverterOutput::isVoltageRegulator() const
 ///           to the system of equations, so any calculation of flux and power based on those values
 ///           may be incorrect.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep, __attribute__((unused))
+inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep __attribute__((unused)),
                                                           const int absoluteStep __attribute__((unused)))
 {
     mInputPowerValid = false;

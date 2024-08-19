@@ -407,8 +407,6 @@ void UtGunnsFluidPressureHead::testPreSolverPotential()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tPotentialLink.getSourcePressure(), 1.0e-14);
 
     /// @test with reversed acceleration.
-    double accel[3] = {0.0, 0.0, -9.81};
-    double col[3]   = {0.0, 0.0,  1.0};
     tArticle.mReverseAcceleration = true;
     tArticle.stepPreSolver(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, tArticle.mPressureHead,             1.0e-14);
@@ -470,8 +468,6 @@ void UtGunnsFluidPressureHead::testPreSolverAccum()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, accum->mAccelPressureHead, 1.0e-14);
 
     /// @test with reversed acceleration.
-    double accel[3] = {0.0, 0.0, -9.81};
-    double col[3]   = {0.0, 0.0,  1.0};
     tArticle.mReverseAcceleration = true;
     tArticle.stepPreSolver(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedP, tArticle.mPressureHead,    1.0e-14);

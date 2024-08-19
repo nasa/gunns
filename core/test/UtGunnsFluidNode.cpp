@@ -343,11 +343,6 @@ void UtGunnsFluidNode::testZeroVolumeThermalCapacitance()
     /// - Set the last-pass of temperature for the delta-temperature term.
     tNode.mPreviousTemperature = 299.999;
 
-    double molWeight = tNode.getContent()->getMWeight();
-
-    double rho1 = tFluid.computeDensity(300.0 * 0.999, 100.0);
-    double rho2 = tFluid.computeDensity(300.0 * 1.001, 100.0);
-
     /// - Thermal capacitance of a non-capacitive node should be zero.
     double capacitance   = 0.0;
     double thermalSource = 0.0;
@@ -988,7 +983,6 @@ void UtGunnsFluidNode::testIntegrateFlowsNoOutflow()
     /// - Add inflows, outflows and extra heat to the node.
     double dt           = 0.1;
     double inFlowRate   = 0.0006;
-    double heatFlux     = 100.0;
     tNode.collectInflux(inFlowRate, &tFluidIn);
 
     /// - Set up last pass temperature.

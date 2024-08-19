@@ -1520,8 +1520,6 @@ void UtGunnsFluidAccum::testMalfStickBellowsToPos()
     tInputData->mLiquidFluidInputData->mPressure = 200.0;
     tModel->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
-    double prevBellowsPosition = tModel->mBellowsPosition;
-
     tNodes[0].setPotential(200.1);
     tNodes[0].getContent()->setPressure(200.1);
 
@@ -1598,8 +1596,6 @@ void UtGunnsFluidAccum::testHoldFlags()
     tModel->mHoldAccumFlag = false;
     tModel->mHoldTemperatureFlag = true;
     tModel->mLiquidHousingQ = 1.0;
-
-    double prevTemperature = tModel->mInternalFluid->getTemperature();
 
     tModel->step(tTimeStep);
     tModel->computeFlows(tTimeStep);

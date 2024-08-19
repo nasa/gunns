@@ -83,7 +83,7 @@ GunnsBasicLink::SolutionResult UtGunnsFakeLink::confirmSolutionAcceptable(const 
 ///           link fails to reset to the last minor step.  It will only fail on minor step 2, for
 ///           the purposes of these tests.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep, const int absoluteStep)
+bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep __attribute__((unused)), const int absoluteStep)
 {
     switch (absoluteStep) {
         case 1 :
@@ -99,7 +99,7 @@ bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep, const int abso
     }
 }
 
-void UtGunnsFakeLink::minorStep(const double timeStep, const int minorStep)
+void UtGunnsFakeLink::minorStep(const double timeStep __attribute__((unused)), const int minorStep __attribute__((unused)))
 {
     ++callsToMinorStep;
     mAdmittanceUpdate = true;

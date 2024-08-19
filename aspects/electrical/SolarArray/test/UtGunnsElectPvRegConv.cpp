@@ -75,7 +75,6 @@ void UtGunnsElectPvRegConv::setUp()
 
     const unsigned int numSections         = 3;
     const unsigned int numStrings          = 12;
-    const unsigned int numStringsBySection = numStrings / numSections;
 
     /// - Initialize the sensors.
     GunnsSensorAnalogWrapperConfigData sensorConfig("tSensorVin", 0.0, 1.0E10);

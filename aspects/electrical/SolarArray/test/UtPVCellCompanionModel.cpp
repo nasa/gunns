@@ -606,13 +606,11 @@ void UtPVCellCompanionModel::testUpdateHandlesBadSunAngleNicely(){
     std::cout << "\n UtPVCellCompanionModel: testUpdateHandlesBadSunIntensityNicely ..............................";
     //Verify behavior of fmod
     double result = -2;
-    double cirlce = 360;
     result = fmod(result,360);
     if(result < 0.0){result += 360;}
     CPPUNIT_ASSERT_DOUBLES_EQUAL(358.0,result,mTolerance);
 
     result = 258;
-    cirlce = 360;
     result = fmod(result,360);
     if(result < 0.0){result += 360;}
     CPPUNIT_ASSERT_DOUBLES_EQUAL(258.0,result,mTolerance);

@@ -154,7 +154,7 @@ void UtGunnsFluidSorptionBed::setUp()
 
     /// - Define custom sorbant with blocking and offgas compounds.
     tCustomSorbant = tConfigData->addCustomSorbant(500.0, 0.4, 400.0);
-    SorbateProperties* sorbateH2o = tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0, 0, 1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
+    SorbateProperties* sorbateH2o __attribute__((unused)) = tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0, 0, 1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
     SorbateProperties* sorbateCo2 = tCustomSorbant->addSorbate(ChemicalCompound::CO2, 0, 0, 7.678e-6, 5.164e-7,  2.330e+3, -3.053e-1,  2.386e+2, -40.0, 0.011375);
     sorbateCo2->addBlockingCompound(ChemicalCompound::H2O, 1.0);
     sorbateCo2->addOffgasCompound  (ChemicalCompound::NH3, 1.0e-4);
@@ -943,8 +943,6 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     double expectedBulkCo2AdsorbNdot = tArticle->mSegments[0].mSorbates[1].mAdsorptionRate
                                      + tArticle->mSegments[1].mSorbates[1].mAdsorptionRate
                                      - expectedTcCo2AdsorbNdot;
-    double expectedTcH2oAdsorbNdot   = tArticle->mSegments[0].mSorbates[0].mAdsorptionRate
-                                     + tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
     double expectedBulkO2DesorbNdot  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate * 5.0e-5; // from setUp, co2OffgasO2
     double approxSegFlow = expectedMdot
                          - expectedBulkCo2AdsorbNdot * 44.0095
@@ -1077,8 +1075,6 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     expectedBulkCo2AdsorbNdot = tArticle->mSegments[0].mSorbates[1].mAdsorptionRate
                               + tArticle->mSegments[1].mSorbates[1].mAdsorptionRate
                               - expectedTcCo2AdsorbNdot;
-    expectedTcH2oAdsorbNdot   = tArticle->mSegments[0].mSorbates[0].mAdsorptionRate
-                              + tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
     expectedBulkO2DesorbNdot  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate * 5.0e-5; // from setUp, co2OffgasO2
     approxSegFlow = -expectedMdot
                   - expectedBulkCo2AdsorbNdot * 44.0095

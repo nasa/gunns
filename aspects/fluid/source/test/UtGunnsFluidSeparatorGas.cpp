@@ -389,7 +389,6 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidEmpty()
     const double expectedMass     = 0.0;
     const double expectedMassErr  = tTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = 0.0;
-    const double expectedSource   = 0.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);

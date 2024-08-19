@@ -2898,9 +2898,6 @@ void UtPolyFluid::testStateModifierExceptions()
     /// - Default construct an uninitialized test article
     PolyFluid article;
 
-    /// - Set argument to 1.0, a valid value
-    const double argument = 1.0;
-
     /// @test for setMassAndMassFractions mass fraction exception using nominal test article and
     ///       mass fractions that don't add up to 1
     const double mass = 1.0;

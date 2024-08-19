@@ -422,7 +422,6 @@ void UtGunnsElectPvArray::testCustomStringsInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellTemperatureCurrentCoeff, tArticle->mConfig.mSectionConfig.mStringConfig.mCellConfig.mTemperatureCurrentCoeff, 0.0);
 
     /// @test    Init of sections.
-    const unsigned int expectedSectionNumStrings = tNumStrings / tNumSections;
     CPPUNIT_ASSERT(tName + ".mSections_0"            == sectionPtr[0]->mName);
     CPPUNIT_ASSERT(tName + ".mSections_1"            == sectionPtr[1]->mName);
     CPPUNIT_ASSERT(tName + ".mSections_2"            == sectionPtr[2]->mName);
@@ -731,8 +730,6 @@ void UtGunnsElectPvArray::testConfirmSolutionAcceptable()
     tArticle->mOpenCircuitSide = false;
     tArticle->step(0.0);
     CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
-    double admittance = tArticle->mAdmittanceMatrix[0];
-    double source     = tArticle->mSourceVector[0];
 
     /// @test    When solution voltage remains on the previous side of the I-V corner, the link
     ///          confirms.

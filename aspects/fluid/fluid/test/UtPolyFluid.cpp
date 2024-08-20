@@ -1439,7 +1439,6 @@ void UtPolyFluid::testSetMassAndMassFractions()
             CPPUNIT_ASSERT_DOUBLES_EQUAL(mMoleFraction2[i], returnedMoleFraction, mTolerance);
         }
     } {
-        const double expectedMass = mMass * 0.5;
         double expectedMassFraction[UtPolyFluid::NDUAL];
         expectedMassFraction[0] = 1.000;
         expectedMassFraction[1] = 0.000;
@@ -2765,15 +2764,15 @@ void UtPolyFluid::testInitializationExceptions()
 {
     UT_RESULT;
 
-    /// - Start with uninitialized test article
-    PolyFluid article;
-
-    /// @test for exception on different number of constituents in config and input data.
-    article.initializeName("article");
-    CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData1, *mInputData2),
-                         TsInitializationException);
-
     {
+        /// - Start with uninitialized test article
+        PolyFluid article;
+
+        /// @test for exception on different number of constituents in config and input data.
+        article.initializeName("article");
+        CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData1, *mInputData2),
+                             TsInitializationException);
+    } {
         /// @test for temperature too small. This exception is actually being thrown from
         ///       constituent MonoFluid before PolyFluid gets a chance
         PolyFluid article;

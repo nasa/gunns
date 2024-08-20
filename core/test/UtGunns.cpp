@@ -25,11 +25,11 @@
 /// @details  This is a constructor for this dummy link class that configures it for allowing us to
 ///           manipulate the inputs to the Gunns system of equations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsFakeLink::UtGunnsFakeLink(int numPorts, bool isNonLinear, bool failOnStep)
+UtGunnsFakeLink::UtGunnsFakeLink(int numPorts, bool isNonLinear, bool failOnStep_)
     :
     GunnsBasicLink(numPorts),
     nonLinearFlag(isNonLinear),
-    failOnStep(failOnStep),
+    failOnStep(failOnStep_),
     delayToAbsoluteStep(0),
     delayToConvergedStep(0),
     callsToRead(0),

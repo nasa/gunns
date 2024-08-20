@@ -82,7 +82,7 @@ class TsSurfaceHeatFlux {
         void  setLighting( const double lightset);
 
         /// @brief Sets one of the radiance vectors.
-        const void  setRadiance( double* radiancePointer, double x, double y, double z);
+        void  setRadiance( double* radiancePointer, double x, double y, double z);
 
         /// @brief Validates that the magnitude of a vector is not zero
         void  vectorValidate(double* vector);

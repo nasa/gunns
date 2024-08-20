@@ -17,7 +17,6 @@ UtGunnsFluidUtils::UtGunnsFluidUtils()
     mFluidTcConfig1(),
     mFluidConfig1(),
     mFluidConfig2(),
-    fractions(),
     mFluidInput1(),
     mFluidInput2(),
     mFluidInput3(),
@@ -47,7 +46,6 @@ void UtGunnsFluidUtils::tearDown()
     delete tFluid1;
     delete mFluidInput2;
     delete mFluidInput1;
-    delete[] fractions;
     delete mFluidConfig2;
     delete mFluidConfig1;
     delete mFluidProperties;
@@ -78,10 +76,7 @@ void UtGunnsFluidUtils::setUp()
     types[2]    = FluidProperties::GUNNS_CO2;
     mFluidConfig2 = new PolyFluidConfigData(mFluidProperties, types, 3);
 
-    fractions = new double[3];
-    fractions[0] = 0.5;
-    fractions[1] = 0.5;
-    fractions[2] = 0.0;
+    double fractions[3] = {0.5, 0.5, 0.0};
     mFluidInput1 = new PolyFluidInputData(283.15,                   //temperature
                                           700.728,                  //pressure
                                           0.0,                      //flowRate
@@ -1130,10 +1125,7 @@ void UtGunnsFluidUtils::testMoleToMassFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 16: testMoleToMassFraction ................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.5;
-    fractions[1] = 0.5;
-    fractions[2] = 0.0;
-
+    double fractions[3] = {0.5, 0.5, 0.0};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMoleFractionToMassFraction(outFractions, fractions, mFluidConfig1);
@@ -1174,10 +1166,7 @@ void UtGunnsFluidUtils::testMassToMoleFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 17: testMassToMoleFraction ................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.3;
-    fractions[1] = 0.5;
-    fractions[2] = 0.2;
-
+    double fractions[3] = {0.3, 0.5, 0.2};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMassFractionToMoleFraction(outFractions, fractions, mFluidConfig1);
@@ -1218,9 +1207,7 @@ void UtGunnsFluidUtils::testPpToMoleFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 18: testPpToMoleFraction ..................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 78.0;
-    fractions[1] = 20.0;
-    fractions[2] =  2.0;
+    double fractions[3] = {78.0, 20.0,  2.0};
     const double sum = fractions[0] + fractions[1] + fractions[2];
 
     double outFractions[3] = {0.0, 0.0, 0.0};
@@ -1257,10 +1244,7 @@ void UtGunnsFluidUtils::testMoleToPpFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 19: testMoleToPpFraction ..................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.78;
-    fractions[1] = 0.20;
-    fractions[2] = 0.02;
-
+    double fractions[3] = {0.78, 0.20, 0.02};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMoleFractionToPartialPressure(outFractions, fractions, mFluidConfig1,

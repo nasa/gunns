@@ -723,7 +723,7 @@ void UtGunnsFluidMultiAdsorber::testInitializationExceptions()
     config.addCompound(tCompound1Type, tCompound1MaxAdsorbedMass, tCompound1EfficiencyCoeff0);
     CPPUNIT_ASSERT_THROW(article.initialize(config, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
-    
+
     /// @test    Initialization exception on invalid config data: exception from compound init.
     config.mCompounds.clear();
     config.addCompound(tCompound1Type, -DBL_EPSILON, tCompound1EfficiencyCoeff0);

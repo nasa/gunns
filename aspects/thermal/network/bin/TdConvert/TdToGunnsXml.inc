@@ -5,13 +5,13 @@ c
 c  This Fortran script is used to generate Gunns C++
 c  ThermalNetwork output from a Thermal Desktop run.
 c
-c  Notes: 
+c  Notes:
 c        1. The Thermal Desktop model must build a
 c           sub-model named 'SPACE'.
 c        2. All user-defined radiation links (not
 c           calculated by RADCAD) must be in a special
 c           sub-model named 'RADIATION' or they will
-c           be recognized as regular linear conductors.  
+c           be recognized as regular linear conductors.
 c
 c  Joe Valerioti, 2011
 c
@@ -45,8 +45,8 @@ HEADER ARRAY DATA, SPACE
       802 = ALLSAME, MAX_LINK_TOTAL, 0.0
       803 = ALLSAME, MAX_LINK_TOTAL, 0.0
 
-HEADER CARRAY DATA, SPACE                      
-C     file name for Network output data                           
+HEADER CARRAY DATA, SPACE
+C     file name for Network output data
       11 = TdNetworkConfig.xml
 
 HEADER VARIABLES0, SPACE
@@ -90,7 +90,7 @@ C-----Print XML Header
       write(nuser11,1000)
       write(nuser11,1001)
 C ______________________________________________________________________________________________________________________
-C=====Node Printing 
+C=====Node Printing
 
 C-----Flag to specify when space node has been encountered
       flag_space = 0
@@ -99,7 +99,7 @@ C----Loop through all nodes
       do i_node = 1, NNOD ,1
 
 C----Print every node except SPACE node
-F        if(  TRIM(NDNAM(i_node)) .ne. 'SPACE' ) then 
+F        if(  TRIM(NDNAM(i_node)) .ne. 'SPACE' ) then
 
 C------------Find temperature and capacitance of each node
 F            ttest = T( INTNOD(NDNAM(i_node),NDINT(i_node)) )
@@ -129,7 +129,7 @@ F     ttest = T( INTNOD(NDNAM(i_node_space),NDINT(i_node_space)) )
 F     ctest = C( INTNOD(NDNAM(i_node_space),NDINT(i_node_space)) )
 
 C-----Print: final count, space node submodel name, space node integer, temperature, capacitance
-      write(nuser11,1101) 
+      write(nuser11,1101)
 F     write(nuser11,1011) 'name', TRIM(NDNAM(i_node_space)), NDINT(i_node_space), 'name'
       write(nuser11,1012) 'temperature', 'K',   ttest, 'temperature'
       write(nuser11,1022) 'capacitance', 'J/K', ctest, 'capacitance'
@@ -144,7 +144,7 @@ C---------Submodels in NMOD are listed alphabetically - SINDA submodels first, t
               i_sub_radcad = i_sub
               cond_ptr_radcad = INTCON(NMOD(i_sub_radcad), -1)
           endif
-      enddo     
+      enddo
 
 C-----Loop through all models
       do i_sub = 1, NMACT ,1
@@ -173,7 +173,7 @@ C-----------------The conductor is a radiation link if its submodel is 'RADIATIO
               endif
 
           enddo
-      enddo   
+      enddo
 
 C ______________________________________________________________________________________________________________________
 C==== Radiation Printing
@@ -197,7 +197,7 @@ C-------------Error check
               else
 C-----------------Get the link info and print.
 F                 CALL CONDAT( NMOD(i_sub), i_link_within_sub, node0, node1, qtest)
-                  
+
                   if (coeff .ge. 0.001) then
                       write(nuser11,1301)
 F                     write(nuser11,1011) 'node0', TRIM(NDNAM(node0)), NDINT(node0), 'node0'
@@ -220,13 +220,13 @@ C---------------------Increment the counter
 
 C ______________________________________________________________________________________________________________________
 C==== Conduction Printing
-   
+
 C-----Reset the link counter
       link_counter = 0
 
 C-----Loop through the link array
       do i_link = 1, link_total, 1
- 
+
           designator = A(800+i_link)
 
 C---------A positive designator flags a conduction link
@@ -244,7 +244,7 @@ C-------------Error check
 
 C-----------------Get the link info and print.
 F                 CALL CONDAT( NMOD(i_sub), i_link_within_sub, node0, node1, qtest)
-    
+
                   if (coeff .ge. 0.001) then
                       write(nuser11,1201)
 F                     write(nuser11,1011) 'node0', TRIM(NDNAM(node0)), NDINT(node0), 'node0'

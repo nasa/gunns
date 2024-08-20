@@ -72,7 +72,7 @@ void UtFluidProperties::testAccessors()
 
     /// @test for each fluid type (just for existence)
     for (int j = 0; j  < FluidProperties::NO_FLUID; j++) {
-        const FluidProperties::FluidType i = static_cast<const FluidProperties::FluidType>(j);
+        const FluidProperties::FluidType i = static_cast<FluidProperties::FluidType>(j);
         const double t = 300.0;
         const double p = 100000.0;
         const double h = 10000.0;

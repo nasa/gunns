@@ -66,9 +66,9 @@ class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class
         /// @brief  Sets the given array to the trace compound mole fraction values.
         void getTcMoleFractions(double* fractions, const unsigned int size) const;
         /// @brief  Returns the size of this mixture data bulk fluid mole fractions array.
-        const unsigned int getNumFluid() const;
+        unsigned int getNumFluid() const;
         /// @brief  Returns the size of this mixture data trace compounds mole fractions array.
-        const unsigned int getNumTc() const;
+        unsigned int getNumTc() const;
 
     protected:
         unsigned int mNumFluid;       /**< *o (1) trick_chkpnt_io(**) Number of primary fluid compounds in this mixture. */
@@ -253,7 +253,7 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mNumFluid.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline const unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
+inline unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
 {
     return mNumFluid;
 }
@@ -261,7 +261,7 @@ inline const unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mNumTc.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline const unsigned int GunnsFluidDistributedMixtureData::getNumTc() const
+inline unsigned int GunnsFluidDistributedMixtureData::getNumTc() const
 {
     return mNumTc;
 }

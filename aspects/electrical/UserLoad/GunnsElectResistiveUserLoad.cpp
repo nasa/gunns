@@ -114,8 +114,8 @@ GunnsElectResistiveUserLoad::~GunnsElectResistiveUserLoad()
 ///           exception is thrown.  If they pass, these pointers are stored in the class for later
 ///           use by the initLoad method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectResistiveUserLoad::initialize(GunnsNetworkSpotterConfigData* configData,
-                                             GunnsNetworkSpotterInputData*  inputData)
+void GunnsElectResistiveUserLoad::initialize(const GunnsNetworkSpotterConfigData* configData,
+                                             const GunnsNetworkSpotterInputData*  inputData)
 {
     /// - Validate & store config & input data pointers.
     mConfig = validateConfig(configData);
@@ -172,9 +172,9 @@ void GunnsElectResistiveUserLoad::initLoad()
 /// @details  Type-casts the base config data class pointer to this spotter's config data type,
 ///           checks for valid type-cast and validates contained data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectResistiveUserLoadConfigData* GunnsElectResistiveUserLoad::validateConfig(GunnsNetworkSpotterConfigData* config)
+const GunnsElectResistiveUserLoadConfigData* GunnsElectResistiveUserLoad::validateConfig(const GunnsNetworkSpotterConfigData* config)
 {
-    GunnsElectResistiveUserLoadConfigData* result = dynamic_cast<GunnsElectResistiveUserLoadConfigData*>(config);
+    const GunnsElectResistiveUserLoadConfigData* result = dynamic_cast<const GunnsElectResistiveUserLoadConfigData*>(config);
     if (!result) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Bad config data pointer type.");
@@ -193,9 +193,9 @@ GunnsElectResistiveUserLoadConfigData* GunnsElectResistiveUserLoad::validateConf
 /// @details  Type-casts the base input data class pointer to this spotter's input data type,
 ///           checks for valid type-cast and validates contained data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectResistiveUserLoadInputData* GunnsElectResistiveUserLoad::validateInput(GunnsNetworkSpotterInputData* input)
+const GunnsElectResistiveUserLoadInputData* GunnsElectResistiveUserLoad::validateInput(const GunnsNetworkSpotterInputData* input)
 {
-    GunnsElectResistiveUserLoadInputData* result = dynamic_cast<GunnsElectResistiveUserLoadInputData*>(input);
+    const GunnsElectResistiveUserLoadInputData* result = dynamic_cast<const GunnsElectResistiveUserLoadInputData*>(input);
     if (!result) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Bad input data pointer type.");

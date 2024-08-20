@@ -54,7 +54,7 @@ namespace Strings
     /// @brief Converts a float to a standard library string.
     static std::string floatToString(
         const double numberToConvert,
-        const double decimalPrecision,
+        const int    decimalPrecision,
         const double minValue,
         const double maxValue);
 
@@ -88,11 +88,11 @@ namespace Strings
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline std::string Strings::floatToString(
     const double numberToConvert,
-    const double decimalPrecision,
+    const int    decimalPrecision,
     const double minValue,
     const double maxValue)
 {
-    double newNumToCon = MsMath::limitRange(minValue, MsMath::quantize(numberToConvert, 1/(std::pow(10,decimalPrecision))), maxValue);
+    double newNumToCon = MsMath::limitRange(minValue, MsMath::quantize(numberToConvert, 1.0/(std::pow(10.0,decimalPrecision))), maxValue);
     std::stringstream convert;
     convert << std::fixed << std::setprecision(decimalPrecision) << newNumToCon;
     std::string cValue(convert.str());

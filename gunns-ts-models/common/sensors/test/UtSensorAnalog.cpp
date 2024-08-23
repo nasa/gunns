@@ -612,7 +612,7 @@ void UtSensorAnalog::testNoise()
     article.mMalfNoiseScale      = 0.5;
     article.mMalfNoiseMultiplier = 0.1;
     float expected = 10.0 + tNominalNoiseScale * UtSensorAnalogNoise::testNoise()
-                   + tNominalNoiseMult * UtSensorAnalogNoise::testNoise() * fabs(10.0 - tOffValue);
+                   + tNominalNoiseMult * UtSensorAnalogNoise::testNoise() * std::fabs(10.0 - tOffValue);
     article.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
@@ -620,7 +620,7 @@ void UtSensorAnalog::testNoise()
     article.mSensedOutput        = 10.0;
     article.mMalfNoiseFlag       = true;
     expected                     = 10.0 + 0.5 * UtSensorAnalogNoise::testNoise()
-                                 + 0.1 * UtSensorAnalogNoise::testNoise() * fabs(10.0 - tOffValue);
+                                 + 0.1 * UtSensorAnalogNoise::testNoise() * std::fabs(10.0 - tOffValue);
     article.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 

@@ -1104,7 +1104,7 @@ void UtGunnsElectPvString::testLoadAtConductance()
 
         tArticle->loadAtPower(expectedP, shortSide);
         const double expectedG = tArticle->mTerminal.mConductance;
-        const double expectedI = sqrt(expectedP * expectedG);
+        const double expectedI = std::sqrt(expectedP * expectedG);
         const double expectedV = expectedP / expectedI;
         tArticle->loadAtConductance(expectedG);
 
@@ -1119,7 +1119,7 @@ void UtGunnsElectPvString::testLoadAtConductance()
 
         tArticle->loadAtPower(expectedP, shortSide);
         const double expectedG = tArticle->mTerminal.mConductance;
-        const double expectedI = sqrt(expectedP * expectedG);
+        const double expectedI = std::sqrt(expectedP * expectedG);
         const double expectedV = expectedP / expectedI;
         tArticle->loadAtConductance(expectedG);
 

@@ -343,7 +343,7 @@ inline void GunnsElectConverterOutput::resetTrips()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsElectConverterOutput::computeFlux()
 {
-    mFlux = fmax(0.0, mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0]);
+    mFlux = std::max(0.0, mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

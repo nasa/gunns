@@ -26,7 +26,7 @@ LIBRARY DEPENDENCIES:
  (tinyxmlparser.o))
 */
 
-#include <ctype.h>
+#include <cctype>
 
 #ifdef TIXML_USE_STL
 #include <sstream>
@@ -152,7 +152,7 @@ void TiXmlBase::EncodeString( const TIXML_STRING& str, TIXML_STRING* outString )
 
 			//*ME:	warning C4267: convert 'size_t' to 'int'
 			//*ME:	Int-Cast to make compiler happy ...
-			outString->append( buf, (int)strlen( buf ) );
+			outString->append( buf, (int)std::strlen( buf ) );
 			++i;
 		}
 		else

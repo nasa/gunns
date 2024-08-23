@@ -125,7 +125,7 @@ void TsLimitSwitchAnalog::update(
 
     /// - set local variable inRange true if realValue within tolerance of target
     bool inRange = false;
-    if(fabs(realValue - mTargetValue) < mTolerance) {
+    if(std::fabs(realValue - mTargetValue) < mTolerance) {
         inRange = true;
     }
 

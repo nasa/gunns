@@ -10,7 +10,7 @@
 #include "software/exceptions/TsParseException.hh"
 #include "parsing/ParseTool.hh"
 #include "UtParseTool.hh"
-#include <stdlib.h>
+#include <cstdlib>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this math unit test.

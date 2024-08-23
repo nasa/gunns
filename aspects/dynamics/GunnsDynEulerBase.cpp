@@ -21,7 +21,7 @@ LIBRARY DEPENDENCY:
 /// @details  This is derived from the 1.0e-6 value used by the Trick implementation in
 ///           trick_source/trick_utils/math/deuler_123_quat.c but we build in a few more operations
 ///           into this constant to make the run-time code more efficient.
-const double GunnsDynEulerBase::TOLSING = sin(UnitConversion::PI_OVER_2 - 1.0e-6);
+const double GunnsDynEulerBase::TOLSING = std::sin(UnitConversion::PI_OVER_2 - 1.0e-6);
 
 /// @details  This tolerance is used in various places in the update method's singularity avoidance
 ///           logic.  This value comes from the Trick implementation in
@@ -71,12 +71,12 @@ void GunnsDynEulerBase::computeQuat(double* quat, const double* euler)
     double half_angles[3];
     GunnsDynUtils::scaleV(half_angles, mAngles, 0.5, 3);
 
-    const double s1 = sin(half_angles[0]);
-    const double c1 = cos(half_angles[0]);
-    const double s2 = sin(half_angles[1]);
-    const double c2 = cos(half_angles[1]);
-    const double s3 = sin(half_angles[2]);
-    const double c3 = cos(half_angles[2]);
+    const double s1 = std::sin(half_angles[0]);
+    const double c1 = std::cos(half_angles[0]);
+    const double s2 = std::sin(half_angles[1]);
+    const double c2 = std::cos(half_angles[1]);
+    const double s3 = std::sin(half_angles[2]);
+    const double c3 = std::cos(half_angles[2]);
 
     computeQuatSeq(quat, s1, c1, s2, c2, s3, c3);
 }
@@ -96,7 +96,7 @@ double* GunnsDynEulerBase::update(const double* quat)
 
     if (MsMath::isInRange(-1.0, sinRot2, 1.0)) {
         // Within range for asin function.
-        if (fabs(sinRot2) < TOLSING) {
+        if (std::fabs(sinRot2) < TOLSING) {
             mSingularity = 0;
             computeAnglesNoSing(quat, sinRot2);            // away from singularity
         } else if (sinRot2 > 0.0) {

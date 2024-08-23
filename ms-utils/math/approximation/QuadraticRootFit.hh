@@ -90,8 +90,7 @@ class QuadraticRootFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double QuadraticRootFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return (mA + sqrt(mB + mC * x)) * mD;
+    return (mA + std::sqrt(mB + mC * x)) * mD;
 }
 
 #endif
-

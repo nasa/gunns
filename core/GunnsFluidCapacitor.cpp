@@ -351,7 +351,7 @@ void GunnsFluidCapacitor::buildAdmittanceMatrix(const double dt)
     }
 
     /// - Build the system admittance matrix contribution.
-    if (fabs(mAdmittanceMatrix[0] - admittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - admittance) > 0.0) {
         mAdmittanceMatrix[0] = admittance;
         mAdmittanceMatrix[1] = 0.0;
         mAdmittanceMatrix[2] = 0.0;

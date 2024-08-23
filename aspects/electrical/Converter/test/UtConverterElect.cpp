@@ -8,7 +8,7 @@
  )
 **************************************************************************************************/
 
-#include <math.h>
+#include <cmath>
 
 #include "UtConverterElect.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -1093,4 +1093,3 @@ void UtConverterElect::testMalfunctions() {
     std::cout << "... Pass";
     std::cout << "\n -----------------------------------------------------------------";
 }
-

@@ -527,6 +527,6 @@ void SensorAnalog::applyResolution()
     value = std::fabs(value);
 
     if (value > FLT_EPSILON) {
-        mSensedOutput = value * static_cast<float>(round(mSensedOutput/value));
+        mSensedOutput = value * std::round(mSensedOutput/value);
     }
 }

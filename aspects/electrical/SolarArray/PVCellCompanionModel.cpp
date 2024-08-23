@@ -318,7 +318,7 @@ void PVCellCompanionModel::update(const bool isMinor, const double V, const doub
     mSunAngle = fmod(mSunAngle, 6.283185307);
     // if (mSunAngle < 0.0)        {mSunAngle += 6.283185307;}             //2pi
     if (mSunAngle < 0.0) {
-        mSunAngle = fabs(mSunAngle);
+        mSunAngle = std::fabs(mSunAngle);
     }
     if (mSunAngle < 0.0)        { mSunAngle = 0.0;}                     //0 radians
     if (mSunAngle >  3.1415926535898){ mSunAngle =  3.1415926535898 ; } //pi radians
@@ -344,7 +344,7 @@ void PVCellCompanionModel::updatePhysicalParameters()
 
     //update Isc, source current using Isc temperature relation from reference 2. Isc changes by coefficient * deltaT.
     //Use sin because the angle supplied by environment is measured between LOS and horizontal. We want the perpendicular component of Isc
-    double lAngleScalar = pow(sin(mSunAngle), mSunAngleScalar);
+    double lAngleScalar = std::pow(std::sin(mSunAngle), mSunAngleScalar);
     double lTempScalar = mIscTempCoefficient * (mTemperature - mTemperatureRef);
     mIsc = (mIscRef + lTempScalar) * mSunIntensity * lAngleScalar * degrade();
 
@@ -368,9 +368,9 @@ void PVCellCompanionModel::updatePhysicalParameters()
     } else {
         mLambda = 0.0;
     }
-    if((exp(mVoc * mLambda) - 1) > 0){
+    if((std::exp(mVoc * mLambda) - 1) > 0){
     //This comes from the well known equation for an ideal Diode
-    mIsat = mIsc / (exp(mVoc * mLambda) - 1);
+    mIsat = mIsc / (std::exp(mVoc * mLambda) - 1);
     }else{
         mIsat = 0.0;
     }
@@ -382,20 +382,20 @@ void PVCellCompanionModel::updatePhysicalParameters()
 void PVCellCompanionModel::updateCompanionModel()
  {
     dampAndBoundIVCurve();
-    double denominator = (1 + mIsat * mLambda * mRs * exp(mLambda * (mV + mI * mRs)));
+    double denominator = (1 + mIsat * mLambda * mRs * std::exp(mLambda * (mV + mI * mRs)));
 
     if (denominator > 0.0) {
         //Derived from implicit derivation of circuit network. See design review documents for details and derivation.
-        mGeqCell = -(mIsat * mLambda * exp(mLambda * (mV + mI * mRs))) / denominator;
+        mGeqCell = -(mIsat * mLambda * std::exp(mLambda * (mV + mI * mRs))) / denominator;
     } else {
         mGeqCell = 0.0;
     }
     //Ideal diode equation
-    mId = mIsat * (exp(mLambda * (mV + mI * mRs)) - 1);
+    mId = mIsat * (std::exp(mLambda * (mV + mI * mRs)) - 1);
     mIl = mGeqCell * mV;
     //Derived from circuit analysis. See design review documents for details and derivation.
     mIeqCell = mIsc - mId - mIl;
-    mGeqCell = fabs(mGeqCell);
+    mGeqCell = std::fabs(mGeqCell);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,7 +421,7 @@ void PVCellCompanionModel::dampAndBoundIVCurve()
                 //Derived from logarithmic damping scenario. See Logarithmic Damping derivation in design review documentation.
                 double logVal = mV - mVlast + 1.0;
                 if (logVal > 0) {
-                    mV = (log(logVal) - mLambda * mRs * (mI - mIlast)) / (2.0 * mLambda) + mVlast;
+                    mV = (std::log(logVal) - mLambda * mRs * (mI - mIlast)) / (2.0 * mLambda) + mVlast;
                 } else {
                     mV = (0.0 - mLambda * mRs * (mI - mIlast)) / (2.0 * mLambda) + mVlast;
                 }
@@ -448,7 +448,7 @@ void PVCellCompanionModel::dampAndBoundIVCurve()
                 double lastDelta = 1.0e6;
                 double lastV     = mVmp;
                 for (int i=0; i<10; ++i) {
-                    filterV = log(1.0 + (mIsc - filterI) / mIsat) / mLambda - filterI * mRs;
+                    filterV = std::log(1.0 + (mIsc - filterI) / mIsat) / mLambda - filterI * mRs;
 
                     /// - Limit filterI to within valid bounds to prevent log of a negative number
                     //    on next pass.
@@ -457,7 +457,7 @@ void PVCellCompanionModel::dampAndBoundIVCurve()
                     /// - Detect a diverging oscillation about mVmp.  This can occur in some cases
                     ///   where the vehicle constant power load is higher than the solar array can
                     ///   provide.  In this case output max power and break out of the filter.
-                    if ( (fabs(delta) > fabs(lastDelta)) and (filterV > mVmp) and (lastV < mVmp) ) {
+                    if ( (std::fabs(delta) > std::fabs(lastDelta)) and (filterV > mVmp) and (lastV < mVmp) ) {
                         filterV = mVmp;
                         filterI = filterV * Gload;
                         break;

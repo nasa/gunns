@@ -204,7 +204,7 @@ inline void GunnsFluidSelectiveMembrane::computePower()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsFluidSelectiveMembrane::buildAdmittance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[3]   = -mAdmittanceMatrix[0];

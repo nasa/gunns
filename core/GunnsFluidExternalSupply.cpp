@@ -341,7 +341,7 @@ void GunnsFluidExternalSupply::step(const double dt __attribute__((unused)))
     /// - The link supports demanded flow as either mass or molar flow, but output a warning if we
     ///   are getting competing inputs, as this indicates an problem in simbus set-up.  We will use
     ///   molar flux demand over mass flow demand if both are set.
-    if (fabs(mFlowRate) > DBL_EPSILON and fabs(mFlux) > DBL_EPSILON) {
+    if (std::fabs(mFlowRate) > DBL_EPSILON and std::fabs(mFlux) > DBL_EPSILON) {
         GUNNS_WARNING("is receiving both molar and mass flow demands.");
     }
 
@@ -363,7 +363,7 @@ void GunnsFluidExternalSupply::step(const double dt __attribute__((unused)))
     }
 
     /// - Lower-limit the mass flow rate and corresponding molar flux.
-    if (fabs(mFlowRate) < m100EpsilonLimit) {
+    if (std::fabs(mFlowRate) < m100EpsilonLimit) {
         mFlowRate = 0.0;
         mFlux     = 0.0;
     }

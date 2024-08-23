@@ -277,7 +277,7 @@ void GunnsThermoelectricEffect::update()
     /// - Update thermal conductance and Seebeck constants.
     mThermalConductance = mThermalConductanceCoeffs[0];
     double seebeckAvg   = mSeebeckCoeffs[0];
-    if (fabs(dT) > DBL_EPSILON) {
+    if (std::fabs(dT) > DBL_EPSILON) {
         mThermalConductance += dT2/dT * (mThermalConductanceCoeffs[1] / 2.0)
                              + dT3/dT * (mThermalConductanceCoeffs[2] / 3.0);
         seebeckAvg          += dT2/dT * (mSeebeckCoeffs[1] / 2.0)

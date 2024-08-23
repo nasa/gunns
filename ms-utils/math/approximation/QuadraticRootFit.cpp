@@ -82,7 +82,7 @@ void QuadraticRootFit::init(const double a,    const double b,
     mInitFlag = false;
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
-    TS_GENERIC_IF_ERREX((fabs(b) < DBL_EPSILON), TsInitializationException,
+    TS_GENERIC_IF_ERREX((std::fabs(b) < DBL_EPSILON), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
     TS_GENERIC_IF_ERREX((minX + flt_epsilon < -mB / mC && -mB / mC < maxX - flt_epsilon), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");

@@ -365,12 +365,12 @@ double Combust::calcEnth(const ChemicalCompound* compound, double temp) const{
 
 double Combust::calcEnt(const ChemicalCompound* compound, double temp, double partPress) const{
     const double* thermoCoeff = lookUpThermoCoeff(compound, temp);
-    double ent = thermoCoeff[0] * log(temp) + thermoCoeff[1] * temp + thermoCoeff[2] * temp * temp /
+    double ent = thermoCoeff[0] * std::log(temp) + thermoCoeff[1] * temp + thermoCoeff[2] * temp * temp /
                2.0 + thermoCoeff[3] * temp * temp * temp / 3.0 + thermoCoeff[4] * temp * temp * temp
                * temp / 4.0 + thermoCoeff[6];
     /// - adjust for non-standard pressures
     partPress = std::max(partPress, DBL_EPSILON);
-    ent = ent - log(partPress / UnitConversion::PA_PER_ATM );
+    ent = ent - std::log(partPress / UnitConversion::PA_PER_ATM );
     return ent * UnitConversion::UNIV_GAS_CONST_SI * UnitConversion::KILO_PER_UNIT;
 }
 
@@ -521,7 +521,7 @@ void Combust::solveEquilibrium(double temp){
 
         /// - Check for convergance
         for(int i = 0; i < mNCompounds; i++){
-            changeSum += fabs(productRatios[i] - productRatiosHold[i]);
+            changeSum += std::fabs(productRatios[i] - productRatiosHold[i]);
             productRatiosHold[i] = productRatios[i];
         }
 
@@ -616,7 +616,7 @@ void Combust::solveCombustion(){
 
     /// - Check if maximum iterations were met or if the final enthalpy/entropy is not with 5% of the
     ///   initial value.
-    if(It >= mMaxItCombust or fabs(product - mReactants) > mReactants / 1000){
+    if(It >= mMaxItCombust or std::fabs(product - mReactants) > mReactants / 1000){
         mWarningCountCombust++;
     }
     mTestTempStep = testTempStepHold;

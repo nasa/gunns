@@ -396,7 +396,7 @@ void GunnsFluidMetabolic::updateState(const double dt)
         mProducedHeat  = 0.0;
         for (int i = 0; i < GunnsFluidMetabolic::NO_METABOLIC; ++i) {
             /// - O2 consumption rate is limited by the O2 mass in the node.
-            mConsumedO2   += fmin((mNodes[1]->getContent()->getMassFraction(mO2) *
+            mConsumedO2   += std::min((mNodes[1]->getContent()->getMassFraction(mO2) *
                                    mNodes[1]->getContent()->getMass()) / dt,
                                   mNCrew[i] * mO2ConsumptionRate[i]);
             mProducedCO2  += mNCrew[i] * mCO2ProductionRate[i];
@@ -405,7 +405,7 @@ void GunnsFluidMetabolic::updateState(const double dt)
         }
         const double flowDemand = mProducedH2O + mProducedCO2 - mConsumedO2;
 
-        if (fabs(flowDemand) <= DBL_EPSILON) {
+        if (std::fabs(flowDemand) <= DBL_EPSILON) {
             /// - Zero out the flow demand if computed consumption rate is negligible.
             mFlowDemand = 0.0;
         } else {
@@ -476,11 +476,11 @@ void GunnsFluidMetabolic::transition(const double        number,
         /// - Transition as many as requested or are available.
         double n = number;
         if (NO_METABOLIC != fromState) {
-            n = fmin(number, mNCrew[fromState]);
-            mNCrew[fromState] = fmax(0.0, mNCrew[fromState] - n);
+            n = std::min(number, mNCrew[fromState]);
+            mNCrew[fromState] = std::max(0.0, mNCrew[fromState] - n);
         }
         if (NO_METABOLIC != toState) {
-            mNCrew[toState]   = fmax(0.0, mNCrew[toState]   + n);
+            mNCrew[toState]   = std::max(0.0, mNCrew[toState]   + n);
         }
     }
 }

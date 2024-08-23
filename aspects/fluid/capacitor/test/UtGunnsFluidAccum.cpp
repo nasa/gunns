@@ -607,7 +607,7 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowIn()
 
     CPPUNIT_ASSERT(0.0 < tModel->mFlowRate);
     CPPUNIT_ASSERT(prevBellowsPosition < newBellowsPosition);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mFlowRate), tNodes[0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mFlowRate), tNodes[0].getOutflux(), tTolerance);
 
     const double expectedSpringP = newBellowsPosition * newBellowsPosition * tSpringCoeff2
                                  + newBellowsPosition * tSpringCoeff1 + tSpringCoeff0;
@@ -646,7 +646,7 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowOut()
 
     CPPUNIT_ASSERT(0.0 > tModel->mFlowRate);
     CPPUNIT_ASSERT(prevBellowsPosition > tModel->mBellowsPosition);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mFlowRate), tNodes[0].getInflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mFlowRate), tNodes[0].getInflux(), tTolerance);
 
     UT_PASS;
 }

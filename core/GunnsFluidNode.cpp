@@ -617,7 +617,7 @@ void GunnsFluidNode::integrateFlows(const double dt)
 
         /// - If there is incoming flow, calculate the new mixture in the node, removing
         ///   negative or dirty zero mass fractions and re-normalizing if necessary.
-        if (fabs(inMass) > DBL_EPSILON) {
+        if (std::fabs(inMass) > DBL_EPSILON) {
 
             /// - First do outflow of trace compounds before mixing in their inflow.
             if (traceCompounds and mContent.getMWeight() > DBL_EPSILON) {
@@ -797,7 +797,7 @@ double GunnsFluidNode::computePressureCorrection()
 
         /// - We only apply the pressure correction if the error is above a certain threshold, to
         ///   avoid creating extra noise in the system.
-        if( fabs(pressureError) > mErrorThreshold ) {
+        if( std::fabs(pressureError) > mErrorThreshold ) {
             mPressureCorrection = pressureError * mCorrectGain;
         }
 

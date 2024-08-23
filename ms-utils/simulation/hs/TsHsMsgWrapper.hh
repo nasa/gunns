@@ -36,7 +36,7 @@ PROGRAMMERS:
 @{
 */
 
-#include <stdarg.h>
+#include <cstdarg>
 #include "TS_hs_msg_types.h"
 
 /// @brief Provides access to TsHsMsg's hsSendMsg macro functionality from "C" code.

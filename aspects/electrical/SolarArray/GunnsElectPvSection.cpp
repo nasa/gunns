@@ -402,11 +402,11 @@ void GunnsElectPvSection::updateEnvironment(const double dt)
     /// - Fraction of ambient power absorbed by the section due to facing away from the light source.
     double trigAngle = 0.0;
     if (mConfig->mSourceAngleEdgeOn) {
-        trigAngle = sin(mInput.mSourceAngle);
+        trigAngle = std::sin(mInput.mSourceAngle);
     } else {
-        trigAngle = cos(mInput.mSourceAngle);
+        trigAngle = std::cos(mInput.mSourceAngle);
     }
-    double facing = pow(fabs(trigAngle), mConfig->mSourceAngleExponent);
+    double facing = std::pow(std::fabs(trigAngle), mConfig->mSourceAngleExponent);
     if (trigAngle < 0.0) {
         facing *= MsMath::limitRange(0.0, (1.0 - mConfig->mBacksideReduction), 1.0);
     }

@@ -234,7 +234,7 @@ void GunnsFluidSimpleRocket::initialize(const GunnsFluidSimpleRocketConfigData& 
     const double gm1 = g - 1.0;
     // Divide by zero is protected against by validate method above.
     mCombustionMWeight      = UnitConversion::UNIT_PER_KILO * UnitConversion::UNIV_GAS_CONST_SI
-                            * mCombustionTemperature * (1.0 / g) * pow((gp1)/2.0, (gp1)/(gm1))
+                            * mCombustionTemperature * (1.0 / g) * std::pow((gp1)/2.0, (gp1)/(gm1))
                             / configData.mCharacteristicVelocity / configData.mCharacteristicVelocity;
 
     /// - Initialize with input data:
@@ -516,7 +516,7 @@ double GunnsFluidSimpleRocket::updateNozzle()
                 ///   Hill & Peterson, Eqn. 3.5.  Interpolate between the equilibrium and frozen
                 ///   results by tuning factor.
                 if (dH > 0.0) {
-                    Ue  = (1.0 - RTF) * Ue  + RTF * sqrt(2.0 * dH);
+                    Ue  = (1.0 - RTF) * Ue  + RTF * std::sqrt(2.0 * dH);
                     Te  = (1.0 - RTF) * Te  + RTF * mCombustModel->getTemp();
                     ge  = (1.0 - RTF) * ge  + RTF * mCombustModel->getGamma();
                     MWe = (1.0 - RTF) * MWe + RTF * mCombustModel->getMolecWeight();
@@ -559,8 +559,8 @@ void GunnsFluidSimpleRocket::updateExitMach(const double gamma)
     double       ratio       = 0.0;
 
     for (int i=0; i<30; ++i) {
-        ratio = (1.0 / mach) * pow( 2.0 / gp1 + mach * mach / gp1OverGm1, gp1OverGm1 / 2.0);
-        const double delta = 0.5 * fabs(mach - machPrev);
+        ratio = (1.0 / mach) * std::pow( 2.0 / gp1 + mach * mach / gp1OverGm1, gp1OverGm1 / 2.0);
+        const double delta = 0.5 * std::fabs(mach - machPrev);
         if (delta < mMachTolerance) {
             break;
         }
@@ -618,7 +618,7 @@ void GunnsFluidSimpleRocket::updateConductance(const double mdot)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSimpleRocket::buildAdmittanceMatrix()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2]   = -mAdmittanceMatrix[0];
@@ -695,7 +695,7 @@ void GunnsFluidSimpleRocket::updateFlux(const double dt   __attribute__((unused)
                                         const double flux __attribute__((unused)))
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;

@@ -385,7 +385,7 @@ void UtGunnsElectPvSection::testUpdate()
         /// @test    Nominal outputs.
         tArticle->update(0.0);
 
-        const double expectedFacing = pow(cos(tSourceAngle), tSourceAngleExponent);
+        const double expectedFacing = std::pow(std::cos(tSourceAngle), tSourceAngleExponent);
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction;
         const double expectedInsol  = 100.0 * expectedFlux / tRefSourceFluxMagnitude;
         const double expectedPower  = -tArticle->mStrings[0].getTerminal().mPower
@@ -406,7 +406,7 @@ void UtGunnsElectPvSection::testUpdate()
         tArticle->mStringsInput.setMalfTemperature(true, 400.0);
         tArticle->update(0.0);
 
-        const double expectedFacing = pow(sin(1.5), tSourceAngleExponent);
+        const double expectedFacing = std::pow(std::sin(1.5), tSourceAngleExponent);
         const double expectedFlux   = expectedFacing * tSourceFluxMagnitude * tSourceExposedFraction
                                     * (1.0 - tBacksideReduction);
         const double expectedInsol  = 0.0;

@@ -96,7 +96,7 @@ int BrentMethod::solve(double&      x,
             d  = b - a;
             e  = d;
         }
-        if (fabs(fc) < fabs(fb)) {
+        if (std::fabs(fc) < std::fabs(fb)) {
             a  = b;
             b  = c;
             c  = a;
@@ -106,15 +106,15 @@ int BrentMethod::solve(double&      x,
         }
 
         // Convergence check.
-        tol1 = 2.0 * DBL_EPSILON * fabs(b) + 0.5 * tol;
+        tol1 = 2.0 * DBL_EPSILON * std::fabs(b) + 0.5 * tol;
         xm = 0.5 * (c - b);
-        if (fabs(xm) <= tol1 or 0.0 == fb) {
+        if (std::fabs(xm) <= tol1 or 0.0 == fb) {
             x = b;
             return iter;
         }
 
         // Attempt inverse quadratic interpolation.
-        if (fabs(e) >= tol1 and fabs(fa) > fabs(fb)) {
+        if (std::fabs(e) >= tol1 and std::fabs(fa) > std::fabs(fb)) {
             s = fb / fa;
             if (a == c) {
                 p = 2.0 * xm * s;
@@ -130,9 +130,9 @@ int BrentMethod::solve(double&      x,
             if (p > 0.0) {
                 q = -q;
             }
-            p = fabs(p);
-            min1 = 3.0 * xm * q - fabs(tol1 * q);
-            min2 = fabs(e * q);
+            p = std::fabs(p);
+            min1 = 3.0 * xm * q - std::fabs(tol1 * q);
+            min2 = std::fabs(e * q);
 
             if (2.0 * p < (min1 < min2 ? min1 : min2)) {
                 e = d;         // Accept interpolation.
@@ -147,7 +147,7 @@ int BrentMethod::solve(double&      x,
         }
         a  = b;                // Move last best guess to a.
         fa = fb;
-        if (fabs(d) > tol1) {  // Evaluate new trial root.
+        if (std::fabs(d) > tol1) {  // Evaluate new trial root.
             b += d;
         } else {
             if (xm >= 0.0) {   // b += SIGN(tol1, xm)

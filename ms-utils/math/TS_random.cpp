@@ -251,7 +251,7 @@ const int TS_random::RAND_CNT = 1000;
 int TS_random::boundSeed(
    int seed )
 {
-    return ( abs( seed ) % RAND_CNT );
+    return ( std::abs( seed ) % RAND_CNT );
 }
 
 
@@ -345,7 +345,7 @@ int TS_random::randomInt(
 
     int range = maxValue - minValue + 1;
 
-    return floor( RAND_VALUES[seed] * range ) + minValue;
+    return std::floor( RAND_VALUES[seed] * range ) + minValue;
 }
 
 

@@ -83,9 +83,9 @@ void GunnsDynEuler231::computeAnglesNoSing(const double* quat, const double rot2
     const double mat02 = GunnsDynUtils::QtoMElement[2](quat);
     const double mat11 = GunnsDynUtils::QtoMElement[4](quat);
     const double mat21 = GunnsDynUtils::QtoMElement[7](quat);
-    mAngles[0] = atan2(-mat02, mat00);
-    mAngles[1] = asin(rot2sin);
-    mAngles[2] = atan2(-mat21, mat11);
+    mAngles[0] = std::atan2(-mat02, mat00);
+    mAngles[1] = std::asin(rot2sin);
+    mAngles[2] = std::atan2(-mat21, mat11);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ void GunnsDynEuler231::computeAnglesPosSing(const double* quat)
 {
     const double mat20 = GunnsDynUtils::QtoMElement[6](quat);
     const double mat22 = GunnsDynUtils::QtoMElement[8](quat);
-    mAngles[0] = atan2(mat20, mat22);
+    mAngles[0] = std::atan2(mat20, mat22);
     mAngles[1] = UnitConversion::PI_OVER_2;
     mAngles[2] = 0.0;
 }
@@ -113,7 +113,7 @@ void GunnsDynEuler231::computeAnglesNegSing(const double* quat)
 {
     const double mat20 = GunnsDynUtils::QtoMElement[6](quat);
     const double mat22 = GunnsDynUtils::QtoMElement[8](quat);
-    mAngles[0] = atan2(mat20, mat22);
+    mAngles[0] = std::atan2(mat20, mat22);
     mAngles[1] = -UnitConversion::PI_OVER_2;
     mAngles[2] = 0.0;
 }

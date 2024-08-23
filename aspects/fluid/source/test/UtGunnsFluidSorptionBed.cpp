@@ -932,9 +932,9 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     /// @test chaining of outputs from previous segment to inputs of next segment, by checking that
     ///       downstream segments have less adsorption and heat flux than upstream, assuming similar
     ///       sorption properties and initial loading.
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mHeatFlux)                    > fabs(tArticle->mSegments[1].mHeatFlux));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mHeatFlux)                    > std::fabs(tArticle->mSegments[1].mHeatFlux));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate) > std::fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate) > std::fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate));
 
     /// @test sorption outputs to node for forward flow.  This assumes we've already verified the
     ///       bed sorbate and bed segments updates, above.  This assumes all of the incoming CO2
@@ -1068,9 +1068,9 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,         DBL_EPSILON);
 
     /// @test chaining of outputs from previous segment to inputs of next segment, reverse flow.
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mHeatFlux)                    > fabs(tArticle->mSegments[0].mHeatFlux));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate) > fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate) > fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mHeatFlux)                    > std::fabs(tArticle->mSegments[0].mHeatFlux));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate) > std::fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate) > std::fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate));
 
     /// @test sorption outputs to node for reverse flow.
     expectedTcCo2AdsorbNdot   = -expectedFlux * tNodes[1].getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO2);

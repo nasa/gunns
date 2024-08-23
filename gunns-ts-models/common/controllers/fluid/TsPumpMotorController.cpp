@@ -548,8 +548,8 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         /// - Control filter damping function.  Damping cuts out at small speed errors to avoid
         ///   instability.  The minimum of 0.0001 represent 0.01% of speed scale and avoids divide-
         ///   by-zero.  We also use this condition to end the start-up state for current limiting.
-        if (fabs(mSpeedError) > mDampingCutoff) {
-            mPulseWidth   += mDampingGain * dSpeedError / std::max(fabs(mSpeedError), 0.0001);
+        if (std::fabs(mSpeedError) > mDampingCutoff) {
+            mPulseWidth   += mDampingGain * dSpeedError / std::max(std::fabs(mSpeedError), 0.0001);
         } else {
             mStartupState  = false;
         }
@@ -631,4 +631,3 @@ double TsPumpMotorController::getTotalPower() const
 {
     return mVoltage * mTotalCurrent;
 }
-

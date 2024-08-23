@@ -951,7 +951,7 @@ const double UnitConversion::PERCENTAGE                    =
 /// - Current value = 3.1415926535897931e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::PI_UTIL                       =
-    acos(-1.0);
+    std::acos(-1.0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) 2 * PI_UTIL
@@ -967,7 +967,7 @@ const double UnitConversion::TWO_PI                        =
 /// - Current value = 1.7724538509055159e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::SQRT_PI                       =
-    sqrt(UnitConversion::PI_UTIL);
+    std::sqrt(UnitConversion::PI_UTIL);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) 2 * sqrt(PI_UTIL)
@@ -975,7 +975,7 @@ const double UnitConversion::SQRT_PI                       =
 /// - Current value = 3.5449077018110318e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::TWO_SQRT_PI                   =
-    2.0 * sqrt(UnitConversion::PI_UTIL);
+    2.0 * std::sqrt(UnitConversion::PI_UTIL);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) sqrt(2 * PI_UTIL)
@@ -983,7 +983,7 @@ const double UnitConversion::TWO_SQRT_PI                   =
 /// - Current value = 2.5066282746310002e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::SQRT_2PI                      =
-    sqrt(2.0 * UnitConversion::PI_UTIL);
+    std::sqrt(2.0 * UnitConversion::PI_UTIL);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) PI_UTIL / 2
@@ -1287,7 +1287,7 @@ const double UnitConversion::EARTH_POLAR_RADIUS            =
 /// - Current value = 1.4142135623730951e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::SQRT2                         =
-    sqrt(2.0);
+    std::sqrt(2.0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) sqrt(2)/2
@@ -1303,7 +1303,7 @@ const double UnitConversion::SQRT1_2                       =
 /// - Current value = 1.7320508075688772e+00
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::SQRT3                         =
-    sqrt(3.0);
+    std::sqrt(3.0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  (--) sqrt(3)/2
@@ -1311,7 +1311,7 @@ const double UnitConversion::SQRT3                         =
 /// - Current value = 8.6602540378443860e-01
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const double UnitConversion::SQRT3_2                       =
-    sqrt(3.0) / 2.0;
+    std::sqrt(3.0) / 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  type   (--)  Type of the unit-to-unit conversion to be performed.
@@ -1361,7 +1361,7 @@ double UnitConversion::convertPrToDb(const double pratio)
                         "Input Argument Out of Range", "")
     }
 
-    return 10.0 * log10(pratio);
+    return 10.0 * std::log10(pratio);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1378,7 +1378,7 @@ double UnitConversion::convertWToDbw(const double power)
     double dBW;
     if (power > 0.0) {
         // Power value neglects division by 1 Watt.
-        dBW = 10.0 * log10(power);
+        dBW = 10.0 * std::log10(power);
     } else {
         /// - Since DB's are generally summed, a return value of 0.0 effectively contributes
         ///   nothing to further computations.

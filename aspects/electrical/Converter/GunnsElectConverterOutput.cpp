@@ -434,7 +434,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
 
         /// - Build the admittance matrix and source vector.
         conductance = MsMath::limitRange(0.0, conductance, mConductanceLimit);
-        if (fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
+        if (std::fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
             mAdmittanceMatrix[0] = conductance;
             mAdmittanceUpdate    = true;
         }
@@ -479,7 +479,7 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
                     current = applyBlockage(mSetpoint);
                 }
             } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
-                current = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+                current = applyBlockage(std::sqrt(mSetpoint / mLoadResistance));
             }
         }
     }
@@ -790,7 +790,7 @@ float GunnsElectConverterOutput::computeCurrentControlSetpoint()
     if (CURRENT == mRegulatorType) {
         setpoint = applyBlockage(mSetpoint);
     } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
-        setpoint = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+        setpoint = applyBlockage(std::sqrt(mSetpoint / mLoadResistance));
     }
     return setpoint;
 }
@@ -819,7 +819,7 @@ bool GunnsElectConverterOutput::computeInputPower(double& inputPower)
         mPower = mFlux * mPotentialVector[0];
 
         /// - Power dissipated due to the output current through the output channel resistance.
-        mOutputChannelLoss = mFlux * mFlux / fmax(DBL_EPSILON, mOutputConductance);
+        mOutputChannelLoss = mFlux * mFlux / std::max(DBL_EPSILON, mOutputConductance);
 
         /// - Input power due to efficiency of the voltage conversion.
         inputPower = (mPower + mOutputChannelLoss) / MsMath::limitRange(DBL_EPSILON, mConverterEfficiency, 1.0);

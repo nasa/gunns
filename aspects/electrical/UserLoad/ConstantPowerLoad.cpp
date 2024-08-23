@@ -318,5 +318,5 @@ void ConstantPowerLoad::updateLoad(){
 /// @details Method: setPowerNormal - method to set the power for normal ops.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ConstantPowerLoad::setPowerNormal(const double power){
-    mPowerNormal = fmax(0.0, power);
+    mPowerNormal = std::max(0.0, power);
 }

@@ -213,8 +213,8 @@ inline void GunnsBasicFlowController::updateState(const double dt __attribute__(
 
     /// - The upper limit of maximum conductivity is applied to model the fully opened size of a
     ///   flow control valve.
-    const double dP = std::max(DBL_EPSILON, fabs(mPotentialVector[0] - mPotentialVector[1]));
-    mEffectiveConductivity = std::min(mDefaultConductivity, fabs(fluxCommand) / dP);
+    const double dP = std::max(DBL_EPSILON, std::fabs(mPotentialVector[0] - mPotentialVector[1]));
+    mEffectiveConductivity = std::min(mDefaultConductivity, std::fabs(fluxCommand) / dP);
 
     /// - Back-flow under reverse potential gradient is either controlled or blocked.
     if (mPotentialVector[1] > mPotentialVector[0] and not mEnableReverseControl) {

@@ -195,7 +195,7 @@ void GunnsThermalRadiation::updateState(const double dt __attribute__((unused)))
 
     /// - Conditional Statement to ensure a division by zero does not take place. DBL_EPSILON is
     ///   used for tolerance comparison.
-    if (fabs(mPotentialVector[0] - mPotentialVector[1]) > DBL_EPSILON)
+    if (std::fabs(mPotentialVector[0] - mPotentialVector[1]) > DBL_EPSILON)
     {
         /// - Admittance is calculated per the above comment block.
         const double T0_4 = mPotentialVector[0] * mPotentialVector[0] * mPotentialVector[0] * mPotentialVector[0];

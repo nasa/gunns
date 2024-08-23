@@ -248,7 +248,7 @@ inline double MsMath::protectedAsin(const double x)
     } else if (x < -1.0 + DBL_EPSILON) {
         result = -UnitConversion::PI_OVER_2;
     } else {
-        result = asin(x);
+        result = std::asin(x);
     }
 
     return result;
@@ -276,7 +276,7 @@ inline double MsMath::protectedAcos(const double x)
     } else if (x < -1.0 + DBL_EPSILON) {
         result = UnitConversion::PI_UTIL;
     } else {
-        result = acos(x);
+        result = std::acos(x);
     }
 
     return result;
@@ -301,7 +301,7 @@ inline double MsMath::protectedSqrt(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = sqrt(x);
+        result = std::sqrt(x);
     }
 
     return result;
@@ -326,7 +326,7 @@ inline double MsMath::protectedLog10(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = log10(x);
+        result = std::log10(x);
     }
 
     return result;
@@ -351,7 +351,7 @@ inline double MsMath::protectedLog(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = log(x);
+        result = std::log(x);
     }
 
     return result;
@@ -605,7 +605,7 @@ inline double MsMath::quantize(const double input, const double resolution)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double MsMath::asinh(const double value)
 {
-    return  MsMath::protectedLog(value + sqrt(value * value + 1.0));
+    return  MsMath::protectedLog(value + std::sqrt(value * value + 1.0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

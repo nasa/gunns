@@ -272,7 +272,7 @@ void GunnsFluidCondensingHxSeparator::initialize(
     /// - Initialize attributes derived from configuration data.
     mSlurperFlowFactor     = configData.mSlurperFlowRateRef  / configData.mWsReferenceSpeed;
     mWsPowerCurveCoeff     = configData.mWsReferencePressure / configData.mWsReferenceSpeed
-                           / pow(mWsMaxCondensate, mWsMassExponent);
+                           / std::pow(mWsMaxCondensate, mWsMassExponent);
     mWsTorqueFactor        = configData.mWsReferenceTorque   / configData.mWsReferenceSpeed;
 
     /// - Initialize input data.
@@ -617,7 +617,7 @@ void GunnsFluidCondensingHxSeparator::updateWaterSeparator(const double dt)
     mLiquidOverflow   = mWsCondensateMass > mWsMaxCondensate;
 
     /// - Compute separator delta pressure on liquid as function of speed and mass.
-    mWsDeltaPressure  = mWsPowerCurveCoeff * mWsDrumSpeed * pow(mWsCondensateMass, mWsMassExponent);
+    mWsDeltaPressure  = mWsPowerCurveCoeff * mWsDrumSpeed * std::pow(mWsCondensateMass, mWsMassExponent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

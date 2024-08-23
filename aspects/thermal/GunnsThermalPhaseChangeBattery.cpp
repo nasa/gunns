@@ -250,7 +250,7 @@ void GunnsThermalPhaseChangeBattery::step(const double dt)
     updateState(dt);
 
     /// - Build the system admittance matrix and source vector contributions.
-    if (fabs(mAdmittanceMatrix[0] - mAdmittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mAdmittance) > 0.0) {
         mAdmittanceMatrix[0] = mAdmittance;
         mAdmittanceUpdate    = true;
     }

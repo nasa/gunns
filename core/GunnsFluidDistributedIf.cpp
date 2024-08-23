@@ -734,7 +734,7 @@ void GunnsFluidDistributedIf::step(const double dt)
 
     /// - Build admittance matrix.
     const double systemConductance = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
-    if (fabs(mAdmittanceMatrix[0] - systemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - systemConductance) > 0.0) {
         mAdmittanceMatrix[0] = systemConductance;
         mAdmittanceUpdate    = true;
     }
@@ -807,7 +807,7 @@ void GunnsFluidDistributedIf::transportFlows(const double dt __attribute__((unus
         } else if (mFlowRate < -m100EpsilonLimit) {
             mNodes[0]->collectOutflux(-mFlowRate);
         }
-    } else if (fabs(mFlowRate) > m100EpsilonLimit) {
+    } else if (std::fabs(mFlowRate) > m100EpsilonLimit) {
         mNodes[0]->collectInflux(mFlowRate, mInternalFluid);
     }
 }

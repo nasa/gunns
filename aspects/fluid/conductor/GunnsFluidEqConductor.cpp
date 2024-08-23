@@ -245,8 +245,8 @@ void GunnsFluidEqConductor::step(const double dt __attribute__((unused)))
     /// - Process user commands to dynamically re-map ports.
     processUserPortCommand();
 
-    const double absSupplyFlux = fabs(mPort0DemandFlux);
-    const double absReturnFlux = fabs(mPort1DemandFlux);
+    const double absSupplyFlux = std::fabs(mPort0DemandFlux);
+    const double absReturnFlux = std::fabs(mPort1DemandFlux);
 
     double avgFlux        = 0.0;
     double supplyLeakFlux = 0.0;
@@ -290,8 +290,8 @@ void GunnsFluidEqConductor::step(const double dt __attribute__((unused)))
     /// - AvgFlux is flux solved by the external network in response to our pressures 2 frames ago,
     ///   so when we estimate the equivalent resistance of the external network, we use the stored
     ///   delta-pressure that corresponds with the fluxes.
-    if (fabs(mLastPotentialDrop) > DBL_EPSILON) {
-        mEquivalentConductance = MsMath::limitRange(0.0, avgFlux / fabs(mLastPotentialDrop),
+    if (std::fabs(mLastPotentialDrop) > DBL_EPSILON) {
+        mEquivalentConductance = MsMath::limitRange(0.0, avgFlux / std::fabs(mLastPotentialDrop),
                                                   mConductanceLimit);
     } else {
         mEquivalentConductance = 0.0;
@@ -330,10 +330,10 @@ void GunnsFluidEqConductor::buildConductance()
     const double A12 = -mEquivalentConductance;
     const double A3  =  mEquivalentConductance + mPort1LeakConductance;
 
-    if (fabs(mAdmittanceMatrix[0] - A0)  > 0.0 or
-        fabs(mAdmittanceMatrix[1] - A12) > 0.0 or
-        fabs(mAdmittanceMatrix[2] - A12) > 0.0 or
-        fabs(mAdmittanceMatrix[3] - A3)  > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - A0)  > 0.0 or
+        std::fabs(mAdmittanceMatrix[1] - A12) > 0.0 or
+        std::fabs(mAdmittanceMatrix[2] - A12) > 0.0 or
+        std::fabs(mAdmittanceMatrix[3] - A3)  > 0.0) {
 
         mAdmittanceUpdate    = true;
         mAdmittanceMatrix[0] = A0;

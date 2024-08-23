@@ -95,7 +95,7 @@ void FluidTsatFit::init(const double a,    const double b,    const double c,
     args << " Args: " << a << " " << b << " " << c << " " << minX << " " << maxX << ".";
 
     /// - Throw a TsInitializationException exception on a divide by 0 in the arguments.
-    TS_GENERIC_IF_ERREX((fabs(c) < DBL_EPSILON), TsInitializationException,
+    TS_GENERIC_IF_ERREX((std::fabs(c) < DBL_EPSILON), TsInitializationException,
                         "Invalid Input Argument", "abs(c) < DBL_EPSILON." + args.str());
 
     /// - Initialize the coefficients with validated values.
@@ -106,11 +106,11 @@ void FluidTsatFit::init(const double a,    const double b,    const double c,
     mA  = a;
 
     /// - Throw a TsInitializationException exception on square root of negative number at minX.
-    TS_GENERIC_IF_ERREX(mB2 - mC4 * (mA - log10(minX)) < 0.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(mB2 - mC4 * (mA - std::log10(minX)) < 0.0, TsInitializationException,
                         "Invalid Input Argument", "square root of negative number at minX." + args.str());
 
     /// - Throw a TsInitializationException exception on square root of negative number at maxX.
-    TS_GENERIC_IF_ERREX(mB2 - mC4 * (mA - log10(maxX)) < 0.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(mB2 - mC4 * (mA - std::log10(maxX)) < 0.0, TsInitializationException,
                         "Invalid Input Argument", "square root of negative number at maxX." + args.str());
 
     /// - Throw a TsInitializationException exception if minX evaluates to <= 0.

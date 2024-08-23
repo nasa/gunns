@@ -273,7 +273,7 @@ void GunnsThermalSource::validate(const GunnsThermalSourceConfigData& configData
         one += configData.cFluxDistributionFractions.at(i);
     }
     /// - Calculate error.
-    const double error = fabs(1.0 - one);
+    const double error = std::fabs(1.0 - one);
 
     /// - Throw exception if flux-distribution fractions do not add up to one.
     TS_PTCS_IF_ERREX(error > FRACTION_TOLERANCE, TsInitializationException,

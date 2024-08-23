@@ -863,7 +863,7 @@ inline double FluidProperties::getTemperature(const double specificEnthalpy,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double FluidProperties::getSaturationPressure(const double temperature) const
 {
-    return pow(10.0, mSaturationPressure->get(getCriticalTemperature() / std::max(temperature, DBL_EPSILON)));
+    return std::pow(10.0, mSaturationPressure->get(getCriticalTemperature() / std::max(temperature, DBL_EPSILON)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

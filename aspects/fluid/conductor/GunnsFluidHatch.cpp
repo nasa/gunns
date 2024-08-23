@@ -25,7 +25,7 @@ PROGRAMMERS:
 */
 
 #include <cfloat>
-#include <math.h>
+#include <cmath>
 #include "core/GunnsFluidUtils.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -264,8 +264,8 @@ void GunnsFluidHatch::updateFluid(const double dt, const double flowrate __attri
                             and (mNodes[1]->getVolume() > 0.0) ) {
 
         /// - Diffusion calculation is only valid when delta pressure and delta temperature are close to 0.0.
-        const double deltaTemperature = fabs(mNodes[0]->getOutflow()->getTemperature() - mNodes[1]->getOutflow()->getTemperature());
-        if (fabs(mPotentialDrop) < GunnsFluidHatch::DIFFUSION_DELTA_PRESS_LIMIT
+        const double deltaTemperature = std::fabs(mNodes[0]->getOutflow()->getTemperature() - mNodes[1]->getOutflow()->getTemperature());
+        if (std::fabs(mPotentialDrop) < GunnsFluidHatch::DIFFUSION_DELTA_PRESS_LIMIT
             and deltaTemperature < GunnsFluidHatch::DIFFUSION_DELTA_TEMP_LIMIT) {
 
             /// - Compute diffusive mass flux across hatch and update diffusive fluid and flow rate.

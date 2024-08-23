@@ -95,7 +95,7 @@ double CombustCH4::calcExpSafe(double value){
         return 0.0;
     }
     else{
-        return exp(value);
+        return std::exp(value);
     }
 }
 
@@ -220,15 +220,15 @@ void CombustCH4::solveElemPotEqns(double* ratios, double* moles, double temp){
     /// - Calculate Lagrange multipliers
         /// - Fuel rich case
     if(2.0 * mInitialFuel > mInitialOxidizer){
-        lagrangeH = 0.5 * (log(ratios[H2]) + calcGibbs(mCompounds[H2], temp));
-        lagrangeO = log(ratios[H2O]) - 2.0 * lagrangeH + calcGibbs(mCompounds[H2O], temp) ;
-        lagrangeC = log(ratios[CO]) - 1.0 * lagrangeO + calcGibbs(mCompounds[CO], temp);
+        lagrangeH = 0.5 * (std::log(ratios[H2]) + calcGibbs(mCompounds[H2], temp));
+        lagrangeO = std::log(ratios[H2O]) - 2.0 * lagrangeH + calcGibbs(mCompounds[H2O], temp) ;
+        lagrangeC = std::log(ratios[CO]) - 1.0 * lagrangeO + calcGibbs(mCompounds[CO], temp);
     }
          /// - Fuel lean case
     else{
-        lagrangeO = 0.5 * (log(ratios[O2]) + calcGibbs(mCompounds[O2], temp));
-        lagrangeC = log(ratios[CO2]) - 2.0 * lagrangeO + calcGibbs(mCompounds[CO2], temp);
-        lagrangeH = 0.5*(log(ratios[H2O]) - lagrangeO + calcGibbs(mCompounds[H2O], temp));
+        lagrangeO = 0.5 * (std::log(ratios[O2]) + calcGibbs(mCompounds[O2], temp));
+        lagrangeC = std::log(ratios[CO2]) - 2.0 * lagrangeO + calcGibbs(mCompounds[CO2], temp);
+        lagrangeH = 0.5*(std::log(ratios[H2O]) - lagrangeO + calcGibbs(mCompounds[H2O], temp));
     }
     /// - Calculate mole fractions of dissociation products using elemental potential equations
     ratioHold[O2] = calcExpSafe(2.0 * lagrangeO - calcGibbs(mCompounds[O2], temp));
@@ -442,4 +442,3 @@ void CombustCH4::solveUnstableRecombination(){
 double CombustCH4::interpolate(double x, double x1, double x2, double y1, double y2){
     return y1 + (y2 - y1) * ((x - x1) / (x2 - x1)) ;
 }
-

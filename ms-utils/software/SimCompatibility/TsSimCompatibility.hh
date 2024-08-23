@@ -391,19 +391,19 @@ class TestHookSimObj;
     var = TsMemoryManager::tsStrdup(const_cast<char*>(str), &var, ##name)
 #define TS_STRDUP_EXT(var, str, name...) \
 { \
-    if (var==NULL) var = new char[strlen(str)+1]; \
+    if (var==NULL) var = new char[std::strlen(str)+1]; \
     TsMemoryManager::tsStrdupExt(const_cast<char*>(str), var, &var, ##name); \
 }
 #else  // non-Trick
 #define TS_STRDUP(var, str, name...) \
 { \
-    var = new char[strlen(str)+1]; \
-    strcpy(var, str);\
+    var = new char[std::strlen(str)+1]; \
+    std::strcpy(var, str);\
 }
 #define TS_STRDUP_EXT(var, str, name...) \
 { \
-    if (var==NULL) var = new char[strlen(str)+1]; \
-    strcpy(var, str);\
+    if (var==NULL) var = new char[std::strlen(str)+1]; \
+    std::strcpy(var, str);\
 }
 #endif
 

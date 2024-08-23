@@ -569,7 +569,7 @@ void Switch::updateSwitchFlow(const double currentActual,
     }
 
     if (getConductance() > 0.0) {
-        mPowerDissipation = fabs((mCurrentActual * mCurrentActual)) / getConductance();
+        mPowerDissipation = std::fabs((mCurrentActual * mCurrentActual)) / getConductance();
     } else {
         mPowerDissipation = 0.0;
     }

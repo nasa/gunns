@@ -421,7 +421,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check dB -> Power Ratio -> dB
     for (int i = 0; i < 1000; i++) {
         const double expectedDB = static_cast<double>(i) * 0.25;
-        const double expectedPR = pow(10, 0.1 * expectedDB);
+        const double expectedPR = std::pow(10, 0.1 * expectedDB);
         const double returnedPR = UnitConversion::convertDbToPr(expectedDB);
         const double convertPR  = UnitConversion::convert(UnitConversion::DB_TO_PR, expectedDB);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPR, returnedPR, tolerance);
@@ -435,7 +435,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check Watts -> dB Watts
     for (int i = 1; i < 1000; i++) {
         const double expectedW   = static_cast<double>(i) * 0.25;
-        const double expectedDBW = 10.0 * log10(expectedW);
+        const double expectedDBW = 10.0 * std::log10(expectedW);
         const double returnedDBW = UnitConversion::convertWToDbw(expectedW);
         const double convertDBW  = UnitConversion::convert(UnitConversion::W_TO_DBW, expectedW);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDBW, returnedDBW, tolerance);
@@ -451,7 +451,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check Power Ratio -> dB -> Power Ratio
     for (int i = 1; i < 1000; i++) {
         const double expectedPR = static_cast<double>(i) * 0.25;
-        const double expectedDB = 10.0 * log10(expectedPR);
+        const double expectedDB = 10.0 * std::log10(expectedPR);
         const double returnedDB = UnitConversion::convertPrToDb(expectedPR);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDB, returnedDB, tolerance);
         const double returnedPR = UnitConversion::convertDbToPr(returnedDB);

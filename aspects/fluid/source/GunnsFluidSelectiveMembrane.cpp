@@ -358,7 +358,7 @@ void GunnsFluidSelectiveMembrane::step(const double dt __attribute__((unused)))
         /// - Compute saturation state of the absorbed fluid in the internal stream, and determine
         ///   whether phase change is occurring.
         if (mMembraneDeltaP[upstreamPort] > 0.0) {
-            const double availableSource = 0.99 * fabs(mFlowRate)
+            const double availableSource = 0.99 * std::fabs(mFlowRate)
                                          * mNodes[upstreamPort]->getContent()->getMassFraction(mInternalType);
             mMembraneFlowRate    = std::min(mMembraneDeltaP[upstreamPort] * mAbsorptionCoeff, availableSource);
             mInternalSaturationP = intProps->getSaturationPressure(mNodes[upstreamPort]->getContent()->getTemperature());
@@ -451,7 +451,7 @@ void GunnsFluidSelectiveMembrane::computeFlows(const double dt __attribute__((un
     mPortDirections[1] = NONE;
     mPortDirections[2] = NONE;
 
-    if (fabs(mFlux) > DBL_EPSILON) {
+    if (std::fabs(mFlux) > DBL_EPSILON) {
         mPortDirections[upstreamPort]   = SOURCE;
         mPortDirections[downstreamPort] = SINK;
     }
@@ -558,7 +558,7 @@ void GunnsFluidSelectiveMembrane::transportFlows(const double dt __attribute__((
 void GunnsFluidSelectiveMembrane::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;

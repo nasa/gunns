@@ -538,7 +538,7 @@ bool GunnsElectConverterInput::computeInputVoltage(double& inputVoltage)
             or (mMalfBlockageFlag and (mMalfBlockageValue >= 1.0)) ) {
         inputVoltage = 0.0;
     } else {
-        inputVoltage = fmax(0.0, mPotentialVector[0]);
+        inputVoltage = std::max(0.0, mPotentialVector[0]);
     }
     return mInputVoltageValid;
 }

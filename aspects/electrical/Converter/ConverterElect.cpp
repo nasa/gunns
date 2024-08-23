@@ -441,7 +441,7 @@ void ConverterElect::step(const double __attribute__((unused)) timeStep)
 void ConverterElect::buildConductance()
 {
     // build the conductance on input side / battery side -- buildConductance()
-    if (mConverter.isConverterOn() && fabs(mConverter.getOutputVoltage()) > 0.0) {
+    if (mConverter.isConverterOn() && std::fabs(mConverter.getOutputVoltage()) > 0.0) {
         // Output Side
         mOutputActiveConductance = mOutputConductance;
         mInputActiveConductance = MIN_CONDUCTANCE;
@@ -463,8 +463,8 @@ void ConverterElect::buildConductance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void ConverterElect::buildAdmittance()
 {
-    if (fabs(mAdmittanceMatrix[0]  - mInputActiveConductance)  > DBL_EPSILON or
-        fabs(mAdmittanceMatrix[15] - mOutputActiveConductance) > DBL_EPSILON) {
+    if (std::fabs(mAdmittanceMatrix[0]  - mInputActiveConductance)  > DBL_EPSILON or
+        std::fabs(mAdmittanceMatrix[15] - mOutputActiveConductance) > DBL_EPSILON) {
         // set input Side admittance
         // To compute indexes for the input side of the admittance matrix let Row = 0 (port0) and Col = 1 (port1)
         // and numPorts = 4
@@ -583,7 +583,7 @@ void ConverterElect::handleOverrideMalfs()
 {
     /// - Malfunction to override output Over Current limit - value should be greater than or equal to zero
     if (mMalfOpOverCurrentFlag) {
-        mMalfOpOverCurrentValue = fmax(0.0, mMalfOpOverCurrentValue);
+        mMalfOpOverCurrentValue = std::max(0.0, mMalfOpOverCurrentValue);
         mConverter.setOutputOverCurrentLimit(mMalfOpOverCurrentValue);
     } else {
         mConverter.setOutputOverCurrentLimit(mOpOverCurrentLimit);
@@ -591,7 +591,7 @@ void ConverterElect::handleOverrideMalfs()
 
     /// - Malfunction to override output Over Voltage limit - value should be greater than or equal to zero
     if (mMalfOpOverVoltageFlag) {
-        mMalfOpOverVoltageValue = fmax(0.0, mMalfOpOverVoltageValue);
+        mMalfOpOverVoltageValue = std::max(0.0, mMalfOpOverVoltageValue);
         mConverter.setOutputOverVoltageLimit(mMalfOpOverVoltageValue);
     } else {
         mConverter.setOutputOverVoltageLimit(mOutputOverVoltageLimit);
@@ -599,7 +599,7 @@ void ConverterElect::handleOverrideMalfs()
 
     /// - Malfunction to override Regulated Voltage - value should be greater than or equal to zero
     if (mMalfRegulatedVoltageFlag) {
-        mMalfRegulatedVoltageValue = fmax(0.0, mMalfRegulatedVoltageValue);
+        mMalfRegulatedVoltageValue = std::max(0.0, mMalfRegulatedVoltageValue);
         mConverter.setRegulatedVoltage(mMalfRegulatedVoltageValue);
     } else {
         mConverter.setRegulatedVoltage(mRegulatedVoltage);

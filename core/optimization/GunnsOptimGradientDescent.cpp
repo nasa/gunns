@@ -392,7 +392,7 @@ void GunnsOptimGradientDescent::setGradientStates()
         if (0.0 == previousState) {
             mGradients.at(gInc).mState.at(i) += stateDeltaFactor * stateRange;
         } else {
-            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * fabs(previousState);
+            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * std::fabs(previousState);
         }
         mGradients.at(gInc).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gInc).mState.at(i),
@@ -403,7 +403,7 @@ void GunnsOptimGradientDescent::setGradientStates()
         if (0.0 == previousState) {
             mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * stateRange;
         } else {
-            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * fabs(previousState);
+            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * std::fabs(previousState);
         }
         mGradients.at(gDec).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gDec).mState.at(i),
@@ -452,7 +452,7 @@ void GunnsOptimGradientDescent::assignCost(const double cost, const double runId
         if (runIdReturned == mGradients.at(i).mRunId) {
             mGradients.at(i).mDeltaCost = cost - mState->mCost;
             double costGradient = 0.0;
-            if (fabs(mGradients.at(i).mDeltaState) > DBL_EPSILON) {
+            if (std::fabs(mGradients.at(i).mDeltaState) > DBL_EPSILON) {
                 costGradient = mGradients.at(i).mDeltaCost / mGradients.at(i).mDeltaState;
             }
             mGradients.at(i).mCostGradient = costGradient;

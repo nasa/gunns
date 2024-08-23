@@ -380,7 +380,7 @@ void TsPoweredValveController::update(const double dt)
 void TsPoweredValveController::updatePower()
 {
     if ((mSupplyVoltageFlag || mMalfPowerGoodFlag) && !mMalfPowerFailFlag && mEnabledFlag) {
-        if (fabs(mCmd) > DBL_EPSILON && (!mManualPositionFlag || mMalfManualFlag)) {
+        if (std::fabs(mCmd) > DBL_EPSILON && (!mManualPositionFlag || mMalfManualFlag)) {
 
             // mCmdScale is positive if a positive command opens the valve.
             // mCmdScale is negative if a negative command opens the valve.
@@ -406,4 +406,3 @@ void TsPoweredValveController::updatePower()
         mResistance         = MAX_RESISTANCE;
     }
 }
-

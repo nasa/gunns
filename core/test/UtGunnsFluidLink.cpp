@@ -325,8 +325,8 @@ void UtGunnsFluidLink::testTransportFluid()
     tNetworkNodes[1].resetFlows();
     tArticle->mFlowRate = 1.0;
     tArticle->transportFluid(false);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[0].mOutfluxRate, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[1].mInfluxRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[0].mOutfluxRate, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[1].mInfluxRate,  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetworkNodes[0].getContent()->getTemperature(),
                                  tNetworkNodes[1].getInflow()->getTemperature(), FLT_EPSILON);
 
@@ -335,8 +335,8 @@ void UtGunnsFluidLink::testTransportFluid()
     tNetworkNodes[1].resetFlows();
     tArticle->mFlowRate = -1.0;
     tArticle->transportFluid(false);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[0].mInfluxRate,  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[1].mOutfluxRate, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[0].mInfluxRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[1].mOutfluxRate, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetworkNodes[1].getContent()->getTemperature(),
                                  tNetworkNodes[0].getInflow()->getTemperature(), FLT_EPSILON);
 
@@ -361,8 +361,8 @@ void UtGunnsFluidLink::testTransportFluid()
     tNetworkNodes[1].resetFlows();
     tArticle->mFlowRate = 1.0;
     tArticle->transportFluid(false);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[0].mOutfluxRate, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[1].mInfluxRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[0].mOutfluxRate, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[1].mInfluxRate,  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mInternalFluid->getTemperature(),
                                  tNetworkNodes[1].getInflow()->getTemperature(), FLT_EPSILON);
 
@@ -371,8 +371,8 @@ void UtGunnsFluidLink::testTransportFluid()
     tNetworkNodes[1].resetFlows();
     tArticle->mFlowRate = -1.0;
     tArticle->transportFluid(false);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[0].mInfluxRate,  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tArticle->mFlowRate), tNetworkNodes[1].mOutfluxRate, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[0].mInfluxRate,  0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tArticle->mFlowRate), tNetworkNodes[1].mOutfluxRate, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mInternalFluid->getTemperature(),
                                  tNetworkNodes[0].getInflow()->getTemperature(), FLT_EPSILON);
 

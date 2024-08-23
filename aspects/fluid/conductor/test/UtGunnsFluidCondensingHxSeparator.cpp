@@ -421,7 +421,7 @@ void UtGunnsFluidCondensingHxSeparator::testInitialization ()
     /// @test    Nominal attributes derived from configuration data.
     const double expectedFlowCoeff  = tSlurperFlowRateRef  / tWsReferenceSpeed;
     const double expectedPowerCoeff = tWsReferencePressure / tWsReferenceSpeed
-                                    / pow(tWsMaxCondensate, tWsMassExponent);
+                                    / std::pow(tWsMaxCondensate, tWsMassExponent);
     const double expectedTorqueFact = tWsReferenceTorque   / tWsReferenceSpeed;
     CPPUNIT_ASSERT(expectedFlowCoeff   == tArticle->mSlurperFlowFactor);
     CPPUNIT_ASSERT(expectedPowerCoeff  == tArticle->mWsPowerCurveCoeff);
@@ -724,13 +724,13 @@ void UtGunnsFluidCondensingHxSeparator::testHxFlow()
         /// - Verify test case results.
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseQtotal[test],
                                      article->mTotalHeat,
-                                     fabs(caseQtotal[test]) * 0.1);
+                                     std::fabs(caseQtotal[test]) * 0.1);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseQsensible[test],
                                      article->mSensibleHeat,
-                                     fabs(caseQsensible[test]) * 0.1);
+                                     std::fabs(caseQsensible[test]) * 0.1);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseCondense[test],
                                      article->mCondensationRate,
-                                     fabs(caseCondense[test]) * 0.5);
+                                     std::fabs(caseCondense[test]) * 0.5);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseExitT[test],
                                      article->mInternalFluid->getTemperature(),
                                      1.5);
@@ -942,8 +942,8 @@ void UtGunnsFluidCondensingHxSeparator::testWaterSeparator()
                             - tNodes[0].getOutflow()->getPartialPressure(FluidProperties::GUNNS_H2O));
     double expectedCondMass = 0.01 + tTimeStep * (0.0001 - expectedEvapRate - 0.0004);
     const double expectedPowerCoeff = tWsReferencePressure / tWsReferenceSpeed
-                                    / pow(tWsMaxCondensate, tWsMassExponent);
-    double expectedDeltaP   = expectedPowerCoeff * 6000.0 * pow(expectedCondMass, tWsMassExponent);
+                                    / std::pow(tWsMaxCondensate, tWsMassExponent);
+    double expectedDeltaP   = expectedPowerCoeff * 6000.0 * std::pow(expectedCondMass, tWsMassExponent);
     bool   expectedOverflow = false;
 
     tArticle->updateWaterSeparator(tTimeStep);

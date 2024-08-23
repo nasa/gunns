@@ -54,7 +54,7 @@ const double GunnsFluidUtils::ANTOINE_H2O_T[] = {    379.0,     364.0,     334.0
 /// @details Reference: NIST (http://webbook.nist.gov/)
 const double GunnsFluidUtils::ANTOINE_H2O_P[] = {124.40375, 72.409663, 20.727646, 4.4542637, 0.6041849};
 /// @details Natural log of 10
-const double GunnsFluidUtils::LN10 = log(10.0);
+const double GunnsFluidUtils::LN10 = std::log(10.0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] conductivity      (m2)           Link effective conductivity.
@@ -130,7 +130,7 @@ double GunnsFluidUtils::computeAdmittance(const double     conductivity,
 
     /// - Limited delta-pressure.
     const double dP_lin = std::max(minLinearizationP,
-                                   fabs(fluid0->getPressure() - fluid1->getPressure()));
+                                   std::fabs(fluid0->getPressure() - fluid1->getPressure()));
     const double dP_Pa  = UnitConversion::PA_PER_KPA * dP_lin;
 
     /// - Calculate admittance.
@@ -235,7 +235,7 @@ double GunnsFluidUtils::computeIsentropicTemperature(const double     expansionS
         const double gamma   = fluid->getAdiabaticIndex();
         const double supplyT = fluid->getTemperature();
         if (pressureRatio > DBL_EPSILON && gamma > DBL_EPSILON) {
-            finalT = supplyT * pow(pressureRatio,((gamma-1.0)/gamma));
+            finalT = supplyT * std::pow(pressureRatio,((gamma-1.0)/gamma));
             finalT = supplyT + expansionScaleFactor * (finalT - supplyT);
         }
     }
@@ -272,7 +272,7 @@ double GunnsFluidUtils::predictConductivity(const double     mdot,
     /// - Only compute conductivity if the current link delta-pressure is > DBL_EPSILON.  Otherwise,
     ///   return zero.
     double conductivity = 0.0;
-    double dP = fabs(fluid0->getPressure() - fluid1->getPressure());
+    double dP = std::fabs(fluid0->getPressure() - fluid1->getPressure());
     if (dP > DBL_EPSILON) {
         const double avgDensity = 0.5 * (fluid0->getDensity() +
                                          fluid1->getDensity());
@@ -283,7 +283,7 @@ double GunnsFluidUtils::predictConductivity(const double     mdot,
 
         /// - Only continue if density is > DBL_EPSILON, else return zero conductivity.
         if (avgDensity > DBL_EPSILON) {
-            conductivity = fabs(mdot);
+            conductivity = std::fabs(mdot);
             const double limitExp = MsMath::limitRange(0.5, exponent, 1.0);
             if (0.5 == limitExp) {
                 conductivity /= std::sqrt(UnitConversion::PA_PER_KPA * dP * avgDensity);
@@ -331,14 +331,14 @@ double GunnsFluidUtils::predictExpansionScaleFactor(const double     deltaTemper
     if (p0 >= p1 && fluid0->getPhase() == FluidProperties::GAS) {
         const double supplyT = fluid0->getTemperature();
         const double gamma   = fluid0->getAdiabaticIndex();
-        tunedFactor = -fabs(deltaTemperature) /
-                      (supplyT * (pow((p1/p0), (gamma - 1.0) / gamma) - 1.0));
+        tunedFactor = -std::fabs(deltaTemperature) /
+                      (supplyT * (std::pow((p1/p0), (gamma - 1.0) / gamma) - 1.0));
     }
     else if (p1 >= p0 && fluid1->getPhase() == FluidProperties::GAS) {
         const double supplyT = fluid1->getTemperature();
         const double gamma   = fluid1->getAdiabaticIndex();
-        tunedFactor = -fabs(deltaTemperature) /
-                      (supplyT * (pow((p0/p1), (gamma - 1.0) / gamma) - 1.0));
+        tunedFactor = -std::fabs(deltaTemperature) /
+                      (supplyT * (std::pow((p0/p1), (gamma - 1.0) / gamma) - 1.0));
     }
 
     return MsMath::limitRange( 0.0, tunedFactor, 1.0);
@@ -541,7 +541,7 @@ double GunnsFluidUtils::computeConvectiveHeatTransferCoefficient(const double   
                                                                  const double     diameter)
 {
     double result     = 0.0;
-    const double mdot = fabs(flowRate);
+    const double mdot = std::fabs(flowRate);
 
     if (mdot > DBL_EPSILON and diameter > DBL_EPSILON) {
         /// - Determine mean velocity through a circular pipe section.
@@ -626,7 +626,7 @@ double GunnsFluidUtils::computeNusseltNumber(const PolyFluid* fluid,
         const double darcy8 = GunnsFluidUtils::computeDarcyFrictionFactor(rOverD, ret) / 8.0;
         const double pr = MsMath::limitRange(0.0, fluid->getPrandtlNumber(), 1.0/DBL_EPSILON);
         const double turbulent = darcy8 * (ret - 1000.0) * pr /
-                (1.0 + 12.7 * sqrt(darcy8) * (pow(pr, (2.0 / 3.0)) - 1.0));
+                (1.0 + 12.7 * std::sqrt(darcy8) * (std::pow(pr, (2.0 / 3.0)) - 1.0));
 
         /// - For transition regime, linearly interpolate between the maximum Re laminar result
         ///   and the minimum Re turbulent value.
@@ -664,10 +664,10 @@ double GunnsFluidUtils::computeDarcyFrictionFactor(const double rOverD,
         ///   equation.
         const double rod = MsMath::limitRange(0.0, rOverD, 0.5) / 3.7;
         const double ret = std::max(re, RE_TRANSITION_LIMIT);
-        const double a   = log10(rod + 12.0 / ret);
-        const double b   = log10(rod - 5.02 * a / ret);
-        const double c   = log10(rod + 10.04 * a * b / ret);
-        const double turbulent = 0.25 / pow(a - pow(b - a, 2.0) / (c - 2.0 * b + a), 2.0);
+        const double a   = std::log10(rod + 12.0 / ret);
+        const double b   = std::log10(rod - 5.02 * a / ret);
+        const double c   = std::log10(rod + 10.04 * a * b / ret);
+        const double turbulent = 0.25 / std::pow(a - std::pow(b - a, 2.0) / (c - 2.0 * b + a), 2.0);
 
         /// - For transition regime, linearly interpolate between the maximum Re laminar result
         ///   and the minimum Re turbulent value.
@@ -695,7 +695,7 @@ double GunnsFluidUtils::computeConvectiveHeatFlux(PolyFluid*   fluid,
                                                   const double UA,
                                                   const double wallTemperature)
 {
-    const double mDot = fabs(flowRate);
+    const double mDot = std::fabs(flowRate);
     double heatFlux   = 0.0;
 
     /// - Skip if mass flow rate or coefficient is too small.
@@ -714,7 +714,7 @@ double GunnsFluidUtils::computeConvectiveHeatFlux(PolyFluid*   fluid,
         const double inFluidT  = fluid->getTemperature();
 
         /// - Compute the outlet fluid temperature.
-        const double outFluidT = wallTemperature + exp(-UAmDotCp) * (inFluidT - wallTemperature);
+        const double outFluidT = wallTemperature + std::exp(-UAmDotCp) * (inFluidT - wallTemperature);
 
         /// - Update the internal fluid temperature.
         fluid->setTemperature(outFluidT);
@@ -882,12 +882,12 @@ double GunnsFluidUtils::computeGasDiffusion(PolyFluid*       fluid,
     const double invLength = 1.0 / totalLength;
 
     /// - Calculate mean free path of the gas mixtures.
-    const double lambda0 = fluid0->getTemperature() / fmax(fluid0->getPressure(), FLT_EPSILON);
-    const double lambda1 = fluid1->getTemperature() / fmax(fluid1->getPressure(), FLT_EPSILON);
+    const double lambda0 = fluid0->getTemperature() / std::max(fluid0->getPressure(), static_cast<double>(FLT_EPSILON));
+    const double lambda1 = fluid1->getTemperature() / std::max(fluid1->getPressure(), static_cast<double>(FLT_EPSILON));
     const double lambda  = LAMBDA_BASE * (lambda0 * length0 + lambda1 * length1) * invLength;
 
     /// - Calculate mean temperature along the diffusion length.
-    const double meanTemperature = fmax(DBL_EPSILON, (fluid0->getTemperature() * length0 +
+    const double meanTemperature = std::max(DBL_EPSILON, (fluid0->getTemperature() * length0 +
                                                       fluid1->getTemperature() * length1) * invLength);
 
 
@@ -905,9 +905,9 @@ double GunnsFluidUtils::computeGasDiffusion(PolyFluid*       fluid,
      *
      * Speed of sound = sqrt( gamma*R*T ), so we're ballpark
      */
-    const double meanMW = fmax(DBL_EPSILON, (fluid0->getMWeight() * length0 +
+    const double meanMW = std::max(DBL_EPSILON, (fluid0->getMWeight() * length0 +
                                              fluid1->getMWeight() * length1) * invLength);
-    const double meanVelocity  = sqrt(3000.0 * UnitConversion::UNIV_GAS_CONST_SI *
+    const double meanVelocity  = std::sqrt(3000.0 * UnitConversion::UNIV_GAS_CONST_SI *
                                       meanTemperature / meanMW);
 
     /// - Diffusivity of the mean gas.
@@ -915,9 +915,9 @@ double GunnsFluidUtils::computeGasDiffusion(PolyFluid*       fluid,
 
     double positiveFlux  = 0.0;
     double negativeFlux  = 0.0;
-    double fluid0MolarDensity = fluid0->getDensity() / fmax(DBL_EPSILON, fluid0->getMWeight());
-    double fluid1MolarDensity = fluid1->getDensity() / fmax(DBL_EPSILON, fluid1->getMWeight());
-    double meanMolarDensity = fmax(DBL_EPSILON, (fluid0MolarDensity * length0 + fluid1MolarDensity * length1) * invLength);
+    double fluid0MolarDensity = fluid0->getDensity() / std::max(DBL_EPSILON, fluid0->getMWeight());
+    double fluid1MolarDensity = fluid1->getDensity() / std::max(DBL_EPSILON, fluid1->getMWeight());
+    double meanMolarDensity = std::max(DBL_EPSILON, (fluid0MolarDensity * length0 + fluid1MolarDensity * length1) * invLength);
 
     /// - Loop over the constituents.
     for (int i = 0; i < fluid0->getNConstituents(); ++i) {
@@ -954,11 +954,11 @@ double GunnsFluidUtils::computeGasDiffusion(PolyFluid*       fluid,
         const double fluid1Mw = fluid1->getMWeight();
         if (bulkFlowRate > 0.0 && negativeFlux < 0.0 && fluid0Mw != 0.0) {
             const double bulkFlux = bulkFlowRate / fluid0Mw / area;
-            const double opposingFlux = fmin(0.0, negativeFlux + bulkFlux);
+            const double opposingFlux = std::min(0.0, negativeFlux + bulkFlux);
             limitNetFluxRatio = MsMath::limitRange(0.0, opposingFlux / negativeFlux, 1.0);
         } else if (bulkFlowRate < 0.0 && positiveFlux > 0.0 && fluid1Mw != 0.0) {
             const double bulkFlux = bulkFlowRate / fluid1Mw / area;
-            const double opposingFlux = fmax(0.0, positiveFlux + bulkFlux);
+            const double opposingFlux = std::max(0.0, positiveFlux + bulkFlux);
             limitNetFluxRatio = MsMath::limitRange(0.0, opposingFlux / positiveFlux, 1.0);
         }
     }

@@ -321,7 +321,7 @@ bool TsHsSqlitePlugin::msg(
 
     // Fill-in the command template to produce a complete SQL command
 
-    int met_seconds = static_cast<int> (floor(met.seconds));
+    int met_seconds = static_cast<int> (std::floor(met.seconds));
 
     char* insert_command = sqlite3_mprintf(insert_command_template,
             msg_hash, file.c_str(), line, type, subsys.c_str(), mtext.c_str(), met_seconds, // INSERT
@@ -372,4 +372,3 @@ bool TsHsSqlitePlugin::insertMessage(char* insertCommand)
 
     return true;
 }
-

@@ -121,7 +121,7 @@ void GunnsRosesTiming::update(const double timestep)
                 if (errCheck) {
                     double error = 0.0;
                     for (unsigned int i=0; i<5; ++i) {
-                        error += fabs(gpuPotentials[i] - cpuPotentials[i]);
+                        error += std::fabs(gpuPotentials[i] - cpuPotentials[i]);
                     }
                     printf("  %9.2e", error);
                 }
@@ -135,7 +135,7 @@ void GunnsRosesTiming::update(const double timestep)
                 if (errCheck) {
                     double error = 0.0;
                     for (unsigned int i=0; i<5; ++i) {
-                        error += fabs(gpuSparsePotentials[i] - cpuPotentials[i]);
+                        error += std::fabs(gpuSparsePotentials[i] - cpuPotentials[i]);
                     }
                     printf("  %9.2e", error);
                 }

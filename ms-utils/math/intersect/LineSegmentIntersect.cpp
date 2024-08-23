@@ -94,7 +94,7 @@ bool LineSegmentIntersect::triangle(
     CROSS(n, ab,ac);
 
     double d = DOT(qp, n);
-    if (fabs(d) < EPSILON) return false;
+    if (std::fabs(d) < EPSILON) return false;
 
     if (d < 0.0) {
         double ap[3];
@@ -210,7 +210,7 @@ bool LineSegmentIntersect::cylinder(
 
     double b,discr;
 
-    if (fabs(a) < EPSILON) {
+    if (std::fabs(a) < EPSILON) {
         // Segment runs parallel to cylinder axis
         if (c > 0.0) {
             return false; // 'a' and thus the segment lie outside cylinder
@@ -237,7 +237,7 @@ bool LineSegmentIntersect::cylinder(
         return false; // No real roots; no intersection
     }
 
-    t = (-b - sqrt(discr)) / a;
+    t = (-b - std::sqrt(discr)) / a;
     if (t < 0.0 || t > 1.0f) return false; // Intersection lies outside segment
 
     if (md + t * nd < 0.0) {
@@ -334,7 +334,7 @@ bool LineSegmentIntersect::sphere(
     }
 
     // Ray now found to intersect sphere, compute smallest t value of intersection
-    double sqrtd = sqrt(discr);
+    double sqrtd = std::sqrt(discr);
     double t = -b - sqrtd;
 
     if (t < 0.0f) {

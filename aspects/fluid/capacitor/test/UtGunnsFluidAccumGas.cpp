@@ -593,7 +593,7 @@ void UtGunnsFluidAccumGas::testComputeFlowsNomFlowIn()
 
     CPPUNIT_ASSERT(0.0 < tModel->mGasFlowRate);
     CPPUNIT_ASSERT(prevGasPressure < tModel->mGasInternalFluid->getPressure());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mGasFlowRate), tNodes[0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mGasFlowRate), tNodes[0].getOutflux(), tTolerance);
 
     const double inMass =  tModel->mGasFlowRate * tTimeStep;
     const double newMass = initialMass + inMass;
@@ -649,7 +649,7 @@ void UtGunnsFluidAccumGas::testComputeFlowsNomFlowOut()
 
     CPPUNIT_ASSERT(0.0 > tModel->mGasFlowRate);
     CPPUNIT_ASSERT(prevGasPressure > tModel->mGasInternalFluid->getPressure());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mGasFlowRate), tNodes[0].getInflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mGasFlowRate), tNodes[0].getInflux(), tTolerance);
 
     UT_PASS;
 }
@@ -847,7 +847,7 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     CPPUNIT_ASSERT(0.0 == tModel->mEditPressureTimer);
     CPPUNIT_ASSERT(false == tModel->mEditPressureFlag);
 
-    bool bellowsNotEqual = (fabs(tModel->mBellowsPosition - originalBellowsPos) > tTolerance);
+    bool bellowsNotEqual = (std::fabs(tModel->mBellowsPosition - originalBellowsPos) > tTolerance);
     CPPUNIT_ASSERT(bellowsNotEqual);
 
     UT_PASS;

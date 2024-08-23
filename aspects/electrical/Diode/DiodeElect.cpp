@@ -29,7 +29,7 @@
  )
  **************************************************************************************************/
 #include "DiodeElect.hh"
-#include <math.h>
+#include <cmath>
 #include <cfloat>
 #include "software/exceptions/TsConfigurationException.hh"
 #include "software/exceptions/TsHsException.hh"

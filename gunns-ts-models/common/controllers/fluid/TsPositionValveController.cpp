@@ -188,7 +188,7 @@ void TsPositionValveController::update(const bool                supplyVoltageFl
                                        const double              dt)
 {
     double cmd = 0.0;
-    if (fabs(command.mPosition - sensed) < mTolerance) {
+    if (std::fabs(command.mPosition - sensed) < mTolerance) {
         cmd                = 0.0;
     } else if (dt > DBL_EPSILON){
         const double limit = dt * mCmdScale;

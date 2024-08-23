@@ -22,7 +22,7 @@
 #include "aspects/electrical/PowerBus/PowerBusElect.hh"
 #include "math/UnitConversion.hh"
 #include "UtPowerBusElect.hh"
-#include <math.h>
+#include <cmath>
 
 EpsTestLoads::EpsTestLoads()
 :
@@ -521,7 +521,7 @@ void UtPowerBusElect::testSteppedLoadVoltage()
     //get load resistance
     double load1Resistance  = tLoads.testLoad1.getResistance();
     //calculate load voltage
-    double load1Voltage = sqrt((load1Power*load1Resistance));
+    double load1Voltage = std::sqrt((load1Power*load1Resistance));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoltage,load1Voltage,tTolerance);
 
     //Load 2  = Constant Power Load
@@ -530,7 +530,7 @@ void UtPowerBusElect::testSteppedLoadVoltage()
     //get load resistance
     double load2Resistance  = tLoads.testLoad2.getResistance();
     //calculate load voltage
-    double load2Voltage = sqrt((load2Power*load2Resistance));
+    double load2Voltage = std::sqrt((load2Power*load2Resistance));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoltage,load2Voltage,tTolerance);
 
     //Load 3 = Resistive Load
@@ -539,7 +539,7 @@ void UtPowerBusElect::testSteppedLoadVoltage()
     //get load resistance
     double load3Resistance  = tLoads.testLoad3.getResistance();
     //calculate load voltage
-    double load3Voltage = sqrt((load3Power*load3Resistance));
+    double load3Voltage = std::sqrt((load3Power*load3Resistance));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoltage,load3Voltage,tTolerance);
 
 

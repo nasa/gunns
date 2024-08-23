@@ -935,7 +935,7 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
 
     /// - Tune the link to half its default mass flow rate.
     const double defaultMdot = mArticle->mFlowRate;
-    mArticle->mTuneMassFlow  = fabs(0.5 * defaultMdot);
+    mArticle->mTuneMassFlow  = std::fabs(0.5 * defaultMdot);
     mArticle->mTuneMode      = GunnsFluidUtils::MASS;
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);

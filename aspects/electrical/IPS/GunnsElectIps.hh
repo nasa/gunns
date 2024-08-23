@@ -32,7 +32,7 @@ PROGRAMMERS:
 
 #include <string>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include "core/GunnsBasicLink.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +401,7 @@ inline void GunnsElectIps::calculateHeatTransfer()
 inline bool GunnsElectIps::isConductanceChanged(const double conductanceOne,
                                                 const double conductanceTwo) const
 {
-    return (fabs(conductanceOne - conductanceTwo) > mConductanceTolerance);
+    return (std::fabs(conductanceOne - conductanceTwo) > mConductanceTolerance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

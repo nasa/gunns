@@ -353,7 +353,7 @@ void UtGunnsFluidHxDynHtc::testHtc()
 
     /// @test    Test segment heat transfer coefficients with no malfunction.
     double mdot            = 2.0;
-    double expectedHtc     = (tHtcCoeff0 + tHtcCoeff1 * powf(mdot, tHtcExponent)) / tNumSegs;
+    double expectedHtc     = (tHtcCoeff0 + tHtcCoeff1 * std::pow(mdot, tHtcExponent)) / tNumSegs;
     tArticle->mMalfHxDegradeFlag = false;
     tArticle->mFlowRate          = mdot;
     tArticle->computeHeatTransferCoefficient();
@@ -407,26 +407,26 @@ void UtGunnsFluidHxDynHtc::testHtc()
     tArticle->mSegsDynHtc[0].mCoeff0   = 100.0;
     tArticle->mSegsDynHtc[0].mCoeff1   = 1.0E10;
     tArticle->mSegsDynHtc[0].mLimit    = 2000.0;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0)));
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0)));
     tArticle->computeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegHtc[0], DBL_EPSILON);
 
     mdot = 10.0;
     tArticle->mFlowRate = mdot;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0)));
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0)));
     tArticle->computeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegHtc[0], DBL_EPSILON);
 
     mdot = FLT_EPSILON;
     tArticle->mFlowRate = mdot;
     tArticle->mSegsDynHtc[0].mExponent = 0.05;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0)));
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0)));
     tArticle->computeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegHtc[0], DBL_EPSILON);
 
     mdot = 10.0;
     tArticle->mFlowRate = mdot;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0)));
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0)));
     tArticle->computeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegHtc[0], DBL_EPSILON);
 

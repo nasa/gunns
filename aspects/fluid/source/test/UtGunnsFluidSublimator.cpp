@@ -367,7 +367,7 @@ void UtGunnsFluidSublimator::testStepNominal()
     double plateConductivity = tPlateConductivity;
     double MW = tNodes[0].getContent()->getMWeight();
     double systemConductance = 1.0E-12 + plateConductivity
-                             * sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
+                             * std::sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
     double plateVentRate = systemConductance * plateDP * MW;
     double feedFlux = tFluidInput1->mPressure * systemConductance;
     double sublimationRate = 0.0;
@@ -407,7 +407,7 @@ void UtGunnsFluidSublimator::testStepNominal()
             tIceCoverageFraction));
     sublimationRate = -tArticle->mHeatBalance / (tHeatOfVaporization + tHeatOfFusion) / 1000.0;
     systemConductance = 1.0E-12 + plateConductivity
-                      * sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW
+                      * std::sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW
                       + (sublimationRate + tArticle->mMalfFeedRateBiasValue) / tFluidInput0->mPressure / MW;
     plateVentRate = systemConductance * plateDP * MW;
 
@@ -604,7 +604,7 @@ void UtGunnsFluidSublimator::testStepNoVent()
     double plateConductivity = tPlateConductivity;
     double MW = tNodes[0].getContent()->getMWeight();
     double systemConductance = 1.0E-12 + plateConductivity
-                      * sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
+                      * std::sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
     double feedFlux = tNodes[1].getContent()->getPressure() * systemConductance;
 
     double sublimationRate = 0.0;
@@ -648,7 +648,7 @@ void UtGunnsFluidSublimator::testStepNoVent()
     plateDP = tArticle->mPotentialVector[0] - tArticle->mPotentialVector[1];
     plateConductivity = tPlateConductivity * (1.0 - iceMass / (tMaxIceMass * tIceCoverageFraction));
     systemConductance = 1.0E-12 + plateConductivity
-                      * sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
+                      * std::sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
 
     feedFlux = tNodes[1].getContent()->getPressure() * systemConductance;
 
@@ -674,7 +674,7 @@ void UtGunnsFluidSublimator::testStepNoVent()
     /// - Calculate expected results.  We expect no ice.
     plateConductivity = tPlateConductivity * (1.0 - iceMass / (tMaxIceMass * tIceCoverageFraction));
     systemConductance = 1.0E-12 + plateConductivity
-                      * sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
+                      * std::sqrt(1000.0 * tNodes[0].getContent()->getDensity() / plateDP) / MW;
 
     feedFlux = tNodes[1].getContent()->getPressure() * systemConductance;
 

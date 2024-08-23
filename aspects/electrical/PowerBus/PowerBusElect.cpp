@@ -432,7 +432,7 @@ void PowerBusElect::checkResLoadConductance()
     }
 
     // if there's a big enough change in the resistive loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
         mActiveResLoadsConductance = mResLoadsConductance;
         mAdmittanceUpdate = true;
     }
@@ -453,7 +453,7 @@ void PowerBusElect::checkCPLoadConductance()
     }
 
     // if there's a big enough change in the constant power loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
         mActiveCPowerLoadsConductance = mCPowerLoadsConductance;
         mAdmittanceUpdate = true;
     }

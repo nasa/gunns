@@ -653,7 +653,7 @@ void UtGunnsFluidHiFiOrifice::testStepLiquid()
 
     const double rho  = 0.5 * (tNodes[tPort0].getOutflow()->getDensity() + tNodes[tPort1].getOutflow()->getDensity());
     const double dp   = p0 - p1;
-    const double flux = sqrt(2 * dp * rho);
+    const double flux = std::sqrt(2 * dp * rho);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeBernoulliFlux(rho, dp), DBL_EPSILON);
     const double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / dp;
     const double avgMW = (tNodes[tPort0].getOutflow()->getMWeight() + tNodes[tPort1].getOutflow()->getMWeight()) * 0.5;

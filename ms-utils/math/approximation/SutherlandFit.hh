@@ -74,7 +74,7 @@ class SutherlandFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double SutherlandFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * sqrt(x * x * x) / (mB + x);
+    return mA * std::sqrt(x * x * x) / (mB + x);
 }
 
 #endif

@@ -520,7 +520,7 @@ void GunnsFluidReactor::inputFromAtmosphere(const double dt)
         if (index != -1) {
             /// - Update total mass for compounds from atmosphere.
             mCompounds[i].mTotalMass = mInternalFluid->getMassFraction(mInternalFluid->getType(index))
-                                     * fabs(mFlowRate) * dt;
+                                     * std::fabs(mFlowRate) * dt;
         }
         /// - Zero out the compound produced/consumed masses.
         mCompounds[i].mMass = 0.0;
@@ -561,11 +561,11 @@ void GunnsFluidReactor::react(const double dt __attribute__((unused)))
         ///   consume 100% of the incoming flow, which would break the fluid mixing and transport
         ///   interface with the downstream node.
         const double maxReactantMass     = mCompounds[reactant].mTotalMass
-                                         * fmin(0.9999, computeEfficiency(i));
+                                         * std::min(0.9999, computeEfficiency(i));
 
         /// - Compute the reagent consumed by the reaction based on its availability and the maximum
         ///   reactant that the reaction could consume.
-        const double reagentMass         = fmin(mCompounds[reagent].mTotalMass * 0.9999,
+        const double reagentMass         = std::min(mCompounds[reagent].mTotalMass * 0.9999,
                                                 maxReactantMass * reagentMassRatio / reactantMassRatio);
 
         /// - Compute reactant consumed by the reaction based on reagent consumed by the reaction.
@@ -623,7 +623,7 @@ void GunnsFluidReactor::outputToAtmosphere(const double dt)
     for (int i = 0; i < mNCompounds; ++i) {
         const int index = mCompounds[i].mIndex;
         if (index != -1) {
-            if (fabs(mCompounds[i].mMass) > DBL_EPSILON) {
+            if (std::fabs(mCompounds[i].mMass) > DBL_EPSILON) {
                 negligible = false;
             }
         }

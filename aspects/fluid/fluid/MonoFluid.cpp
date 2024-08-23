@@ -236,20 +236,20 @@ void MonoFluid::addState(const MonoFluid* src,  const double flowRate)
     double srcFlowRate = 0.0;
 
     /// - If the override flow rate is too small, use the rate inside the source fluid.
-    if (fabs(flowRate) < mMinFlowRate) {
+    if (std::fabs(flowRate) < mMinFlowRate) {
         srcFlowRate = src->mFlowRate;
     } else {
         srcFlowRate = flowRate;
     }
     const double newFlowRate = mFlowRate + srcFlowRate;
 
-    if (fabs(newFlowRate) > mMinFlowRate) {
+    if (std::fabs(newFlowRate) > mMinFlowRate) {
         /// - The combined temperature and pressure are the mass flow rate weighted averages.
         const double fraction           = mFlowRate   / newFlowRate;
         const double srcFraction        = srcFlowRate / newFlowRate;
-        mTemperature                    = fabs(mTemperature * fraction +
+        mTemperature                    = std::fabs(mTemperature * fraction +
                                                src->mTemperature * srcFraction);
-        mPressure                       = fabs(mPressure * fraction +
+        mPressure                       = std::fabs(mPressure * fraction +
                                                src->mPressure * srcFraction);
     } else {
         /// - Or 50/50 if the mass flow rate is sufficiently small.

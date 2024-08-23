@@ -298,11 +298,11 @@ void GunnsFluidHiFiOrifice::step(const double dt)
     }
 
     /// - Determine Reynolds number and actual coefficient of discharge considering laminar flow.
-    const double vm = fabs(mFlowRate) / mNodes[inletPort]->getOutflow()->getDensity() / mThroatArea;
+    const double vm = std::fabs(mFlowRate) / mNodes[inletPort]->getOutflow()->getDensity() / mThroatArea;
     mReActual = GunnsFluidUtils::computeReynoldsNumber(mNodes[inletPort]->getOutflow(),
                                                        vm, mThroatDiameter);
 
-    mCdActual = mCdDefault * sqrt(std::min(mReCritical, mReActual)
+    mCdActual = mCdDefault * std::sqrt(std::min(mReCritical, mReActual)
                                 / std::max(mReCritical, DBL_EPSILON));
     if (mCdActual < DBL_EPSILON) mCdActual = mCdDefault;
 
@@ -474,7 +474,7 @@ double GunnsFluidHiFiOrifice::computeLiquidConductivity(const PolyFluid* fluid0,
 double GunnsFluidHiFiOrifice::computeBernoulliFlux(const double rho,
                                                    const double dp) const
 {
-    return sqrt(2 * rho * dp);
+    return std::sqrt(2 * rho * dp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -482,7 +482,7 @@ double GunnsFluidHiFiOrifice::computeBernoulliFlux(const double rho,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidHiFiOrifice::buildAdmittanceMatrix()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2]   = -mAdmittanceMatrix[0];
@@ -589,7 +589,7 @@ void GunnsFluidHiFiOrifice::transportFlows(const double dt)
 void GunnsFluidHiFiOrifice::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;

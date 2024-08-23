@@ -476,7 +476,7 @@ void PolyFluid::validate()
     for (int i = 0; i < mNConstituents; ++i) {
         one += mConstituents[i].mMassFraction;
     }
-    const double error = fabs(1.0 - one);
+    const double error = std::fabs(1.0 - one);
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mass fractions don't add up to 1.",
                         TsInitializationException, "Invalid Input Data", mName);
@@ -494,7 +494,7 @@ void PolyFluid::validate()
     //    The defined fluids are either GAS or LIQUID phase, so mPhase will be reset from SOLID.
     mPhase = FluidProperties::NO_PHASE;
     for (int i = 0; i < mNConstituents; ++i) {
-        if (fabs(mConstituents[i].mMassFraction) > DBL_EPSILON) {
+        if (std::fabs(mConstituents[i].mMassFraction) > DBL_EPSILON) {
             if (FluidProperties::NO_PHASE == mPhase) {
                 mPhase = mConstituents[i].mFluid.getPhase();
             } else if (mConstituents[i].mFluid.getPhase() != mPhase) {
@@ -541,7 +541,7 @@ void PolyFluid::derive()
     mPrandtlNumber       = 0.0;
     mAdiabaticIndex      = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
-        if (fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
+        if (std::fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
             mDensity             += mConstituents[i].mFluid.getDensity();
             mViscosity           += mConstituents[i].mFluid.getViscosity() *
                                     mConstituents[i].mMoleFraction;
@@ -626,7 +626,7 @@ void PolyFluid::setTemperature(const double temperature)
         mConstituents[i].mFluid.setTemperature(mTemperature);
         mConstituents[i].mFluid.setPressure(mPressure * moleFraction);
         /// - Update the properties of the composite fluid from the constituent fluid properties.
-         if (fabs(moleFraction) > DBL_EPSILON) {
+         if (std::fabs(moleFraction) > DBL_EPSILON) {
              const double massFraction = mConstituents[i].mMassFraction;
              mDensity                 += mConstituents[i].mFluid.getDensity();
              mViscosity               += mConstituents[i].mFluid.getViscosity()     * moleFraction;
@@ -658,7 +658,7 @@ void PolyFluid::setPressure(const double pressure)
     /// - Update the density of the composite fluid from the constituent fluid densities.
     mDensity   = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
-        if (fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
+        if (std::fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
             mDensity += mConstituents[i].mFluid.getProperties()->
                         getDensity(mTemperature, mPressure * mConstituents[i].mMoleFraction);
         }
@@ -692,7 +692,7 @@ void PolyFluid::setMassAndMassFractions(const double mass, double* massFraction)
     for (int i = 0; i < mNConstituents; ++i) {
         one += massFraction[i];
     }
-    const double error = fabs(1.0 - one);
+    const double error = std::fabs(1.0 - one);
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mass fractions don't add up to 1.",
                         TsOutOfBoundsException, "Input Argument Out of Range", mName);
@@ -756,7 +756,7 @@ void PolyFluid::setMoleAndMoleFractions(const double mole, double* moleFraction)
     for (int i = 0; i < mNConstituents; ++i) {
         one += moleFraction[i];
     }
-    const double error = fabs(1.0 - one);
+    const double error = std::fabs(1.0 - one);
     if (error > FRACTION_TOLERANCE) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Mole fractions don't add up to 1.",
                         TsOutOfBoundsException, "Input Argument Out of Range", mName);
@@ -985,7 +985,7 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
     ///   value and them compute the combined mass flow rate.
     double destFlowRate = mFlowRate;
     double srcFlowRate;
-    if (fabs(flowRate) < DBL_EPSILON) {
+    if (std::fabs(flowRate) < DBL_EPSILON) {
         srcFlowRate  = src->mFlowRate;
     } else {
         srcFlowRate  =  flowRate;
@@ -993,7 +993,7 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
     mFlowRate += srcFlowRate;
 
     /// - Throw an exception if mass flow rate is too small.
-    if (fabs(mFlowRate) < DBL_EPSILON) {
+    if (std::fabs(mFlowRate) < DBL_EPSILON) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Combined flow rate magnitude < DBL_EPSILON.",
                         TsOutOfBoundsException, "Input Argument Out of Range", mName);
     }
@@ -1046,7 +1046,7 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
     mAdiabaticIndex      = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
         mConstituents[i].mFluid.setTemperature(mTemperature);
-        if (fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
+        if (std::fabs(mConstituents[i].mMoleFraction) > DBL_EPSILON) {
             mDensity             += mConstituents[i].mFluid.getDensity();
             mViscosity           += mConstituents[i].mFluid.getViscosity() *
                                     mConstituents[i].mMoleFraction;
@@ -1088,10 +1088,10 @@ void PolyFluid::addState(const PolyFluid* src, const double flowRate)
 void PolyFluid::edit(const double temperature, const double pressure)
 {
     /// - Set the composite pressure
-    mPressure  = fmax(0.0, pressure);
+    mPressure  = std::max(0.0, pressure);
 
     /// - And let setTemperature do the rest
-    setTemperature(fmax(0.0, temperature));
+    setTemperature(std::max(0.0, temperature));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1110,11 +1110,11 @@ void PolyFluid::edit(const double temperature, double* partialPressure)
     /// - Set the composite pressure as the sum of the constituent partial pressures
     mPressure = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
-        mPressure += fmax(0.0, partialPressure[i]);
+        mPressure += std::max(0.0, partialPressure[i]);
     }
 
     /// - Call setTemperature to set the fluid to the new total pressure and temperature.
-    setTemperature(fmax(0.0, temperature));
+    setTemperature(std::max(0.0, temperature));
 
     /// - Return after setting pressure and temperature if pressure is zero to avoid divide-by zero.
     if (mPressure < static_cast<double>(FLT_EPSILON)) {
@@ -1128,12 +1128,12 @@ void PolyFluid::edit(const double temperature, double* partialPressure)
     // between the new/delete.
     try {
         for (int i = 0; i < mNConstituents; ++i) {
-            moleFractions[i] = fmax(0.0, partialPressure[i]) / mPressure;
+            moleFractions[i] = std::max(0.0, partialPressure[i]) / mPressure;
         }
         setMoleAndMoleFractions(getMole(), moleFractions);
 
         /// - And let setTemperature do the rest
-        setTemperature(fmax(0.0, temperature));
+        setTemperature(std::max(0.0, temperature));
 
     } catch (...) {
         TsHsMsg warnMsg(TS_HS_WARNING, "GUNNS");
@@ -1166,7 +1166,7 @@ double PolyFluid::computeTemperature(const double specificEnthalpy) const
     double b        = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
         const double massFraction = mConstituents[i].mMassFraction;
-        if (fabs(massFraction) > DBL_EPSILON) {
+        if (std::fabs(massFraction) > DBL_EPSILON) {
             const LinearFit* cpFit = dynamic_cast<const LinearFit*>(mConstituents[i].mFluid.
                                                                     mProperties->mSpecificHeat);
             a += massFraction * cpFit->getB(); // scale factor in linear curve fit
@@ -1179,7 +1179,7 @@ double PolyFluid::computeTemperature(const double specificEnthalpy) const
     ///   so -4ac = +4ah.
     // Protect for square root of negative number
     const double temp = std::max( (b * b + 4.0 * a * specificEnthalpy), 0.0);
-    return 0.5 * (-b + sqrt(temp)) / a;
+    return 0.5 * (-b + std::sqrt(temp)) / a;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1201,7 +1201,7 @@ double PolyFluid::computeSpecificEnthalpy(const double temperature, const double
     double specificHeat = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
         const double massFraction = mConstituents[i].mMassFraction;
-        if (fabs(massFraction) > DBL_EPSILON) {
+        if (std::fabs(massFraction) > DBL_EPSILON) {
             specificHeat += mConstituents[i].mFluid.mProperties->mSpecificHeat->get(temperature,
                             pressure) * massFraction;
         }
@@ -1229,7 +1229,7 @@ double PolyFluid::computePressure(const double temperature, const double density
     double pressure   = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
         const double massFraction = mConstituents[i].mMassFraction;
-        if (fabs(massFraction) > DBL_EPSILON) {
+        if (std::fabs(massFraction) > DBL_EPSILON) {
             pressure += mConstituents[i].mFluid.computePressure(temperature,
                                                                  density * massFraction);
         }
@@ -1256,7 +1256,7 @@ double PolyFluid::computeDensity(const double temperature, const double pressure
     double density = 0.0;
     for (int i = 0; i < mNConstituents; ++i) {
         const double moleFraction = mConstituents[i].mMoleFraction;
-        if (fabs(moleFraction) > DBL_EPSILON) {
+        if (std::fabs(moleFraction) > DBL_EPSILON) {
             density += mConstituents[i].mFluid.computeDensity(temperature,
                                                                pressure * moleFraction);
         }

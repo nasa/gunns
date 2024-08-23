@@ -52,11 +52,11 @@ distribution.
 #pragma warning( disable : 4786 )
 #endif
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 
 // Help out windows:
 #if defined( _DEBUG ) && !defined( DEBUG )
@@ -1787,7 +1787,7 @@ public:
 	/// Return the result.
 	const char* CStr()								{ return buffer.c_str(); }
 	/// Return the length of the result string.
-	size_t Size()									{ return buffer.size(); }
+	std::size_t Size()								{ return buffer.size(); }
 
 	#ifdef TIXML_USE_STL
 	/// Return the result.

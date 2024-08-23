@@ -87,7 +87,7 @@ void UtGunnsFluidSeparatorGas::setUp()
                                                                    tReferencePressure,
                                                                    tReferenceRemovalRate);
     tPowerCurveCoefficient  = tReferencePressure / tReferenceSpeed
-                            / pow(tMaxLiquidMass, tMassExponent);
+                            / std::pow(tMaxLiquidMass, tMassExponent);
 
     /// - Define the nominal input data.
     tMalfBlockageFlag       = false;
@@ -421,7 +421,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidNoGas()
     const double expectedSepRate = 0.0;
     const double expectedMass    = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP  = tPowerCurveCoefficient * tSeparatorSpeed
-                                 * pow(expectedMass, tMassExponent);
+                                 * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate, tArticle->mSeparationRate, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,    tArticle->mLiquidMass,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,  tArticle->mLiquidDeltaP,   DBL_EPSILON);
@@ -452,7 +452,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidZeroTimeStep()
     const double expectedSepRate = 0.0;
     const double expectedMass    = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP  = tPowerCurveCoefficient * tSeparatorSpeed
-                                 * pow(expectedMass, tMassExponent);
+                                 * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate, tArticle->mSeparationRate, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,    tArticle->mLiquidMass,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,  tArticle->mLiquidDeltaP,   DBL_EPSILON);
@@ -484,7 +484,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidFull()
     const double expectedSepRate  = tTransferFlowRate;
     const double expectedMass     = tMaxLiquidMass;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
@@ -517,7 +517,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidDryAir()
     const double expectedSepRate  = 0.0;
     const double expectedMass     = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
@@ -552,7 +552,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidNominal()
     const double expectedSepRate  = expectedCondense / tTimeStep;
     const double expectedMass     = 1.0 + expectedCondense - tArticle->mTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
@@ -625,7 +625,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidReverseFlow()
     const double expectedSepRate  = expectedCondense / tTimeStep;
     const double expectedMass     = 1.0 + expectedCondense;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);

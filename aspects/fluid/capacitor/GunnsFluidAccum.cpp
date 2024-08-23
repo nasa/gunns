@@ -262,7 +262,7 @@ void GunnsFluidAccum::buildConductance()
     /// - Compute system conductance using effective conductivity.
     double liquidSystemConductance = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
     /// - Set admittance matrix.
-    if (fabs(mAdmittanceMatrix[3] - liquidSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[3] - liquidSystemConductance) > 0.0) {
         /// - Zero out mAdmittanceMatrix[1] and [2]. No flow ever allowed between nodes.  Note we
         ///   don't zero [0] because that is reserved for the pressurizer to control.  It will be
         ///   updated by GunnsFluidAccumGas::buildGasConductance when applicable.  Because we don't
@@ -465,7 +465,7 @@ double GunnsFluidAccum::computeMass(const double volume, const double density) c
 double GunnsFluidAccum::computeMass(const double dt, const double flowRate, const double currentMass) const
 {
     double newMass = currentMass;
-    if (fabs(flowRate) > m100EpsilonLimit) {
+    if (std::fabs(flowRate) > m100EpsilonLimit) {
         newMass = currentMass + flowRate * dt;
     }
     return (std::max(newMass, DBL_EPSILON));

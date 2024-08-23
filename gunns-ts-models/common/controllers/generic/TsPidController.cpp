@@ -273,10 +273,10 @@ double TsPidController::update(const double dt)
         mTimer      = 0.0;
 
         /// - Zero very small results to avoid underflows.
-        if (fabs(mIntegral) < DBL_EPSILON) {
+        if (std::fabs(mIntegral) < DBL_EPSILON) {
             mIntegral = 0.0;
         }
-        if (fabs(mOutput) < DBL_EPSILON) {
+        if (std::fabs(mOutput) < DBL_EPSILON) {
             mOutput = 0.0;
         }
 

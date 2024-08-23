@@ -347,7 +347,7 @@ void GunnsFluidTank::updateState(const double dt)
         editComplete[i]         = true;
         if (mEditPartialPressureRateFlag[i]) {
 
-            const double rate = fabs(mEditPartialPressureRateValue[i]);
+            const double rate = std::fabs(mEditPartialPressureRateValue[i]);
             if (rate < DBL_EPSILON) {
                 mEditPartialPressureRateFlag[i] = false;
                 GUNNS_WARNING("partial pressure rate edit canceled, zero rate not allowed.");
@@ -634,7 +634,7 @@ void GunnsFluidTank::computeDpdt(const double dt)
         mDpdt = mDpdt + mDpdtFilterGain *
                 ((mNodes[0]->getPotential() - mPreviousPressure) / dt - mDpdt);
         // Avoid arithmetic underflow when approaching zero.
-        if (fabs(mDpdt) < DBL_EPSILON) {
+        if (std::fabs(mDpdt) < DBL_EPSILON) {
             mDpdt = 0.0;
         }
     } else {

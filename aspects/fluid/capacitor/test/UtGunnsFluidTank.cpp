@@ -1035,7 +1035,7 @@ void UtGunnsFluidTank::testOwnShellFlux()
     /// - Initialize default test article with nominal initialization data.
     /// - Shell radius = (3/4 * V/pi)^1/3.  We hard-code the pi product as a redundant check on the
     ///   pi constant used by the test article.
-    mShellRadius = pow(2.35619449019 * mVolume, (1.0/3.0));
+    mShellRadius = std::pow(2.35619449019 * mVolume, (1.0/3.0));
     /// - Shell surface area = 4 pi r^2
     mSurfaceArea = 12.5663706144 * mShellRadius* mShellRadius;
     mConfigData->mShellRadius = mShellRadius;

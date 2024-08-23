@@ -551,13 +551,13 @@ void UtGunnsOptimParticleSwarm::testUpdate()
     persStateDelta[1] = -tArticle->mParticles.at(0).mCurrentState.mState.at(1);
     persStateDelta[2] = -tArticle->mParticles.at(1).mCurrentState.mState.at(0);
     persStateDelta[3] = -tArticle->mParticles.at(1).mCurrentState.mState.at(1);
-    accelBound[0] = fabs(persStateDelta[0] * tConfigData->mCognitiveCoeff
+    accelBound[0] = std::fabs(persStateDelta[0] * tConfigData->mCognitiveCoeff
                        + globStateDelta[0] * tConfigData->mSocialCoeff);
-    accelBound[1] = fabs(persStateDelta[1] * tConfigData->mCognitiveCoeff
+    accelBound[1] = std::fabs(persStateDelta[1] * tConfigData->mCognitiveCoeff
                        + globStateDelta[1] * tConfigData->mSocialCoeff);
-    accelBound[2] = fabs(persStateDelta[2] * tConfigData->mCognitiveCoeff
+    accelBound[2] = std::fabs(persStateDelta[2] * tConfigData->mCognitiveCoeff
                        + globStateDelta[2] * tConfigData->mSocialCoeff);
-    accelBound[3] = fabs(persStateDelta[3] * tConfigData->mCognitiveCoeff
+    accelBound[3] = std::fabs(persStateDelta[3] * tConfigData->mCognitiveCoeff
                        + globStateDelta[3] * tConfigData->mSocialCoeff);
     velPrevious[0] = tArticle->mParticles.at(0).mCurrentState.mVelocity.at(0);
     velPrevious[1] = tArticle->mParticles.at(0).mCurrentState.mVelocity.at(1);
@@ -884,4 +884,3 @@ void UtGunnsOptimParticleSwarm::testAccessors()
 
     UT_PASS_LAST;
 }
-

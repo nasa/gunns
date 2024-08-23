@@ -225,7 +225,7 @@ void GunnsFluidFireSource::initialize(const GunnsFluidFireSourceConfigData& conf
 void GunnsFluidFireSource::validate(const GunnsFluidFireSourceConfigData& configData) const
 {
     /// - Throw an exception for sum of mass flow rates is equal to zero
-    if (DBL_EPSILON > fabs(configData.mFireCO2ProductRate + configData.mFireH2OProductRate
+    if (DBL_EPSILON > std::fabs(configData.mFireCO2ProductRate + configData.mFireH2OProductRate
                          + configData.mFireO2ConsumpRate)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Sum of bulk fluid mass flow rates is equal to zero.");

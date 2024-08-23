@@ -85,7 +85,7 @@ void RationalFit::init(const double a,    const double b,    const double c,    
     const double discrim = c * c - 4 * d;
     if (discrim > FLT_EPSILON) {
         // Either check that both real roots are sufficiently outside valid range
-        const double arg = 0.5 * sqrt(discrim);
+        const double arg = 0.5 * std::sqrt(discrim);
         TS_GENERIC_IF_ERREX((minX <= -c + arg + FLT_EPSILON && -c + arg - FLT_EPSILON <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
         TS_GENERIC_IF_ERREX((minX <= -c - arg + FLT_EPSILON && -c - arg - FLT_EPSILON <= maxX), TsInitializationException,

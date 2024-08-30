@@ -940,9 +940,9 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5 * defaultConductivity, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5 * defaultConductivity, mArticle->mMaxConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     /// - Tune the link to double its default true volumetric flow rate for positive flow.
     double defaultVdot     = mArticle->mFlowRate / mNodes[0].getOutflow()->getDensity();
@@ -951,9 +951,9 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0 * defaultConductivity, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0 * defaultConductivity, mArticle->mMaxConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     /// - Set up the nodes to create backflow and re-adjust the link to the new pressures.
     mNodes[0].setPotential(675.0);
@@ -972,9 +972,9 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5 * defaultConductivity, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5 * defaultConductivity, mArticle->mMaxConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     /// - Restore the nodes to their original state and re-adjust the link again.
     mNodes[0].setPotential(700.728);
@@ -994,9 +994,9 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0 * defaultConductivity, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0 * defaultConductivity, mArticle->mMaxConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     /// - Tune the link to half its default expansion scale factor.
     const double defaultdT = mArticle->mNodes[1]->getOutflow()->getTemperature() -
@@ -1007,7 +1007,7 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5 * defaultScaleFactor,  mArticle->mExpansionScaleFactor,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     const double expected    = mArticle->mEffectiveConductivity;
 
@@ -1015,13 +1015,13 @@ void UtGunnsFluidPressureSensitiveValve::testTuning()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     mArticle->mTuneMode      = static_cast<GunnsFluidUtils::TuningMode>(-1);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT(GunnsFluidUtils::OFF == mArticle->mTuneMode);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->mEffectiveConductivity,
-                                                            FLT_EPSILON);
+                                                            static_cast<double>(FLT_EPSILON));
 
     UT_PASS;
 }
@@ -1191,43 +1191,43 @@ void UtGunnsFluidPressureSensitiveValve::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = mExpansionScaleFactor;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mPosition < 0.
-    mInputData->mPosition = -FLT_EPSILON;
+    mInputData->mPosition = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mPosition > 1.
-    mInputData->mPosition = 1.0 + FLT_EPSILON;
+    mInputData->mPosition = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mMalfLeakThruValue < 0.
-    mInputData->mMalfLeakThruValue = -FLT_EPSILON;
+    mInputData->mMalfLeakThruValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfLeakThruValue = mMalfLeakThruValue;
 
     /// @test    Initialization exception on invalid input data: mWallTemperature < 0.
-    mInputData->mWallTemperature = -FLT_EPSILON;
+    mInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mWallTemperature = mWallTemperature;
 
     /// @test    Initialization exception on invalid input data: mMalfFailToValue < 0.
-    mInputData->mMalfFailToValue = -FLT_EPSILON;
+    mInputData->mMalfFailToValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3),
                          TsInitializationException);
     mInputData->mMalfFailToValue = mMalfFailToValue;
 
     /// @test    Initialization exception on invalid input data: mMalfFailToValue > 1.
-    mInputData->mMalfFailToValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfFailToValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3),
                          TsInitializationException);
     mInputData->mMalfFailToValue = mMalfFailToValue;

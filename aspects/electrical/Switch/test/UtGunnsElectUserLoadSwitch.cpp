@@ -683,10 +683,10 @@ void UtGunnsElectUserLoadSwitch::testComputeFlowsOverrideNonGround()
 
         CPPUNIT_ASSERT_NO_THROW(tArticle->computeFlows(0.0));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,   tArticle->mPotentialDrop,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,                         FLT_EPSILON * expectedFlux);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,                        FLT_EPSILON * expectedPwr);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,                         static_cast<double>(FLT_EPSILON) * expectedFlux);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,                        static_cast<double>(FLT_EPSILON) * expectedPwr);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSwitch.getPowerDissipation(), DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mLoadsPower,                   FLT_EPSILON * expectedPwr);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mLoadsPower,                   static_cast<double>(FLT_EPSILON) * expectedPwr);
     }
 
     UT_PASS;

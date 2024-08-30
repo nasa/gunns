@@ -635,13 +635,13 @@ void UtGunnsFluidReliefValve::testUpdateStateNominal()
     mArticle->mRateLimit = 1.0 / mTimeStep;
 
     /// @test    Start at crack pressure so valve is closed.
-    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure - FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure - static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPosition, mTolerance);
     CPPUNIT_ASSERT(GunnsFluidValve::CLOSED == mArticle->mState);
 
     /// @test    Increment to just above crack pressure so valve is closed but opening.
-    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure + FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure + static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPosition, mTolerance * 1.0e+05);
     CPPUNIT_ASSERT(GunnsFluidValve::OPENING == mArticle->mState);
@@ -653,13 +653,13 @@ void UtGunnsFluidReliefValve::testUpdateStateNominal()
     CPPUNIT_ASSERT(GunnsFluidValve::OPENING == mArticle->mState);
 
     /// @test    Increment to just below full open pressure so valve is opening and almost open.
-    mArticle->mPotentialVector[2]   = outletPressure + mFullOpenPressure - FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mFullOpenPressure - static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, mArticle->mPosition, mTolerance * 1.0e+05);
     CPPUNIT_ASSERT(GunnsFluidValve::OPENING == mArticle->mState);
 
     /// @test    Increment to just above full open pressure so valve is open.
-    mArticle->mPotentialVector[2]   = outletPressure + mFullOpenPressure + FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mFullOpenPressure + static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, mArticle->mPosition, mTolerance);
     CPPUNIT_ASSERT(GunnsFluidValve::OPEN == mArticle->mState);
@@ -671,13 +671,13 @@ void UtGunnsFluidReliefValve::testUpdateStateNominal()
     CPPUNIT_ASSERT(GunnsFluidValve::CLOSING == mArticle->mState);
 
     /// @test    Decrement to just above reseat pressure so valve is closing and almost closed.
-    mArticle->mPotentialVector[2]   = outletPressure + mReseatPressure + FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mReseatPressure + static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPosition, mTolerance * 1.0e+05);
     CPPUNIT_ASSERT(GunnsFluidValve::CLOSING == mArticle->mState);
 
     /// @test    Decrement to just below reseat pressure so valve is closed.
-    mArticle->mPotentialVector[2]   = outletPressure + mReseatPressure - FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mReseatPressure - static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPosition, mTolerance);
     CPPUNIT_ASSERT(GunnsFluidValve::CLOSED == mArticle->mState);
@@ -710,7 +710,7 @@ void UtGunnsFluidReliefValve::testUpdateStateHysteresis()
     mArticle->mRateLimit = 1.0 / mTimeStep;
 
     /// @test    Start just below crack pressure so valve is closed
-    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure - FLT_EPSILON;
+    mArticle->mPotentialVector[2]   = outletPressure + mCrackPressure - static_cast<double>(FLT_EPSILON);
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPosition, mTolerance);
     CPPUNIT_ASSERT(GunnsFluidValve::CLOSED == mArticle->mState);
@@ -935,12 +935,12 @@ void UtGunnsFluidReliefValve::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = mExpansionScaleFactor;
 
     /// @test    Initialization exception on invalid config data: mRateLimit < 0.
-    mConfigData->mRateLimit  = -FLT_EPSILON;
+    mConfigData->mRateLimit  = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mConfigData->mRateLimit  = mRateLimit;
 
     /// @test    Initialization exception on invalid config data: mReseatPressure < 0.
-    mConfigData->mReseatPressure  = -FLT_EPSILON;
+    mConfigData->mReseatPressure  = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mConfigData->mReseatPressure  = mReseatPressure;
 
@@ -971,43 +971,43 @@ void UtGunnsFluidReliefValve::testInitializationExceptions()
     mConfigData->mPopSlopeScale  = mPopSlopeScale;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mPosition < 0.
-    mInputData->mPosition = -FLT_EPSILON;
+    mInputData->mPosition = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mPosition > 1.
-    mInputData->mPosition = 1.0 + FLT_EPSILON;
+    mInputData->mPosition = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mMalfLeakThruValue < 0.
-    mInputData->mMalfLeakThruValue = -FLT_EPSILON;
+    mInputData->mMalfLeakThruValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mMalfLeakThruValue = mMalfLeakThruValue;
 
     /// @test    Initialization exception on invalid input data: mWallTemperature < 0.
-    mInputData->mWallTemperature = -FLT_EPSILON;
+    mInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3), TsInitializationException);
     mInputData->mWallTemperature = mWallTemperature;
 
     /// @test    Initialization exception on invalid input data: mMalfFailToValue < 0.
-    mInputData->mMalfFailToValue = -FLT_EPSILON;
+    mInputData->mMalfFailToValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3),
                          TsInitializationException);
     mInputData->mMalfFailToValue = mMalfFailToValue;
 
     /// @test    Initialization exception on invalid input data: mMalfFailToValue > 1.
-    mInputData->mMalfFailToValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfFailToValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1, mPort2, mPort3),
                          TsInitializationException);
     mInputData->mMalfFailToValue = mMalfFailToValue;

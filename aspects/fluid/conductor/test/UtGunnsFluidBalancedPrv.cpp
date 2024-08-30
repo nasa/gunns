@@ -505,13 +505,13 @@ void UtGunnsFluidBalancedPrv::testStepEdgeCases()
     /// @test  Limited lower value of exit pressure droop.
     tArticle->mExitPressureDroop = 0.0;
     tArticle->step(0.01);
-    double expectedOutG = 1.0 / FLT_EPSILON / tNodes[tPort0].getOutflow()->getMWeight();
+    double expectedOutG = 1.0 / static_cast<double>(FLT_EPSILON) / tNodes[tPort0].getOutflow()->getMWeight();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutG, tArticle->mExitConductance, DBL_EPSILON);
 
     /// @test  Limited upper value of exit pressure droop.
     tArticle->mExitPressureDroop = 1.0e15;
     tArticle->step(0.01);
-    expectedOutG = 1.0 * FLT_EPSILON / tNodes[tPort0].getOutflow()->getMWeight();
+    expectedOutG = 1.0 * static_cast<double>(FLT_EPSILON) / tNodes[tPort0].getOutflow()->getMWeight();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutG, tArticle->mExitConductance, DBL_EPSILON);
 
     /// @test  Link port mapping and protect against zero inlet molecular weight.
@@ -571,7 +571,7 @@ void UtGunnsFluidBalancedPrv::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInMdot,  tNodes[0].getOutflux(),     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutMdot, tNodes[1].getInflux(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getInflow()->getMWeight(),
-                                 tNodes[0].getOutflow()->getMWeight(),        FLT_EPSILON);
+                                 tNodes[0].getOutflow()->getMWeight(),        static_cast<double>(FLT_EPSILON));
 
     /// @test  Verify correct port directions
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1, tPort2);

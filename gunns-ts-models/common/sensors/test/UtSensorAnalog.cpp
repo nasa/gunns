@@ -56,14 +56,14 @@ void UtSensorAnalog::setUp()
 {
     /// - Define nominal config data.
     tName                 = "Test Sensor";
-    tMinRange             =  1.0;
-    tMaxRange             = 49.0;
-    tOffValue             =  5.0;
-    tNominalBias          =  0.1;
-    tNominalScale         =  0.99;
-    tNominalNoiseScale    =  1.0;
-    tNominalNoiseMult     =  0.01;
-    tNominalResolution    =  0.2;
+    tMinRange             =  1.0F;
+    tMaxRange             = 49.0F;
+    tOffValue             =  5.0F;
+    tNominalBias          =  0.1F;
+    tNominalScale         =  0.99F;
+    tNominalNoiseScale    =  1.0F;
+    tNominalNoiseMult     =  0.01F;
+    tNominalResolution    =  0.2F;
     tNominalNoiseFunction = UtSensorAnalogNoise::testNoise;
     tUnitConversion       = UnitConversion::NO_CONVERSION;
     tNominalConfig = new SensorAnalogConfigData(tMinRange,
@@ -105,13 +105,13 @@ void UtSensorAnalog::testConfigData()
 
     /// - Test default construction of a test config data article.
     SensorAnalogConfigData defaultConfig;
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mMinRange);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mMaxRange);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mOffValue);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mNominalBias);
-    CPPUNIT_ASSERT(1.0                           == defaultConfig.mNominalScale);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mNominalNoiseScale);
-    CPPUNIT_ASSERT(0.0                           == defaultConfig.mNominalResolution);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mMinRange);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mMaxRange);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mOffValue);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mNominalBias);
+    CPPUNIT_ASSERT(1.0F                          == defaultConfig.mNominalScale);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mNominalNoiseScale);
+    CPPUNIT_ASSERT(0.0F                          == defaultConfig.mNominalResolution);
     CPPUNIT_ASSERT(0                             == defaultConfig.mNoiseFunction);
     CPPUNIT_ASSERT(UnitConversion::NO_CONVERSION == defaultConfig.mUnitConversion);
 
@@ -182,18 +182,18 @@ void UtSensorAnalog::testInputData()
     CPPUNIT_ASSERT(false == defaultInput.mMalfIgnorePower);
     CPPUNIT_ASSERT(false == defaultInput.mMalfPerfectSensor);
     CPPUNIT_ASSERT(0.0   == defaultInput.mTruthInput);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfFailToValue);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfFailToValue);
     CPPUNIT_ASSERT(false == defaultInput.mMalfScaleFlag);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfScaleValue);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfScaleValue);
     CPPUNIT_ASSERT(false == defaultInput.mMalfBiasFlag);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfBiasValue);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfBiasValue);
     CPPUNIT_ASSERT(false == defaultInput.mMalfDriftFlag);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfDriftRate);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfDriftRate);
     CPPUNIT_ASSERT(false == defaultInput.mMalfNoiseFlag);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfNoiseScale);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfNoiseScale);
     CPPUNIT_ASSERT(false == defaultInput.mMalfResolutionFlag);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mMalfResolutionValue);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mDrift);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mMalfResolutionValue);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mDrift);
 
     /// - Test nominal construction of a test input data article.
     SensorAnalogInputData nominalInput(true, 10.0);
@@ -304,28 +304,28 @@ void UtSensorAnalog::testConstruction()
     CPPUNIT_ASSERT(false                         == article.mInitFlag);
 
     /// - Test default construction of the test article.
-    CPPUNIT_ASSERT(0.0                           == article.mMinRange);
-    CPPUNIT_ASSERT(0.0                           == article.mMaxRange);
-    CPPUNIT_ASSERT(0.0                           == article.mOffValue);
-    CPPUNIT_ASSERT(0.0                           == article.mNominalBias);
-    CPPUNIT_ASSERT(0.0                           == article.mNominalScale);
-    CPPUNIT_ASSERT(0.0                           == article.mNominalNoiseScale);
-    CPPUNIT_ASSERT(0.0                           == article.mNominalResolution);
+    CPPUNIT_ASSERT(0.0F                          == article.mMinRange);
+    CPPUNIT_ASSERT(0.0F                          == article.mMaxRange);
+    CPPUNIT_ASSERT(0.0F                          == article.mOffValue);
+    CPPUNIT_ASSERT(0.0F                          == article.mNominalBias);
+    CPPUNIT_ASSERT(0.0F                          == article.mNominalScale);
+    CPPUNIT_ASSERT(0.0F                          == article.mNominalNoiseScale);
+    CPPUNIT_ASSERT(0.0F                          == article.mNominalResolution);
     CPPUNIT_ASSERT(0.0                           == article.mTruthInput);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfFailToValue);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfFailToValue);
     CPPUNIT_ASSERT(false                         == article.mMalfScaleFlag);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfScaleValue);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfScaleValue);
     CPPUNIT_ASSERT(false                         == article.mMalfBiasFlag);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfBiasValue);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfBiasValue);
     CPPUNIT_ASSERT(false                         == article.mMalfDriftFlag);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfDriftRate);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfDriftRate);
     CPPUNIT_ASSERT(false                         == article.mMalfNoiseFlag);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfNoiseScale);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfNoiseScale);
     CPPUNIT_ASSERT(false                         == article.mMalfResolutionFlag);
-    CPPUNIT_ASSERT(0.0                           == article.mMalfResolutionValue);
-    CPPUNIT_ASSERT(0.0                           == article.mDrift);
+    CPPUNIT_ASSERT(0.0F                          == article.mMalfResolutionValue);
+    CPPUNIT_ASSERT(0.0F                          == article.mDrift);
     CPPUNIT_ASSERT(0.0                           == article.mTruthOutput);
-    CPPUNIT_ASSERT(0.0                           == article.mSensedOutput);
+    CPPUNIT_ASSERT(0.0F                          == article.mSensedOutput);
     CPPUNIT_ASSERT(0                             == article.mNoiseFunction);
     CPPUNIT_ASSERT(UnitConversion::NO_CONVERSION == article.mUnitConversion);
 
@@ -364,23 +364,23 @@ void UtSensorAnalog::testInitialize()
     CPPUNIT_ASSERT(tNominalResolution    == article.mNominalResolution);
     CPPUNIT_ASSERT(tTruthInput           == article.mTruthInput);
     CPPUNIT_ASSERT(tTruthInput           == article.mTruthOutput);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfFailToValue);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfFailToValue);
     CPPUNIT_ASSERT(false                 == article.mMalfScaleFlag);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfScaleValue);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfScaleValue);
     CPPUNIT_ASSERT(false                 == article.mMalfBiasFlag);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfBiasValue);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfBiasValue);
     CPPUNIT_ASSERT(false                 == article.mMalfDriftFlag);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfDriftRate);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfDriftRate);
     CPPUNIT_ASSERT(false                 == article.mMalfNoiseFlag);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfNoiseScale);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfNoiseScale);
     CPPUNIT_ASSERT(false                 == article.mMalfResolutionFlag);
-    CPPUNIT_ASSERT(0.0                   == article.mMalfResolutionValue);
-    CPPUNIT_ASSERT(0.0                   == article.mDrift);
+    CPPUNIT_ASSERT(0.0F                  == article.mMalfResolutionValue);
+    CPPUNIT_ASSERT(0.0F                  == article.mDrift);
     CPPUNIT_ASSERT(true                  == article.mInitFlag);
 
     /// - Based on the config & input data, verify the initial sensor output.
-    float expected =  tTruthInput * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * static_cast<double>(round(expected/tNominalResolution));
+    float expected =  static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
+    expected = tNominalResolution * std::round(expected/tNominalResolution);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
     std::cout << "... Pass";
@@ -448,17 +448,17 @@ void UtSensorAnalog::testInput()
 
     /// - Give the sensor an extremely small truth input and verify it is zeroed before applying the
     ///   units conversion.  This should result in absolute zero expressed in deg. F.
-    article.setTruthInput(FLT_MIN * 0.1);
-    double expected = -UnitConversion::ZERO_F_IN_R;
+    article.setTruthInput(static_cast<double>(FLT_MIN) * 0.1);
+    float expected = static_cast<float>(-UnitConversion::ZERO_F_IN_R);
     article.processInput();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, -FLT_EPSILON * expected);
 
     /// - Give the sensor a normal truth input and verify units conversion is correctly applied.
     ///   This should result in 32 deg. F.
     article.setTruthInput(273.15);
-    expected = UnitConversion::convertDegKToDegF(273.15);
+    expected = static_cast<float>(UnitConversion::convertDegKToDegF(273.15));
     article.processInput();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON * 273.15);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON * 273.15F);
 
     std::cout << "... Pass";
 }
@@ -480,21 +480,21 @@ void UtSensorAnalog::testScale()
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify the scale output with no malfunction.
-    article.mSensedOutput = 10.0;
-    const float expected  = 10.0 * tNominalScale;
+    article.mSensedOutput = 10.0F;
+    const float expected  = 10.0F * tNominalScale;
     article.applyScale();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the scale output with malfunction added.
-    article.mSensedOutput    = 10.0;
+    article.mSensedOutput    = 10.0F;
     article.mMalfScaleFlag   = true;
-    article.mMalfScaleValue  = 0.5;
-    const float expectedMalf = expected * 0.5;
+    article.mMalfScaleValue  = 0.5F;
+    const float expectedMalf = expected * 0.5F;
     article.applyScale();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMalf, article.mSensedOutput, FLT_EPSILON);
 
     /// - Remove the malfunction and verify original result.
-    article.mSensedOutput   = 10.0;
+    article.mSensedOutput   = 10.0F;
     article.mMalfScaleFlag  = false;
     article.applyScale();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON);
@@ -519,21 +519,21 @@ void UtSensorAnalog::testBias()
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify the bias output with no malfunction.
-    article.mSensedOutput = 10.0;
-    const float expected  = 10.0 + tNominalBias;
+    article.mSensedOutput = 10.0F;
+    const float expected  = 10.0F + tNominalBias;
     article.applyBias();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the scale output with malfunction added.
-    article.mSensedOutput  = 10.0;
+    article.mSensedOutput  = 10.0F;
     article.mMalfBiasFlag  = true;
-    article.mMalfBiasValue = 0.5;
-    const float expectedMalf = expected + 0.5;
+    article.mMalfBiasValue = 0.5F;
+    const float expectedMalf = expected + 0.5F;
     article.applyBias();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMalf, article.mSensedOutput, FLT_EPSILON);
 
     /// - Remove the malfunction and verify original result.
-    article.mSensedOutput = 10.0;
+    article.mSensedOutput = 10.0F;
     article.mMalfBiasFlag  = false;
     article.applyBias();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,     article.mSensedOutput, FLT_EPSILON);
@@ -558,33 +558,33 @@ void UtSensorAnalog::testDrift()
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify the drift output with no malfunction.
-    article.mSensedOutput  = 10.0;
-    const float expected   = 10.0;
+    article.mSensedOutput  = 10.0F;
+    const float expected   = 10.0F;
     article.applyDrift(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,  article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the drift output with malfunction active.
-    article.mSensedOutput  = 10.0;
+    article.mSensedOutput  = 10.0F;
     article.mMalfDriftFlag = true;
-    article.mMalfDriftRate = 1.0;
-    const float expected1  = expected + tTimeStep;
+    article.mMalfDriftRate = 1.0F;
+    const float expected1  = expected + static_cast<float>(tTimeStep);
     article.applyDrift(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected1, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify a 2nd drift frame with a different drift rate.
-    article.mSensedOutput  = 10.0;
+    article.mSensedOutput  = 10.0F;
     article.mMalfDriftFlag = true;
-    article.mMalfDriftRate = 1.5;
-    const float expected2  = expected1 + 1.5 * tTimeStep;
+    article.mMalfDriftRate = 1.5F;
+    const float expected2  = expected1 + 1.5F * static_cast<float>(tTimeStep);
     article.applyDrift(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected2, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify drift is zeroed when the malfunction is removed.
-    article.mSensedOutput  = 10.0;
+    article.mSensedOutput  = 10.0F;
     article.mMalfDriftFlag = false;
     article.applyDrift(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,  article.mSensedOutput, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       article.mDrift,        0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0F,       article.mDrift,        0.0F);
 
     std::cout << "... Pass";
 }
@@ -608,27 +608,27 @@ void UtSensorAnalog::testNoise()
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify the noise output with no malfunction.
-    article.mSensedOutput        = 10.0;
-    article.mMalfNoiseScale      = 0.5;
-    article.mMalfNoiseMultiplier = 0.1;
-    float expected = 10.0 + tNominalNoiseScale * UtSensorAnalogNoise::testNoise()
-                   + tNominalNoiseMult * UtSensorAnalogNoise::testNoise() * std::fabs(10.0 - tOffValue);
+    article.mSensedOutput        = 10.0F;
+    article.mMalfNoiseScale      = 0.5F;
+    article.mMalfNoiseMultiplier = 0.1F;
+    float expected = 10.0F + tNominalNoiseScale * static_cast<float>(UtSensorAnalogNoise::testNoise())
+                   + tNominalNoiseMult * static_cast<float>(UtSensorAnalogNoise::testNoise()) * std::fabs(10.0F - tOffValue);
     article.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the noise output with malfunction.
-    article.mSensedOutput        = 10.0;
+    article.mSensedOutput        = 10.0F;
     article.mMalfNoiseFlag       = true;
-    expected                     = 10.0 + 0.5 * UtSensorAnalogNoise::testNoise()
-                                 + 0.1 * UtSensorAnalogNoise::testNoise() * std::fabs(10.0 - tOffValue);
+    expected                     = 10.0F + 0.5F * static_cast<float>(UtSensorAnalogNoise::testNoise())
+                                 + 0.1F * static_cast<float>(UtSensorAnalogNoise::testNoise()) * std::fabs(10.0F - tOffValue);
     article.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the noise output with noise scales zero.
-    article.mSensedOutput        = 10.0;
-    article.mMalfNoiseScale      = 0.0;
-    article.mMalfNoiseMultiplier = 0.0;
-    expected                     = 10.0;
+    article.mSensedOutput        = 10.0F;
+    article.mMalfNoiseScale      = 0.0F;
+    article.mMalfNoiseMultiplier = 0.0F;
+    expected                     = 10.0F;
     article.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
@@ -638,11 +638,11 @@ void UtSensorAnalog::testNoise()
     CPPUNIT_ASSERT_NO_THROW(article2.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify the noise output with no noise function.
-    article2.mSensedOutput       = 10.0;
+    article2.mSensedOutput       = 10.0F;
     article2.mMalfNoiseFlag      = true;
-    article2.mMalfNoiseScale     = 0.5;
-    article.mMalfNoiseMultiplier = 0.1;
-    expected                     = 10.0;
+    article2.mMalfNoiseScale     = 0.5F;
+    article.mMalfNoiseMultiplier = 0.1F;
+    expected                     = 10.0F;
     article2.applyNoise();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article2.mSensedOutput, FLT_EPSILON);
 
@@ -667,49 +667,49 @@ void UtSensorAnalog::testResolution()
 
     /// - Verify the resolution output with no malfunction.  The nominal quantize scale is set to
     ///   0.2, so this case should round downwards.
-    article.mSensedOutput   = 10.05;
-    float expected          = 10.0;
+    article.mSensedOutput   = 10.05F;
+    float expected          = 10.0F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify the rounding up case.
-    article.mSensedOutput   = 10.15;
-    expected                = 10.2;
+    article.mSensedOutput   = 10.15F;
+    expected                = 10.2F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify a negative value case, rounding down.
-    article.mSensedOutput   = -10.15;
-    expected                = -10.2;
+    article.mSensedOutput   = -10.15F;
+    expected                = -10.2F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify a negative value case, rounding up.
-    article.mSensedOutput   = -10.05;
-    expected                = -10.0;
+    article.mSensedOutput   = -10.05F;
+    expected                = -10.0F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify a negative value gets used as positive.
-    article.mSensedOutput         = -10.15;
-    article.mNominalResolution    =  -0.2;
-    expected                      = -10.2;
+    article.mSensedOutput         = -10.15F;
+    article.mNominalResolution    =  -0.2F;
+    expected                      = -10.2F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify zero value.
-    article.mSensedOutput         = 10.15;
-    article.mNominalResolution    =  0.0;
-    expected                      = 10.15;
+    article.mSensedOutput         = 10.15F;
+    article.mNominalResolution    =  0.0F;
+    expected                      = 10.15F;
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
     /// - Verify malfunction overrides the nominal value.
-    article.mSensedOutput         = 10.15;
-    article.mNominalResolution    =  0.2;
+    article.mSensedOutput         = 10.15F;
+    article.mNominalResolution    =  0.2F;
     article.mMalfResolutionFlag   = true;
-    article.mMalfResolutionValue  =  0.18;
-    expected                      = 10.08;  // int (10.15/0.18) * 0.18
+    article.mMalfResolutionValue  =  0.18F;
+    expected                      = 10.08F;  // int (10.15/0.18) * 0.18
     article.applyResolution();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
 
@@ -729,39 +729,39 @@ void UtSensorAnalog::testUpdateNominal()
 
     /// - Set up a test article with nominal config & input data.
     FriendlySensorAnalog article;
-    tNominalConfig->mNominalResolution = 0.18;
+    tNominalConfig->mNominalResolution = 0.18F;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Based on the nominal config & input data, verify the sensor output.
-    float expected = tTruthInput * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = 0.18 * static_cast<double>(round(expected/0.18));
+    float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
+    expected = 0.18F * std::round(expected/0.18F);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
 
     /// - Verify the lower output limit.
-    article.setTruthInput(tMinRange - 5.0);
+    article.setTruthInput(static_cast<double>(tMinRange) - 5.0);
     expected = tMinRange;
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
     /// - Verify the upper output limit.
-    article.setTruthInput(tMaxRange + 5.0);
+    article.setTruthInput(static_cast<double>(tMaxRange) + 5.0);
     expected = tMaxRange;
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
     /// - Verify protection against underflow in the input.
     article.setTruthInput(DBL_MIN);
-    article.mMinRange          =-1.0;
-    article.mNominalResolution = 0.0;
-    article.mNominalBias       = 0.0;
-    article.mNominalScale      = 1.0;
-    article.mNominalNoiseScale = 0.0;
-    article.mNominalNoiseMult  = 0.0;
-    expected = 0.0;
+    article.mMinRange          =-1.0F;
+    article.mNominalResolution = 0.0F;
+    article.mNominalBias       = 0.0F;
+    article.mNominalScale      = 1.0F;
+    article.mNominalNoiseScale = 0.0F;
+    article.mNominalNoiseMult  = 0.0F;
+    expected = 0.0F;
     article.update(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, 0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, 0.0F);
 
     std::cout << "... Pass";
 }
@@ -833,8 +833,8 @@ void UtSensorAnalog::testMalfStuck()
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Verify nominal sensed output of sensor.
-    float expected = tTruthInput * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * static_cast<double>(round(expected/tNominalResolution));
+    float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
+    expected = tNominalResolution * std::round(expected/tNominalResolution);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
@@ -847,8 +847,8 @@ void UtSensorAnalog::testMalfStuck()
 
     /// - Remove the malf and verify the sensor goes back to the new truth value.
     article.mMalfFailStuckFlag = false;
-    expected = article.getTruthInput() * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * static_cast<double>(round(expected/tNominalResolution));
+    expected = static_cast<float>(article.getTruthInput()) * tNominalScale + tNominalBias + tNominalNoiseScale;
+    expected = tNominalResolution * std::round(expected/tNominalResolution);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
@@ -880,14 +880,14 @@ void UtSensorAnalog::testMalfPerfect()
     /// - Verify the perfect sensor malf overrides power.
     article.mMalfPerfectSensor = true;
     article.update(tTimeStep);
-    expected = tTruthInput;
+    expected = static_cast<float>(tTruthInput);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
 
     /// - Verify the perfect sensor malf overrides the stuck malf.
     article.mMalfFailStuckFlag = true;
     article.setTruthInput(20.0);
-    expected = 20.0;
+    expected = 20.0F;
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
@@ -929,8 +929,8 @@ void UtSensorAnalog::testMalfInteractions()
     article.setPowerFlag(true);
     article.mMalfFailStuckFlag = true;
     article.mMalfFailToFlag    = true;
-    article.mMalfFailToValue   = 15.0;
-    expected                   = 15.0;
+    article.mMalfFailToValue   = 15.0F;
+    expected                   = 15.0F;
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.getSensedOutput(), FLT_EPSILON);
     CPPUNIT_ASSERT(true  == article.mDegradedFlag);
@@ -955,18 +955,18 @@ void UtSensorAnalog::testMalfInteractions()
 
     /// - Verify the interaction of the scale, bias, drift, noise & quantization malfunctions.
     article2.mMalfScaleFlag       = true;
-    article2.mMalfScaleValue      = 1.2;
+    article2.mMalfScaleValue      = 1.2F;
     article2.mMalfBiasFlag        = true;
-    article2.mMalfBiasValue       = -0.6;
+    article2.mMalfBiasValue       = -0.6F;
     article2.mMalfDriftFlag       = true;
-    article2.mMalfDriftRate       = 0.05;
+    article2.mMalfDriftRate       = 0.05F;
     article2.mMalfNoiseFlag       = true;
-    article2.mMalfNoiseScale      = 5.0;
+    article2.mMalfNoiseScale      = 5.0F;
     article2.mMalfResolutionFlag  = true;
-    article2.mMalfResolutionValue = 0.175;
-    expected = tTruthInput * tNominalScale * 1.2 + tNominalBias - 0.6 + 0.05 * tTimeStep +
-               tNominalNoiseScale * 5.0;
-    expected = 0.175 * static_cast<double>(round(expected/0.175));
+    article2.mMalfResolutionValue = 0.175F;
+    expected = static_cast<float>(tTruthInput) * tNominalScale * 1.2F + tNominalBias - 0.6F +
+               0.05F * static_cast<float>(tTimeStep) + tNominalNoiseScale * 5.0F;
+    expected = 0.175F * std::round(expected/0.175F);
     article2.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article2.getSensedOutput(), FLT_EPSILON * expected);
     CPPUNIT_ASSERT(true  == article.mDegradedFlag);
@@ -992,7 +992,7 @@ void UtSensorAnalog::testExternalNoiseFunctions()
 
     /// - Step the sensor to call the TS_noise function.  We just need to verify this configuration
     ///   compiles and runs, but check each value to make sure it is within the noise scale.
-    float expected = tTruthInput * tNominalScale + tNominalBias;
+    float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias;
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, tNominalNoiseScale);
     article.update(tTimeStep);
@@ -1014,12 +1014,12 @@ void UtSensorAnalog::testSense()
 
     /// - Set up a test article with nominal config & input data.
     FriendlySensorAnalog article;
-    tNominalConfig->mNominalResolution = 0.18;
+    tNominalConfig->mNominalResolution = 0.18F;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tNominalConfig, *tNominalInput, tName.c_str()));
 
     /// - Based on the nominal config & input data, verify the sensor output.
-    float expected = tTruthInput * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = 0.18 * static_cast<double>(round(expected/0.18));
+    float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
+    expected = 0.18F * std::round(expected/0.18F);
     const float result = article.sense(tTimeStep, true, tTruthInput);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, result, FLT_EPSILON * expected);
 

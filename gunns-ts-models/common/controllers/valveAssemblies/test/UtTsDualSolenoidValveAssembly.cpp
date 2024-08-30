@@ -54,11 +54,11 @@ void UtTsDualSolenoidValveAssembly::setUp()
     cController.mMaxFluidPosition    = 1.0;
     cController.mLatch               = TsDualSolenoidValveController::LATCHING;
     cSensorOpen.mOffValue            = false;
-    cSensorOpen.mTarget              = 1.0;
-    cSensorOpen.mTolerance           = 0.1;
+    cSensorOpen.mTarget              = 1.0F;
+    cSensorOpen.mTolerance           = 0.1F;
     cSensorClosed.mOffValue          = false;
-    cSensorClosed.mTarget            = 0.0;
-    cSensorClosed.mTolerance         = 0.1;
+    cSensorClosed.mTarget            = 0.0F;
+    cSensorClosed.mTolerance         = 0.1F;
     tConfig                          = new TsDualSolenoidValveAssemblyConfigData(cController,
                                                                                  cSensorOpen,
                                                                                  cSensorClosed);
@@ -71,7 +71,7 @@ void UtTsDualSolenoidValveAssembly::setUp()
     iController.mCloseSolenoidCmd    = false;
     iSensorOpen.mPowerFlag           = true;
     iSensorOpen.mTruthInput          = false;
-    iSensorOpen.mTruthInputAnalog    = 0.0;
+    iSensorOpen.mTruthInputAnalog    = 0.0F;
     iSensorClosed.mPowerFlag         = true;
     iSensorClosed.mTruthInput        = false;
     iSensorClosed.mTruthInputAnalog  = 0.0;
@@ -312,13 +312,13 @@ void UtTsDualSolenoidValveAssembly::testInitializationFailure()
 
     /// @test    Assembly fails to init if open sensor fails to init.
     tConfig->mController.mMinCmdPosition =  0.0;
-    tConfig->mSensorOpen.mTolerance      = -1.0;
+    tConfig->mSensorOpen.mTolerance      = -1.0F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfig, *tInput, tName), TsInitializationException);
     CPPUNIT_ASSERT(                                          !tArticle->mInitialized);
 
     /// @test    Assembly fails to init if closed sensor fails to init.
-    tConfig->mSensorClosed.mTolerance    =  0.1;
-    tConfig->mSensorClosed.mTolerance    = -1.0;
+    tConfig->mSensorClosed.mTolerance    =  0.1F;
+    tConfig->mSensorClosed.mTolerance    = -1.0F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfig, *tInput, tName), TsInitializationException);
     CPPUNIT_ASSERT(                                          !tArticle->mInitialized);
 

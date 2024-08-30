@@ -324,7 +324,7 @@ void UtGunnsResistorPowerFunction::testStep()
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Potential below minimum linearization.
-        tArticle->mPotentialVector[tPort0] = tNodes[tPort1].getPotential() + FLT_EPSILON;
+        tArticle->mPotentialVector[tPort0] = tNodes[tPort1].getPotential() + static_cast<double>(FLT_EPSILON);
         tArticle->step(tTimeStep);
         const double dP        = minLinP;
         const double G         = 1.0 / tResistance;
@@ -387,7 +387,7 @@ void UtGunnsResistorPowerFunction::testStep()
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Potential below minimum linearization.
-        tArticle->mPotentialVector[tPort0] = tNodes[tPort1].getPotential() + FLT_EPSILON;
+        tArticle->mPotentialVector[tPort0] = tNodes[tPort1].getPotential() + static_cast<double>(FLT_EPSILON);
         tArticle->step(tTimeStep);
         const double dP        = minLinP;
         const double G         = 1.0 / tResistance;
@@ -553,7 +553,7 @@ void UtGunnsResistorPowerFunction::testInitializationExceptions()
     tConfigData->mResistance = tResistance;
 
     /// @test    Initialization exception on invalid config data: exponent near zero.
-    tConfigData->mExponent = FLT_EPSILON;
+    tConfigData->mExponent = static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());

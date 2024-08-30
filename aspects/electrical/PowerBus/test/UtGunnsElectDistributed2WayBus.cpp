@@ -90,13 +90,13 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
     CPPUNIT_ASSERT(0                                  == tArticle->mInData.mFrameCount);
     CPPUNIT_ASSERT(0                                  == tArticle->mInData.mFrameLoopback);
     CPPUNIT_ASSERT(false                              == tArticle->mInData.mDemandMode);
-    CPPUNIT_ASSERT(0.0                                == tArticle->mInData.mDemandPower);
-    CPPUNIT_ASSERT(0.0                                == tArticle->mInData.mSupplyVoltage);
+    CPPUNIT_ASSERT(0.0F                               == tArticle->mInData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F                               == tArticle->mInData.mSupplyVoltage);
     CPPUNIT_ASSERT(0                                  == tArticle->mOutData.mFrameCount);
     CPPUNIT_ASSERT(0                                  == tArticle->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(false                              == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mDemandPower);
-    CPPUNIT_ASSERT(0.0                                == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(0.0F                               == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F                               == tArticle->mOutData.mSupplyVoltage);
     CPPUNIT_ASSERT(false                              == tArticle->mIsPairMaster);
     CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tArticle->mForcedRole);
     CPPUNIT_ASSERT(0                                  == tArticle->mSupplyDatas.size());
@@ -147,15 +147,15 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
     CPPUNIT_ASSERT(supply3 == tArticle->mSupplyDatas.at(2));
 
     /// @test    Initialize function as primary side.
-    const float voltage = 120.0;
+    const float voltage = 120.0F;
     tArticle->initialize(true, voltage);
 
     CPPUNIT_ASSERT(true    == tArticle->mIsPairMaster);
     CPPUNIT_ASSERT(true    == tArticle->mInData.mDemandMode);
-    CPPUNIT_ASSERT(0.0     == tArticle->mInData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F    == tArticle->mInData.mDemandPower);
     CPPUNIT_ASSERT(voltage == tArticle->mInData.mSupplyVoltage);
     CPPUNIT_ASSERT(false   == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(0.0     == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F    == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(voltage == tArticle->mOutData.mSupplyVoltage);
 
     /// @test    Initialize function as secondary side.
@@ -164,10 +164,10 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
 
     CPPUNIT_ASSERT(false   == article2.mIsPairMaster);
     CPPUNIT_ASSERT(false   == article2.mInData.mDemandMode);
-    CPPUNIT_ASSERT(0.0     == article2.mInData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F    == article2.mInData.mDemandPower);
     CPPUNIT_ASSERT(voltage == article2.mInData.mSupplyVoltage);
     CPPUNIT_ASSERT(true    == article2.mOutData.mDemandMode);
-    CPPUNIT_ASSERT(0.0     == article2.mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F    == article2.mOutData.mDemandPower);
     CPPUNIT_ASSERT(voltage == article2.mOutData.mSupplyVoltage);
 
     UT_PASS;
@@ -194,7 +194,7 @@ void UtGunnsElectDistributed2WayBus::testUpdateFrameCounts()
     UT_RESULT;
 
     /// - Initialize default constructed test article with nominal initialization data.
-    tArticle->initialize(true, 120.0);
+    tArticle->initialize(true, 120.0F);
 
     /// @test    updateFrameCounts method.
     tArticle->mOutData.mFrameCount   = 43;
@@ -220,7 +220,7 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
     /// - Initialize default constructed test article with nominal initialization data.
     GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
     GunnsElectDistributed2WayBusSupplyData* supply2 = tArticle->createSupplyData();
-    tArticle->initialize(true, 120.0);
+    tArticle->initialize(true, 120.0F);
     tArticle->mOutData.mFrameCount = 43;
 
     GunnsDistributed2WayBusNotification notif;
@@ -231,23 +231,23 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
 
     /// @test    Remain in Supply mode.
     supply1->mAvailable              = true;
-    supply1->mMaximumVoltage         = 120.0;
+    supply1->mMaximumVoltage         = 120.0F;
     supply2->mAvailable              = true;
-    supply2->mMaximumVoltage         = 105.0;
+    supply2->mMaximumVoltage         = 105.0F;
     tArticle->mInData.mDemandMode    = true;
-    tArticle->mInData.mDemandPower   = 100.0;
-    tArticle->mInData.mSupplyVoltage = 110.0;
+    tArticle->mInData.mDemandPower   = 100.0F;
+    tArticle->mInData.mSupplyVoltage = 110.0F;
     tArticle->mInData.mFrameCount    = 44;
     tArticle->mInData.mFrameLoopback = 42;
     tArticle->updateFrameCounts();
-    tArticle->update(119.0, 1.0);
+    tArticle->update(119.0F, 1.0F);
     tArticle->popNotification(notif);
 
-    CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(119.0 == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mOutData.mDemandPower);
-    CPPUNIT_ASSERT(NONE  == notif.mLevel);
-    CPPUNIT_ASSERT(""    == notif.mMessage);
+    CPPUNIT_ASSERT(false  == tArticle->mOutData.mDemandMode);
+    CPPUNIT_ASSERT(119.0F == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(0.0F   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(NONE   == notif.mLevel);
+    CPPUNIT_ASSERT(""     == notif.mMessage);
 
     /// @test    Switch to Demand mode.
     supply1->mAvailable              = false;
@@ -257,12 +257,12 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
     tArticle->update(104.0, 1.0);
     tArticle->popNotification(notif);
 
-    CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(105.0 == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(1.0   == tArticle->mOutData.mDemandPower);
-    CPPUNIT_ASSERT(0     == tArticle->mFramesSinceFlip);
-    CPPUNIT_ASSERT(INFO  == notif.mLevel);
-    CPPUNIT_ASSERT(0     == notif.mMessage.rfind("flipping to Demand role", 0));
+    CPPUNIT_ASSERT(true   == tArticle->mOutData.mDemandMode);
+    CPPUNIT_ASSERT(105.0F == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(1.0F   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0      == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(INFO   == notif.mLevel);
+    CPPUNIT_ASSERT(0      == notif.mMessage.rfind("flipping to Demand role", 0));
 
     /// @test    Remain in Demand mode, even though our local supply has returned, because not
     ///          enough frames have passed since our flip to Demand.
@@ -270,35 +270,35 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
     tArticle->mInData.mFrameCount    = 46;
     tArticle->mInData.mFrameLoopback = 44;
     tArticle->updateFrameCounts();
-    tArticle->update(119.0, 1.0);
+    tArticle->update(119.0F, 1.0F);
     tArticle->popNotification(notif);
 
     tArticle->mInData.mFrameCount    = 47;
     tArticle->mInData.mFrameLoopback = 45;
     tArticle->updateFrameCounts();
-    tArticle->update(119.0, 1.0);
+    tArticle->update(119.0F, 1.0F);
     tArticle->popNotification(notif);
 
-    CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(120.0 == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(1.0   == tArticle->mOutData.mDemandPower);
-    CPPUNIT_ASSERT(2     == tArticle->mFramesSinceFlip);
-    CPPUNIT_ASSERT(NONE  == notif.mLevel);
-    CPPUNIT_ASSERT(""    == notif.mMessage);
+    CPPUNIT_ASSERT(true   == tArticle->mOutData.mDemandMode);
+    CPPUNIT_ASSERT(120.0F == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(1.0F   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(2      == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(NONE   == notif.mLevel);
+    CPPUNIT_ASSERT(""     == notif.mMessage);
 
     /// @test    Switch to Supply mode.
     tArticle->mInData.mFrameCount    = 48;
     tArticle->mInData.mFrameLoopback = 46;
     tArticle->updateFrameCounts();
-    tArticle->update(119.0, 1.0);
+    tArticle->update(119.0F, 1.0F);
     tArticle->popNotification(notif);
 
-    CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(119.0 == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mOutData.mDemandPower);
-    CPPUNIT_ASSERT(0     == tArticle->mFramesSinceFlip);
-    CPPUNIT_ASSERT(INFO  == notif.mLevel);
-    CPPUNIT_ASSERT(0     == notif.mMessage.rfind("flipping to Supply role", 0));
+    CPPUNIT_ASSERT(false  == tArticle->mOutData.mDemandMode);
+    CPPUNIT_ASSERT(119.0F == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(0.0F   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0      == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(INFO   == notif.mLevel);
+    CPPUNIT_ASSERT(0      == notif.mMessage.rfind("flipping to Supply role", 0));
 
     UT_PASS;
 }
@@ -312,7 +312,7 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
 
     /// - Initialize default constructed test article with nominal initialization data.
     GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
-    tArticle->initialize(true, 120.0);
+    tArticle->initialize(true, 120.0F);
     tArticle->mOutData.mFrameCount = 43;
 
     GunnsDistributed2WayBusNotification notif;
@@ -323,26 +323,26 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
 
     /// @test    Remains in Supply when forced.
     tArticle->mInData.mDemandMode    = true;
-    tArticle->mInData.mDemandPower   = 100.0;
-    tArticle->mInData.mSupplyVoltage = 110.0;
+    tArticle->mInData.mDemandPower   = 100.0F;
+    tArticle->mInData.mSupplyVoltage = 110.0F;
     tArticle->mInData.mFrameCount    = 44;
     tArticle->mInData.mFrameLoopback = 42;
     tArticle->updateFrameCounts();
     tArticle->forceSupplyRole();
-    tArticle->update(2.0, 1.0);
+    tArticle->update(2.0F, 1.0F);
 
     CPPUNIT_ASSERT(false == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(2.0   == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(0.0   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(2.0F  == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(0.0F  == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(0     == tArticle->mNotifications.size());
 
     /// @test    Force to Demand role.
     tArticle->forceDemandRole();
-    tArticle->update(2.0, 1.0);
+    tArticle->update(2.0F, 1.0F);
 
     CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(0.0   == tArticle->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT(1.0   == tArticle->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F  == tArticle->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(1.0F  == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(0     == tArticle->mNotifications.size());
 
     UT_PASS;
@@ -367,15 +367,15 @@ void UtGunnsElectDistributed2WayBus::testAccessors()
     CPPUNIT_ASSERT(false == tArticle->isInDemandRole());
 
     /// @test    getRemoteLoad()
-    tArticle->mInData.mDemandPower = 10.0;
+    tArticle->mInData.mDemandPower = 10.0F;
     tArticle->mOutData.mDemandMode = true;
-    CPPUNIT_ASSERT(0.0  == tArticle->getRemoteLoad());
+    CPPUNIT_ASSERT(0.0F  == tArticle->getRemoteLoad());
     tArticle->mOutData.mDemandMode = false;
-    CPPUNIT_ASSERT(10.0 == tArticle->getRemoteLoad());
+    CPPUNIT_ASSERT(10.0F == tArticle->getRemoteLoad());
 
     /// @test    getRemoteSupply()
-    tArticle->mInData.mSupplyVoltage = 100.0;
-    CPPUNIT_ASSERT(100.0 == tArticle->getRemoteSupply());
+    tArticle->mInData.mSupplyVoltage = 100.0F;
+    CPPUNIT_ASSERT(100.0F == tArticle->getRemoteSupply());
 
     UT_PASS_LAST;
 }

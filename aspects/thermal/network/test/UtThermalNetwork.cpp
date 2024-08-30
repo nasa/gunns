@@ -265,7 +265,7 @@ void UtThermalNetwork::testInitialize()
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksSrc,  tArticle->numLinksSrc);
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksHtr,  tArticle->numLinksHtr);
     CPPUNIT_ASSERT_EQUAL(parserFriendly.numLinksPan,  tArticle->numLinksPan);
-    CPPUNIT_ASSERT(parserFriendly.vCapEditGroupList.size() == tArticle->numCapEditGroups);
+    CPPUNIT_ASSERT(parserFriendly.vCapEditGroupList.size() == static_cast<std::size_t>(tArticle->numCapEditGroups));
 
     /// @test  Initialization of capacitance edit group controls
     for(int i = 0; i < tArticle->numCapEditGroups; ++i)
@@ -450,7 +450,7 @@ void UtThermalNetwork::testConfigBuild()
 
         /// - The flux-distribution-fraction vector is a different size for each source, since sources
         ///   have a variable number of ports.
-        for(int ii = 0; ii < tArticle->mSourceConfigData[i]->cFluxDistributionFractions.size(); ++ii)
+        for(std::size_t ii = 0; ii < tArticle->mSourceConfigData[i]->cFluxDistributionFractions.size(); ++ii)
         {
             /// @test Sources: power-draw fractions
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE( "Source efficiency, index: " + out.str(),
@@ -474,7 +474,7 @@ void UtThermalNetwork::testConfigBuild()
 
         /// - The flux-distribution-fraction vector is a different size for each heater, since heaters
         ///   have a variable number of ports.
-        for(int ii = 0; ii < tArticle->mHeaterConfigData[i]->cFluxDistributionFractions.size(); ++ii)
+        for(std::size_t ii = 0; ii < tArticle->mHeaterConfigData[i]->cFluxDistributionFractions.size(); ++ii)
         {
             /// @test Heaters: power-draw fractions
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE( "Heater efficiency, index: " + out.str(),
@@ -504,7 +504,7 @@ void UtThermalNetwork::testConfigBuild()
 
         /// - The flux-distribution-fraction vector is a different size for each panel, since panels
         ///   have a variable number of ports.
-        for(int ii = 0; ii < tArticle->mPanelConfigData[i]->cFluxDistributionFractions.size(); ++ii)
+        for(std::size_t ii = 0; ii < tArticle->mPanelConfigData[i]->cFluxDistributionFractions.size(); ++ii)
         {
             /// @test Panels: power-draw fractions
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE( "Panel efficiency, index: " + out.str(),

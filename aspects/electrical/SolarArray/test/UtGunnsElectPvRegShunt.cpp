@@ -322,11 +322,11 @@ void UtGunnsElectPvRegShunt::testNominalInitialization()
     /// @test    Trips package.
     GunnsBasicLink::SolutionResult result;
     CPPUNIT_ASSERT(false                     == tArticle->mTrips.isTripped());
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverVoltage.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverCurrent.checkForTrip(result, tInOverCurrentTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverVoltage.checkForTrip(result, tOutOverVoltageTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverCurrent.checkForTrip(result, tOutOverCurrentTrip + 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutUnderVoltage.checkForTrip(result, tOutUnderVoltageTrip - 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverVoltage.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mInOverCurrent.checkForTrip(result, static_cast<float>(tInOverCurrentTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverVoltage.checkForTrip(result, static_cast<float>(tOutOverVoltageTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutOverCurrent.checkForTrip(result, static_cast<float>(tOutOverCurrentTrip + 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mTrips.mOutUnderVoltage.checkForTrip(result, static_cast<float>(tOutUnderVoltageTrip - 0.01), tTripPriority));
 
     /// @test    Nominal state data.
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
@@ -768,7 +768,7 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     tArray->mSections[0].mStrings[0].loadAtConductance(tShuntConductance);
     const double shuntedStringP = tArray->mSections[0].mStrings[0].getTerminal().mPower;
 
-    const int numLoadedStrings   = ceil(powerDemand / loadedStringP);
+    const int numLoadedStrings   = static_cast<int>(std::ceil(powerDemand / loadedStringP));
     const int numShuntedStrings  = tArrayConfig->mNumStrings - numLoadedStrings;
     const int firstLoadedSection = tArrayConfig->mNumSections - 1;
     const int firstLoadedString  = tArrayConfig->mNumStrings / tArrayConfig->mNumSections - 1;
@@ -781,10 +781,10 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
 
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM   == tArticle->confirmSolutionAcceptable(1, 2));
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::REG == tArticle->mState);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,   tArticle->mInputPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPsh,   tArticle->mShuntPower,       FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,   tArticle->mInputPower,       static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGin,   tArticle->mInputConductance, static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPsh,   tArticle->mShuntPower,       static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(false == tArray->mCommonStringsOutput);
     CPPUNIT_ASSERT(true  == tArray->mSections[0].mStrings[0].isShunted());
     CPPUNIT_ASSERT(false == tArray->mSections[firstLoadedSection].mStrings[firstLoadedString].isShunted());
@@ -798,10 +798,10 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     double actualSensedIin    = tArticle->mSensors.mInCurrent->getSensedOutput();
     double actualSensedVout   = tArticle->mSensors.mOutVoltage->getSensedOutput();
     double actualSensedIout   = tArticle->mSensors.mOutCurrent->getSensedOutput();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, FLT_EPSILON * expectedSensedVout);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, static_cast<double>(FLT_EPSILON) * expectedSensedVout);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, static_cast<double>(FLT_EPSILON));
 
     /// @test    Transition from REG -> OFF due to insufficient array power, only after solution is
     ///          converged, and all strings are shunted.  This tests the scenario where
@@ -898,7 +898,7 @@ void UtGunnsElectPvRegShunt::testConfirmSolutionAcceptable()
     CPPUNIT_ASSERT(GunnsElectPvRegShunt::OFF == tArticle->mState);
     expectedSensedVout = outputVolts;
     actualSensedVout   = tArticle->mSensors.mOutVoltage->getSensedOutput();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, FLT_EPSILON * expectedSensedVout);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, static_cast<double>(FLT_EPSILON) * expectedSensedVout);
 
     UT_PASS;
 }

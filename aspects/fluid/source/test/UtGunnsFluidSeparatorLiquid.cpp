@@ -433,19 +433,19 @@ void UtGunnsFluidSeparatorLiquid::testInitializationExceptions()
     mConfigData->mLiquidType = FluidProperties::GUNNS_WATER;
 
     /// @test    Initialization exception on invalid input data: blockage malfunction value < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: blockage malfunction value > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: transfer temperature < 0.
-    mInputData->mTransferTemperature = -FLT_EPSILON;
+    mInputData->mTransferTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mTransferTemperature = mTransferTemperature;

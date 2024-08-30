@@ -369,7 +369,7 @@ void UtFluidProperties::testLowP()
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         for (int j = 0; j < 10; ++j) {
             const double temperature = 270.0;
-            const double expectedP   = FLT_EPSILON + FLT_EPSILON * 0.1 * j;
+            const double expectedP   = static_cast<double>(FLT_EPSILON) + static_cast<double>(FLT_EPSILON) * 0.1 * j;
             const double expectedD   = mArticle->getProperties(type)->
                 getDensity(temperature, expectedP);
             const double returnedP   = mArticle->getProperties(type)->
@@ -387,7 +387,7 @@ void UtFluidProperties::testLowP()
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         for (int j = 0; j < 10; ++j) {
             const double temperature = 270.0;
-            const double expectedP   = FLT_EPSILON + FLT_EPSILON * 0.1 * j;
+            const double expectedP   = static_cast<double>(FLT_EPSILON) + static_cast<double>(FLT_EPSILON) * 0.1 * j;
             const double expectedD   = mArticle->getProperties(type)->
                 getDensity(temperature, expectedP);
             const double returnedP   = mArticle->getProperties(type)->
@@ -733,16 +733,16 @@ void UtFluidProperties::testHeTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(2.1768, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(303.4472,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(2.1768, 60000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(1000.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(27.06089,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(1000.0, 60000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Critical point:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(66.78098,
@@ -792,16 +792,16 @@ void UtFluidProperties::testXeTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(170.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(3052.36,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(170.0, 34473.8),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(692.003,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(750.0, 34473.8),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Critical point:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1118.36,
@@ -851,16 +851,16 @@ void UtFluidProperties::testN2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(160.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(693.263,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(160.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(209.91,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(750.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -905,16 +905,16 @@ void UtFluidProperties::testO2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(160.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1003.26,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(160.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(254.064,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(750.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -959,16 +959,16 @@ void UtFluidProperties::testH2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(88.3871,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 80000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(16.8613,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 80000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -1013,16 +1013,16 @@ void UtFluidProperties::testWaterPvtTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(999.792208924,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(273.16, 1.0e-10),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1000.3387535,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(273.16, 1075.4274162),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(999.792208924,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(373.506467, 1.0e-10),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(958.549732485,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(373.506467, 1075.4274162),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -1078,7 +1078,7 @@ void UtFluidProperties::testSaturationCurveConsistency()
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         const double Ps   = mArticle->getProperties(type)->getSaturationPressure(temperature[i]);
         const double Ts   = mArticle->getProperties(type)->getSaturationTemperature(Ps);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature[i], Ts, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature[i], Ts, static_cast<double>(FLT_EPSILON));
     }
 
     std::cout << "... Pass" << std::endl;

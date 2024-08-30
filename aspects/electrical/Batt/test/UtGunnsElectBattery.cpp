@@ -228,7 +228,7 @@ void UtGunnsElectBattery::testNominalInitialization()
     CPPUNIT_ASSERT(tMalfThermalRunawayFlag     == tArticle->mMalfThermalRunawayFlag);
     CPPUNIT_ASSERT(tMalfThermalRunawayDuration == tArticle->mMalfThermalRunawayDuration);
     CPPUNIT_ASSERT(tMalfThermalRunawayInterval == tArticle->mMalfThermalRunawayInterval);
-    CPPUNIT_ASSERT(tNumCells                   == tArticle->mNumCells);
+    CPPUNIT_ASSERT(tNumCells                   == static_cast<int>(tArticle->mNumCells));
     CPPUNIT_ASSERT(tCellsInParallel            == tArticle->mCellsInParallel);
     CPPUNIT_ASSERT(tInterconnectResistance     == tArticle->mInterconnectResistance);
     CPPUNIT_ASSERT(tSocVocTable                == tArticle->mSocVocTable);
@@ -538,7 +538,7 @@ void UtGunnsElectBattery::testThermalRunaway()
 
     /// @test malfunction restart, results after all cells have finished.
     tArticle->setMalfThermalRunaway(true, 1.0, 1.0);
-    for (unsigned int i=0; i<11*tNumCells; ++i) {
+    for (int i=0; i<11*tNumCells; ++i) {
         tArticle->step(dt);
         tArticle->computeFlows(dt);
     }

@@ -294,8 +294,8 @@ void UtGunnsFluidNode::testLowTempThermalCapacitance()
 
     /// - Call PolyFluid directly for the same density perturbation that computeCapacitance does,
     ///   and verify it matches this hardcoded result.  This is a redundant check on PolyFluid.
-    double T1 = 0.999 * 0.5 * FLT_EPSILON;
-    double T2 = 1.001 * 0.5 * FLT_EPSILON;
+    double T1 = 0.999 * 0.5 * static_cast<double>(FLT_EPSILON);
+    double T2 = 1.001 * 0.5 * static_cast<double>(FLT_EPSILON);
     double rho1 = tFluid.computeDensity(T1, 100.0); // Should be 5.5885273962925748
     double rho2 = tFluid.computeDensity(T2, 100.0); // Should be 5.5885273962925748
 
@@ -308,7 +308,7 @@ void UtGunnsFluidNode::testLowTempThermalCapacitance()
             (tNode.getContent()->getTemperature() - tNode.mPreviousTemperature);
 
     /// - Call computeThermalCapacitance and verify correct mCapacitance and return value result.
-    tNode.getContent()->setTemperature(0.5 * FLT_EPSILON);
+    tNode.getContent()->setTemperature(0.5 * static_cast<double>(FLT_EPSILON));
     double tResult = tNode.computeThermalCapacitance();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(thermalSource, tResult,                   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(capacitance,   tNode.mThermalCapacitance, DBL_EPSILON);
@@ -1536,15 +1536,15 @@ void UtGunnsFluidNode::testValidate()
                                                          idealDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealDensity,  tNode2.getContent()->getDensity(),  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealPressure, tNode2.getContent()->getPressure(),
-            100.0 * FLT_EPSILON);
+            100.0 * static_cast<double>(FLT_EPSILON));
 
     idealTemperature =
             tNode2.getContent()->computeTemperature(tNode2.getContent()->getSpecificEnthalpy());
     idealSpecificEnthalpy = tNode2.getContent()->computeSpecificEnthalpy(idealTemperature);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealTemperature,
-            tNode2.getContent()->getTemperature(), FLT_EPSILON); // These fail DBL_ due to roundoff
+            tNode2.getContent()->getTemperature(), static_cast<double>(FLT_EPSILON)); // These fail DBL_ due to roundoff
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealSpecificEnthalpy,
-            tNode2.getContent()->getSpecificEnthalpy(), FLT_EPSILON);
+            tNode2.getContent()->getSpecificEnthalpy(), static_cast<double>(FLT_EPSILON));
 
     std::cout << "... Pass";
 }
@@ -1601,7 +1601,7 @@ void UtGunnsFluidNode::testRestart()
     /// - Change the node's mContent to give it some mass error, and verify this causes the mass
     ///   to be reset.
     const double tMass = tNode.getContent()->getMass();
-    tNode.getContent()->setMass(tMass + 1.01 * FLT_EPSILON);
+    tNode.getContent()->setMass(tMass + 1.01 * static_cast<double>(FLT_EPSILON));
 
     tNode.restart();
 

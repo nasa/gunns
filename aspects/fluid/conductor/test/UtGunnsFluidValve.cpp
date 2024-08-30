@@ -780,31 +780,31 @@ void UtGunnsFluidValve::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = mExpansionScaleFactor;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mPosition < 0.
-    mInputData->mPosition = -FLT_EPSILON;
+    mInputData->mPosition = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mPosition > 1.
-    mInputData->mPosition = 1.0 + FLT_EPSILON;
+    mInputData->mPosition = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mPosition = mPosition;
 
     /// @test    Initialization exception on invalid input data: mMalfLeakThruValue < 0.
-    mInputData->mMalfLeakThruValue = -FLT_EPSILON;
+    mInputData->mMalfLeakThruValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfLeakThruValue = mMalfLeakThruValue;

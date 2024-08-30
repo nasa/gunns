@@ -246,8 +246,8 @@ void UtGunnsElectPvString::testConfig()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBlockingDiodeVoltageDrop, tConfigData->mBlockingDiodeVoltageDrop, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBypassDiodeVoltageDrop,   tConfigData->mBypassDiodeVoltageDrop,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSurfaceArea,          tConfigData->mCellConfig.mSurfaceArea,  0.0);
-    CPPUNIT_ASSERT(tBypassDiodeInterval == tConfigData->mBypassDiodeInterval);
-    CPPUNIT_ASSERT(tNumCells            == tConfigData->mNumCells);
+    CPPUNIT_ASSERT(tBypassDiodeInterval == static_cast<int>(tConfigData->mBypassDiodeInterval));
+    CPPUNIT_ASSERT(tNumCells            == static_cast<int>(tConfigData->mNumCells));
 
     /// @test    Configuration data default construction.
     GunnsElectPvStringConfigData defaultConfig;
@@ -263,8 +263,8 @@ void UtGunnsElectPvString::testConfig()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBlockingDiodeVoltageDrop, assignConfig.mBlockingDiodeVoltageDrop, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tBypassDiodeVoltageDrop,   assignConfig.mBypassDiodeVoltageDrop,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSurfaceArea,          assignConfig.mCellConfig.mSurfaceArea,  0.0);
-    CPPUNIT_ASSERT(tBypassDiodeInterval == assignConfig.mBypassDiodeInterval);
-    CPPUNIT_ASSERT(tNumCells            == assignConfig.mNumCells);
+    CPPUNIT_ASSERT(tBypassDiodeInterval == static_cast<int>(assignConfig.mBypassDiodeInterval));
+    CPPUNIT_ASSERT(tNumCells            == static_cast<int>(assignConfig.mNumCells));
 
     /// @test    Configuration data self assign.
     GunnsElectPvStringConfigData* assignConfig2 = &assignConfig;

@@ -111,10 +111,10 @@ void UtSwitchCard::setUp() {
     tMinInputVoltage = 70.0;
     tMaxConductance = 1.3E5;
 
-    tInputVoltSensorConfigData = SensorAnalogConfigData(0.0, 140.0, 0.0, 0.0, 1.0, 0.0, 0.001, 0, UnitConversion::NO_CONVERSION);
-    tInputCurrentSensorConfigData = SensorAnalogConfigData(-125.0, 125.0, 0.0, 0.0, 1.0, 0.0, 0.001, 0, UnitConversion::NO_CONVERSION);
-    tSwitchVoltSensorConfigData = SensorAnalogConfigData(0.0, 250.0, 0.0, 0.0, 1.0, 0.0, 0.001, 0, UnitConversion::NO_CONVERSION);
-    tSwitchCurrentSensorConfigData = SensorAnalogConfigData(-250.0, 250.0, 0.0, 0.0, 1.0, 0.0, 0.001, 0, UnitConversion::NO_CONVERSION);
+    tInputVoltSensorConfigData = SensorAnalogConfigData(0.0F, 140.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.001F, 0, UnitConversion::NO_CONVERSION);
+    tInputCurrentSensorConfigData = SensorAnalogConfigData(-125.0F, 125.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.001F, 0, UnitConversion::NO_CONVERSION);
+    tSwitchVoltSensorConfigData = SensorAnalogConfigData(0.0F, 250.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.001F, 0, UnitConversion::NO_CONVERSION);
+    tSwitchCurrentSensorConfigData = SensorAnalogConfigData(-250.0F, 250.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.001F, 0, UnitConversion::NO_CONVERSION);
 
     tInputVoltSensorInputData = SensorAnalogInputData(true, 0.0);
     tInputCurrentSensorInputData = SensorAnalogInputData(true, 0.0);

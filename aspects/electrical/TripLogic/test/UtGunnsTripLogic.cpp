@@ -66,7 +66,7 @@ void UtGunnsTripLogic::testConstruction()
         FriendlyGunnsTripGreaterThan* article = new FriendlyGunnsTripGreaterThan();
         CPPUNIT_ASSERT(false == article->mMalfInhibitTrip);
         CPPUNIT_ASSERT(false == article->mMalfForceTrip);
-        CPPUNIT_ASSERT(0.0   == article->mLimit);
+        CPPUNIT_ASSERT(0.0F  == article->mLimit);
         CPPUNIT_ASSERT(0     == article->mPriority);
         CPPUNIT_ASSERT(false == article->mIsTripped);
         delete article;
@@ -75,7 +75,7 @@ void UtGunnsTripLogic::testConstruction()
         FriendlyGunnsTripLessThan* article = new FriendlyGunnsTripLessThan();
         CPPUNIT_ASSERT(false == article->mMalfInhibitTrip);
         CPPUNIT_ASSERT(false == article->mMalfForceTrip);
-        CPPUNIT_ASSERT(0.0   == article->mLimit);
+        CPPUNIT_ASSERT(0.0F  == article->mLimit);
         CPPUNIT_ASSERT(0     == article->mPriority);
         CPPUNIT_ASSERT(false == article->mIsTripped);
         delete article;
@@ -140,32 +140,32 @@ void UtGunnsTripLogic::testCheckForTrip()
 
         /// @test    No trip condition and not priority yet.
         GunnsBasicLink::SolutionResult result = GunnsBasicLink::CONFIRM;
-        bool justTripped = article->checkForTrip(result, 4.9, 2);
+        bool justTripped = article->checkForTrip(result, 4.9F, 2);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
 
         /// @test    Trip condition but not priority yet.
-        justTripped = article->checkForTrip(result, 5.1, 2);
+        justTripped = article->checkForTrip(result, 5.1F, 2);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::DELAY   == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
 
         /// @test    Trip condition and priority met.
-        justTripped = article->checkForTrip(result, 5.1, 3);
+        justTripped = article->checkForTrip(result, 5.1F, 3);
         CPPUNIT_ASSERT(true                    == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::REJECT  == result);
         CPPUNIT_ASSERT(true                    == article->mIsTripped);
 
         /// @test    Trip condition and past priority.
-        justTripped = article->checkForTrip(result, 5.1, 4);
+        justTripped = article->checkForTrip(result, 5.1F, 4);
         result      = GunnsBasicLink::CONFIRM;
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(true                    == article->mIsTripped);
 
         /// @test    Tripped and priority met but no trip condition.
-        justTripped = article->checkForTrip(result, 4.9, 4);
+        justTripped = article->checkForTrip(result, 4.9F, 4);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(true                    == article->mIsTripped);
@@ -173,14 +173,14 @@ void UtGunnsTripLogic::testCheckForTrip()
         /// @test    Priority met but no trip condition.
         result      = GunnsBasicLink::CONFIRM;
         article->mIsTripped = false;
-        justTripped = article->checkForTrip(result, 4.9, 4);
+        justTripped = article->checkForTrip(result, 4.9F, 4);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
 
         /// @test    Trip condition, not priority yet, but result is already REJECT.
         result      = GunnsBasicLink::REJECT;
-        justTripped = article->checkForTrip(result, 5.1, 2);
+        justTripped = article->checkForTrip(result, 5.1F, 2);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::REJECT  == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
@@ -189,7 +189,7 @@ void UtGunnsTripLogic::testCheckForTrip()
         article->mIsTripped     = false;
         article->mMalfForceTrip = true;
         result                  = GunnsBasicLink::CONFIRM;
-        justTripped = article->checkForTrip(result, 4.9, 2);
+        justTripped = article->checkForTrip(result, 4.9F, 2);
         CPPUNIT_ASSERT(true                    == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::REJECT  == result);
         CPPUNIT_ASSERT(true                    == article->mIsTripped);
@@ -199,7 +199,7 @@ void UtGunnsTripLogic::testCheckForTrip()
         article->mMalfForceTrip   = true;
         article->mMalfInhibitTrip = true;
         result                    = GunnsBasicLink::CONFIRM;
-        justTripped = article->checkForTrip(result, 5.1, 3);
+        justTripped = article->checkForTrip(result, 5.1F, 3);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
@@ -210,7 +210,7 @@ void UtGunnsTripLogic::testCheckForTrip()
         article->mMalfInhibitTrip = false;
         article->mLimit           = 0.0;
         result                    = GunnsBasicLink::CONFIRM;
-        justTripped = article->checkForTrip(result, 5.1, 3);
+        justTripped = article->checkForTrip(result, 5.1F, 3);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
@@ -219,7 +219,7 @@ void UtGunnsTripLogic::testCheckForTrip()
         article->mLimit           = tLimit;
         article->mPriority        = 0;
         result                    = GunnsBasicLink::CONFIRM;
-        justTripped = article->checkForTrip(result, 5.1, 3);
+        justTripped = article->checkForTrip(result, 5.1F, 3);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
@@ -231,12 +231,12 @@ void UtGunnsTripLogic::testCheckForTrip()
         article->initialize(tLimit, tPriority, false);
 
         GunnsBasicLink::SolutionResult result = GunnsBasicLink::CONFIRM;
-        bool justTripped = article->checkForTrip(result, 5.1, 3);
+        bool justTripped = article->checkForTrip(result, 5.1F, 3);
         CPPUNIT_ASSERT(false                   == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == result);
         CPPUNIT_ASSERT(false                   == article->mIsTripped);
 
-        justTripped = article->checkForTrip(result, 4.9, 3);
+        justTripped = article->checkForTrip(result, 4.9F, 3);
         CPPUNIT_ASSERT(true                    == justTripped);
         CPPUNIT_ASSERT(GunnsBasicLink::REJECT  == result);
         CPPUNIT_ASSERT(true                    == article->mIsTripped);

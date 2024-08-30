@@ -787,10 +787,11 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     double originalBellowsPos = tModel->mBellowsPosition;
     double originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterations = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    int numIterations = static_cast<int>(
+                        ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                           / tModel->mEditPressureRate                                                // number of seconds to achieve edit
                           + tModel->mEditHoldTime)                                                   // add edit hold time
-                          / tTimeStep                                                                // convert to iterations
+                          / tTimeStep)                                                               // convert to iterations
                           + 5;                                                                       // small pad at the end
 
     for (int i=0;i<numIterations;i++)
@@ -824,10 +825,11 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     originalBellowsPos = tModel->mBellowsPosition;
     originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    numIterations = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    numIterations = static_cast<int>(
+                    ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                       / tModel->mEditPressureRate                                                // number of seconds to achieve edit
                       + tModel->mEditHoldTime)                                                   // add edit hold time
-                      / tTimeStep                                                                // convert to iterations
+                      / tTimeStep)                                                               // convert to iterations
                       + 5;                                                                       // small pad at the end
 
     for (int i=0;i<numIterations;i++)
@@ -1007,10 +1009,11 @@ void UtGunnsFluidAccumGas::testBellowsEdit()
     double originalPressure = tModel->mInternalFluid->getPressure();
     double originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterations = ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
+    int numIterations = static_cast<int>(
+                        ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
                           / tModel->mEditBellowsRate                                          // number of seconds to achieve edit
                           + tModel->mEditHoldTime)                                            // add edit hold time
-                          / tTimeStep                                                         // convert to iterations
+                          / tTimeStep)                                                        // convert to iterations
                           + 5;                                                                // A little pad at the end.
 
     for (int i=0;i<numIterations;i++)
@@ -1047,15 +1050,17 @@ void UtGunnsFluidAccumGas::testBellowsEdit()
     originalPressure = tModel->mGasInternalFluid->getPressure();
     originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterationsPressure = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    int numIterationsPressure = static_cast<int>(
+                                 ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                                   / tModel->mEditPressureRate                                                 // number of seconds to achieve edit
                                   + tModel->mEditHoldTime)                                                    // add edit hold time
-                                  / tTimeStep;                                                                // convert to iterations
+                                  / tTimeStep);                                                               // convert to iterations
 
-    int numIterationsBellows = ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
+    int numIterationsBellows = static_cast<int>(
+                               ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
                                  / tModel->mEditBellowsRate                                          // number of seconds to achieve edit
                                  + tModel->mEditHoldTime)                                            // add edit hold time
-                                 / tTimeStep;                                                        // convert to iterations
+                                 / tTimeStep);                                                       // convert to iterations
 
     numIterations = numIterationsPressure + numIterationsBellows + 5;                                // Allow more than enough iterations.
 

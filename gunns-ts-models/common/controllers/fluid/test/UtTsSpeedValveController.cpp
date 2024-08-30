@@ -130,7 +130,7 @@ void UtTsSpeedValveController::setUp()
     mEnabledFlag            = true;
     mCmd                    = 10.0;
     mCommand                = TsSpeedValveCmd(mEnabledFlag, mCmd);
-    mSensed                 = TsOpenCloseValveSensed(mCmdPosition > mMaxCmdPosition - FLT_EPSILON, mCmdPosition < mMinCmdPosition + FLT_EPSILON);
+    mSensed                 = TsOpenCloseValveSensed(mCmdPosition > mMaxCmdPosition - static_cast<double>(FLT_EPSILON), mCmdPosition < mMinCmdPosition + static_cast<double>(FLT_EPSILON));
     mInput                  = new TsPoweredValveControllerInputData(mCmdPosition,
                                                                     mManualPositionFlag,
                                                                     mManualPositionValue,
@@ -731,33 +731,33 @@ void UtTsSpeedValveController::testInitializationExceptions()
     mConfig->mMaxFluidPosition = mMaxFluidPosition;
 
     /// @test  Exception on valve position < min position.
-    mInput->mCmdPosition = mMinCmdPosition - FLT_EPSILON;
+    mInput->mCmdPosition = mMinCmdPosition - static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mInput->mCmdPosition = mCmdPosition;
 
     /// @test  Exception on valve position > max position.
-    mInput->mCmdPosition = mMaxCmdPosition + FLT_EPSILON;
+    mInput->mCmdPosition = mMaxCmdPosition + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mInput->mCmdPosition = mCmdPosition;
 
     /// @test  Exception on on manual position < min position.
     mInput->mManualPositionFlag  = true;;
-    mInput->mManualPositionValue = mMinCmdPosition - FLT_EPSILON;
+    mInput->mManualPositionValue = mMinCmdPosition - static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mInput->mManualPositionValue = mManualPositionValue;
 
     /// @test  Exception on manual position  > max position.
-    mInput->mManualPositionValue = mMaxCmdPosition + FLT_EPSILON;
+    mInput->mManualPositionValue = mMaxCmdPosition + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mInput->mManualPositionFlag  = false;;
     mInput->mManualPositionValue = mManualPositionValue;
 
     /// @test  Exception on on transit time < 0.
-    mConfig->mTransitTime = -FLT_EPSILON;
+    mConfig->mTransitTime = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mConfig->mTransitTime = mTransitTime;
@@ -769,7 +769,7 @@ void UtTsSpeedValveController::testInitializationExceptions()
     mConfig->mRefCmd = mRefCmd;
 
     /// @test  Exception on on hold power < 0.
-    mConfig->mHoldPower = -FLT_EPSILON;
+    mConfig->mHoldPower = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfig, *mInput, mName), TsInitializationException);
     CPPUNIT_ASSERT(!article.isInitialized());
     mConfig->mHoldPower = mHoldPower;

@@ -435,17 +435,17 @@ void UtGunnsFluidPipe::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = mExpansionScaleFactor;
 
     /// @test    Initialization exception on invalid input data: blockage < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: blockage > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: pipe temperature < 0.
-    mInputData->mWallTemperature = -FLT_EPSILON;
+    mInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mWallTemperature = mWallTemperature;
 

@@ -424,7 +424,7 @@ void UtGunns::testDefaultConstruction()
     CPPUNIT_ASSERT(-1            == tNetwork.mDebugDesiredNode);
     CPPUNIT_ASSERT(false         == tNetwork.mVerbose);
     CPPUNIT_ASSERT(false         == tNetwork.mSorActive);
-    CPPUNIT_ASSERT(1.0           == tNetwork.mSorWeight);
+    CPPUNIT_ASSERT(1.0F          == tNetwork.mSorWeight);
     CPPUNIT_ASSERT(100           == tNetwork.mSorMaxIter);
     CPPUNIT_ASSERT(1.0e-12       == tNetwork.mSorTolerance);
     CPPUNIT_ASSERT(-1            == tNetwork.mSorLastIteration);

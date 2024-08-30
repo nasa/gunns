@@ -119,7 +119,7 @@ void UtGunnsDistributed2WayBusBase::testFrameCounts()
     tArticle->updateFrameCounts();
     CPPUNIT_ASSERT(expectedOutFrameCount == tOutData.mFrameCount);
     CPPUNIT_ASSERT(expectedFramesFlip    == tArticle->mFramesSinceFlip);
-    CPPUNIT_ASSERT(expectedLoopLatency   == tArticle->mLoopLatency);
+    CPPUNIT_ASSERT(expectedLoopLatency   == static_cast<unsigned int>(tArticle->mLoopLatency));
     CPPUNIT_ASSERT(tInData.mFrameCount   == tOutData.mFrameLoopback);
 
     std::cout << "... Pass";

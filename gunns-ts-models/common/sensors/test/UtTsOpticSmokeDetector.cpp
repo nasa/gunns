@@ -49,35 +49,35 @@ UtTsOpticSmokeDetector::~UtTsOpticSmokeDetector()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtTsOpticSmokeDetector::setUp()
 {
-    dt                               = 0.1;
+    dt                               = 0.1F;
     sdName                           = "Smoke Detector Test";
 
-    configData.obsMaxPercentage      = 104.12; // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.obsMinPercentage      = 0.0;    // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.obsSmokeContributer   = 20.0;   //Tunes the obscuration smoke contribution according to JMEWS.
-    configData.scatterMaxPercentage  = 2.47;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.scatterMinPercentage  = 0.11;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.bitOnMaxScatterValue  = 1.42;   // %/ft. JMEWS Data. Ref. SSP 41002 Table 3.3.4.1.1.3-1 for ISS SD.
-    configData.nominalObscuration    = 8.24;   // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.nominalScatter        = 0.16;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    configData.bitRecoveryTime       = 1.5;    // sec.  D684-10508-02-02: Sec. 3.3 for ISS SD: "Quite Period".
+    configData.obsMaxPercentage      = 104.12F; // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.obsMinPercentage      = 0.0F;    // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.obsSmokeContributer   = 20.0F;   //Tunes the obscuration smoke contribution according to JMEWS.
+    configData.scatterMaxPercentage  = 2.47F;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.scatterMinPercentage  = 0.11F;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.bitOnMaxScatterValue  = 1.42F;   // %/ft. JMEWS Data. Ref. SSP 41002 Table 3.3.4.1.1.3-1 for ISS SD.
+    configData.nominalObscuration    = 8.24F;   // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.nominalScatter        = 0.16F;   // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    configData.bitRecoveryTime       = 1.5F;    // sec.  D684-10508-02-02: Sec. 3.3 for ISS SD: "Quite Period".
 
     inputData.isPowered              = false;
     inputData.isLoadOn               = 1;
     inputData.isBitEnabled           = false;
-    inputData.smokeLevelFactor       = 0.0;
-    inputData.bitTimer               = 0.0;
+    inputData.smokeLevelFactor       = 0.0F;
+    inputData.bitTimer               = 0.0F;
 
     //obscuration sensor
-    configData.obsSensorConfigD.mMinRange              = 0.0;    // Obs.%
-    configData.obsSensorConfigD.mMaxRange              = 104.15; // Obs.%
-    configData.obsSensorConfigD.mNominalNoiseScale     = 0.5;
+    configData.obsSensorConfigD.mMinRange              = 0.0F;    // Obs.%
+    configData.obsSensorConfigD.mMaxRange              = 104.15F; // Obs.%
+    configData.obsSensorConfigD.mNominalNoiseScale     = 0.5F;
     configData.obsSensorConfigD.mNoiseFunction         = TsNoise::getNoise;
 
     //scatter sensor
-    configData.scatterSensorConfigD.mMinRange          = 0.0;    // %/ft
-    configData.scatterSensorConfigD.mMaxRange          = 2.47;   // %/ft
-    configData.scatterSensorConfigD.mNominalNoiseScale = 0.05;
+    configData.scatterSensorConfigD.mMinRange          = 0.0F;    // %/ft
+    configData.scatterSensorConfigD.mMaxRange          = 2.47F;   // %/ft
+    configData.scatterSensorConfigD.mNominalNoiseScale = 0.05F;
     configData.scatterSensorConfigD.mNoiseFunction     = TsNoise::getNoise;
 
     test  = new TsOpticSmokeDetector();
@@ -418,7 +418,7 @@ void UtTsOpticSmokeDetector::RunUpdateNominallyWithSmokeTest()
     std::cout << "\n Optic Smoke Detector: Verify outputs with nominal conditions and smoke added in to the system.";
 
     inputData.isPowered = true;
-    inputData.smokeLevelFactor = 0.9;
+    inputData.smokeLevelFactor = 0.9F;
 
     testArticle.initialize(configData, inputData, sdName);
 
@@ -429,12 +429,12 @@ void UtTsOpticSmokeDetector::RunUpdateNominallyWithSmokeTest()
     float obsVoltValue     = obscurationValue * configData.obsPercentVoltSlope + configData.obsVoltIntercept;
     float scatVoltValue    = scatterValue * configData.scatPercentVoltSlope + configData.scatVoltIntercept;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obsVoltValue,     testArticle.obsSensedVoltage, 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatVoltValue,    testArticle.scatSensedVoltage, 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obsVoltValue,     testArticle.obsSensedVoltage, 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatVoltValue,    testArticle.scatSensedVoltage, 0.05F);
 
     std::cout << "\t... Pass";
 }
@@ -459,10 +459,10 @@ void UtTsOpticSmokeDetector::RunUpdateWithPowerMalfunctionsTest()
     float obscurationValue = configData.nominalObscuration;
     float scatterValue     = configData.nominalScatter;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
     CPPUNIT_ASSERT_EQUAL(1,  testArticle.isLoadOn);
 
     std::cout << "\t... Pass";
@@ -478,8 +478,8 @@ void UtTsOpticSmokeDetector::RunUpdateWithNoPowerTest()
     inputData.isPowered       = false;
     testArticle.malfPowerToOn = false;
     testArticle.malfTotalFail = false;
-    configData.obsOffValue    = 53.45;
-    configData.scatOffValue   = 0.1006;
+    configData.obsOffValue    = 53.45F;
+    configData.scatOffValue   = 0.1006F;
     float obsVoltValue        = configData.obsOffValue * configData.obsPercentVoltSlope + configData.obsVoltIntercept;
     float scatVoltValue       = configData.scatOffValue * configData.scatPercentVoltSlope + configData.scatVoltIntercept;
 
@@ -488,12 +488,12 @@ void UtTsOpticSmokeDetector::RunUpdateWithNoPowerTest()
     testArticle.update(dt);
 
     CPPUNIT_ASSERT_EQUAL(0,              testArticle.isLoadOn);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.obsOffValue,  testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.scatOffValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.obsOffValue,  testArticle.getSensedObscurationValue(), 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.scatOffValue, testArticle.getSensedScatterValue(), 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obsVoltValue,     testArticle.obsSensedVoltage, 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatVoltValue,    testArticle.scatSensedVoltage, 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.obsOffValue,  testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.scatOffValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.obsOffValue,  testArticle.getSensedObscurationValue(), 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configData.scatOffValue, testArticle.getSensedScatterValue(), 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obsVoltValue,     testArticle.obsSensedVoltage, 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatVoltValue,    testArticle.scatSensedVoltage, 0.05F);
 
     std::cout << "\t... Pass";
 }
@@ -515,10 +515,10 @@ void UtTsOpticSmokeDetector::RunUpdateWithFailCommandTest()
 
     testArticle.update(dt);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(53.45,   testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1006,  testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(53.45,   testArticle.getSensedObscurationValue(), 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.10060, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(53.45F,   testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1006F,  testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(53.45F,   testArticle.getSensedObscurationValue(), 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.10060F, testArticle.getSensedScatterValue(), 0.05F);
 
     std::cout << "\t... Pass";
 }
@@ -541,8 +541,8 @@ void UtTsOpticSmokeDetector::RunUpdateWithFailedObscurationSensorTest()
 
     float obscurationValue = configData.nominalObscuration;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.05);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, testArticle.getSensedObscurationValue(), 1.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.05F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0F, testArticle.getSensedObscurationValue(), 1.0F);
 
     std::cout << "\t... Pass";
 }
@@ -556,7 +556,7 @@ void UtTsOpticSmokeDetector::RunUpdateWithFailedScatterSensorTest()
 
     inputData.isPowered = true;
     //Malf
-    inputData.scatterSensorInputD.mMalfFailToValue = 0.0;
+    inputData.scatterSensorInputD.mMalfFailToValue = 0.0F;
     inputData.scatterSensorInputD.mMalfScaleFlag = true;
 
     testArticle.initialize(configData, inputData, sdName);
@@ -565,8 +565,8 @@ void UtTsOpticSmokeDetector::RunUpdateWithFailedScatterSensorTest()
 
     float scatterValue     = configData.nominalScatter;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0F, testArticle.getSensedScatterValue(), 0.05F);
 
     std::cout << "\t... Pass";
 }
@@ -594,10 +594,10 @@ void UtTsOpticSmokeDetector::RunActiveBitTest()
     float obscurationValue = configData.obsMaxPercentage;
     float scatterValue     = configData.bitOnMaxScatterValue;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
 
     testArticle.isBitEnabled = false;
     for(int ii = 0; ii < 16; ii++)
@@ -608,20 +608,20 @@ void UtTsOpticSmokeDetector::RunActiveBitTest()
     obscurationValue = configData.obsMaxPercentage;
     scatterValue     = configData.scatterMinPercentage;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.06);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.06F);
 
     testArticle.update(dt); //After bitTimer exceeds bit recovery time, sensor has finished active bit test.
 
     obscurationValue = configData.nominalObscuration;
     scatterValue     = configData.nominalScatter;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.06);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.06F);
 
     std::cout << "\t... Pass";
 }
@@ -635,7 +635,7 @@ void UtTsOpticSmokeDetector::RunActiveBitWithSmokeTest()
 
     inputData.isPowered                 = true;
     inputData.isBitEnabled              = true;
-    inputData.smokeLevelFactor          = 0.9;
+    inputData.smokeLevelFactor          = 0.9F;
     testArticle.malfTotalFail           = false;
     testArticle.malfPowerToOn           = false;
 
@@ -649,10 +649,10 @@ void UtTsOpticSmokeDetector::RunActiveBitWithSmokeTest()
     float obscurationValue = configData.obsMaxPercentage;
     float scatterValue     = configData.bitOnMaxScatterValue;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
 
     testArticle.isBitEnabled = false;
     for(int ii = 0; ii < 16; ii++)
@@ -663,21 +663,20 @@ void UtTsOpticSmokeDetector::RunActiveBitWithSmokeTest()
     obscurationValue = configData.obsMaxPercentage;
     scatterValue     = configData.scatterMinPercentage;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
 
     testArticle.update(dt); //After bitTimer exceeds bit recovery time, sensor has finished active bit test, goes back to normal.
 
     obscurationValue = configData.nominalObscuration + (configData.obsSmokeContributer * inputData.smokeLevelFactor);
     scatterValue     = configData.nominalScatter + (configData.scatterMaxPercentage - configData.nominalScatter) * inputData.smokeLevelFactor;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.obscurationPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.scatterPercentage, 0.01F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(obscurationValue, testArticle.getSensedObscurationValue(), 1.0F);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(scatterValue, testArticle.getSensedScatterValue(), 0.05F);
 
     std::cout << "\t... Pass";
 }
-

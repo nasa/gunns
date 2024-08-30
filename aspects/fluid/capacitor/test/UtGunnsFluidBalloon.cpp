@@ -128,7 +128,7 @@ void UtGunnsFluidBalloon::setUp()
     tBiasHeatFlux         = 10.0;
     tInputData            = new GunnsFluidBalloonInputData(false, false, 0.0,
                                                            tFluidInputGas,
-                                                           tShellTemperature,
+                                                           static_cast<float>(tShellTemperature),
                                                            tBiasHeatFlux);
 
     /// - Define the nominal port mapping.
@@ -181,7 +181,7 @@ void UtGunnsFluidBalloon::testConfigAndInput()
 
     /// @test    Input data nominal construction.
     GunnsFluidBalloonInputData nominalInput(true, true, 1.0, tFluidInputGas,
-                                            tShellTemperature, tBiasHeatFlux);
+                                            static_cast<float>(tShellTemperature), tBiasHeatFlux);
     CPPUNIT_ASSERT(false                 == nominalInput.mMalfBlockageFlag);
     CPPUNIT_ASSERT(0.0                   == nominalInput.mMalfBlockageValue);
     CPPUNIT_ASSERT(true                  == nominalInput.mMalfStuckFlag);
@@ -189,7 +189,7 @@ void UtGunnsFluidBalloon::testConfigAndInput()
     CPPUNIT_ASSERT(1.0                   == nominalInput.mMalfInflatabilityScaleValue);
     CPPUNIT_ASSERT(tFluidInputGas        == nominalInput.mInitialFluidState);
     CPPUNIT_ASSERT(0.0                   == nominalInput.mInitialVolume);
-    CPPUNIT_ASSERT(tShellTemperature     == nominalInput.mShellTemperature);
+    CPPUNIT_ASSERT(tShellTemperature     == static_cast<double>(nominalInput.mShellTemperature));
     CPPUNIT_ASSERT(tBiasHeatFlux         == nominalInput.mBiasHeatFlux);
 
     /// @test    Configuration data default construction.
@@ -200,8 +200,8 @@ void UtGunnsFluidBalloon::testConfigAndInput()
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mDpdtFilterGain);
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mThermalDampingMass);
     CPPUNIT_ASSERT(1.0E-6                == defaultConfig.mEditFluxTarget);
-    CPPUNIT_ASSERT(0.0                   == defaultConfig.mSurfaceArea);
-    CPPUNIT_ASSERT(0.0                   == defaultConfig.mShellRadius);
+    CPPUNIT_ASSERT(0.0F                  == defaultConfig.mSurfaceArea);
+    CPPUNIT_ASSERT(0.0F                  == defaultConfig.mShellRadius);
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mInflatability);
     CPPUNIT_ASSERT(0.0                   == defaultConfig.mMaxVolume);
 
@@ -214,8 +214,8 @@ void UtGunnsFluidBalloon::testConfigAndInput()
     CPPUNIT_ASSERT(0.0                   == defaultInput.mMalfInflatabilityScaleValue);
     CPPUNIT_ASSERT(0                     == defaultInput.mInitialFluidState);
     CPPUNIT_ASSERT(0.0                   == defaultInput.mInitialVolume);
-    CPPUNIT_ASSERT(0.0                   == defaultInput.mShellTemperature);
-    CPPUNIT_ASSERT(0.0                   == defaultInput.mBiasHeatFlux);
+    CPPUNIT_ASSERT(0.0F                  == defaultInput.mShellTemperature);
+    CPPUNIT_ASSERT(0.0F                  == defaultInput.mBiasHeatFlux);
 
     /// @test    Configuration data copy construction.
     GunnsFluidBalloonConfigData copyConfig(*tConfigData);
@@ -239,7 +239,7 @@ void UtGunnsFluidBalloon::testConfigAndInput()
     CPPUNIT_ASSERT(1.0                   == copyInput.mMalfInflatabilityScaleValue);
     CPPUNIT_ASSERT(tFluidInputGas        == copyInput.mInitialFluidState);
     CPPUNIT_ASSERT(0.0                   == copyInput.mInitialVolume);
-    CPPUNIT_ASSERT(tShellTemperature     == copyInput.mShellTemperature);
+    CPPUNIT_ASSERT(tShellTemperature     == static_cast<double>(copyInput.mShellTemperature));
     CPPUNIT_ASSERT(tBiasHeatFlux         == copyInput.mBiasHeatFlux);
 
     UT_PASS;
@@ -307,8 +307,8 @@ void UtGunnsFluidBalloon::testNominalInitialization()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->mNodes[0]->getVolume(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->getVolume(),            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->mInflation,             FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),         FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->mInflation,             static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),         static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsFluidBalloon::INFLATING  == tArticle->mInflationState);
     CPPUNIT_ASSERT(GunnsFluidBalloon::INFLATING  == tArticle->getInflationState());
     CPPUNIT_ASSERT(0.0                           == tArticle->mPressureCorrection);
@@ -497,7 +497,7 @@ void UtGunnsFluidBalloon::testUpdateFluid()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->getVolume(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tNodes[tPort0].getVolume(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsFluidBalloon::DEFLATING  == tArticle->getInflationState());
 
     /// @test    updateFluid when inflating.
@@ -513,7 +513,7 @@ void UtGunnsFluidBalloon::testUpdateFluid()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->getVolume(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tNodes[tPort0].getVolume(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsFluidBalloon::INFLATING  == tArticle->getInflationState());
 
     /// @test    updateFluid when holding steady, partially inflated.
@@ -526,7 +526,7 @@ void UtGunnsFluidBalloon::testUpdateFluid()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->getVolume(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tNodes[tPort0].getVolume(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsFluidBalloon::PARTIALLY_INFLATED  == tArticle->getInflationState());
 
     /// @test    updateFluid with the stuck malfunction active.
@@ -538,7 +538,7 @@ void UtGunnsFluidBalloon::testUpdateFluid()
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tArticle->getVolume(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(volume,    tNodes[tPort0].getVolume(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(inflation, tArticle->getInflation(),   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(GunnsFluidBalloon::PARTIALLY_INFLATED  == tArticle->getInflationState());
 
     UT_PASS;
@@ -663,7 +663,7 @@ void UtGunnsFluidBalloon::testEditPartialPressureRate()
     double delMoles    = 1000.0 * delPressure * delVolume / RT;
     double mdot        = 2.0 * delMoles * tArticle->mInternalFluid->getMWeight() / tTimeStep;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdot, -tArticle->mFlowRate, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdot, -tArticle->mFlowRate, static_cast<double>(FLT_EPSILON));
 
     UT_PASS;
 }
@@ -695,14 +695,14 @@ void UtGunnsFluidBalloon::testPressureCorrectionPos()
     double linkG  = tArticle->mPressureCorrectionGain;
     double linkPc = nodePc * linkG;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-Perr,  linkPc,                        FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(linkPc, tArticle->mPressureCorrection, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-Perr,  linkPc,                        static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(linkPc, tArticle->mPressureCorrection, static_cast<double>(FLT_EPSILON));
 
     /// @test    pressure correction not applied when disabled.
     tArticle->mDisablePressureCorrection = true;
     tArticle->step(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPressureCorrection, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPressureCorrection, static_cast<double>(FLT_EPSILON));
 
     UT_PASS;
 }
@@ -734,8 +734,8 @@ void UtGunnsFluidBalloon::testPressureCorrectionNeg()
     double linkG  = tArticle->mPressureCorrectionGain;
     double linkPc = nodePc * linkG;
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-Perr,  linkPc,                        FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(linkPc, tArticle->mPressureCorrection, FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-Perr,  linkPc,                        static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(linkPc, tArticle->mPressureCorrection, static_cast<double>(FLT_EPSILON));
 
     UT_PASS;
 }

@@ -335,12 +335,12 @@ void UtGunnsFluidUtils::testLowPressureCapacitance()
     double molWeight = tFluid.getMWeight();    // Should be 2.8836520501689176e+01
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.8836520501689176e+01, molWeight,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(FLT_EPSILON,            tFluid.getPressure(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(static_cast<double>(FLT_EPSILON), tFluid.getPressure(), DBL_EPSILON);
 
     /// - Call PolyFluid directly for the same density perturbation that computeCapacitance does,
     ///   and verify it matches this hardcoded result.  This is a redundant check on PolyFluid.
-    double P1 = 0.999 * 0.5 * FLT_EPSILON;
-    double P2 = 1.001 * 0.5 * FLT_EPSILON;
+    double P1 = 0.999 * 0.5 * static_cast<double>(FLT_EPSILON);
+    double P2 = 1.001 * 0.5 * static_cast<double>(FLT_EPSILON);
     double rho1 = tFluid.computeDensity(300.0, P1);         // Should be 6.8838677529188106e-10
     double rho2 = tFluid.computeDensity(300.0, P2);         // Should be 6.8976492699416704e-10
 
@@ -351,7 +351,7 @@ void UtGunnsFluidUtils::testLowPressureCapacitance()
     double capacitance = (rho2 - rho1) * volume / (molWeight * (P2 - P1));
 
     /// - Call computeCapacitance and verify correct mCapacitance and return value result.
-    tFluid.setPressure(0.5 * FLT_EPSILON);
+    tFluid.setPressure(0.5 * static_cast<double>(FLT_EPSILON));
     double tResult = GunnsFluidUtils::computeCapacitance(&tFluid, volume);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(capacitance, tResult,            DBL_EPSILON);
 

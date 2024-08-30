@@ -51,7 +51,7 @@ void UtGunnsElectSwitchUtil2::setUp()
     tName = "tArticle";
 
     /// - Create nominal config data.
-    tResistance   = 0.0668;
+    tResistance   = 0.0668F;
     tTripPriority = 3;
 
     tConfigData = new GunnsElectSwitchUtil2ConfigData(tResistance, tTripPriority);
@@ -112,8 +112,8 @@ void UtGunnsElectSwitchUtil2::testConfigData()
 
     /// @test    Default construction.
     GunnsElectSwitchUtil2ConfigData defaultConfig;
-    CPPUNIT_ASSERT(0.0 == defaultConfig.mResistance);
-    CPPUNIT_ASSERT(0   == defaultConfig.mTripPriority);
+    CPPUNIT_ASSERT(0.0F == defaultConfig.mResistance);
+    CPPUNIT_ASSERT(0    == defaultConfig.mTripPriority);
 
     /// @test    Assignment operator.
     GunnsElectSwitchUtil2ConfigData assignConfig;
@@ -159,12 +159,12 @@ void UtGunnsElectSwitchUtil2::testInputData()
     CPPUNIT_ASSERT(false == defaultInput.mPosition);
     CPPUNIT_ASSERT(false == defaultInput.mPositionCommand);
     CPPUNIT_ASSERT(false == defaultInput.mResetTripsCommand);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mInputUnderVoltageTripLimit);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mInputUnderVoltageTripReset);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mInputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mInputOverVoltageTripReset);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mPosOverCurrentTripLimit);
-    CPPUNIT_ASSERT(0.0   == defaultInput.mNegOverCurrentTripLimit);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mInputUnderVoltageTripLimit);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mInputUnderVoltageTripReset);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mInputOverVoltageTripReset);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mPosOverCurrentTripLimit);
+    CPPUNIT_ASSERT(0.0F  == defaultInput.mNegOverCurrentTripLimit);
 
     /// @test    Assignment operator.
     GunnsElectSwitchUtil2InputData assignInput;
@@ -196,12 +196,12 @@ void UtGunnsElectSwitchUtil2::testDefaultConstruction()
     CPPUNIT_ASSERT(false == article.mPosition);
     CPPUNIT_ASSERT(false == article.mPositionCommand);
     CPPUNIT_ASSERT(false == article.mResetTripsCommand);
-    CPPUNIT_ASSERT(0.0   == article.mInputUnderVoltageTrip.getLimit());
-    CPPUNIT_ASSERT(0.0   == article.mInputUnderVoltageReset.getLimit());
-    CPPUNIT_ASSERT(0.0   == article.mInputOverVoltageTrip.getLimit());
-    CPPUNIT_ASSERT(0.0   == article.mInputOverVoltageReset.getLimit());
-    CPPUNIT_ASSERT(0.0   == article.mPosOverCurrentTrip.getLimit());
-    CPPUNIT_ASSERT(0.0   == article.mNegOverCurrentTrip.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mInputUnderVoltageTrip.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mInputUnderVoltageReset.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mInputOverVoltageTrip.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mInputOverVoltageReset.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mPosOverCurrentTrip.getLimit());
+    CPPUNIT_ASSERT(0.0F  == article.mNegOverCurrentTrip.getLimit());
     CPPUNIT_ASSERT(false == article.mWaitingToTrip);
     CPPUNIT_ASSERT(false == article.mJustTripped);
     CPPUNIT_ASSERT(""    == article.mName);
@@ -265,12 +265,12 @@ void UtGunnsElectSwitchUtil2::testInitializationErrors()
     tConfigData->mResistance = tResistance;
 
     /// @test    Error thrown for IUV trip reset less than trip value.
-    tInputData->mInputUnderVoltageTripReset = tInputUnderVoltageTripLimit - 0.001;
+    tInputData->mInputUnderVoltageTripReset = tInputUnderVoltageTripLimit - 0.001F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tName), TsInitializationException);
     tInputData->mInputUnderVoltageTripReset = tInputUnderVoltageTripReset;
 
     /// @test    Error thrown for IOV trip reset greater than trip value.
-    tInputData->mInputOverVoltageTripReset = tInputOverVoltageTripLimit + 0.001;
+    tInputData->mInputOverVoltageTripReset = tInputOverVoltageTripLimit + 0.001F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tName), TsInitializationException);
     tInputData->mInputOverVoltageTripReset = tInputOverVoltageTripReset;
 
@@ -298,7 +298,7 @@ void UtGunnsElectSwitchUtil2::testInputConstraints()
     /// @test    constraint on input under-volt trip reset value is applied.
     {
         const float expectedLimit = tArticle->mInputUnderVoltageTrip.getLimit();
-        tArticle->mInputUnderVoltageReset.setLimit(expectedLimit - 0.001);
+        tArticle->mInputUnderVoltageReset.setLimit(expectedLimit - 0.001F);
         tArticle->updateState();
         CPPUNIT_ASSERT(expectedLimit == tArticle->mInputUnderVoltageReset.getLimit());
     }
@@ -306,7 +306,7 @@ void UtGunnsElectSwitchUtil2::testInputConstraints()
     /// @test    constraint on input over-volt trip reset value is applied.
     {
         const float expectedLimit = tArticle->mInputOverVoltageTrip.getLimit();
-        tArticle->mInputOverVoltageReset.setLimit(expectedLimit + 0.001);
+        tArticle->mInputOverVoltageReset.setLimit(expectedLimit + 0.001F);
         tArticle->updateState();
         CPPUNIT_ASSERT(expectedLimit == tArticle->mInputOverVoltageReset.getLimit());
     }
@@ -329,12 +329,12 @@ void UtGunnsElectSwitchUtil2::testUpdateState()
 
     /// - Set the trips.
     GunnsBasicLink::SolutionResult result = GunnsBasicLink::CONFIRM;
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001F, tTripPriority));
 
     /// @test    Tripped switch remains tripped if commanded closed, and stays open when tripped
     ///          and commanded closed.
@@ -362,12 +362,12 @@ void UtGunnsElectSwitchUtil2::testUpdateState()
     CPPUNIT_ASSERT(false == tArticle->mWaitingToTrip);
 
     /// - Set the trips.
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001F, tTripPriority));
 
     /// @test    Trips are reset if commanded to reset.
     tArticle->mJustTripped       = true;
@@ -404,12 +404,12 @@ void UtGunnsElectSwitchUtil2::testUpdateState()
     CPPUNIT_ASSERT(true == tArticle->mPosition);
 
     /// - Set the trips.
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001, tTripPriority));
-    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip .checkForTrip(result, tInputUnderVoltageTripLimit - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageReset.checkForTrip(result, tInputUnderVoltageTripReset + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip  .checkForTrip(result, tInputOverVoltageTripLimit  + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageReset .checkForTrip(result, tInputOverVoltageTripReset  - 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mPosOverCurrentTrip    .checkForTrip(result, tPosOverCurrentTripLimit    + 0.001F, tTripPriority));
+    CPPUNIT_ASSERT(true == tArticle->mNegOverCurrentTrip    .checkForTrip(result, tNegOverCurrentTripLimit    - 0.001F, tTripPriority));
 
     /// @test    Fail closed malf overrides trips.
     tArticle->updateState();
@@ -433,7 +433,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
     tArticle->initialize(*tConfigData, *tInputData, tName);
 
     /// @test    no trips for any trip condition if not converged.
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripLimit + 1.0, 0);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripLimit + 1.0F, 0);
 
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
@@ -447,7 +447,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    no trips if failed closed.
     tArticle->setMalfFailClosed(true);
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripLimit + 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripLimit + 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -460,7 +460,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    waiting to trip for any trip condition if not on trip priority step.
     tArticle->setMalfFailClosed();
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripLimit + 1.0, 2);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripLimit + 1.0F, 2);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -472,7 +472,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
     CPPUNIT_ASSERT(true  == tArticle->mPosition);
 
     /// @test    +OC trip.
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripReset - 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripReset - 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -485,7 +485,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    -OC trip.
     tArticle->resetTrips();
-    tArticle->updateTrips(tNegOverCurrentTripLimit - 1.0, tInputOverVoltageTripReset - 1.0, 3);
+    tArticle->updateTrips(tNegOverCurrentTripLimit - 1.0F, tInputOverVoltageTripReset - 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -498,7 +498,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    IUV trip.
     tArticle->resetTrips();
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputUnderVoltageTripLimit - 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputUnderVoltageTripLimit - 1.0F, 3);
     CPPUNIT_ASSERT(true == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -511,7 +511,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    No trip resets if failed open.
     tArticle->setMalfFailOpen(true);
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputUnderVoltageTripReset + 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputUnderVoltageTripReset + 1.0F, 3);
     CPPUNIT_ASSERT(true  == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -524,7 +524,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    IUV trip reset.
     tArticle->setMalfFailOpen();
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputUnderVoltageTripReset + 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputUnderVoltageTripReset + 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -537,7 +537,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    IOV trip simo with +OC trip.
     tArticle->resetTrips();
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripLimit + 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripLimit + 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(true  == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -549,7 +549,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
     CPPUNIT_ASSERT(false == tArticle->mPosition);
 
     /// @test    IOV trip reset prevented by present +OC trip.
-    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0, tInputOverVoltageTripReset - 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit + 1.0F, tInputOverVoltageTripReset - 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(true  == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -562,7 +562,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
 
     /// @test    IOV trip.
     tArticle->resetTrips();
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputOverVoltageTripLimit + 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputOverVoltageTripLimit + 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(true  == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -574,7 +574,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
     CPPUNIT_ASSERT(false == tArticle->mPosition);
 
     /// @test     waiting to IOV trip reset.
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputOverVoltageTripReset - 1.0, 2);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputOverVoltageTripReset - 1.0F, 2);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(true  == tArticle->getInputOverVoltageTrip()->isTripped());
@@ -586,7 +586,7 @@ void UtGunnsElectSwitchUtil2::testUpdateTrips()
     CPPUNIT_ASSERT(false == tArticle->getPosition());
 
     /// @test     IOV trip reset.
-    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0, tInputOverVoltageTripReset - 1.0, 3);
+    tArticle->updateTrips(tPosOverCurrentTripLimit - 1.0F, tInputOverVoltageTripReset - 1.0F, 3);
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageTrip()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputUnderVoltageReset()->isTripped());
     CPPUNIT_ASSERT(false == tArticle->getInputOverVoltageTrip()->isTripped());

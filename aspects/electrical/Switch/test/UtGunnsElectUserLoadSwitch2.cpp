@@ -22,14 +22,14 @@ UtGunnsElectUserLoadSwitch2::UtGunnsElectUserLoadSwitch2()
     tNodes(),
     tNodeList(),
     tPorts(),
-    tSwitchResistance(0.0),
+    tSwitchResistance(0.0F),
     tSwitchTripPriority(0),
-    tCurrentSensorMinRange(0.0),
-    tCurrentSensorMaxRange(0.0),
-    tInputVoltageSensorMinRange(0.0),
-    tInputVoltageSensorMaxRange(0.0),
-    tOutputVoltageSensorMinRange(0.0),
-    tOutputVoltageSensorMaxRange(0.0),
+    tCurrentSensorMinRange(0.0F),
+    tCurrentSensorMaxRange(0.0F),
+    tInputVoltageSensorMinRange(0.0F),
+    tInputVoltageSensorMaxRange(0.0F),
+    tOutputVoltageSensorMinRange(0.0F),
+    tOutputVoltageSensorMaxRange(0.0F),
     tConfigData(0),
     tMalfBlockageFlag(false),
     tMalfBlockageValue(0.0),
@@ -82,14 +82,14 @@ void UtGunnsElectUserLoadSwitch2::setUp()
 
     /// - Define the nominal configuration data.
     tName                        = "nominal";
-    tSwitchResistance            =   0.1;
+    tSwitchResistance            =   0.1F;
     tSwitchTripPriority          =   2;
-    tCurrentSensorMinRange       = -10.0;
-    tCurrentSensorMaxRange       =  10.0;
-    tInputVoltageSensorMinRange  =   0.0;
-    tInputVoltageSensorMaxRange  = 200.0;
-    tOutputVoltageSensorMinRange =  -1.0;
-    tOutputVoltageSensorMaxRange = 180.0;
+    tCurrentSensorMinRange       = -10.0F;
+    tCurrentSensorMaxRange       =  10.0F;
+    tInputVoltageSensorMinRange  =   0.0F;
+    tInputVoltageSensorMaxRange  = 200.0F;
+    tOutputVoltageSensorMinRange =  -1.0F;
+    tOutputVoltageSensorMaxRange = 180.0F;
     tConfigData                  = new GunnsElectUserLoadSwitch2ConfigData(tName,
                                                                           &tNodeList,
                                                                            tSwitchResistance,
@@ -182,7 +182,7 @@ void UtGunnsElectUserLoadSwitch2::testConfig()
     CPPUNIT_ASSERT(tNodes                       == tConfigData->mNodeList->mNodes);
     CPPUNIT_ASSERT(0.0                          == tConfigData->mDefaultConductivity);
     CPPUNIT_ASSERT(tSwitchResistance            == tConfigData->mSwitch.mResistance);
-    CPPUNIT_ASSERT(tSwitchTripPriority          == tConfigData->mSwitch.mTripPriority);
+    CPPUNIT_ASSERT(tSwitchTripPriority          == static_cast<int>(tConfigData->mSwitch.mTripPriority));
     CPPUNIT_ASSERT(tCurrentSensorMinRange       == tConfigData->mCurrentSensor.mMinRange);
     CPPUNIT_ASSERT(tCurrentSensorMaxRange       == tConfigData->mCurrentSensor.mMaxRange);
     CPPUNIT_ASSERT(TsNoise::getNoiseFunction()  == tConfigData->mCurrentSensor.mNoiseFunction);
@@ -209,12 +209,12 @@ void UtGunnsElectUserLoadSwitch2::testInput()
     CPPUNIT_ASSERT(tSwitchIsClosed             == tInputData->mSwitch.mPosition);
     CPPUNIT_ASSERT(tSwitchIsClosed             == tInputData->mSwitch.mPositionCommand);
     CPPUNIT_ASSERT(false                       == tInputData->mSwitch.mResetTripsCommand);
-    CPPUNIT_ASSERT(tInputUnderVoltageTripLimit == tInputData->mSwitch.mInputUnderVoltageTripLimit);
-    CPPUNIT_ASSERT(tInputUnderVoltageTripReset == tInputData->mSwitch.mInputUnderVoltageTripReset);
-    CPPUNIT_ASSERT(tInputOverVoltageTripLimit  == tInputData->mSwitch.mInputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(tInputOverVoltageTripReset  == tInputData->mSwitch.mInputOverVoltageTripReset);
-    CPPUNIT_ASSERT(tSwitchPosTripLimit         == tInputData->mSwitch.mPosOverCurrentTripLimit);
-    CPPUNIT_ASSERT(tSwitchNegTripLimit         == tInputData->mSwitch.mNegOverCurrentTripLimit);
+    CPPUNIT_ASSERT(tInputUnderVoltageTripLimit == static_cast<double>(tInputData->mSwitch.mInputUnderVoltageTripLimit));
+    CPPUNIT_ASSERT(tInputUnderVoltageTripReset == static_cast<double>(tInputData->mSwitch.mInputUnderVoltageTripReset));
+    CPPUNIT_ASSERT(tInputOverVoltageTripLimit  == static_cast<double>(tInputData->mSwitch.mInputOverVoltageTripLimit));
+    CPPUNIT_ASSERT(tInputOverVoltageTripReset  == static_cast<double>(tInputData->mSwitch.mInputOverVoltageTripReset));
+    CPPUNIT_ASSERT(tSwitchPosTripLimit         == static_cast<double>(tInputData->mSwitch.mPosOverCurrentTripLimit));
+    CPPUNIT_ASSERT(tSwitchNegTripLimit         == static_cast<double>(tInputData->mSwitch.mNegOverCurrentTripLimit));
     CPPUNIT_ASSERT(tLoadsOverrideActive        == tInputData->mLoadsOverrideActive);
     CPPUNIT_ASSERT(tLoadsOverrideVoltage       == tInputData->mLoadsOverrideVoltage);
 
@@ -415,9 +415,9 @@ void UtGunnsElectUserLoadSwitch2::testStep()
         CPPUNIT_ASSERT(true == tLoadCp.getLoad()->getPowerValid());
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
-        double expectedSensedI    = flux                          + tArticle->mCurrentSensor.mMalfDriftRate       * timestep;
-        double expectedSensedVin  = tArticle->mPotentialVector[0] + tArticle->mInputVoltageSensor.mMalfDriftRate  * timestep;
-        double expectedSensedVout = expectedLoadsV                + tArticle->mOutputVoltageSensor.mMalfDriftRate * timestep;
+        double expectedSensedI    = flux                          + static_cast<double>(tArticle->mCurrentSensor.mMalfDriftRate)       * timestep;
+        double expectedSensedVin  = tArticle->mPotentialVector[0] + static_cast<double>(tArticle->mInputVoltageSensor.mMalfDriftRate)  * timestep;
+        double expectedSensedVout = expectedLoadsV                + static_cast<double>(tArticle->mOutputVoltageSensor.mMalfDriftRate) * timestep;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedI,    static_cast<double>(tArticle->mCurrentSensor.getSensedOutput()),       1.0e-3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  static_cast<double>(tArticle->mInputVoltageSensor.getSensedOutput()),  1.0e-3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, static_cast<double>(tArticle->mOutputVoltageSensor.getSensedOutput()), 1.0e-3);
@@ -647,7 +647,7 @@ void UtGunnsElectUserLoadSwitch2::testComputeFlows()
         double expectedA       = expectedG * (1.0 - tInputData->mMalfBlockageValue);
         double expectedFlux    = expectedA * (tNodes[tPorts[0]].getPotential() - tNodes[tPorts[1]].getPotential());
         double expectedPower   = -expectedFlux * tNodes[tPorts[0]].getPotential();
-        double expectedLoadPwr = -expectedPower - expectedFlux * expectedFlux * tSwitchResistance;
+        double expectedLoadPwr = -expectedPower - expectedFlux * expectedFlux * static_cast<double>(tSwitchResistance);
 
         CPPUNIT_ASSERT_NO_THROW(tArticle->computeFlows(0.0));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,      tArticle->mFlux,                         DBL_EPSILON);
@@ -737,9 +737,9 @@ void UtGunnsElectUserLoadSwitch2::testComputeFlowsOverrideNonGround()
 
         CPPUNIT_ASSERT_NO_THROW(tArticle->computeFlows(0.0));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,   tArticle->mPotentialDrop,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,                         FLT_EPSILON * expectedFlux);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,                        FLT_EPSILON * expectedPwr);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mLoadsPower,                   FLT_EPSILON * expectedPwr);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,                         static_cast<double>(FLT_EPSILON) * expectedFlux);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,                        static_cast<double>(FLT_EPSILON) * expectedPwr);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mLoadsPower,                   static_cast<double>(FLT_EPSILON) * expectedPwr);
     }
 
     UT_PASS;
@@ -932,14 +932,14 @@ void UtGunnsElectUserLoadSwitch2::testInitializationExceptions()
     tConfigData->mName = tName;
 
     /// @test    Initialization exception from the switch.
-    tConfigData->mSwitch.mResistance = 0.0;
+    tConfigData->mSwitch.mResistance = 0.0F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPorts[0], tPorts[1]),
                          TsInitializationException);
     CPPUNIT_ASSERT(!tArticle->isInitialized());
     tConfigData->mSwitch.mResistance = tSwitchResistance;
 
     /// @test    Initialization exception from a sensor.
-    tConfigData->mInputVoltageSensor.mMaxRange = -99.9;
+    tConfigData->mInputVoltageSensor.mMaxRange = -99.9F;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPorts[0], tPorts[1]),
                          TsInitializationException);
     CPPUNIT_ASSERT(!tArticle->isInitialized());

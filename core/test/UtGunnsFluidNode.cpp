@@ -1070,23 +1070,23 @@ void UtGunnsFluidNode::testOutflowOverflow()
     tNode.initVolume(volume);
     const double initMass = tNode.getMass();
 
+    /// - Set up an incoming fluid.
+    double fractionsIn[FluidProperties::NO_FLUID] = {0.99, 0.0, 0.01};
+    PolyFluidInputData fluidInitIn(290.0,                  // temperature
+                                     1.0,                  // pressure
+                                     0.0,                  // flowrate
+                                     0.0,                  // mass
+                                   fractionsIn);           // massFraction
+    PolyFluid tFluidIn(*tFluidConfig, fluidInitIn);
+
+    /// - Add inflows and outflows to the node, test is overflowing indication.
+    const double thruFlux = 0.033; // molar rate (kg*mol/s)
+    tNode.scheduleOutflux(thruFlux);
+    CPPUNIT_ASSERT(tNode.isOverflowing(dt));
+    const double inFlowRate  = thruFlux * tFluidIn.getMWeight();
+    tNode.collectInflux(inFlowRate, &tFluidIn);
+
     {
-        /// - Set up an incoming fluid.
-        double fractionsIn[FluidProperties::NO_FLUID] = {0.99, 0.0, 0.01};
-        PolyFluidInputData fluidInitIn(290.0,                  // temperature
-                                         1.0,                  // pressure
-                                         0.0,                  // flowrate
-                                         0.0,                  // mass
-                                       fractionsIn);           // massFraction
-        PolyFluid tFluidIn(*tFluidConfig, fluidInitIn);
-
-        /// - Add inflows and outflows to the node, test is overflowing indication.
-        const double thruFlux = 0.033; // molar rate (kg*mol/s)
-        tNode.scheduleOutflux(thruFlux);
-        CPPUNIT_ASSERT(tNode.isOverflowing(dt));
-        const double inFlowRate  = thruFlux * tFluidIn.getMWeight();
-        tNode.collectInflux(inFlowRate, &tFluidIn);
-
         /// - Call integrateFlows with dt = 0.1 and verify outputs.
         const double initMoles        = tNode.getContent()->getMole();
         const double thruMoles        = thruFlux * dt - initMoles;
@@ -1109,55 +1109,53 @@ void UtGunnsFluidNode::testOutflowOverflow()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFluxThru, tNode.mFluxThrough, DBL_EPSILON);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractO2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  static_cast<double>(FLT_EPSILON));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractN2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  static_cast<double>(FLT_EPSILON));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractCO2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), static_cast<double>(FLT_EPSILON));
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tNode.mExpansionDeltaT,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0,           tNode.mContent.getTemperature(), FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(290.0,           tNode.mContent.getTemperature(), static_cast<double>(FLT_EPSILON));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassErr, tNode.mMassError,                DBL_EPSILON);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(outFlow,         tNode.getOutflow()->getFlowRate(), DBL_EPSILON);
     }
 
-    tNode.resetFlows();
-
     /// - Now do a test with the same outflux, but the inflow is so small that it causes the node
     ///   to limit resulting mass from going negative.  The resulting mixture should equal the
     ///   inflow.
     {
-        /// - Set up a different incoming fluid than previous step.
-        double fractionsIn[FluidProperties::NO_FLUID] = {0.01, 0.49, 0.5};
-        PolyFluidInputData fluidInitIn(320.0,                  // temperature
-                                         1.0,                  // pressure
-                                         0.0,                  // flowrate
-                                         0.0,                  // mass
-                                       fractionsIn);           // massFraction
-        PolyFluid tFluidIn(*tFluidConfig, fluidInitIn);
-
-        const double thruFlux = 0.033; // molar rate (kg*mol/s)
+        tNode.resetFlows();
         tNode.scheduleOutflux(thruFlux);
         CPPUNIT_ASSERT(tNode.isOverflowing(dt));
-        const double inFlowRate = thruFlux * tFluidIn.getMWeight() * 1.0e-6;
+        const double inFlowRate_new = thruFlux * tFluidIn.getMWeight() * 1.0e-6;
 
-        tNode.collectInflux(inFlowRate, &tFluidIn);
+        /// - Set up a different incoming fluid than previous step.
+        double fractionsIn_new[FluidProperties::NO_FLUID] = {0.01, 0.49, 0.5};
+        PolyFluidInputData fluidInitIn_new(320.0,                  // temperature
+                                             1.0,                  // pressure
+                                             0.0,                  // flowrate
+                                             0.0,                  // mass
+                                           fractionsIn_new);       // massFraction
+        PolyFluid tFluidIn_new(*tFluidConfig, fluidInitIn_new);
+
+        tNode.collectInflux(inFlowRate_new, &tFluidIn_new);
 
         const double expectedMass     = DBL_EPSILON;
-        const double expectedFractO2  = fractionsIn[0];
-        const double expectedFractN2  = fractionsIn[1];
-        const double expectedFractCO2 = fractionsIn[2];
+        const double expectedFractO2  = fractionsIn_new[0];
+        const double expectedFractN2  = fractionsIn_new[1];
+        const double expectedFractCO2 = fractionsIn_new[2];
 
         CPPUNIT_ASSERT_NO_THROW(tNode.integrateFlows(dt));
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass, tNode.getMass(), DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractO2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  static_cast<double>(FLT_EPSILON));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractN2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  static_cast<double>(FLT_EPSILON));
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractCO2,
-                tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), FLT_EPSILON);
+                tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), static_cast<double>(FLT_EPSILON));
     }
 
     std::cout << "... Pass";

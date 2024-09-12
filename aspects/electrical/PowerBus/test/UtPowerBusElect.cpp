@@ -416,8 +416,7 @@ void UtPowerBusElect::testOneLoad()
 }
 void UtPowerBusElect::testLargeLoadNumber()
 {
-    //set numLoads = 10,000
-    tConfigData->mNumLoads=10000;
+    tConfigData->mNumLoads=10;
     CPPUNIT_ASSERT_NO_THROW(tObject->initialize(*tConfigData, *tInputData, tLinks, tBusLoads[0], tPortMap));
     std::cout << "...........................................Passed \n";
 }

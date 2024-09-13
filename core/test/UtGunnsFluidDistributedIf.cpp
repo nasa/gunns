@@ -428,7 +428,6 @@ void UtGunnsFluidDistributedIf::testProcessInputs()
     CPPUNIT_ASSERT(0     == tArticleInterface->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(false == tArticleInterface->mOutData.mDemandMode);
     CPPUNIT_ASSERT(false == tArticleInterface->mInData.hasValidData());
-    double inFractions[2]   = {0.7, 0.3};
     double inTcFractions[4] = {1.0e-7, 2.0e-7, 3.0e-7, 4.0e-7};
     double inTcFractionSum  = inTcFractions[0] + inTcFractions[1] + inTcFractions[2] + inTcFractions[3];
 

@@ -806,10 +806,7 @@ void UtGunnsFluidReactor::testUpdateFluid()
         mArticle->mCompounds[NH42HPO4].mMass      =  0.0;
         mArticle->mCompounds[H3PO4].mMass         =  0.0;
         mArticle->mCompounds[NH3].mMass           =  0.0;
-        const double expectedNH3Mass              =  mArticle->mInternalFluid->
-                                                     getMassFraction(FluidProperties::GUNNS_NH3) *
-                                                     mArticle->mInternalFluid->getMass();
-        mArticle->mFlowRate                       = 0.0;
+        mArticle->mFlowRate                       =  0.0;
         mArticle->updateFluid(mTimeStep, mFlowRate);
         const double returnedNH42HPO4TotalMass    =  mArticle->mCompounds[NH42HPO4].mTotalMass;
         const double returnedH3PO4TotalMass       =  mArticle->mCompounds[H3PO4].mTotalMass;
@@ -882,7 +879,6 @@ void UtGunnsFluidReactor::testComputeFlows()
 
     /// - Compute expected results.
     mFlowRate = mArticle->mFlowRate;
-    const double maxRate          = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mMaxReactantRate;
     const double efficiency       = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mReactantEfficiency;
     const double moleRatioCO2     = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mProduct1MoleRatio;
     const double moleRatioH2O     = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mProduct2MoleRatio;
@@ -1036,7 +1032,6 @@ void UtGunnsFluidReactor::testComputeFlowsH2Removal()
 
     /// - Compute expected results.
     mFlowRate = mArticle->mFlowRate;
-    const double maxRate          = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mMaxReactantRate;
     const double efficiency       = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mReactantEfficiency;
     const double moleRatioH2O     = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mProduct1MoleRatio;
     const double moleRatioO2      = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mReagentMoleRatio;

@@ -95,7 +95,7 @@ void TsSurfaceHeatFlux::setLighting( const double lightset)
 ///
 /// @details  Sets a particular radiance vector (can be used when not connected to env model)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-const void TsSurfaceHeatFlux::setRadiance( double* radiancePointer, // --   pointer to radiance vector of
+void TsSurfaceHeatFlux::setRadiance( double* radiancePointer, // --   pointer to radiance vector of
                                                               //      interest (sun, IR, or albedo)
         double x,   // (W/m2)     x-component of input radiance vector
         double y,   // (W/m2)     y-component of input radiance vector

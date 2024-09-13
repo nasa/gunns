@@ -533,10 +533,6 @@ void UtUnitConversion::testCompareOld()
     const double TS_IN_PER_M          = 39.37007874;
     const double TS_FT_PER_M          = 3.280839895013;
     const double TS_M_PER_FT          = 0.3048;
-    const double TS_FT_PER_MI         = 5280.0;      // Mile
-    const double TS_MI_PER_FT         = 0.000189394;
-    const double TS_FT_PER_NMI        = 6076.115;    // International nautical mile
-    const double TS_NMI_PER_FT        = 0.000164579;
     const double TS_M_PER_KM          = 1000.0;
     const double TS_KM_PER_M          = 0.001;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_IN_PER_FT, UnitConversion::IN_PER_FT_UTIL, 1.0e-16);
@@ -676,9 +672,7 @@ void UtUnitConversion::testCompareOld()
     const double TS_RAD_PER_REV       = 6.28318531;
     const double TS_REV_PER_RAD       = 0.159154943;
     const double TS_RAD_PER_ARCSEC    = 4.84813681e-6;
-    const double TS_ARCSEC_PER_RAD    = 206264.806293699;
     const double TS_RAD_PER_ARCMIN    = 2.90888209e-4;
-    const double TS_ARCMIN_PER_RAD    = 3437.746766834;
     const double TS_PI                = 3.14159265358979323846;
     const double TS_TWO_PI            = 6.28318530717958647692;
     const double TS_SQRT_PI           = 1.77245385090551602729;
@@ -696,6 +690,7 @@ void UtUnitConversion::testCompareOld()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_MIL_PER_DEG, UnitConversion::MIL_PER_DEG, 1.0e-16);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_DEG_PER_MIL, UnitConversion::DEG_PER_MIL, 1.0e-16);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_REV, UnitConversion::RAD_PER_REV, 1.0e-08);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_REV_PER_RAD, UnitConversion::REV_PER_RAD, 1.0e-08);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_ARCSEC, UnitConversion::RAD_PER_ARCSEC, 1.0e-09);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_ARCMIN, UnitConversion::RAD_PER_ARCMIN, 1.0e-12);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_PI, UnitConversion::PI_UTIL, 1.0e-16);

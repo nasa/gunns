@@ -121,7 +121,7 @@ void GunnsElectPvCellEquivCircuit2::update(const GunnsElectPvCellEquivCircuit* r
         if (mTemperature == refCell->mTemperature) {
             /// - If we're at the reference temperature, cell only varies with illumination.
             ///   Currents increase with more light, resistances decrease, and all other parameters
-            ///   are unchanged from teh reference cell.
+            ///   are unchanged from the reference cell.
             mIsc = refCell->mIsc * photoRatio;
             mImp = refCell->mImp * photoRatio;
             mRs  = refCell->mRs  / photoRatio;

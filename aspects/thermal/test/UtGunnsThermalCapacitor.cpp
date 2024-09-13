@@ -529,7 +529,6 @@ void UtGunnsThermalCapacitor::testAccessors()
 
     int group = 5;
     double potential = 126.4;
-    double override = 156.1;
 
     /// @test   getEditCapacitanceGroup() accessor.
     tArticle->mEditCapacitanceGroup = group;

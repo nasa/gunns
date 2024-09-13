@@ -23,14 +23,14 @@ UtGunnsFluidFireSource::UtGunnsFluidFireSource()
     tConfigData(),
     tInputData(),
     tArticle(),
-    tFireFlag(),
-    tHeatOutput(),
     tO2ConsumpRate(),
     tCO2ProductRate(),
     tH2OProductRate(),
     tMinReqO2(),
-    tLinkName(),
     tTcRatesState(),
+    tLinkName(),
+    tFireFlag(),
+    tHeatOutput(),
     tTcInput(),
     tNodes(),
     tNodeList(),
@@ -601,7 +601,6 @@ void UtGunnsFluidFireSource::testComputeFlowsFromNode()
     tArticle->transportFlows(tTimeStep);
 
     const double expectedP   = tNodes[0].getPotential();
-    const double expectedQ   = (tCO2ProductRate + tH2OProductRate - tO2ConsumpRate + tTcRatesState[0] + tTcRatesState[1]) * tHeatOutput / tArticle->getInternalFluid()->getDensity();
     const double expectedPwr = tInputData->mMalfFireHeat;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,                 tArticle->mPotentialDrop,                DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,               tArticle->mPower,                        DBL_EPSILON);

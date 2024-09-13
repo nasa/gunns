@@ -746,8 +746,6 @@ void UtGunnsElectPvString::testStep()
                                     * (1.0 + tCellTemperatureVoltageCoeff * dT);
         const double expectedRs     = numCells * tCellSeriesResistance;
         const double expectedVs     = tBlockingDiodeVoltageDrop + tBypassDiodeVoltageDrop;
-        const double expectedConv   = tCellEfficiency * (1.0 + tCellTemperatureCurrentCoeff * dT);
-        const double expectedPwrSrc = 0.0;
         const double expectedIsrc   = 0.0;
         const double expectedVoc    = expectedVsh - expectedVs + expectedIsrc * expectedRsh / 1.0E6;
         const double expectedIsc    = 0.0;
@@ -777,7 +775,6 @@ void UtGunnsElectPvString::testStep()
         const double expectedVsh    = 0.0;
         const double expectedRs     = 1.0 / 1.0E6;
         const double expectedVs     = tBlockingDiodeVoltageDrop + 4 * tBypassDiodeVoltageDrop;
-        const double expectedPwrSrc = 0.0;
         const double expectedIsrc   = 0.0;
         const double expectedVoc    = 0.0;
         const double expectedIsc    = 0.0;
@@ -799,7 +796,6 @@ void UtGunnsElectPvString::testStep()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp,   tArticle->mMpp.mConductance,            DBL_EPSILON);
     } {
         /// @test    Update MPP with zero source power.
-        tArticle->mEqProps->mIL;
         tArticle->updateMpp();
 
         const double expectedPmpp   = 0.0;

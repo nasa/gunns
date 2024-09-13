@@ -72,57 +72,57 @@ void UtFluidProperties::testAccessors()
 
     /// @test for each fluid type (just for existence)
     for (int j = 0; j  < FluidProperties::NO_FLUID; j++) {
-        const FluidProperties::FluidType i = static_cast<const FluidProperties::FluidType>(j);
+        const FluidProperties::FluidType i = static_cast<FluidProperties::FluidType>(j);
         const double t = 300.0;
         const double p = 100000.0;
         const double h = 10000.0;
         const double d = 30.0;
-        const FluidProperties::FluidType type   =
+        const FluidProperties::FluidType type   __attribute__((unused)) =
             mArticle->getProperties(i)->getType();
         /// @test getType
-        const FluidProperties::FluidPhase phase =
+        const FluidProperties::FluidPhase phase __attribute__((unused)) =
             mArticle->getProperties(i)->getPhase();
         /// @test getMWeight
-        const double mWeight                    =
+        const double mWeight                    __attribute__((unused)) =
             mArticle->getProperties(i)->getMWeight();
         /// @test getCriticalTemperature
-        const double criticalTemperature        =
+        const double criticalTemperature        __attribute__((unused)) =
             mArticle->getProperties(i)->getCriticalTemperature();
         /// @test getDensity
-        const double density                    =
+        const double density                    __attribute__((unused)) =
             mArticle->getProperties(i)->getDensity(t, p);
         /// @test getViscosity
-        const double viscosity                  =
+        const double viscosity                  __attribute__((unused)) =
             mArticle->getProperties(i)->getViscosity(t, p);
         /// @test getSpecificHeat
-        const double specificHeat               =
+        const double specificHeat               __attribute__((unused)) =
             mArticle->getProperties(i)->getSpecificHeat(t, p);
         /// @test getSpecificEnthalpy
-        const double specificEnthalpy           =
+        const double specificEnthalpy           __attribute__((unused)) =
             mArticle->getProperties(i)->getSpecificEnthalpy(t, p);
         /// @test getAdiabaticIndex
-        const double adiabaticIndex             =
+        const double adiabaticIndex             __attribute__((unused)) =
             mArticle->getProperties(i)->getAdiabaticIndex(t, p);
         /// @test getAdiabaticIndex
-        const double thermalConductivity        =
+        const double thermalConductivity        __attribute__((unused)) =
             mArticle->getProperties(i)->getThermalConductivity(t, p);
         /// @test getAdiabaticIndex
-        const double prandtlNumber              =
+        const double prandtlNumber              __attribute__((unused)) =
             mArticle->getProperties(i)->getPrandtlNumber(t, p);
         /// @test getPressure
-        const double pressure                   =
+        const double pressure                   __attribute__((unused)) =
             mArticle->getProperties(i)->getPressure(t, d);
         /// @test getTemperature
-        const double temperature                =
+        const double temperature                __attribute__((unused)) =
             mArticle->getProperties(i)->getTemperature(h, p);
         /// @test getSaturationPressure
-        const double saturationPressure         =
+        const double saturationPressure         __attribute__((unused)) =
             mArticle->getProperties(i)->getSaturationPressure(t);
         /// @test getSaturationTemperature
-        const double saturationTemperature      =
+        const double saturationTemperature      __attribute__((unused)) =
             mArticle->getProperties(i)->getSaturationTemperature(p);
         /// @test getSaturationTemperature
-        const double heatOfVaporization         =
+        const double heatOfVaporization         __attribute__((unused)) =
             mArticle->getProperties(i)->getHeatOfVaporization(t);
     }
 
@@ -756,10 +756,10 @@ void UtFluidProperties::testHeTable()
     const double maxT = 1000.0;
     const double minT = 2.1768;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -767,10 +767,10 @@ void UtFluidProperties::testHeTable()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -815,10 +815,10 @@ void UtFluidProperties::testXeTable()
     const double maxT = 750.0;
     const double minT = 170.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -826,10 +826,10 @@ void UtFluidProperties::testXeTable()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -869,10 +869,10 @@ void UtFluidProperties::testN2Table()
     const double maxT = 750.0;
     const double minT = 160.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -880,10 +880,10 @@ void UtFluidProperties::testN2Table()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -923,10 +923,10 @@ void UtFluidProperties::testO2Table()
     const double maxT = 750.0;
     const double minT = 160.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -934,10 +934,10 @@ void UtFluidProperties::testO2Table()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -977,10 +977,10 @@ void UtFluidProperties::testH2Table()
     const double maxT = 1000.0;
     const double minT = 64.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -988,10 +988,10 @@ void UtFluidProperties::testH2Table()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -1031,10 +1031,10 @@ void UtFluidProperties::testWaterPvtTable()
     const double maxT = 373.506467;
     const double minT = 273.16;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
@@ -1042,10 +1042,10 @@ void UtFluidProperties::testWaterPvtTable()
             const double density = mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getPressure(temperature, density);
             if (std::fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }

@@ -30,6 +30,7 @@ PROGRAMMERS:
 
 #include <cstdio>
 #include <iostream>
+#include <cstdarg>
 
 #include "TsHsMsgWrapper.hh"
 #include "TsHsMngr.hh"
@@ -87,7 +88,7 @@ void tsHsSendMsgFileLineFormattedC(
 {
     const int MESSAGE_BUFFER_MAX_SIZE = 1024;
 
-    va_list mtext_args;
+    std::va_list mtext_args;
     va_start(mtext_args, mtext);
 
     if (tsGlobalHsMngr)
@@ -99,4 +100,3 @@ void tsHsSendMsgFileLineFormattedC(
 
     va_end(mtext_args);
 }
-

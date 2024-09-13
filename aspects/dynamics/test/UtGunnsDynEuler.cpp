@@ -166,7 +166,7 @@ void UtGunnsDynEuler::testUpdate()
 
     for (unsigned int seq=0; seq<6; ++seq) {
         std::stringstream ss;
-        ss << "Sequence: " << sequences[seq];
+        ss << "Sequence: " << static_cast<int>(sequences[seq]);
 
         GunnsDynEulerBase* article = tFactory.create(sequences[seq]);
 

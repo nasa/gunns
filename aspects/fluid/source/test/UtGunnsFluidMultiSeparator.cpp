@@ -596,7 +596,6 @@ void UtGunnsFluidMultiSeparator::testStep()
     const double expectedA     = expectedG * std::sqrt(1000.0 * 0.5 * expectedRhoIn / (p0 - p1))
                                / expectedMwIn;
     const double flux = expectedA * (p0 - p1);
-    const double mdot = flux * expectedMwIn;
     const double sepH2O = flux * 0.009 * tFluidFractions[0] / 18.0153; // mass fraction and MW of H2O;
     const double sepH2  = flux * 0.001 * tFluidFractions[1] / 2.01588; // mass fraction and MW of H2;
     tArticle->mSepBufferThru[0] = sepH2O;
@@ -839,8 +838,6 @@ void UtGunnsFluidMultiSeparator::testTransportFlows()
     tArticle->mAdmittanceMatrix[5] =  expectedA;
     const double expectedFlux   = expectedA * expectedDp;
     const double expectedMdot   = expectedFlux * expectedMwIn;
-    const double expectedQ      = expectedMdot / expectedRhoIn;
-    const double expectedPwr    = -expectedQ * expectedDp * 1000.0;
     const double xH2O           = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2O);
     const double xH2            = tNodes[0].getContent()->getMoleFraction(FluidProperties::GUNNS_H2);
     const double xCO2           = tNodes[0].getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO2);

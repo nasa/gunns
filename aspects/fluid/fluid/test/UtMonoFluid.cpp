@@ -285,11 +285,11 @@ void UtMonoFluid::testPropertyAccessors()
     /// @test getType
     CPPUNIT_ASSERT(mType == mArticle->getType());
 
-    /// @test getPhase
-    FluidProperties::FluidPhase expected = mProperties->getProperties(mType)->getPhase();
-    CPPUNIT_ASSERT(expected == mArticle->getPhase());
-
     {
+        /// @test getPhase
+        FluidProperties::FluidPhase expected = mProperties->getProperties(mType)->getPhase();
+        CPPUNIT_ASSERT(expected == mArticle->getPhase());
+    } {
         /// @test getMWeight
         const double expected =
             mProperties->getProperties(mType)->getMWeight();

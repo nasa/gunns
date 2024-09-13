@@ -730,9 +730,7 @@ void UtGunnsGasTurbine::testUpdateState()
     tArticle->mPotentialVector[1] = tNodes[1].getContent()->getPressure();
 
     double expectedImpellerSpeed = tMotorSpeed / tDriveRatio; // 6000
-    double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
-    double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
     double expectedCorrectedSpeed= expectedImpellerSpeed/std::sqrt(sourceTemp/tReferenceTemp); // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed;
 
@@ -828,9 +826,7 @@ void UtGunnsGasTurbine::testUpdateFluid()
 
     /// - Source pressure converted from kPa to Pa to relate power in Watts.
     double expectedImpellerSpeed = tMotorSpeed / tDriveRatio; // 6000
-    double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
-    double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
     double expectedCorrectedSpeed= expectedImpellerSpeed / std::sqrt(sourceTemp / tReferenceTemp) ; // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed ;
 

@@ -332,7 +332,7 @@ void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address,
 /// @details  This adds a model output variable for which we are trying to achieve its target
 ///           values by optimizing the input variables.  This function adds an optional scalar
 ///           target value, for optimizing a steady-state model.  A target trajectory for a non-
-///           steady-state model can be specified with teh addOutputDataRow function.
+///           steady-state model can be specified with the addOutputDataRow function.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::addOutput(const std::string& varName, double* address, const double targetValue, const double costWeight)
 {

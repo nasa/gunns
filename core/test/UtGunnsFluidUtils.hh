@@ -82,7 +82,6 @@ class UtGunnsFluidUtils : public CppUnit::TestFixture
         GunnsFluidTraceCompoundsConfigData* mFluidTcConfig1;  /**< (--) Pointer to Fluid 1 trace compounds config data. */
         PolyFluidConfigData*                mFluidConfig1;    /**< (--) Pointer to Fluid 1 config data. */
         PolyFluidConfigData*                mFluidConfig2;    /**< (--) Pointer to Fluid 2 config data. */
-        double*                             fractions;        /**< (--) Pointer to Fluid Fractions. */
         PolyFluidInputData*                 mFluidInput1;     /**< (--) Pointer to Fluid 1 input data. */
         PolyFluidInputData*                 mFluidInput2;     /**< (--) Pointer to Fluid 2 input data. */
         PolyFluidInputData*                 mFluidInput3;     /**< (--) Pointer to Fluid 3 input data. */

@@ -498,7 +498,6 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     DefinedFluidProperties definedFluidProps;
     const FluidProperties* gasProps = definedFluidProps.getProperties(tGasType);
     const FluidProperties* liqProps = definedFluidProps.getProperties(tLiquidType);
-    const FluidProperties* heProps  = definedFluidProps.getProperties(FluidProperties::GUNNS_HE);
 
     /// @test positive flow direction.
     tArticle->mFlowRate = 0.001;

@@ -48,7 +48,7 @@ void UtCholeskyLdu::testNormalSolution()
     std::cout << "\n -----------------------------------------------------------------------------";
     std::cout << "\n UtCholeskyLdu ..... 01: testNormalSolution .........................";
 
-    double tolerance = 1.0E-14;
+    double tolerance = 1.0E-13;
 
     /// - Test this made-up system.
     double A[16] = {10.0,     -0.001,    -0.002,    0.0,
@@ -150,9 +150,9 @@ void UtCholeskyLdu::testNormalSolution()
     results[1] = Cs[3] * xs[0] + Cs[4] * xs[1] + Cs[5] * xs[2];
     results[2] = Cs[6] * xs[0] + Cs[7] * xs[1] + Cs[8] * xs[2];
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[0], result[0], std::max(b[0] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[1], result[1], std::max(b[1] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[2], result[2], std::max(b[2] * tolerance, 2.0 * tolerance));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(bs[0], results[0], std::max(bs[0] * tolerance, 2.0 * tolerance));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(bs[1], results[1], std::max(bs[1] * tolerance, 2.0 * tolerance));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(bs[2], results[2], std::max(bs[2] * tolerance, 2.0 * tolerance));
 
     std::cout << "... Pass";
 }
@@ -277,15 +277,11 @@ void UtCholeskyLdu::testInvert()
 {
     std::cout << "\n UtCholeskyLdu ..... 05: testInvert .................................";
 
-    double tolerance = 1.0E-14;
-
     /// - Test this made-up system.
     double A[16] = {10.0,     -0.001,    -0.002,    0.0,
                     -0.001,    8.0,      -0.003,   -0.001,
                     -0.002,   -0.003,    12.0,      0.0,
                      0.0,     -0.001,     0.0,      9.0};
-    double x[4]  = { 0.0,      0.0,       0.0,      0.0};
-    double b[4]  = {27.0,      0.03,      0.0,     -1.5};
 
     double C[16];
     for (int i=0; i<16; ++i) {

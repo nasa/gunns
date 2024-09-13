@@ -1,14 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup  UT_GUNNS_ELECT_DIODE   Diode Unit tests
 /// @ingroup   UT_GUNNS_ELECT
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @details   Unit test class for Diode Elect.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 #include <cppunit/ui/text/TestRunner.h>
-#include "UtDiodeElect.hh"
 #include "UtGunnsElectRealDiode.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +21,6 @@
 int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;
 
-    runner.addTest(UtDiodeElect::suite());
     runner.addTest(UtGunnsElectRealDiode::suite());
 
     runner.run();

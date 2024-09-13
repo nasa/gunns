@@ -99,7 +99,7 @@ void UtGunnsElectRealDiode::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectRealDiode::testConfigAndInput()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("GUNNS Electrical Aspect Diode Unit Tests");
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT(tName  == tConfigData->mName);
@@ -394,5 +394,5 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     }
 
-    UT_PASS_LAST;
+    UT_PASS_FINAL;
 }

@@ -60,16 +60,10 @@ cd $GUNNS_HOME/$FOLDER; make clean;
 set FOLDER = aspects/electrical/resistive/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
-set FOLDER = aspects/electrical/sar/test
-cd $GUNNS_HOME/$FOLDER; make clean;
-
 set FOLDER = aspects/electrical/SolarArray/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/electrical/Switch/test
-cd $GUNNS_HOME/$FOLDER; make clean;
-
-set FOLDER = aspects/electrical/SwitchCard/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/electrical/UserLoad/test

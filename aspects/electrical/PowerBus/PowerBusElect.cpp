@@ -1,5 +1,5 @@
-/*********************** TRICK HEADER *************************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -27,7 +27,7 @@
   (
  (Carlo Bocatto) (L-3) (Initial Prototype) (5/2013)
   )
- **************************************************************************************************/
+*/
 #include <cfloat>
 #include <iostream>
 #include "PowerBusElect.hh"
@@ -228,6 +228,9 @@ void PowerBusElect::initialize(      PowerBusElectConfigData &configData,
 
     //set flag to true upon successful initialization
     mInitFlag = true;
+
+    /// - Warn of deprecation due to obsolescence.
+    GUNNS_WARNING("this link is deprecated!  It is obsoleted by placing instances of GunnsElectSwitch or GunnsElectUserLoadSwitch links in parallel.");
 }
 
 

@@ -1,12 +1,8 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-LIBRARY DEPENDENCY:
-  ((aspects/electrical/Diode/GunnsElectRealDiode.o)
-   (core/GunnsBasicLink.o)
-   (software/exceptions/TsInitializationException.o))
 */
+
 #include "UtGunnsElectRealDiode.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
@@ -355,7 +351,9 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
 {
     UT_RESULT;
 
-    /// - Initialize default constructed test article with nominal initialization data.
+    /// - Initialize default constructed test article with nominal initialization data, initially
+    ///   in forward bias.
+    tInputData->mReverseBias = false;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
 
     {
@@ -365,7 +363,7 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         const GunnsBasicLink::SolutionResult expectedResult = GunnsBasicLink::CONFIRM;
         const bool                           expectedBias   = false;
         const GunnsBasicLink::SolutionResult result = tArticle->confirmSolutionAcceptable(1, 1);
-        //CPPUNIT_ASSERT(expectedResult == result); FIXME: this assertion fails!
+        CPPUNIT_ASSERT(expectedResult == result);
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     } {
         /// @test    Switches to reverse bias.

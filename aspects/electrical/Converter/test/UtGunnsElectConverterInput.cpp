@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -143,7 +143,7 @@ void UtGunnsElectConverterInput::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectConverterInput::testConfig()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("GUNNS Electrical Aspect Converters Unit Tests");
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT(&tSensorVin         == tConfigData->mInputVoltageSensor);

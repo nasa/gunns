@@ -2,10 +2,6 @@
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 #include <cppunit/ui/text/TestRunner.h>
 
-#include "UtSolarString.hh"
-#include "UtPVCellCompanionModel.hh"
-#include "UtSolarSection.hh"
-#include "UtSolarArray.hh"
 #include "UtGunnsElectPvString.hh"
 #include "UtGunnsElectPvString2.hh"
 #include "UtGunnsElectPvSection.hh"
@@ -24,10 +20,6 @@
 int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;
 
-    runner.addTest(UtSolarString::suite());
-    runner.addTest(UtPVCellCompanionModel::suite());
-    runner.addTest(UtSolarSection::suite());
-    runner.addTest(UtSolarArray::suite());
     runner.addTest(UtGunnsElectPvString::suite());
     runner.addTest(UtGunnsElectPvString2::suite());
     runner.addTest(UtGunnsElectPvSection::suite());

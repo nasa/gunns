@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -852,5 +852,5 @@ void UtGunnsElectPvRegConv::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->mWasteHeat,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux, tNodes[0].getInflux(),    DBL_EPSILON);
 
-    UT_PASS_LAST;
+    UT_PASS_FINAL;
 }

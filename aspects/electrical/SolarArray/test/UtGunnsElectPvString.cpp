@@ -115,7 +115,7 @@ void UtGunnsElectPvString::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectPvString::testCellConfig()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("GUNNS Electrical Aspect Photovoltaics Unit Tests");
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tCellSurfaceArea,             tConfigData->mCellConfig.mSurfaceArea,             0.0);

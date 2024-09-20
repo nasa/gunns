@@ -224,16 +224,6 @@ else
 endif
 
 #
-set FOLDER = aspects/electrical/sar/test
-
-cd $GUNNS_HOME/$FOLDER; make clean; make;
-if ( -f $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then
-    echo $FOLDER\: `grep -E 'OK \(*|FAILURES\!|Failures \!' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log` `grep 'ERROR SUMMARY' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log | grep -v ' 0 errors'` >> $OUT
-else
-    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
-endif
-
-#
 set FOLDER = aspects/electrical/SolarArray/test
 
 cd $GUNNS_HOME/$FOLDER; make clean; make;
@@ -245,16 +235,6 @@ endif
 
 #
 set FOLDER = aspects/electrical/Switch/test
-
-cd $GUNNS_HOME/$FOLDER; make clean; make;
-if ( -f $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then
-    echo $FOLDER\: `grep -E 'OK \(*|FAILURES\!|Failures \!' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log` `grep 'ERROR SUMMARY' $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log | grep -v ' 0 errors'` >> $OUT
-else
-    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
-endif
-
-#
-set FOLDER = aspects/electrical/SwitchCard/test
 
 cd $GUNNS_HOME/$FOLDER; make clean; make;
 if ( -f $GUNNS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then

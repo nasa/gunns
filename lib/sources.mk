@@ -12,13 +12,10 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/ConstantPowerLoad/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/IPS/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/PowerBus/*.cpp) \
- $(wildcard $(GUNNS_HOME)/aspects/electrical/FetSwitch/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/SolarArray/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/Switch/*.cpp) \
- $(wildcard $(GUNNS_HOME)/aspects/electrical/SwitchCard/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/UserLoad/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/resistive/*.cpp) \
- $(wildcard $(GUNNS_HOME)/aspects/electrical/sar/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/TripLogic/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/fluid/capacitor/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/fluid/conductor/*.cpp) \

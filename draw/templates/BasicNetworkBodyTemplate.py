@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -99,7 +99,7 @@ class BasicNetworkBodyTemplate:
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         '/// @param[in] name    (--) Name of the network for H&S messages.\n'
         '/// @param[in] network (--) Pointer to the main network object.\n'
-        '/// \n'
+        '///\n'
         '/// @details  Default constructs the ' + self.data['networkName'] + ' Network Config Data.\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         '' + self.data['networkName'] + 'ConfigData::' + self.data['networkName'] + 'ConfigData(const std::string& name, ' + self.data['networkName'] + '* network)\n'
@@ -174,7 +174,7 @@ class BasicNetworkBodyTemplate:
         '    netConfig(name, this),\n'
         '    netInput(this),\n')
     r = r + self.blockConstructorPreSpotter()
-    r = r+('    // Data Tables \n')
+    r = r+('    // Data Tables\n')
     for table in self.data['dataTables']:
       name   = table[0][1]
       size   = str(int(table[1][1]) - 1)

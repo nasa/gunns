@@ -1,4 +1,7 @@
 /***************************************************************************************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 PURPOSE:
     (These algorithms comprise the Choleski LDU Decomposition direct method for solving systems of
      linear algebraic equations.  This is a freeware package available from

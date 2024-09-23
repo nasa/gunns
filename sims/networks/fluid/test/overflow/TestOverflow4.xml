@@ -421,13 +421,13 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Fluid Sensor" Ports="0=node &amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="tgGBQmwMv0rxqSuOl08c-1" label="sensor13">
+    <object About="Fluid Sensor" Ports="0=node &amp;amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="tgGBQmwMv0rxqSuOl08c-1" label="sensor13">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/fluid/conductor/GunnsFluidSensor" type="Link" />
       <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(nVTRboMgFP0aH7dYWPe+uLYviy9u2TPKtZIiGKC17uuHXJtoWju7xATvuXDP4XAhoomtWAMRiZltoHARfY8IOTEjWC49THymQvA1xlCxGhDZfaVp5pGtPAruxwyU1QZnWWf0AVrB3bBcqAqMcJhtxyXpJorfPNh/NCm0Ul6I0MpOMqO8r82EchMtKRZuPEcNDgyig+TzED2vMe7G2e0jNNk/aFaP03wvoZnuZSB9iGazgGa1gIYmHpk7OJrkrDjsjT4qflOc6fvuqs3aaXh703NaZhhpUmoDd6SUQkrs3DknS62cFT/9jQlD0PFC7ngfVrhOhiVh/LMrHJwd3iGcG5H1Z9fAB8tB+v+JI3RqySVkUuwVQgWo/mwDfBrhteD8cscD/IRvwdjoRrICKi05GDuvO3h+ZW1Ah5I98As=);fontSize=12;strokeColor=#000000;fontColor=#000000;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="530" y="50" />
       </mxCell>
     </object>
-    <object About="Fluid Sensor" Ports="0=node &amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="tgGBQmwMv0rxqSuOl08c-2" label="sensor23">
+    <object About="Fluid Sensor" Ports="0=node &amp;amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="tgGBQmwMv0rxqSuOl08c-2" label="sensor23">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/fluid/conductor/GunnsFluidSensor" type="Link" />
       <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeWidth=1;shape=stencil(nVTRboMgFP0aH7dYWPe+uLYviy9u2TPKtZIiGKC17uuHXJtoWju7xATvuXDP4XAhoomtWAMRiZltoHARfY8IOTEjWC49THymQvA1xlCxGhDZfaVp5pGtPAruxwyU1QZnWWf0AVrB3bBcqAqMcJhtxyXpJorfPNh/NCm0Ul6I0MpOMqO8r82EchMtKRZuPEcNDgyig+TzED2vMe7G2e0jNNk/aFaP03wvoZnuZSB9iGazgGa1gIYmHpk7OJrkrDjsjT4qflOc6fvuqs3aaXh703NaZhhpUmoDd6SUQkrs3DknS62cFT/9jQlD0PFC7ngfVrhOhiVh/LMrHJwd3iGcG5H1Z9fAB8tB+v+JI3RqySVkUuwVQgWo/mwDfBrhteD8cscD/IRvwdjoRrICKi05GDuvO3h+ZW1Ah5I98As=);fontSize=12;strokeColor=#000000;fontColor=#000000;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="530" y="210" />

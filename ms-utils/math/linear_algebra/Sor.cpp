@@ -1,4 +1,7 @@
 /**************************** TRICK HEADER *******************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 PURPOSE:
     This routine implements a Successive OverRelaxation method to
     solve linear systems  A]{x} = {B}.  SOR is an interative

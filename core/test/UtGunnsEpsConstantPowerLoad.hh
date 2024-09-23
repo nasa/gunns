@@ -5,7 +5,7 @@
 @defgroup  UT_GUNNS_CPL_TEST_LINK    Constant Power Load Link for Solver Test
 @ingroup   UT_GUNNS
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details

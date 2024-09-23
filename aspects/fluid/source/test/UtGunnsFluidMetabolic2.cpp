@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((aspects/fluid/source/GunnsFluidMetabolic2.o))
-***************************************************************************************************/
+*/
 
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"

@@ -1,6 +1,9 @@
 #ifndef QuadLinInvFit_EXISTS
 #define QuadLinInvFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_QUAD_LIN_INV Bivariate Quadratic Linear Inverse Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 

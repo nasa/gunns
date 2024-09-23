@@ -1,4 +1,7 @@
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  UT_UTILITIES_MATH_LINEAR_ALGEBRA Linear Algebra Utilities Unit Tests
 @ingroup   UT_UTILITIES_MATH
 @details   This is the unit test main for the ts-models linear algebra utilities classes.

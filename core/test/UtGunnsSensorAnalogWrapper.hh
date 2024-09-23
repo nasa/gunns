@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_SENSOR_ANALOG_WRAPPER    GUNNS Analog Sensor Wrapper Spotter Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Analog Sensor Wrapper Spotter class

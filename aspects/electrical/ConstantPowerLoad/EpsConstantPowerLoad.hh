@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONSTANT_POWER_LOAD_LINK    Constant Power Load Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONSTANT_POWER_LOAD
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details

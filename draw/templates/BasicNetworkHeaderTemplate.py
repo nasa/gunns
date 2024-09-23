@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -110,7 +110,7 @@ class BasicNetworkHeaderTemplate:
         namespaceForMacro = self.data['networkNamespace'].rstrip(':') + '__'
       r = r + (
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
-        '/// @brief    ' + className + ' Jumper Plug definitions \n'
+        '/// @brief    ' + className + ' Jumper Plug definitions\n'
         '///\n'
         '/// @details  Defines a jumper plug class for a socket list in this network.\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
@@ -182,7 +182,7 @@ class BasicNetworkHeaderTemplate:
     r = r + self.blockConfigPreSolver()
     r = r + (
         '        // Solver configuration data\n'
-        '        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ \n'
+        '        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */\n'
         '        // Spotters configuration data\n')
     for spotter in self.data['spotters']:
       r = r + ('        ' + spotter[0] + 'ConfigData ' + spotter[1] + ';    /**< (--) trick_chkpnt_io(**) ' + spotter[1] + ' config data. */\n')
@@ -303,7 +303,7 @@ class BasicNetworkHeaderTemplate:
         '        ' + self.data['networkName'] + '& operator =(const ' + self.data['networkName'] + '&);\n'
         '};\n'
         '\n'
-        '/// @}  \n'
+        '/// @}\n'
         '\n')
     r = r + self.blockPostClass()
     r = r + (

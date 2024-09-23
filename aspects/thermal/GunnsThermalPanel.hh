@@ -4,7 +4,7 @@
 @defgroup  TSM_GUNNS_THERMAL_PANEL    Gunns ThermalPanel Link
 @ingroup   TSM_GUNNS_THERMAL
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details

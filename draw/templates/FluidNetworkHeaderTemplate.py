@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -36,7 +36,7 @@ class FluidNetworkHeaderTemplate(BasicNetworkHeaderTemplate):
         '\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         '/// @brief  Union for ' + self.data['networkName'] + ' GUNNS network mass fractions as scalars and as an array.\n'
-        '///         The array is used as an argument in the PolyFluidInputData constructor. \n'
+        '///         The array is used as an argument in the PolyFluidInputData constructor.\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         'union ' + self.data['networkName'] + 'MassFractions {\n'
         '    ' + self.data['networkNamespace'] + self.data['networkName'] + 'Fractions scalar;\n'
@@ -61,7 +61,7 @@ class FluidNetworkHeaderTemplate(BasicNetworkHeaderTemplate):
         '\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         '/// @brief  Union for a ' + self.data['networkName'] + ' GUNNS network trace compounds state as scalars and as an\n'
-        '///         array. The array is used as an argument in various objects input data constructors. \n'
+        '///         array. The array is used as an argument in various objects input data constructors.\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         'union ' + self.data['networkName'] + '_' + self.data['intTcConfig'][0] + 'State {\n'
         '    ' + self.data['networkNamespace'] + self.data['networkName'] + '_' + self.data['intTcConfig'][0] + 'Scalars scalar;\n'
@@ -86,7 +86,7 @@ class FluidNetworkHeaderTemplate(BasicNetworkHeaderTemplate):
         '\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         '/// @brief  Union for reactor compound masses as scalars and as an array.\n'
-        '///         The array is used as an argument in the chemical reactor input data constructor. \n'
+        '///         The array is used as an argument in the chemical reactor input data constructor.\n'
         '////////////////////////////////////////////////////////////////////////////////////////////////////\n'
         'union ' + self.data['networkName'] + '_' + rxnCompounds[0][1] + 'TotalMasses {\n'
         '    ' + self.data['networkNamespace'] + self.data['networkName'] + '_' + rxnCompounds[0][1] + 'Masses scalar;\n'

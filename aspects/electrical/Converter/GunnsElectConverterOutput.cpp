@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Output Link implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:

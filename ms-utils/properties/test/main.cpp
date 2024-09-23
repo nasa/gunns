@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup  UT_TSM_PROPERTIES  Properties Unit tests
 /// @ingroup   UT_TSM
-/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @details   Unit test classes for the properties models.
 ////////////////////////////////////////////////////////////////////////////////////////////////////

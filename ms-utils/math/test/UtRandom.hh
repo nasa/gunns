@@ -5,7 +5,7 @@
 /// @defgroup  UT_TSM_UTILITIES_MATH_MATH    Math Unit Tests
 /// @ingroup   UT_TSM_UTILITIES_MATH
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details   Unit Tests for the Math class.

@@ -2,6 +2,9 @@
 #define TsApproximation_EXISTS
 
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  @brief     Approximation base class.
 
  @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_BASE Approximation Base Class

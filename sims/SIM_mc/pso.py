@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2023 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This script runs PSO using parallel processing on a specified number of CPU cores.

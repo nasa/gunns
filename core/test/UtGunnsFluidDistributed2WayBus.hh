@@ -5,7 +5,7 @@
 /// @defgroup UT_FLUID_DISTRIBUTED_2WAY_BUS    GUNNS Fluid Distributed 2-Way Bus Interface Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Distributed 2-Way Bus Interface

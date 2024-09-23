@@ -2,6 +2,8 @@
 #define UtLaguerreMethod_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @defgroup UT_UTILITIES_MATH_ROOT_FINDING_LAGUERRE_METHOD Laguerre's Method Unit Tests
 /// @ingroup  UT_UTILITIES_MATH_ROOT_FINDING
 ///

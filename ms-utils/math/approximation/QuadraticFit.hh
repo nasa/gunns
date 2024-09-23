@@ -1,6 +1,9 @@
 #ifndef QuadraticFit_EXISTS
 #define QuadraticFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_QUADRATIC Univariate Quadratic Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 

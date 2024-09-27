@@ -72,6 +72,8 @@ class MsMath
         static double protectedDiv(const double num, const double den, const double threshold = DBL_EPSILON, const double retval = 0.0);
         /// @brief Limits the value of a double argument to a specified range (lower <= x <= upper).
         static double limitRange(const double lower, const double x, const double upper);
+        /// @brief Limits the value of a float argument to a specified range (lower <= x <= upper).
+        static float limitRange(const float lower, const float x, const float upper);
         /// @brief Limits the value of an integer argument to a specified range (lower <= x <= upper).
         static int limitRange(const int lower, const int x, const int upper);
         /// @brief Is the double input within specified range (lower <= x <= upper)?
@@ -405,6 +407,28 @@ inline double MsMath::protectedDiv(const double num, const double den, const dou
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double MsMath::limitRange(const double lower, const double x, const double upper)
+{
+    return std::max(std::min(x, upper), lower);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  lower  (--)  Lower limit of range.
+/// @param[in]  x      (--)  Input argument to be limited.
+/// @param[in]  upper  (--)  Upper limit of range.
+///
+/// @return     float (--)  The value limited to the specified range.
+///
+/// @warning    If lower > upper, then lower is returned without complaint, so don't do that.
+///
+/// @details    Limits the value of a float argument to the specified range (lower <= x <= upper).
+///             \verbatim
+///                       _
+///                      |  lower,     x < lower
+///             result = |  x,         lower <= x <= upper
+///                      |_ upper,     x > upper
+///             \endverbatim
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline float MsMath::limitRange(const float lower, const float x, const float upper)
 {
     return std::max(std::min(x, upper), lower);
 }

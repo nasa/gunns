@@ -457,8 +457,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
     } else {
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVin = static_cast<float>(
-            MsMath::limitRange(static_cast<double>(-FLT_MAX), mPotentialVector[0], static_cast<double>(FLT_MAX)));
+        float sensedVin = MsMath::limitRange(-FLT_MAX, static_cast<float>(mPotentialVector[0]), FLT_MAX);
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
         ///   integrated.  This is because we don't have the time-step in this function, and we must

@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ()
-***************************************************************************************************/
+*/
 
 #include <iostream>
 
@@ -667,11 +664,47 @@ void UtMath::testLimitRangeDouble()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the method for range limiting floats.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtMath::testLimitRangeFloat()
+{
+    std::cout << "\n.Math Test 12: Limit Range Float Tests......................................";
+
+    /// @test for argument well within range
+    float expected = 1.0F;
+    float returned = MsMath::limitRange(0.0F, 1.0F, 2.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    /// @test for argument at lower limit
+    returned = MsMath::limitRange(1.0F, 1.0F, 2.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    /// @test for argument below lower limit
+    returned = MsMath::limitRange(1.0F, 0.0F, 2.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    /// @test for argument at upper limit
+    returned = MsMath::limitRange(0.0F, 1.0F, 1.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    /// @test for argument above upper limit
+    returned = MsMath::limitRange(0.0F, 2.0F, 1.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    /// @test for upper < lower
+    expected = 2.0F;
+    returned = MsMath::limitRange(2.0F, 1.0F, 0.0F);
+    CPPUNIT_ASSERT(expected == returned);
+
+    std::cout << "Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests the method for range limiting integers.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testLimitRangeInt()
 {
-    std::cout << "\n.Math Test 12: Limit Range Integer Tests....................................";
+    std::cout << "\n.Math Test 13: Limit Range Integer Tests....................................";
 
     /// @test for argument well within range
     double expected  = 1.0;
@@ -711,7 +744,7 @@ void UtMath::testLimitRangeInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testIsInRangeDouble()
 {
-    std::cout << "\n.Math Test 13: Is In Range Double Tests.....................................";
+    std::cout << "\n.Math Test 14: Is In Range Double Tests.....................................";
 
     /// @test for argument well within range
     CPPUNIT_ASSERT(MsMath::isInRange(0.0, 1.0, 2.0));
@@ -740,7 +773,7 @@ void UtMath::testIsInRangeDouble()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testIsInRangeInt()
 {
-    std::cout << "\n.Math Test 14: Is In Range Integer Tests....................................";
+    std::cout << "\n.Math Test 15: Is In Range Integer Tests....................................";
 
     /// @test for argument well within range
     CPPUNIT_ASSERT(MsMath::isInRange(0, 1, 2));
@@ -769,7 +802,7 @@ void UtMath::testIsInRangeInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testInnerLimitDouble()
 {
-    std::cout << "\n.Math Test 15: Inner Limit Double Tests.....................................";
+    std::cout << "\n.Math Test 16: Inner Limit Double Tests.....................................";
 
     /// @test for argument well below lower limit
     double expected  = -1.0;
@@ -824,7 +857,7 @@ void UtMath::testInnerLimitDouble()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testInnerLimitInt()
 {
-    std::cout << "\n.Math Test 16: Inner Limit Integer Tests....................................";
+    std::cout << "\n.Math Test 17: Inner Limit Integer Tests....................................";
 
     /// @test for argument well below lower limit
     int expected  = -1;
@@ -869,7 +902,7 @@ void UtMath::testInnerLimitInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testRounding()
 {
-    std::cout << "\n.Math Test 17: Rounding Tests...............................................";
+    std::cout << "\n.Math Test 18: Rounding Tests...............................................";
 
     /// @test for argument exactly equal to integer
     int expected = 1;
@@ -911,7 +944,7 @@ void UtMath::testRounding()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testQuantize()
 {
-    std::cout << "\n.Math Test 18: Quantize Tests...............................................";
+    std::cout << "\n.Math Test 19: Quantize Tests...............................................";
 
     double arg = 3.14159;
     double expected = 3.0;
@@ -998,7 +1031,7 @@ void UtMath::testQuantize()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testFastPow()
 {
-    std::cout << "\n.Math Test 19: fastPow Tests................................................";
+    std::cout << "\n.Math Test 20: fastPow Tests................................................";
 
     double base = 0.0;
     double exp  = 1.25;

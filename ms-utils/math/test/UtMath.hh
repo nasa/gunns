@@ -5,7 +5,7 @@
 /// @defgroup  UT_TSM_UTILITIES_MATH_MATH    MsMath Unit Tests
 /// @ingroup   UT_TSM_UTILITIES_MATH
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details   Unit Tests for the Math class.
@@ -54,6 +54,8 @@ class UtMath : public CppUnit::TestFixture
         void testprotectedDiv();
         /// @brief    Test double limitRange method.
         void testLimitRangeDouble();
+        /// @brief    Test float limitRange method.
+        void testLimitRangeFloat();
         /// @brief    Test int limitRange method.
         void testLimitRangeInt();
         /// @brief    Test double isInRange method.
@@ -83,6 +85,7 @@ class UtMath : public CppUnit::TestFixture
         CPPUNIT_TEST(testProtectedLog);
         CPPUNIT_TEST(testprotectedDiv);
         CPPUNIT_TEST(testLimitRangeDouble);
+        CPPUNIT_TEST(testLimitRangeFloat);
         CPPUNIT_TEST(testLimitRangeInt);
         CPPUNIT_TEST(testIsInRangeDouble);
         CPPUNIT_TEST(testIsInRangeInt);

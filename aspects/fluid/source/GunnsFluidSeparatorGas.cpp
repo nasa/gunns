@@ -1,4 +1,4 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -20,7 +20,7 @@ LIBRARY DEPENDENCY:
 PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (2011-11) (Initial)
     (Jason Harvey)      (L-3 Communications) (2012-12) (Base on conductor with extra source))
-**************************************************************************************************/
+*/
 
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -244,25 +244,25 @@ void GunnsFluidSeparatorGas::validate(const GunnsFluidSeparatorGasConfigData& co
     }
 
     /// - Throw an exception on liquid mass capacity < FLT_EPSILON.
-    if (configData.mMaxLiquidMass < FLT_EPSILON) {
+    if (configData.mMaxLiquidMass < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Liquid mass capacity < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference speed < FLT_EPSILON.
-    if (configData.mReferenceSpeed < FLT_EPSILON) {
+    if (configData.mReferenceSpeed < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference speed < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference pressure < FLT_EPSILON.
-    if (configData.mReferencePressure < FLT_EPSILON) {
+    if (configData.mReferencePressure < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference pressure < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference liquid removal rate < FLT_EPSILON.
-    if (configData.mReferenceRemovalRate < FLT_EPSILON) {
+    if (configData.mReferenceRemovalRate < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference liquid removal rate < FLT_EPSILON.");
     }

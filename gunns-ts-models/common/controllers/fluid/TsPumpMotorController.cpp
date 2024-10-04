@@ -138,7 +138,7 @@ TsPumpMotorControllerInputData::TsPumpMotorControllerInputData(const DcDynPumpMo
                                                                const double voltage,
                                                                const double sensedSpeed,
                                                                const double sensedTemperature,
-                                                               const double startupState,
+                                                               const bool   startupState,
                                                                const bool   commandEnable,
                                                                const double commandSpeed,
                                                                const double noisePhase)
@@ -524,7 +524,7 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         speedCommand = mCommandSpeed;
     }
 
-    if (mMotorPowerBus and FLT_EPSILON < speedCommand) {
+    if (mMotorPowerBus and static_cast<double>(FLT_EPSILON) < speedCommand) {
 
         /// - Apply noise as a sine wave to speed command.
         mNoisePhase += UnitConversion::TWO_PI * mNoiseFrequency * dt;
@@ -537,7 +537,7 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         /// - Compute speed error and speed error rate of change.
         double dSpeedError = -mSpeedError;
         mSpeedError = -1.0;
-        if (speedCommand > FLT_EPSILON) {
+        if (speedCommand > static_cast<double>(FLT_EPSILON)) {
             mSpeedError = (speedCommand - mSensedSpeed) / speedCommand;
         }
         dSpeedError += mSpeedError;

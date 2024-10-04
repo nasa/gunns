@@ -158,9 +158,9 @@ class GunnsFluidBalloon : public GunnsFluidTank
         /// @brief Returns the current inflation state enumeration of this GUNNS Fluid Balloon.
         InflationStates getInflationState() const;
         /// @brief Sets and resets the wall stuck malfunction.
-        void            setMalfStuck(const double flag = false);
+        void            setMalfStuck(const bool flag = false);
         /// @brief Sets and resets the inflatability scale malfunction.
-        void            setMalfInflatabilityScale(const double flag  = false,
+        void            setMalfInflatabilityScale(const bool   flag  = false,
                                                   const double value = 0.0);
 
     protected:
@@ -229,7 +229,7 @@ inline GunnsFluidBalloon::InflationStates GunnsFluidBalloon::getInflationState()
 /// @details Sets the wall stuck malf flag to the given state.  Calling this method with default
 ///          arguments resets the malfunction.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidBalloon::setMalfStuck(const double flag)
+inline void GunnsFluidBalloon::setMalfStuck(const bool flag)
 {
     mMalfStuckFlag = flag;
 }
@@ -241,7 +241,7 @@ inline void GunnsFluidBalloon::setMalfStuck(const double flag)
 /// @details Sets the inflatability scale malf to the given state.  Calling this method with default
 ///          arguments resets the malfunction.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline void GunnsFluidBalloon::setMalfInflatabilityScale(const double flag, const double value)
+inline void GunnsFluidBalloon::setMalfInflatabilityScale(const bool flag, const double value)
 {
     mMalfInflatabilityScaleFlag  = flag;
     mMalfInflatabilityScaleValue = value;

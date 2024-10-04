@@ -1,4 +1,4 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -20,7 +20,7 @@
  PROGRAMMERS:
   ( ((Danny Strauss) (L-3) (Jun 2011))
     ((Danny Strauss) (L-3) (Jul 2014) (Added Trick naming of allocations, and _EXT versions)) )
-***************************************************************************************************/
+*/
 
 #include <stdexcept>
 #include <algorithm> // for std::replace
@@ -78,7 +78,7 @@ std::string tsNameFix(const std::string sName, const std::string sFrom, const st
 ///
 /// @details  Return a string containing type/name specification (e.g., "MyClass foo")
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::string name, void* var)
+const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::string name, void* var __attribute__((unused)))
 {
     /*********************** DEBUG ***************************/
 //    void *backtrace_buffer[100];
@@ -183,7 +183,8 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
 //#endif
 /******************* END DEBUG ***************************/
         }
-
+//#else
+//        (void*)var;
 #endif
     }
     if (!tsName.empty()) {

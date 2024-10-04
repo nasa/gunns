@@ -1,4 +1,4 @@
-/***************************************** TRICK HEADER ********************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -24,7 +24,8 @@ LIBRARY DEPENDENCY:
     (
      (Mike Moore) (L3) (2013-05)
     )
- **************************************************************************************************/
+*/
+
 #include "core/GunnsBasicConductor.hh"
 #include "aspects/electrical/resistive/GunnsElectricalResistor.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -177,7 +178,7 @@ void GunnsElectricalResistor::validate() const
     }
 
     /// - Throw an exception if electrical efficiency <= 0 or electrical efficiency >= 1.
-    if (!MsMath::isInRange(FLT_EPSILON, static_cast<float>(mElectricalEfficiency), 1.0 - FLT_EPSILON)) {
+    if (!MsMath::isInRange(static_cast<double>(FLT_EPSILON), mElectricalEfficiency, 1.0 - static_cast<double>(FLT_EPSILON))) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data", "Electrical Efficiency outside valid range (0-1).");
     }
 }

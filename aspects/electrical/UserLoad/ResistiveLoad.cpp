@@ -1,4 +1,4 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -25,7 +25,7 @@ LIBRARY DEPENDENCY:
     (
      (Shailaja Janapati) (L3) (10-2011) (Initial Prototype)
     )
- **************************************************************************************************/
+*/
 
 #include <cmath>
 #include <cfloat>
@@ -308,7 +308,7 @@ void ResistiveLoad::calculateResistiveLoad()
                }
             }
             break;
-        case LoadSTANDBY:
+        default : // LoadSTANDBY because not LoadOFF check above
             if (0.0 < mResistanceStandby ) {
                mEquivalentResistance = MsMath::limitRange(MINIMUM_RESISTANCE, mResistanceStandby, MAXIMUM_RESISTANCE);
             } else {

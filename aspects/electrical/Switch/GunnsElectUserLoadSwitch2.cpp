@@ -2,7 +2,7 @@
 @file     GunnsElectUserLoadSwitch2.cpp
 @brief    GUNNS Electrical User Load Switch Link Variant 2 implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -50,7 +50,7 @@ const double GunnsElectUserLoadSwitch2::mLoadsOverrideG = 1.0E8;
 GunnsElectUserLoadSwitch2ConfigData::GunnsElectUserLoadSwitch2ConfigData(
         const std::string& name,
         GunnsNodeList*     nodes,
-        const double       switchResistance,
+        const float        switchResistance,
         const int          switchTripPriority,
         const float        curentSensorMinRange,
         const float        curentSensorMaxRange,
@@ -98,12 +98,12 @@ GunnsElectUserLoadSwitch2InputData::GunnsElectUserLoadSwitch2InputData(
         const bool   malfBlockageFlag,
         const double malfBlockageValue,
         const bool   switchIsClosed,
-        const double inputUnderVoltageTripLimit,
-        const double inputUnderVoltageTripReset,
-        const double inputOverVoltageTripLimit,
-        const double inputOverVoltageTripReset,
-        const double switchPosTripLimit,
-        const double switchNegTripLimit,
+        const float  inputUnderVoltageTripLimit,
+        const float  inputUnderVoltageTripReset,
+        const float  inputOverVoltageTripLimit,
+        const float  inputOverVoltageTripReset,
+        const float  switchPosTripLimit,
+        const float  switchNegTripLimit,
         const bool   loadsOverrideActive,
         const double loadsOverrideVoltage)
     :
@@ -371,8 +371,8 @@ GunnsBasicLink::SolutionResult GunnsElectUserLoadSwitch2::confirmSolutionAccepta
            mInputVoltageSensor .sense(0.0, true, mPotentialVector[0]);
            mOutputVoltageSensor.sense(0.0, true, mLoadsVoltage);
 
-           mSwitch.updateTrips(mCurrentSensor.getSensedOutput(),
-                               mInputVoltageSensor.getSensedOutput(), convergedStep);
+           mSwitch.updateTrips(static_cast<double>(mCurrentSensor.getSensedOutput()),
+                               static_cast<double>(mInputVoltageSensor.getSensedOutput()), convergedStep);
            if (mSwitch.isWaitingToTrip() ) {
                result = GunnsBasicLink::DELAY;
            } else if (mSwitch.hasJustTripped()) {

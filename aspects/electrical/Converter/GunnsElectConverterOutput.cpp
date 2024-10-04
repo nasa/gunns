@@ -674,7 +674,7 @@ void GunnsElectConverterOutput::updateCurrentLimitState(GunnsBasicLink::Solution
                                                         const float                     current)
 {
     /// - Voltage regulators can only LIMIT_OC.
-    const bool canOcLimit = mOutputOverCurrentTrip.getLimit() > 0.0 and mLimitStateFlips < mStateFlipsLimit;
+    const bool canOcLimit = mOutputOverCurrentTrip.getLimit() > 0.0F and mLimitStateFlips < mStateFlipsLimit;
 
     if (LIMIT_OC == mLimitState and voltage > computeVoltageControlSetpoint()) {
         rejectWithLimitState(result, NO_LIMIT); /// - LIMIT_OC to NO_LIMIT transition.
@@ -703,9 +703,9 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
     ///   their normal current regulation (NO_LIMIT) to LIMIT_UV when the output voltage drops too
     ///   low, then if demand keeps pulling output voltage down and current up, we can reach the OC
     ///   limit.
-    const bool canOvLimit = mOutputOverVoltageTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit;
-    const bool canUvLimit = mOutputUnderVoltageTrip.getLimit() > 0.0 and mLimitStateFlips < mStateFlipsLimit;
-    const bool canOcLimit = mOutputOverCurrentTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit
+    const bool canOvLimit = mOutputOverVoltageTrip.getLimit()  > 0.0F and mLimitStateFlips < mStateFlipsLimit;
+    const bool canUvLimit = mOutputUnderVoltageTrip.getLimit() > 0.0F and mLimitStateFlips < mStateFlipsLimit;
+    const bool canOcLimit = mOutputOverCurrentTrip.getLimit()  > 0.0F and mLimitStateFlips < mStateFlipsLimit
                             and canUvLimit;
 
     if (LIMIT_OC == mLimitState) {
@@ -733,7 +733,7 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
             rejectWithLimitState(result, LIMIT_UV);
         } else {
             const float setpoint = computeCurrentControlSetpoint();
-            if ((current > setpoint) or (0.0 == setpoint)) {
+            if ((current > setpoint) or (0.0F == setpoint)) {
                 /// - LIMIT_OV to LIMIT_UV transition due to output current exceeds setpoint.
                 ///   Rather than going directly to NO_LIMIT, we transition to LIMIT_UV first, and
                 ///   afterwards may transition to NO_LIMIT.
@@ -769,9 +769,9 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float GunnsElectConverterOutput::computeVoltageControlSetpoint()
 {
-    float setpoint = mSetpoint;
+    double setpoint = mSetpoint;
     if (TRANSFORMER == mRegulatorType) setpoint *= mInputVoltage;
-    return setpoint;
+    return static_cast<float>(setpoint);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -784,13 +784,13 @@ float GunnsElectConverterOutput::computeVoltageControlSetpoint()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float GunnsElectConverterOutput::computeCurrentControlSetpoint()
 {
-    float setpoint = 0.0;
+    double setpoint = 0.0;
     if (CURRENT == mRegulatorType) {
         setpoint = applyBlockage(mSetpoint);
     } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
         setpoint = applyBlockage(std::sqrt(mSetpoint / mLoadResistance));
     }
-    return setpoint;
+    return static_cast<float>(setpoint);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

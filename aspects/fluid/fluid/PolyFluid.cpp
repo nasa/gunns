@@ -1286,7 +1286,7 @@ int PolyFluid::find(const FluidProperties::FluidType& type) const
 
     /// - Otherwise throw an exception
     std::ostringstream msg;
-    msg << "An invalid fluid type (" << type << ") was specified.";
+    msg << "An invalid fluid type (" << static_cast<unsigned int>(type) << ") was specified.";
     TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", msg.str(),
                     TsOutOfBoundsException, "Input Argument Out of Range", mName);
 }

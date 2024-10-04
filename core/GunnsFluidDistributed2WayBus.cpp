@@ -494,7 +494,7 @@ double GunnsFluidDistributed2WayBus::computeDemandLimit(const double timestep,
     double ndotLimit = 0.0;
     if (isInDemandRole() and not mInData.mDemandMode) {
         /// - Limit inputs to avoid divide-by-zero.
-        if (timestep > FLT_EPSILON and mOutData.mCapacitance > FLT_EPSILON and mInData.mCapacitance > FLT_EPSILON) {
+        if (timestep > DBL_EPSILON and mOutData.mCapacitance > DBL_EPSILON and mInData.mCapacitance > DBL_EPSILON) {
             /// - Limited exponent for the lag gain:
             const int exponent = std::min(100, std::max(1, mLoopLatency));
             /// - Stability filter 'lag gain' imposes limit on demand flow as latency increases.

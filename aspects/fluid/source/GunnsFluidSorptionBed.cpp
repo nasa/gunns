@@ -21,7 +21,7 @@ LIBRARY DEPENDENCY:
 
 /// @details  This value is chosen to avoid adsorbing all of the sorbate mass out of the flow
 ///           stream, for stability.
-const float GunnsFluidSorptionBedSorbate::mLimitAdsorbFraction = 0.99;
+const double GunnsFluidSorptionBedSorbate::mLimitAdsorbFraction = 0.99;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Sorption Bed Sorbate.
@@ -267,11 +267,11 @@ GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(c
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Reference to the object to be copied.
+/// @param[in] that (--) Reference to the object to be copied (unused).
 ///
 /// @details  This doesn't assign anything since all class member are const.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidSorptionBedSegmentConfigData& GunnsFluidSorptionBedSegmentConfigData::operator =(const GunnsFluidSorptionBedSegmentConfigData& that)
+GunnsFluidSorptionBedSegmentConfigData& GunnsFluidSorptionBedSegmentConfigData::operator =(const GunnsFluidSorptionBedSegmentConfigData& that __attribute__((unused)))
 {
     return *this;
 }
@@ -318,11 +318,11 @@ GunnsFluidSorptionBedSegmentInputData::GunnsFluidSorptionBedSegmentInputData(con
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Reference to the object to be copied.
+/// @param[in] that (--) Reference to the object to be copied (unused).
 ///
 /// @details  This doesn't assign anything since all class member are const.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidSorptionBedSegmentInputData& GunnsFluidSorptionBedSegmentInputData::operator =(const GunnsFluidSorptionBedSegmentInputData& that)
+GunnsFluidSorptionBedSegmentInputData& GunnsFluidSorptionBedSegmentInputData::operator =(const GunnsFluidSorptionBedSegmentInputData& that __attribute__((unused)))
 {
     return *this;
 }
@@ -358,7 +358,7 @@ GunnsFluidSorptionBedSegment::~GunnsFluidSorptionBedSegment()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] configData  (--) Reference to the configuration data for this bed segment.
-/// @param[in] fluidConfig (--) Pointer to the network fluid configuration.
+/// @param[in] fluidConfig (--) Pointer to the network fluid configuration (unused).
 /// @param[in] loading     (--) Reference to vector of initial sorbate loadings.
 ///
 /// @throws   TsInitializationException
@@ -368,7 +368,7 @@ GunnsFluidSorptionBedSegment::~GunnsFluidSorptionBedSegment()
 ///           or they can be missing entirely if they're not desired to be modeled.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfigData&             configData,
-                                        const PolyFluidConfigData*                                fluidConfig,
+                                        const PolyFluidConfigData*                                fluidConfig __attribute__((unused)),
                                         const std::vector<GunnsFluidSorptionBedSegmentInputData>& loading)
 {
     /// - Initialize from configuration data.
@@ -477,7 +477,7 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         ///   fluid and this doesn't account for other sorbates desorbing at the same time.
         ///   We only do this for sorbates that are bulk fluids, since for trace compounds we do
         ///   not model fluid states such as phase or saturation.
-        double desorbLimit = FLT_MAX; // use this number as an arbitrarily large limit
+        double desorbLimit = static_cast<double>(FLT_MAX); // use this number as an arbitrarily large limit
         const FluidProperties::FluidType fluidType = mSorbates[i].getProperties()->getCompound()->mFluidType;
         if (fluidIndex >= 0) {
             const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
@@ -1085,7 +1085,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] port (--) The port to be assigned
+/// @param[in] port (--) The port to be assigned (unused)
 /// @param[in] node (--) The desired node to assign the port to
 ///
 /// @returns  bool  (--) Returns true if all rules checks pass
@@ -1094,7 +1094,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
 ///           this specific class.  These are:
 ///           - A GunnsFluidSorptionBed must not map either port to a liquid node.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidSorptionBed::checkSpecificPortRules(const int port, const int node) const
+bool GunnsFluidSorptionBed::checkSpecificPortRules(const int port __attribute__((unused)), const int node) const
 {
     bool result = true;
     GunnsFluidNode* nodePtr = dynamic_cast<GunnsFluidNode*> (mNodeList->mNodes);

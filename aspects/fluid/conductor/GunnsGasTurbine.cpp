@@ -8,7 +8,7 @@
 LIBRARY DEPENDENCY:
    ((aspects/fluid/potential/GunnsGasFanCurve.o)
     (software/exceptions/TsInitializationException.o))
-**************************************************************************************************/
+*/
 
 #include "GunnsGasTurbine.hh"
 
@@ -508,7 +508,7 @@ void GunnsGasTurbine::updateFluid(const double dt __attribute__((unused)), const
 
     mImpellerPower = -UnitConversion::PA_PER_KPA * std::fabs(mVolFlowRate) * mPressureDrop * mEfficiency;
 
-    if (mMotorSpeed > FLT_EPSILON and mDriveRatio > DBL_EPSILON) {
+    if (mMotorSpeed > static_cast<double>(FLT_EPSILON) and mDriveRatio > DBL_EPSILON) {
         mImpellerTorque = -mImpellerPower * UnitConversion::SEC_PER_MIN_PER_2PI / mMotorSpeed;
     } else {
         mImpellerTorque = 0.0;
@@ -548,7 +548,7 @@ void GunnsGasTurbine::computeFlowRate()
     const double sourcePress   = std::max(DBL_EPSILON,mNodes[sourcePort]->getOutflow()->getPressure());
 
     /// - The impeller generates no flow if there is no inlet density
-    if (sourceDensity > FLT_EPSILON ) {
+    if (sourceDensity > static_cast<double>(FLT_EPSILON) ) {
         /// - Scale Turbine curve coefficients based on corrected impeller speed, using interpolation
         const double correctedSpeed = MsMath::limitRange(mCorrectedSpeedLow,
                 mImpellerSpeed/(sourceTemp/mReferenceTemp), mCorrectedSpeedHigh);

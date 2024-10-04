@@ -142,7 +142,7 @@ SorbateProperties& SorbateProperties::operator =(const SorbateProperties& that)
 double SorbateProperties::computeLoadingEquil(const double pp, const double temperature) const
 {
     double result = 0.0;
-    if (0.0 != mTothE and pp >= FLT_EPSILON) {
+    if (0.0 != mTothE and pp >= static_cast<double>(FLT_EPSILON)) {
         const double EoverT = MsMath::limitRange(0.0, mTothE / temperature, 100.0);
         const double expT   = std::exp(EoverT);
         const double a      = mTothA0 * expT;

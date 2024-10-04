@@ -288,11 +288,11 @@ void GunnsFluidFireSource::step(const double dt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] dt (s) Integration time step
+/// @param[in] dt (s) Integration time step (unused)
 ///
 /// @details  Computes the flows across the link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidFireSource::computeFlows(const double dt)
+void GunnsFluidFireSource::computeFlows(const double dt __attribute((unused)))
 {
     /// - Set port flow directions and schedule flow from source nodes.
     if (mFlux > DBL_EPSILON) {

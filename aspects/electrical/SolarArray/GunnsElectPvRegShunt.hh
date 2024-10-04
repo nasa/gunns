@@ -8,7 +8,7 @@
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_REG_SHUNT    Photovoltaic Array Shunting Regulator Model
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -82,11 +82,11 @@ class GunnsElectPvRegShuntConfigData : public GunnsBasicLinkConfigData
         GunnsSensorAnalogWrapper* mInVoltageSensor;     /**<    (--)    trick_chkpnt_io(**) Optional pointer to the input voltage sensor wrapper. */
         GunnsSensorAnalogWrapper* mOutCurrentSensor;    /**<    (--)    trick_chkpnt_io(**) Optional pointer to the output current sensor wrapper. */
         GunnsSensorAnalogWrapper* mOutVoltageSensor;    /**<    (--)    trick_chkpnt_io(**) Optional pointer to the output voltage sensor wrapper. */
-        double                    mInOverCurrentTrip;   /**<    (amp)   trick_chkpnt_io(**) Optional input over-current trip limit. */
-        double                    mInOverVoltageTrip;   /**<    (V)     trick_chkpnt_io(**) Optional input over-volt trip limit. */
-        double                    mOutOverCurrentTrip;  /**<    (amp)   trick_chkpnt_io(**) Optional output over-current trip limit. */
-        double                    mOutOverVoltageTrip;  /**<    (V)     trick_chkpnt_io(**) Optional output over-volt trip limit. */
-        double                    mOutUnderVoltageTrip; /**<    (V)     trick_chkpnt_io(**) Optional output under-volt trip limit. */
+        float                     mInOverCurrentTrip;   /**<    (amp)   trick_chkpnt_io(**) Optional input over-current trip limit. */
+        float                     mInOverVoltageTrip;   /**<    (V)     trick_chkpnt_io(**) Optional input over-volt trip limit. */
+        float                     mOutOverCurrentTrip;  /**<    (amp)   trick_chkpnt_io(**) Optional output over-current trip limit. */
+        float                     mOutOverVoltageTrip;  /**<    (V)     trick_chkpnt_io(**) Optional output over-volt trip limit. */
+        float                     mOutUnderVoltageTrip; /**<    (V)     trick_chkpnt_io(**) Optional output under-volt trip limit. */
         unsigned int              mTripPriority;        /**<    (--)    trick_chkpnt_io(**) Trip network step priority. */
         LoadOrder                 mStringLoadOrder;     /**< ** (--)    trick_chkpnt_io(**) Optional string loading order. */
         /// @brief Default constructs this Photovoltaic Array Shunting Regulator configuration data.
@@ -99,11 +99,11 @@ class GunnsElectPvRegShuntConfigData : public GunnsBasicLinkConfigData
                                        GunnsSensorAnalogWrapper* inVoltageSensor        = 0,
                                        GunnsSensorAnalogWrapper* outCurrentSensor       = 0,
                                        GunnsSensorAnalogWrapper* outVoltageSensor       = 0,
-                                       const double              inputOverCurrentTrip   = 0.0,
-                                       const double              inputOverVoltageTrip   = 0.0,
-                                       const double              outputOverCurrentTrip  = 0.0,
-                                       const double              outputOverVoltageTrip  = 0.0,
-                                       const double              outputUnderVoltageTrip = 0.0,
+                                       const float               inputOverCurrentTrip   = 0.0,
+                                       const float               inputOverVoltageTrip   = 0.0,
+                                       const float               outputOverCurrentTrip  = 0.0,
+                                       const float               outputOverVoltageTrip  = 0.0,
+                                       const float               outputUnderVoltageTrip = 0.0,
                                        const unsigned int        tripPriority           = 0);
         /// @brief Default destructs this Photovoltaic Array Shunting Regulator configuration data.
         virtual ~GunnsElectPvRegShuntConfigData();

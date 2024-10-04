@@ -350,7 +350,7 @@ void GunnsFluidEvaporation::updateVaporRate(const double dt)
         const double liqMWeight = mNodes[0]->getContent()->getMWeight();
 
         if ( (DBL_EPSILON < mGasMWeight) and (DBL_EPSILON < liqMWeight) and (DBL_EPSILON < dt) ) {
-            if (mLiquidPoolMass > FLT_EPSILON) {
+            if (mLiquidPoolMass > static_cast<double>(FLT_EPSILON)) {
                 /// - Evaporation gas rate as a function of pool mass, evaporation coefficient and
                 ///   vapor potential, then reduced by the link's blockage malfunction.  Limited to
                 ///   positive values so this link can't condense.

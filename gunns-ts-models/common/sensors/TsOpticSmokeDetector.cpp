@@ -212,7 +212,7 @@ void TsOpticSmokeDetector::update(
     }
 
     obscurationPercentage = MsMath::limitRange(configD.obsMinPercentage, obscurationPercentage, configD.obsMaxPercentage);
-    scatterPercentage     = MsMath::limitRange(0.0, scatterPercentage, configD.scatterMaxPercentage);
+    scatterPercentage     = MsMath::limitRange(0.0F, scatterPercentage, configD.scatterMaxPercentage);
 
     bool sensorPower = static_cast<bool>(isLoadOn);
     obscurationSensor.setTruthInput(obscurationPercentage);

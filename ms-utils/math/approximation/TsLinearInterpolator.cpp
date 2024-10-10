@@ -1,11 +1,11 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o)
      (simulation/hs/TsHsMsg.o))
- **************************************************************************************************/
+*/
 
 #include "GenericMacros.hh"
 #include "software/exceptions/TsHsException.hh"
@@ -125,7 +125,7 @@ void TsLinearInterpolator::init(const double *x, const double *z, const int n,
                                 const double minX, const double maxX, const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
@@ -165,8 +165,8 @@ void TsLinearInterpolator::init(const double *x, const double *z, const int n,
 
     mMinX = minX;
     mMaxX = maxX;
-    mMinY = -FLT_EPSILON;
-    mMaxY =  FLT_EPSILON;
+    mMinY = -DBL_EPSILON;
+    mMaxY =  DBL_EPSILON;
 
     /// - Throw an exception if independent variable (x) array does not cover valid range.
     ///   mX is used to ensure input array is in strictly ascending order.

@@ -454,8 +454,8 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
 {
     if (isVoltageRegulator()) {
         if (LIMIT_OC == mLimitState) {
-            current     = mOutputOverCurrentTrip.getLimit();
-            conductance = FLT_EPSILON;
+            current     = static_cast<double>(mOutputOverCurrentTrip.getLimit());
+            conductance = static_cast<double>(FLT_EPSILON);
         } else {
             conductance    = applyBlockage(mOutputConductance);
             voltage = mSetpoint;
@@ -466,15 +466,15 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
     } else {
         if (LIMIT_OV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            voltage = mOutputOverVoltageTrip.getLimit();
+            voltage = static_cast<double>(mOutputOverVoltageTrip.getLimit());
         } else if (LIMIT_UV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            voltage = mOutputUnderVoltageTrip.getLimit();
+            voltage = static_cast<double>(mOutputUnderVoltageTrip.getLimit());
         } else {
-            conductance = FLT_EPSILON;
+            conductance = static_cast<double>(FLT_EPSILON);
             if (CURRENT == mRegulatorType) {
                 if (LIMIT_OC == mLimitState) {
-                    current = applyBlockage(mOutputOverCurrentTrip.getLimit());
+                    current = applyBlockage(static_cast<double>(mOutputOverCurrentTrip.getLimit()));
                 } else {
                     current = applyBlockage(mSetpoint);
                 }
@@ -539,10 +539,10 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
             ///   repeat the drift integration too many times.  The result of all this is that drift
             ///   lags behind by one major step for causing trips.
             if (mOutputVoltageSensor) {
-                sensedVout = mOutputVoltageSensor->sense(0.0, true, sensedVout);
+                sensedVout = mOutputVoltageSensor->sense(0.0, true, static_cast<double>(sensedVout));
             }
             if (mOutputCurrentSensor) {
-                sensedIout = mOutputCurrentSensor->sense(0.0, true, sensedIout);
+                sensedIout = mOutputCurrentSensor->sense(0.0, true, static_cast<double>(sensedIout));
             }
 
             /// - Check all trip logics for trips.  If any trip, reject the solution.  Note that

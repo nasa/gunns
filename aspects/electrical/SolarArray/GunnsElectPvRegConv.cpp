@@ -467,16 +467,16 @@ GunnsBasicLink::SolutionResult GunnsElectPvRegConv::confirmSolutionAcceptable(
         ///   integration too many times.  The result of all this is that drift lags behind by one
         ///   major step for causing trips.
         if (mSensors.mInVoltage) {
-            sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, sensedVin);
+            sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, static_cast<double>(sensedVin));
         }
         if (mSensors.mInCurrent) {
-            sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, sensedIin);
+            sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, static_cast<double>(sensedIin));
         }
         if (mSensors.mOutVoltage) {
-            sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, sensedVout);
+            sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, static_cast<double>(sensedVout));
         }
         if (mSensors.mOutCurrent) {
-            sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, sensedIout);
+            sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, static_cast<double>(sensedIout));
         }
 
         /// - Check all trip logics for trips.  If any trip, reject the solution and mode to OFF.

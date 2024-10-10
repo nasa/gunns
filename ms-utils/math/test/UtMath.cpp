@@ -764,6 +764,33 @@ void UtMath::testIsInRangeDouble()
     /// @test for upper < lower
     CPPUNIT_ASSERT(!MsMath::isInRange(2.0, 1.0, 0.0));
 
+    std::cout << "Pass";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests the method for checking floats in range.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtMath::testIsInRangeFloat()
+{
+    std::cout << "\n.Math Test 15: Is In Range Float Tests......................................";
+
+    /// @test for argument well within range
+    CPPUNIT_ASSERT(MsMath::isInRange(0.0F, 1.0F, 2.0F));
+
+    /// @test for argument at lower limit
+    CPPUNIT_ASSERT(MsMath::isInRange(1.0F, 1.0F, 2.0F));
+
+    /// @test for argument below lower limit
+    CPPUNIT_ASSERT(!MsMath::isInRange(1.0F, 0.0F, 2.0F));
+
+    /// @test for argument at upper limit
+    CPPUNIT_ASSERT(MsMath::isInRange(0.0F, 1.0F, 1.0F));
+
+    /// @test for argument above upper limit
+    CPPUNIT_ASSERT(!MsMath::isInRange(0.0F, 2.0F, 1.0F));
+
+    /// @test for upper < lower
+    CPPUNIT_ASSERT(!MsMath::isInRange(2.0F, 1.0F, 0.0F));
 
     std::cout << "Pass";
 }
@@ -773,7 +800,7 @@ void UtMath::testIsInRangeDouble()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testIsInRangeInt()
 {
-    std::cout << "\n.Math Test 15: Is In Range Integer Tests....................................";
+    std::cout << "\n.Math Test 16: Is In Range Integer Tests....................................";
 
     /// @test for argument well within range
     CPPUNIT_ASSERT(MsMath::isInRange(0, 1, 2));
@@ -793,7 +820,6 @@ void UtMath::testIsInRangeInt()
     /// @test for upper < lower
     CPPUNIT_ASSERT(!MsMath::isInRange(2, 1, 0));
 
-
     std::cout << "Pass";
 }
 
@@ -802,7 +828,7 @@ void UtMath::testIsInRangeInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testInnerLimitDouble()
 {
-    std::cout << "\n.Math Test 16: Inner Limit Double Tests.....................................";
+    std::cout << "\n.Math Test 17: Inner Limit Double Tests.....................................";
 
     /// @test for argument well below lower limit
     double expected  = -1.0;
@@ -857,7 +883,7 @@ void UtMath::testInnerLimitDouble()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testInnerLimitInt()
 {
-    std::cout << "\n.Math Test 17: Inner Limit Integer Tests....................................";
+    std::cout << "\n.Math Test 18: Inner Limit Integer Tests....................................";
 
     /// @test for argument well below lower limit
     int expected  = -1;
@@ -902,7 +928,7 @@ void UtMath::testInnerLimitInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testRounding()
 {
-    std::cout << "\n.Math Test 18: Rounding Tests...............................................";
+    std::cout << "\n.Math Test 19: Rounding Tests...............................................";
 
     /// @test for argument exactly equal to integer
     int expected = 1;
@@ -944,7 +970,7 @@ void UtMath::testRounding()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testQuantize()
 {
-    std::cout << "\n.Math Test 19: Quantize Tests...............................................";
+    std::cout << "\n.Math Test 20: Quantize Tests...............................................";
 
     double arg = 3.14159;
     double expected = 3.0;
@@ -1031,7 +1057,7 @@ void UtMath::testQuantize()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtMath::testFastPow()
 {
-    std::cout << "\n.Math Test 20: fastPow Tests................................................";
+    std::cout << "\n.Math Test 21: fastPow Tests................................................";
 
     double base = 0.0;
     double exp  = 1.25;

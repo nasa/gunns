@@ -1,4 +1,4 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -10,12 +10,14 @@
  PROGRAMMERS:
  ((Tim Caldwell) (GHG) (Initial) (2012-03))
 
-***************************************************************************************************/
+*/
+
 #include "GunnsFluidAccumGas.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
-    const int GunnsFluidAccumGas::GAS_PORT = 0;
+/// @details  Port zero of this link is always attached to a gas node.
+const int GunnsFluidAccumGas::GAS_PORT = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name                             (--)     Link name
@@ -341,7 +343,7 @@ void GunnsFluidAccumGas::initialize(const GunnsFluidAccumGasConfigData &configDa
     TS_NEW_PRIM_OBJECT_EXT(mGasInternalFluid, PolyFluid,
                            (*(mNodes[GAS_PORT]->getContent()), std::string(mName) + ".mGasInternalFluid"),
                            std::string(mName) + ".mGasInternalFluid");
-    mGasInternalFluid->setMassAndMassFractions(FLT_EPSILON,
+    mGasInternalFluid->setMassAndMassFractions(static_cast<double>(FLT_EPSILON),
                                             inputData.mGasFluidInputData->mMassFraction);
     mGasInternalFluid->setPressure(inputData.mGasFluidInputData->mPressure);
     mGasInternalFluid->setTemperature(inputData.mGasFluidInputData->mTemperature);

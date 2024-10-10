@@ -1,13 +1,12 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
-
 #include "PowerFit.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +61,7 @@ void PowerFit::init(const double a,    const double b,
                    const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Initialize the coefficients.
     mA = a;

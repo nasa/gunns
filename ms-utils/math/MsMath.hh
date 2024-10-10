@@ -78,6 +78,8 @@ class MsMath
         static int limitRange(const int lower, const int x, const int upper);
         /// @brief Is the double input within specified range (lower <= x <= upper)?
         static bool isInRange(const double lower, const double x, const double upper);
+        /// @brief Is the float input within specified range (lower <= x <= upper)?
+        static bool isInRange(const float lower, const float x, const float upper);
         /// @brief Is the integer input within specified range (lower <= i <= upper)?
         static bool isInRange(const int lower, const int i, const int upper);
         /// @brief  Limits the value of a double argument outside a specified range (x <= lower || upper <= x).
@@ -473,6 +475,28 @@ inline int MsMath::limitRange(const int lower, const int x, const int upper)
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline bool MsMath::isInRange(const double lower, const double x, const double upper)
+{
+    return lower <= x && x <= upper;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  lower  (--)  Lower limit of range.
+/// @param[in]  x      (--)  Input argument to be limited.
+/// @param[in]  upper  (--)  Upper limit of range.
+///
+/// @return     bool   (--)  True if the input argument is within the specified range, otherwise false.
+///
+/// @warning    If lower > upper, then false is returned without complaint, so don't do that.
+///
+/// @details    Determines if the float argument value is within the specified range (lower <= x <= upper).
+///             \verbatim
+///                       _
+///                      |  false,     x < lower
+///             result = |  true,         lower <= x <= upper
+///                      |_ false,     x > upper
+///             \endverbatim
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool MsMath::isInRange(const float lower, const float x, const float upper)
 {
     return lower <= x && x <= upper;
 }

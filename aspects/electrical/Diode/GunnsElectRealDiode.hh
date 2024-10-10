@@ -8,7 +8,7 @@
 @defgroup  GUNNS_ELECTRICAL_DIODE_REAL    GUNNS Real Diode Link
 @ingroup   GUNNS_ELECTRICAL_DIODE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -71,7 +71,7 @@ class GunnsElectRealDiodeConfigData : public GunnsBasicPotentialConfigData
 class GunnsElectRealDiodeInputData : public GunnsBasicPotentialInputData
 {
     public:
-        double mReverseBias;                /**< (--) trick_chkpnt_io(**) Initial bias direction. */
+        bool mReverseBias;                /**< (--) trick_chkpnt_io(**) Initial bias direction. */
         /// @brief    Default constructs this Real Diode input data.
         GunnsElectRealDiodeInputData(const bool   malfBlockageFlag  = false,
                                      const double malfBlockageValue = 0.0,

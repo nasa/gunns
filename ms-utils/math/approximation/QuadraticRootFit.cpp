@@ -1,10 +1,10 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
 
@@ -46,7 +46,7 @@ QuadraticRootFit::QuadraticRootFit(const double a,    const double b,
                                    const double minX, const double maxX,
                                    const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(-a),
     mB(a * a),
     mC(4.0 * b),

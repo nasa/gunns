@@ -709,13 +709,13 @@ void GunnsFluidDistributedIf::step(const double dt)
         ///     limit_correct = fabs(Pd*gain/(dt*(1/Cs + 1/Cd)) - limit_wrong)
         mInterface.computeDemandLimit(dt, 0.0);
         mDemandFluxGain = mInterface.getDemandLimitGain();
-        if (mInterface.mOutData.mCapacitance > static_cast<double>(FLT_EPSILON) and mInterface.mInData.mCapacitance) {
+        if (mInterface.mOutData.mCapacitance > DBL_EPSILON and mInterface.mInData.mCapacitance > DBL_EPSILON) {
             const double conductance = mDemandFluxGain * mInterface.mInData.mCapacitance / dt;
             /// - The default for this option = false follows the interface design standard, but our
             ///   GUNNS implementation sometimes restricts the resulting flow rate too much.  Use
             ///   this option = true to relax the stability in favor of increased flow rate.  You
             ///   can safely use this when Cs/Cd >> 1 and for small lags <= 4.
-            if (mDemandOption or conductance < static_cast<double>(FLT_EPSILON)) {
+            if (mDemandOption or conductance < DBL_EPSILON) {
                 mEffectiveConductivity = conductance;
             } else {
                 mEffectiveConductivity = 1.0 / std::max(1.0/conductance + dt/mInterface.mOutData.mCapacitance, DBL_EPSILON);

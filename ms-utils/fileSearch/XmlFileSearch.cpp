@@ -1,5 +1,5 @@
-/************************************** TRICK HEADER **********************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -12,7 +12,7 @@
  (
   ((Jose A. Perez) (L3 Comm) (October 16, 2012) (TS21) (Initial))
  )
-***************************************************************************************************/
+*/
 
 #include <algorithm>
 #include "XmlFileSearch.hh"
@@ -85,7 +85,7 @@ void XmlFileSearch::searchDirectory(
             }
         }
         /// - Throw an exception if number of files is greater than 100.
-        if(maxNumberOfFiles < static_cast<const int>(fileList.size()))
+        if(maxNumberOfFiles < static_cast<int>(fileList.size()))
         {
             closedir(dir);
             TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_GENERIC, "Invalid Initialization Data", TsInitializationException,
@@ -116,7 +116,7 @@ std::string XmlFileSearch::obtainExt(
     std::string ext = "";
 
     //Finds the last period character of the file name
-    if((pathName.compare(".")) != static_cast<const int>(std::string::npos))
+    if((pathName.compare(".")) != static_cast<int>(std::string::npos))
     {
         int period = pathName.find_last_of(".");
 

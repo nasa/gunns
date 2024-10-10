@@ -2,7 +2,7 @@
 @file      GunnsElectDistributedIf.cpp
 @brief     GUNNS Electrical Distributed Bi-Directional Interface Link implementation.
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -165,7 +165,7 @@ void GunnsElectDistributedIf::initialize(const GunnsElectDistributedIfConfigData
         supply.mNetCapDV   = 0.0;
         mSupplies.push_back(supply);
     }
-    mInterface.initialize(configData.mIsPairPrimary, mNodes[0]->getPotential());
+    mInterface.initialize(configData.mIsPairPrimary, static_cast<float>(mNodes[0]->getPotential()));
     if (inputData.mForceSupplyMode) {
         mInterface.forceSupplyRole();
     } else if (inputData.mForceDemandMode) {
@@ -231,7 +231,7 @@ void GunnsElectDistributedIf::step(const double dt)
     /// - The voltage supplied to this side from the remote side only needs to be updated once, here
     ///   at the beginning of the major step, since it only changes from the remote side between our
     ///   steps.
-    mVoltageSource.setInputVoltage(mInterface.getRemoteSupply());
+    mVoltageSource.setInputVoltage(static_cast<double>(mInterface.getRemoteSupply()));
 
     minorStep(dt, 1);
 }
@@ -252,13 +252,13 @@ void GunnsElectDistributedIf::minorStep(const double dt        __attribute__((un
     } else {
         mVoltageSource.setEnabled(false);
         mPowerLoad.setEnabled(not mMalfPowerLoad);
-        mPowerLoad.setInputPower(mInterface.getRemoteLoad());
+        mPowerLoad.setInputPower(static_cast<double>(mInterface.getRemoteLoad()));
         /// - Set the power load's IUV trip limit so that it won't overload the input.  This helps
         ///   the network converge when the upstream supply can't meet the power demand.  Note that
         ///   the IUV trip isn't enabled because trip priority is always 0 - but the
         ///   GunnsElectConverterInput still uses the limit value to avoid overloading the input
         ///   even when the IUV trip isn't enabled.
-        mPowerLoad.getInputUnderVoltageTrip()->setLimit(0.9 * mPotentialVector[0]);
+        mPowerLoad.getInputUnderVoltageTrip()->setLimit(static_cast<float>(0.9 * mPotentialVector[0]));
     }
 
     /// - This link has no contributions to the network system of equations; the child converter
@@ -280,7 +280,7 @@ void GunnsElectDistributedIf::updateSupplyData()
     ///   supply to here.
     bool anySuppliesEnabled = false;
     for (unsigned int i=0; i<mSupplies.size(); ++i) {
-        mSupplies.at(i).mSupplyData->mMaximumVoltage = mSupplies.at(i).mLink->getControlVoltage();
+        mSupplies.at(i).mSupplyData->mMaximumVoltage = static_cast<float>(mSupplies.at(i).mLink->getControlVoltage());
         if (mSupplies.at(i).mLink->getEnabled() and mSupplies.at(i).mSupplyData->mMaximumVoltage > FLT_EPSILON) {
             anySuppliesEnabled = true;
         }
@@ -306,7 +306,7 @@ void GunnsElectDistributedIf::updateSupplyData()
 ///           re-solve with our link in Demand mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsBasicLink::SolutionResult GunnsElectDistributedIf::confirmSolutionAcceptable(
-        const int convergedStep,
+        const int convergedStep __attribute__((unused)),
         const int absoluteStep __attribute__((unused)))
 {
     GunnsBasicLink::SolutionResult result = CONFIRM;
@@ -350,9 +350,10 @@ bool GunnsElectDistributedIf::updateInterface()
     const bool previousRole = mInterface.isInDemandRole();
     updateSupplyData();
     if (mVoltageSource.getInputPowerValid()) {
-        mInterface.update(mPotentialVector[0], mVoltageSource.getInputPower());
+        mInterface.update(static_cast<float>(mPotentialVector[0]),
+                          static_cast<float>(mVoltageSource.getInputPower()));
     } else {
-        mInterface.update(mPotentialVector[0], 0.0);
+        mInterface.update(static_cast<float>(mPotentialVector[0]), 0.0F);
     }
     processIfNotifications(false);
     return previousRole;

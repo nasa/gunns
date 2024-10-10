@@ -465,7 +465,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         ///   integration too many times.  The result of all this is that drift lags behind by one
         ///   major step for causing trips.
         if (mInputVoltageSensor) {
-            sensedVin = mInputVoltageSensor->sense(0.0, true, sensedVin);
+            sensedVin = mInputVoltageSensor->sense(0.0, true, static_cast<double>(sensedVin));
         }
 
         /// - Check all trip logics for trips.  If any trip, reject the solution.

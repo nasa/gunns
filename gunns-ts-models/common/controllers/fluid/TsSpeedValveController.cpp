@@ -2,7 +2,7 @@
 @file
 @brief    TS21 Fluid Controller Speed Valve Controller implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -61,8 +61,8 @@ void TsSpeedValveController::initialize(const TsPoweredValveControllerConfigData
     /// - Initialize from the input data.
     mCommand.mEnable  = input.mEnabledFlag;
     mCommand.mSpeed   = input.mCmd;
-    mSensed.mClose    = input.mCmdPosition < mMinCmdPosition + FLT_EPSILON;
-    mSensed.mOpen     = input.mCmdPosition > mMaxCmdPosition - FLT_EPSILON;
+    mSensed.mClose    = input.mCmdPosition < mMinCmdPosition + static_cast<double>(FLT_EPSILON);
+    mSensed.mOpen     = input.mCmdPosition > mMaxCmdPosition - static_cast<double>(FLT_EPSILON);
 
     /// - Initialize the outputs (position and power) consistent with the inputs.
     update(0.0);

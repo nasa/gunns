@@ -317,7 +317,7 @@ void GunnsOptimGradientDescent::update()
 ///           has reached its final value and won't be improved further.  Then the global state is
 ///           updated as the integral, from its previous state, of the chosen gradients.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimGradientDescent::propagateState(const double gain)
+void GunnsOptimGradientDescent::propagateState(const double gain __attribute((unused)))
 {
     for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
 

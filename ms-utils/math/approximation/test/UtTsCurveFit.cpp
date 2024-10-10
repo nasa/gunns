@@ -1,28 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
- (
-     (math/approximation/CubicFit.o)
-     (math/approximation/ExponentialFit.o)
-     (math/approximation/InvLinearFit.o)
-     (math/approximation/InvQuadraticFit.o)
-     (math/approximation/LinearFit.o)
-     (math/approximation/PowerFit.o)
-     (math/approximation/ProductFit.o)
-     (math/approximation/QuadLinFit.o)
-     (math/approximation/QuadLinInvFit.o)
-     (math/approximation/QuadraticFit.o)
-     (math/approximation/QuadraticRootFit.o)
-     (math/approximation/QuarticFit.o)
-     (math/approximation/QuinticFit.o)
-     (math/approximation/QuotientFit.o)
-     (math/approximation/RationalFit.o)
-     (math/approximation/ShowmateFit.o)
-     (math/approximation/SutherlandFit.o)
- )
- ***************************************************************************************************/
+*/
 
 #include "math/approximation/CubicFit.hh"
 #include "math/approximation/ExponentialFit.hh"
@@ -808,7 +787,7 @@ void UtTsCurveFit::testExponentialException()
     const double b = +2.0;
     const double c = +3.0;
     const double minX = -1000.0;
-    const double maxX = -0.5 * static_cast<double>(FLT_EPSILON);
+    const double maxX = -0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new ExponentialFit(a, b, c, minX, maxX), TsInitializationException);
     CPPUNIT_ASSERT_THROW(new ExponentialFit(a, b, c, -maxX, -minX), TsInitializationException);
@@ -831,11 +810,11 @@ void UtTsCurveFit::testRationalException()
     const double minX = -1000.0;
     const double maxX = +1000.0;
 
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, c - static_cast<double>(FLT_EPSILON) / 2, d, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, c - DBL_EPSILON / 2, d, minX, maxX),
         TsInitializationException);
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, -c + static_cast<double>(FLT_EPSILON) / 2, d, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, -c + DBL_EPSILON / 2, d, minX, maxX),
         TsInitializationException);
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, 0.0, static_cast<double>(FLT_EPSILON) / 256.0, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, 0.0, DBL_EPSILON / 256.0, minX, maxX),
         TsInitializationException);
 
     std::cout << "... Pass";
@@ -853,16 +832,16 @@ void UtTsCurveFit::testInvLinearException()
     const double b = 0.0;
     const double c = -1000.0;
 
-    double minX = static_cast<double>(FLT_EPSILON) * 0.5;
+    double minX = DBL_EPSILON * 0.5;
     double maxX = 1000.0;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, minX, maxX), TsInitializationException);
 
     minX = -1000.0;
-    maxX = -static_cast<double>(FLT_EPSILON) * 0.5;
+    maxX = -DBL_EPSILON * 0.5;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, -maxX, -minX), TsInitializationException);
 
-    minX = -0.5 * static_cast<double>(FLT_EPSILON);
-    maxX = +0.5 * static_cast<double>(FLT_EPSILON);
+    minX = -0.5 * DBL_EPSILON;
+    maxX = +0.5 * DBL_EPSILON;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, -maxX, -minX), TsInitializationException);
 
     std::cout << "... Pass";
@@ -880,16 +859,16 @@ void UtTsCurveFit::testInvQuadraticException()
     const double b = +2.0;
     const double c = +3.0;
 
-    double minX = static_cast<double>(FLT_EPSILON) * 0.5;
+    double minX = DBL_EPSILON * 0.5;
     double maxX = 1000.0;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, minX, maxX), TsInitializationException);
 
     minX = -1000.0;
-    maxX = -static_cast<double>(FLT_EPSILON) * 0.5;
+    maxX = -DBL_EPSILON * 0.5;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, -maxX, -minX), TsInitializationException);
 
-    minX = -0.5 * static_cast<double>(FLT_EPSILON);
-    maxX = +0.5 * static_cast<double>(FLT_EPSILON);
+    minX = -0.5 * DBL_EPSILON;
+    maxX = +0.5 * DBL_EPSILON;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, -maxX, -minX), TsInitializationException);
 
     std::cout << "... Pass";
@@ -908,8 +887,8 @@ void UtTsCurveFit::testShowmateException()
     const double c = +3.0;
     const double d = +4.0;
     const double e = +5.0;
-    const double minX = -2.0 * static_cast<double>(FLT_EPSILON);
-    const double maxX = +0.5 * static_cast<double>(FLT_EPSILON);
+    const double minX = -2.0 * DBL_EPSILON;
+    const double maxX = +0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new ShowmateFit(a, b, c, d, e, minX, maxX), TsInitializationException);
     CPPUNIT_ASSERT_THROW(new ShowmateFit(a, b, c, d, e, -maxX, -minX), TsInitializationException);
@@ -927,8 +906,8 @@ void UtTsCurveFit::testSutherlandException()
 
     const double a = +1.0;
     const double b = +0.0;
-    double minX = -0.5 * static_cast<double>(FLT_EPSILON);
-    double maxX = +0.5 * static_cast<double>(FLT_EPSILON);
+    double minX = -0.5 * DBL_EPSILON;
+    double maxX = +0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new SutherlandFit(a, b, minX, maxX), TsInitializationException);
 

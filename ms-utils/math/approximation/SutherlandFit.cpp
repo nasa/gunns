@@ -1,10 +1,10 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
 
@@ -70,13 +70,13 @@ void SutherlandFit::init(const double a,    const double b,
                          const double minX, const double maxX, const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
-    TS_GENERIC_IF_ERREX((b + mMinX < FLT_EPSILON && -FLT_EPSILON < b - mMaxX), TsInitializationException,
+    TS_GENERIC_IF_ERREX((b + mMinX < DBL_EPSILON && -DBL_EPSILON < b - mMaxX), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
 
     /// - Initialize the coefficients with validated values.

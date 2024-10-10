@@ -1,15 +1,13 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
-
 #include "QuarticFit.hh"
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Quartic curve fit model.
@@ -42,7 +40,7 @@ QuarticFit::QuarticFit(const double a,    const double b,    const double c,
                        const double d,    const double e,
                        const double minX, const double maxX, const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(a),
     mB(b),
     mC(c),
@@ -77,7 +75,7 @@ void QuarticFit::init(const double a,    const double b,    const double c,
                       const double minX, const double maxX, const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Initialize the coefficients.
     mA = a;
@@ -86,4 +84,3 @@ void QuarticFit::init(const double a,    const double b,    const double c,
     mD = d;
     mE = e;
 }
-

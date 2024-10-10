@@ -69,7 +69,7 @@ double GunnsFluidHxDynHtcSegment::update(const double mdot, const double degrada
 {
     const double fabsMdot = std::min(10.0, std::fabs(mdot));
     double htc = mCoeff0;
-    if (fabsMdot > FLT_EPSILON) {
+    if (fabsMdot > static_cast<double>(FLT_EPSILON)) {
         htc += mCoeff1 * std::pow(fabsMdot, MsMath::limitRange(0.05, mExponent, 20.0));
     }
     return MsMath::limitRange(0.0, htc * degradation, mLimit);
@@ -282,7 +282,7 @@ void GunnsFluidHxDynHtc::validate(const GunnsFluidHxDynHtcConfigData& configData
             }
 
             /// - Throw an exception if a segment HTC upper limit < FLT_EPSILON.
-            if (configData.mSegsHtc[i].mLimit < FLT_EPSILON) {
+            if (configData.mSegsHtc[i].mLimit < static_cast<double>(FLT_EPSILON)) {
                 GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                         "A segment's HTC upper limit < FLT_EPSILON.");
             }
@@ -295,7 +295,7 @@ void GunnsFluidHxDynHtc::validate(const GunnsFluidHxDynHtcConfigData& configData
         }
 
         /// - Throw an exception if the HTC upper limit < FLT_EPSILON.
-        if (configData.mHtcLimit < FLT_EPSILON) {
+        if (configData.mHtcLimit < static_cast<double>(FLT_EPSILON)) {
             GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Overall HTC upper limit < FLT_EPSILON.");
         }

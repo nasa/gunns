@@ -1,4 +1,4 @@
-/****************************** TRICK HEADER ******************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
@@ -15,7 +15,8 @@
  (
   ((Jose A. Perez) (L3-Comm) (Mar 23, 2012) (TS21) (Initial))
  )
- **************************************************************************************************/
+*/
+
 #include <cfloat>
 #include "TsOpticSmokeDetector.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -30,31 +31,31 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 TsOpticSmokeDetectorConfigData::TsOpticSmokeDetectorConfigData()
     :
-    obsMaxPercentage     (104.12),  // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    obsMinPercentage     (-10.0),   // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    obsSmokeContributer  (6.7),     // Tunes the obscuration smoke contribution according to JMEWS.
-    scatterMaxPercentage (2.47),    // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    scatterMinPercentage (0.11),    // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    bitOnMaxScatterValue (1.42),    // %/ft. JMEWS Data. Ref. SSP 41002 Table 3.3.4.1.1.3-1 for ISS SD.
-    nominalObscuration   (8.24),    // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    nominalScatter       (0.16768), // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
-    bitRecoveryTime      (1.5),     // sec.  D684-10508-02-02: Sec. 3.3 for ISS SD: "Quite Period".
-    obsOffValue          (53.45),   // Obs.% Per instructor provided data.
-    scatOffValue         (0.1006),  // %/ft. Per instructor provided data.
-    obsPercentVoltSlope  (-0.08),   // v/%.  Slope in form of y=mx+b. SSP 41002 Rev.P.
-    obsVoltIntercept     (4.0),     // v.    Slope y-intercept in form of y=mx+b. SSP 41002 Rev.P..
-    scatPercentVoltSlope (2.01),    // v/(%/ft). Slope in form of y=mx+b. SSP 41002 Rev.P.
-    scatVoltIntercept    (0.0),     // v.    Slope y-intercept in form of y=mx+b. SSP 41002 Rev.P..
+    obsMaxPercentage     (104.12F),  // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    obsMinPercentage     (-10.0F),   // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    obsSmokeContributer  (6.7F),     // Tunes the obscuration smoke contribution according to JMEWS.
+    scatterMaxPercentage (2.47F),    // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    scatterMinPercentage (0.11F),    // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    bitOnMaxScatterValue (1.42F),    // %/ft. JMEWS Data. Ref. SSP 41002 Table 3.3.4.1.1.3-1 for ISS SD.
+    nominalObscuration   (8.24F),    // Obs.% JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    nominalScatter       (0.16768F), // %/ft. JMEWS Data. Ref. D684-10508-02-02: Sec. 3.3 for ISS SD.
+    bitRecoveryTime      (1.5F),     // sec.  D684-10508-02-02: Sec. 3.3 for ISS SD: "Quite Period".
+    obsOffValue          (53.45F),   // Obs.% Per instructor provided data.
+    scatOffValue         (0.1006F),  // %/ft. Per instructor provided data.
+    obsPercentVoltSlope  (-0.08F),   // v/%.  Slope in form of y=mx+b. SSP 41002 Rev.P.
+    obsVoltIntercept     (4.0F),     // v.    Slope y-intercept in form of y=mx+b. SSP 41002 Rev.P..
+    scatPercentVoltSlope (2.01F),    // v/(%/ft). Slope in form of y=mx+b. SSP 41002 Rev.P.
+    scatVoltIntercept    (0.0F),     // v.    Slope y-intercept in form of y=mx+b. SSP 41002 Rev.P..
     obsSensorConfigD     (),
     scatterSensorConfigD ()
 {
-    obsSensorConfigD.mMinRange              = -10.0;  // Obs.%
-    obsSensorConfigD.mMaxRange              = 104.12; // Obs.%
-    obsSensorConfigD.mNominalNoiseScale     = 0.01;
+    obsSensorConfigD.mMinRange              = -10.0F;  // Obs.%
+    obsSensorConfigD.mMaxRange              = 104.12F; // Obs.%
+    obsSensorConfigD.mNominalNoiseScale     = 0.01F;
     obsSensorConfigD.mNoiseFunction         = TsNoise::getNoise;
-    scatterSensorConfigD.mMinRange          = 0.0;    // %/ft
-    scatterSensorConfigD.mMaxRange          = 2.47;   // %/ft
-    scatterSensorConfigD.mNominalNoiseScale = 0.001;
+    scatterSensorConfigD.mMinRange          = 0.0F;    // %/ft
+    scatterSensorConfigD.mMaxRange          = 2.47F;   // %/ft
+    scatterSensorConfigD.mNominalNoiseScale = 0.001F;
     scatterSensorConfigD.mNoiseFunction     = TsNoise::getNoise;
 }
 
@@ -215,13 +216,13 @@ void TsOpticSmokeDetector::update(
     scatterPercentage     = MsMath::limitRange(0.0F, scatterPercentage, configD.scatterMaxPercentage);
 
     bool sensorPower = static_cast<bool>(isLoadOn);
-    obscurationSensor.setTruthInput(obscurationPercentage);
+    obscurationSensor.setTruthInput(static_cast<double>(obscurationPercentage));
     obscurationSensor.setPowerFlag(sensorPower);
-    scatterSensor.setTruthInput(scatterPercentage);
+    scatterSensor.setTruthInput(static_cast<double>(scatterPercentage));
     scatterSensor.setPowerFlag(sensorPower);
 
-    obscurationSensor.update(dt);
-    scatterSensor.update(dt);
+    obscurationSensor.update(static_cast<double>(dt));
+    scatterSensor.update(static_cast<double>(dt));
 
     /// - Coltru needs a sensed voltage. Convert values to voltage linearly.
     //        voltage = m * x + b
@@ -259,11 +260,11 @@ void TsOpticSmokeDetector::validate()
                         "Invalid Configuration Data", ": bitRecoveryTime input value cannot be negative, zero or be close to zero.");
 
     /// - Throw an exception if smokeLevelFactor is not within 0.0 and 1.0.
-    TS_GENERIC_IF_ERREX((smokeLevelFactor < 0.0 || smokeLevelFactor > 1.0), TsInitializationException,
+    TS_GENERIC_IF_ERREX((smokeLevelFactor < 0.0F || smokeLevelFactor > 1.0F), TsInitializationException,
                         "Invalid Initialization Data", ": smokeLevelFactor input value can only be from 0.0 to 1.0.");
 
     /// - Throw an exception if bit timer is less than 0.0.
-    TS_GENERIC_IF_ERREX((bitTimer < 0.0), TsInitializationException,
+    TS_GENERIC_IF_ERREX((bitTimer < 0.0F), TsInitializationException,
                         "Invalid Initialization Data", ": bitTimer input value cannot be negative.");
 }
 

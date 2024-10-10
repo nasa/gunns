@@ -815,7 +815,7 @@ bool GunnsFluidAccum::rampValue(const double dt,
                                 const double rateLowerLimit,
                                 const double rateUpperLimit)
 {
-    double rampComplete = false;
+    bool rampComplete = false;
     /// - Limit target value.
     targetValue = MsMath::limitRange(targetLowerLimit, targetValue, targetUpperLimit);
     /// - Limit ramp rate.

@@ -1,25 +1,13 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-PURPOSE:
-   (Classes for the Editable Thermal Fluid Volume Capacitor/Source Model.)
-
-REQUIREMENTS:
-   ()
-
-REFERENCE:
-   ()
-
-ASSUMPTIONS AND LIMITATIONS:
-   ()
 
 LIBRARY DEPENDENCY:
     ((core/GunnsFluidCapacitor.o))
 
 PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-09))
-**************************************************************************************************/
+*/
 
 #include <cmath>
 
@@ -235,7 +223,7 @@ void GunnsFluidTank::initialize(const GunnsFluidTankConfigData& configData,
     mHeatFluxFromShell = 0.0;
     mHeatFluxToShell   = 0.0;
     mTemperature       = mNodes[0]->getContent()->getTemperature();
-    mShellTemperature  = inputData.mShellTemperature;
+    mShellTemperature  = static_cast<double>(inputData.mShellTemperature);
     mBiasHeatFlux      = inputData.mBiasHeatFlux;
     mPreviousPressure  = mNodes[0]->getPotential();
     mDpdt              = 0.0;

@@ -102,7 +102,7 @@ class GunnsFluidSorptionBedSorbate
         std::vector<GunnsFluidSorptionBedSorbate*>   mBlockingStates;        /**< ** (1) trick_chkpnt_io(**) Pointers to the Sorption Bed Sorbate states of the blocking compounds. */
         std::vector<unsigned int>                    mBlockingCompoundIndex; /**< ** (1) trick_chkpnt_io(**) Index of the blocking compounds interaction data in the Sorbate Properties. */
         std::vector<GunnsFluidSorptionBedFluidIndex> mOffgasIndexes;         /**< ** (1) trick_chkpnt_io(**) Fluid indexes of the offgasing compounds. */
-        static const float                           mLimitAdsorbFraction;   /**< ** (1) trick_chkpnt_io(**) Limit on fraction of influx that can be adsorbed. */
+        static const double                          mLimitAdsorbFraction;   /**< ** (1) trick_chkpnt_io(**) Limit on fraction of influx that can be adsorbed. */
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.

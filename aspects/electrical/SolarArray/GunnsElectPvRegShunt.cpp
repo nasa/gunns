@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Photovoltaic Array Shunting Regulator Model implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -116,11 +116,11 @@ GunnsElectPvRegShuntConfigData::GunnsElectPvRegShuntConfigData(
         GunnsSensorAnalogWrapper* inVoltageSensor,
         GunnsSensorAnalogWrapper* outCurrentSensor,
         GunnsSensorAnalogWrapper* outVoltageSensor,
-        const double              inOverCurrentTrip,
-        const double              inOverVoltageTrip,
-        const double              outOverCurrentTrip,
-        const double              outOverVoltageTrip,
-        const double              outUnderVoltageTrip,
+        const float               inOverCurrentTrip,
+        const float               inOverVoltageTrip,
+        const float               outOverCurrentTrip,
+        const float               outOverVoltageTrip,
+        const float               outUnderVoltageTrip,
         const unsigned int        tripPriority)
     :
     GunnsBasicLinkConfigData(name, nodes),
@@ -611,10 +611,10 @@ GunnsBasicLink::SolutionResult GunnsElectPvRegShunt::confirmSolutionAcceptable(
         ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
         const unsigned int section = mStringLoadOrder[0].mSection;
         const unsigned int string  = mStringLoadOrder[0].mString;
-        float sensedVin  = mArray->mSections[section].mStrings[string].getTerminal().mVoltage;
-        float sensedIin  = mArray->mSections[section].mStrings[string].getTerminal().mCurrent;
-        float sensedVout = mPotentialVector[1];
-        float sensedIout = mFlux;
+        float sensedVin  = static_cast<float>(mArray->mSections[section].mStrings[string].getTerminal().mVoltage);
+        float sensedIin  = static_cast<float>(mArray->mSections[section].mStrings[string].getTerminal().mCurrent);
+        float sensedVout = static_cast<float>(mPotentialVector[1]);
+        float sensedIout = static_cast<float>(mFlux);
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction
         ///   isn't integrated.  This is because we don't have the time-step in this function,
@@ -622,16 +622,16 @@ GunnsBasicLink::SolutionResult GunnsElectPvRegShunt::confirmSolutionAcceptable(
         ///   repeat the drift integration too many times.  The result of all this is that drift
         ///   lags behind by one major step for causing trips.
         if (mSensors.mInVoltage) {
-            sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, sensedVin);
+            sensedVin = mSensors.mInVoltage->sense(0.0, mPowered, static_cast<double>(sensedVin));
         }
         if (mSensors.mInCurrent) {
-            sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, sensedIin);
+            sensedIin = mSensors.mInCurrent->sense(0.0, mPowered, static_cast<double>(sensedIin));
         }
         if (mSensors.mOutVoltage) {
-            sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, sensedVout);
+            sensedVout = mSensors.mOutVoltage->sense(0.0, mPowered, static_cast<double>(sensedVout));
         }
         if (mSensors.mOutCurrent) {
-            sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, sensedIout);
+            sensedIout = mSensors.mOutCurrent->sense(0.0, mPowered, static_cast<double>(sensedIout));
         }
 
         /// - Check all trip logics for trips. If any trip, reject the solution and mode to OFF.

@@ -33,9 +33,11 @@ GUNNS_HOME ?= $(abspath ${PWD}/../..)
 
 OPTS = -O2 -g
 
+WARNOPTS = -Wall -Wextra -Wshift-overflow -Warray-bounds -Wshadow -Wformat=2 -Wignored-attributes -Wpacked -Walloca -Wpointer-compare -Wcast-align -Wwrite-strings -Wdangling-else -Wdate-time -Wmissing-field-initializers -Woverlength-strings -Woverloaded-virtual -Wsign-promo -Wctor-dtor-privacy -Wregister -Wnon-virtual-dtor -Wswitch-default -Wdouble-promotion -Wfloat-conversion
+
 GUNNSLIB := libgunns.a
 GUNNSROSESLIB := libgunnsroses.a
-CXXFLAGS = -Wall $(OPTS)
+CXXFLAGS = $(OPTS) $(WARNOPTS)
 
 INCDIRS = -I$(GUNNS_HOME) -I$(GUNNS_HOME)/core -I$(GUNNS_HOME)/aspects \
  -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models \

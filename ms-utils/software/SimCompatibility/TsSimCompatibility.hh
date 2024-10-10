@@ -146,9 +146,11 @@ class TestHookSimObj;
 }
 #else  // non-Trick
 #define TS_NEW_PRIM_ARRAY(var, nelem, type, name...) \
-    var = new type[nelem]
+    var = new type[nelem]; \
+    (void)(name)
 #define TS_NEW_PRIM_ARRAY_EXT(var, nelem, type, name...) \
-    if (var==NULL) var = new type[nelem]
+    if (var==NULL) var = new type[nelem]; \
+    (void)(name)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

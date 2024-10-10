@@ -2,7 +2,7 @@
 @file     GunnsOptimFactory.cpp
 @brief    GUNNS Optimization Optimizer Factory implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -68,6 +68,9 @@ GunnsOptimBase* GunnsOptimFactory::createOptimizer(const OptimizerType type)
             break;
         }
         case GunnsOptimFactory::NONE : {
+            break;
+        }
+        default : {
             break;
         }
     }

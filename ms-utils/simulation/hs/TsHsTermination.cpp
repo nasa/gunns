@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -73,6 +73,8 @@ bool TsHsTermination::msg(
 #ifndef no_TRICK_ENV
         // Const cast required for trick 7 do not remove while there are still trick 7 users
         exec_terminate(const_cast<char*>(location.str().c_str()), const_cast<char*>(mtext.c_str()));
+#else
+        (void)mtext;  // avoid compiler warning about unused variable
 #endif
         return false;
     }

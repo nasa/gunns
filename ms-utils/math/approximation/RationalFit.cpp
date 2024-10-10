@@ -1,10 +1,10 @@
-/************************** TRICK HEADER **********************************************************
+/*
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
 #include <cmath>
@@ -45,7 +45,7 @@ RationalFit::RationalFit()
 RationalFit::RationalFit(const double a,    const double b,    const double c,    const double d,
                          const double minX, const double maxX, const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(a),
     mB(b),
     mC(c),
@@ -79,23 +79,23 @@ void RationalFit::init(const double a,    const double b,    const double c,    
                        const double minX, const double maxX, const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
-    const double discrim = c * c - 4 * d;
-    if (discrim > FLT_EPSILON) {
+    const double discrim = c * c - 4.0 * d;
+    if (discrim > DBL_EPSILON) {
         // Either check that both real roots are sufficiently outside valid range
         const double arg = 0.5 * std::sqrt(discrim);
-        TS_GENERIC_IF_ERREX((minX <= -c + arg + FLT_EPSILON && -c + arg - FLT_EPSILON <= maxX), TsInitializationException,
+        TS_GENERIC_IF_ERREX((minX <= -c + arg + DBL_EPSILON && -c + arg - DBL_EPSILON <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
-        TS_GENERIC_IF_ERREX((minX <= -c - arg + FLT_EPSILON && -c - arg - FLT_EPSILON <= maxX), TsInitializationException,
+        TS_GENERIC_IF_ERREX((minX <= -c - arg + DBL_EPSILON && -c - arg - DBL_EPSILON <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
-    } else if (discrim > -FLT_EPSILON) {
+    } else if (discrim > -DBL_EPSILON) {
         // Or check that an (almost) single real root is sufficiently outside valid range
-        TS_GENERIC_IF_ERREX((minX <= -0.5 * c + FLT_EPSILON && -0.5 * c - FLT_EPSILON < maxX), TsInitializationException,
+        TS_GENERIC_IF_ERREX((minX <= -0.5 * c + DBL_EPSILON && -0.5 * c - DBL_EPSILON < maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
     }
 

@@ -5,7 +5,7 @@
 /// @defgroup UT_PHOTOVOLTAIC_SHUNTING_REGULATOR    Photovoltaic Array Shunting Regulator Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Photovoltaic Array Shunting Regulator Link
@@ -109,11 +109,11 @@ class UtGunnsElectPvRegShunt: public CppUnit::TestFixture
         GunnsSensorAnalogWrapper        tSensorVin;           /**< (--)    Sensor object. */
         GunnsSensorAnalogWrapper        tSensorIout;          /**< (--)    Sensor object. */
         GunnsSensorAnalogWrapper        tSensorVout;          /**< (--)    Sensor object. */
-        double                          tInOverCurrentTrip;   /**< (amp)   Nominal config data. */
-        double                          tInOverVoltageTrip;   /**< (v)     Nominal config data. */
-        double                          tOutOverCurrentTrip;  /**< (amp)   Nominal config data. */
-        double                          tOutOverVoltageTrip;  /**< (v)     Nominal config data. */
-        double                          tOutUnderVoltageTrip; /**< (v)     Nominal config data. */
+        float                           tInOverCurrentTrip;   /**< (amp)   Nominal config data. */
+        float                           tInOverVoltageTrip;   /**< (v)     Nominal config data. */
+        float                           tOutOverCurrentTrip;  /**< (amp)   Nominal config data. */
+        float                           tOutOverVoltageTrip;  /**< (v)     Nominal config data. */
+        float                           tOutUnderVoltageTrip; /**< (v)     Nominal config data. */
         unsigned int                    tTripPriority;        /**< (v)     Nominal config data. */
         FriendlyGunnsElectPvArray*      tArray;               /**< (--)    Test PV array. */
         GunnsElectPvArrayConfigData*    tArrayConfig;         /**< (--)    Test PV array config data. */

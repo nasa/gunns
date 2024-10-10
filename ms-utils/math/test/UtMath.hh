@@ -60,6 +60,8 @@ class UtMath : public CppUnit::TestFixture
         void testLimitRangeInt();
         /// @brief    Test double isInRange method.
         void testIsInRangeDouble();
+        /// @brief    Test float isInRange method.
+        void testIsInRangeFloat();
         /// @brief    Test int isInRange method.
         void testIsInRangeInt();
         /// @brief    Test innerLimit method.
@@ -88,6 +90,7 @@ class UtMath : public CppUnit::TestFixture
         CPPUNIT_TEST(testLimitRangeFloat);
         CPPUNIT_TEST(testLimitRangeInt);
         CPPUNIT_TEST(testIsInRangeDouble);
+        CPPUNIT_TEST(testIsInRangeFloat);
         CPPUNIT_TEST(testIsInRangeInt);
         CPPUNIT_TEST(testInnerLimitDouble);
         CPPUNIT_TEST(testInnerLimitInt);

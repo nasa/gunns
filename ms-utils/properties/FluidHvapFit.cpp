@@ -44,7 +44,7 @@ FluidHvapFit::FluidHvapFit(const double a,
                            const double minX,  const double maxX,
                            const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(a),
     mAlpha(alpha),
     mBeta(beta)
@@ -77,7 +77,7 @@ void FluidHvapFit::init(const double a,
                         const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;

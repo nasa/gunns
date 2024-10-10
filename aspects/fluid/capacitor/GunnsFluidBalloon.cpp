@@ -228,13 +228,13 @@ void GunnsFluidBalloon::initialize(const GunnsFluidBalloonConfigData& configData
 void GunnsFluidBalloon::validate(const GunnsFluidBalloonConfigData& configData) const
 {
     /// - Issue an error on inflatability < FLT_EPISLON.
-    if (configData.mInflatability < FLT_EPSILON) {
+    if (configData.mInflatability < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has inflatability < FLT_EPSILON.");
     }
 
     /// - Issue an error on volume < minimum.
-    if (configData.mMaxVolume < (mMinVolume + FLT_EPSILON)) {
+    if (configData.mMaxVolume < (mMinVolume + static_cast<double>(FLT_EPSILON))) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has maximum volume < minimum allowed.");
     }
@@ -347,9 +347,9 @@ double GunnsFluidBalloon::updateInflation()
         mInflationState = DEFLATED;
     } else if (mMaxVolume == volume) {
         mInflationState = INFLATED;
-    } else if (volume > mNodes[0]->getVolume() + FLT_EPSILON) {
+    } else if (volume > mNodes[0]->getVolume() + static_cast<double>(FLT_EPSILON)) {
         mInflationState = INFLATING;
-    } else if (volume < mNodes[0]->getVolume() - FLT_EPSILON) {
+    } else if (volume < mNodes[0]->getVolume() - static_cast<double>(FLT_EPSILON)) {
         mInflationState = DEFLATING;
     } else {
         mInflationState = PARTIALLY_INFLATED;

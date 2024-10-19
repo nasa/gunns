@@ -107,7 +107,10 @@ void GunnsRosesTiming::update(const double timestep)
         
         if (N_STEPS <= step) {
             storePotentials();
-            
+//            dumpA();
+//            dumpIslands();
+//            two lines above are for debugging - uncomment as needed
+
             if (Gunns::NO_GPU == gpuMode) {
                 cpuTimePrev = cpuTime;
                 cpuTime = network->mSolveTimeAvg;
@@ -128,8 +131,8 @@ void GunnsRosesTiming::update(const double timestep)
                 
                 if (errCheck) {
                     double error = 0.0;
-                    for (unsigned int i = 0; i < 5; ++i) {
-                        error += fabs(gpuPotentials[i] - cpuPotentials[i]);
+                    for (unsigned int i=0; i<5; ++i) {
+                        error += std::fabs(gpuPotentials[i] - cpuPotentials[i]);
                     }
                     printf("  %9.2e", error);
                 }
@@ -165,15 +168,14 @@ void GunnsRosesTiming::update(const double timestep)
         }
         
         printf("\nTerminating sim:\n");
-        delete network;  // Deallocate the network
-        step = 0;
+        exec_terminate("", "");  // from Trick's exec_proto.h, tell Trick to kill the sim
 
-        // Prevent division by zero
-        if (step != 0) {
-            N /= step;
-        } else {
-            printf("Error: step is zero, preventing division by zero.\n");
-        }
+        // Prevent division by zero - uncomment as needed
+        // if (step != 0) {
+        //     N /= step;
+        // } else {
+        //     printf("Error: step is zero, preventing division by zero.\n");
+        // }
     }
 }
 

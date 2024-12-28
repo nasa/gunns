@@ -169,13 +169,6 @@ void GunnsRosesTiming::update(const double timestep)
         
         printf("\nTerminating sim:\n");
         exec_terminate("", "");  // from Trick's exec_proto.h, tell Trick to kill the sim
-
-        // Prevent division by zero - uncomment as needed
-        // if (step != 0) {
-        //     N /= step;
-        // } else {
-        //     printf("Error: step is zero, preventing division by zero.\n");
-        // }
     }
 }
 

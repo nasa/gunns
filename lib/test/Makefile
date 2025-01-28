@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright 2024 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This builds the Trick-less GUNNS compiled libraries for unit tests.
@@ -58,7 +58,7 @@ CUDAOBJDIRS := $(sort $(dir $(CUDAOBJECTS)))
 
 all: ${GUNNSLIB}
 
-roses: CXXFLAGS += -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
+roses: CXXFLAGS += -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 roses: ${GUNNSROSESLIB}
 
 $(GUNNSLIB) : $(OBJECTS)

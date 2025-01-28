@@ -2,7 +2,7 @@
 #define CUDASPARSESOLVE_HH
 
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @file
@@ -32,7 +32,8 @@ LIBRARY_DEPENDENCY:
 - ((math/linear_algebra/cuda/CudaSparseSolve.o))
 
 PROGRAMMERS:
-- ((Alex Lin) (NASA) (2017-07))
+- (((Alex Lin) (NASA) (2017-07))
+   ((Jason Harvey) (CACI) (CUDA 12.2) (2025-01)))
 
 @{
 */
@@ -68,12 +69,12 @@ class CudaSparseSolve : public CholeskyLdu, public CudaIfUtils
         int                current_n;      /**< (--) Current size of n we have allocated space for. */
         double*            d_A_dense;      /**< (--) Pointer to the dense-form [A] matrix on the GPU. */
         int                nnz;            /**< (--) Total number of non-zero elements. */
-        int*               d_nnzPerVector; /**< (--) Array of number of non-zero elements per vector on the GPU. */
         double*            d_A;            /**< (--) Pointer to the sparse-form [A] matrix on the GPU. */
         int*               d_A_RowIndices; /**< (--) Array of the start of the sparse columns on the GPU. */
         int*               d_A_ColIndices; /**< (--) Array of number of the column indices of the non-zero elements on the GPU. */
         double*            d_b;            /**< (--) Pointer to the {b} vector on the GPU. */
         double*            d_x;            /**< (--) Pointer to the {x} vector on the GPU. */
+        void*              p_buffer;       /**< (--) Pointer to the prune buffer. */
 };
 
 /// @}

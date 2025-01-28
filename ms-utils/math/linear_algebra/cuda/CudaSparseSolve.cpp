@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @file
@@ -22,12 +22,12 @@ CudaSparseSolve::CudaSparseSolve()
     current_n(0),
     d_A_dense(0),
     nnz(0),
-    d_nnzPerVector(0),
     d_A(0),
     d_A_RowIndices(0),
     d_A_ColIndices(0),
     d_b(0),
-    d_x(0)
+    d_x(0),
+    p_buffer(0)
 {
     /// - Create handles to CUDA contexts
     cusparseCreate(&p_handle);
@@ -61,8 +61,8 @@ CudaSparseSolve::~CudaSparseSolve()
     if (d_b) {
         cudaFree(d_b) ;
     }
-    if (d_nnzPerVector) {
-        cudaFree(d_nnzPerVector) ;
+    if (p_buffer) {
+        cudaFree(p_buffer) ;
     }
     if (d_A_dense) {
         cudaFree(d_A_dense) ;
@@ -99,11 +99,6 @@ void CudaSparseSolve::Decompose(double* A, int n)
             cudaFree(d_A_dense);
         }
         checkReturn(cudaMalloc(&d_A_dense, n * n * sizeof(*d_A_dense)), __FILE__, __LINE__);
-        /// - Allocate CUDA memory for number non zero elements per row.
-        if (d_nnzPerVector) {
-            cudaFree(d_nnzPerVector);
-        }
-        checkReturn(cudaMalloc(&d_nnzPerVector, n * sizeof(*d_nnzPerVector)), __FILE__, __LINE__);
         /// - Allocate CUDA memory for B vector.
         if (d_b) {
             cudaFree(d_b);
@@ -116,22 +111,41 @@ void CudaSparseSolve::Decompose(double* A, int n)
         checkReturn(cudaMalloc(&d_x, n * sizeof(double)), __FILE__, __LINE__);
         current_n = n;
     }
-    /// - Copy dense matrix to device and determine number of non zeros.
+
+    /// - Copy dense matrix to device.
     checkReturn(cudaMemcpy(d_A_dense, A, n * n * sizeof(*d_A_dense), cudaMemcpyHostToDevice),
                            __FILE__, __LINE__);
-    checkReturn(cusparseDnnz(p_handle, CUSPARSE_DIRECTION_ROW, n, n, mat_desc, d_A_dense, n,
-                             d_nnzPerVector, &nnz), __FILE__, __LINE__);
+
+    /// - Get prune buffer size in bytes.
+    const double pThreshold = 1.0e-100;
+    size_t pBufferSize;
+    //TODO these cusparseDpruneDense2csr functions are deprecated in CUDA and we expect them to be
+    //     deleted in CUDA 13.  We'll have to change all this code to use the new cuDSS library.
+    checkReturn(cusparseDpruneDense2csr_bufferSizeExt(p_handle, n, n, d_A_dense, n, &pThreshold,
+            mat_desc, d_A, d_A_RowIndices, d_A_ColIndices, &pBufferSize), __FILE__, __LINE__);
+
+    /// - Allocate CUDA memory for the prune buffer.
+    if (p_buffer) {
+        cudaFree(p_buffer);
+    }
+    checkReturn(cudaMalloc(&p_buffer, pBufferSize * sizeof(char)), __FILE__, __LINE__);
+
+    /// - Allocate CUDA memory for rows indices in A.
+    if (d_A_RowIndices) {
+        cudaFree(d_A_RowIndices);
+    }
+    checkReturn(cudaMalloc(&d_A_RowIndices, (n + 1) * sizeof(*d_A_RowIndices)), __FILE__, __LINE__);
+
+    /// - Determine number of non zeros per row.
+    checkReturn(cusparseDpruneDense2csrNnz(p_handle, n, n, d_A_dense, n, &pThreshold,
+            mat_desc, d_A_RowIndices, &nnz, p_buffer), __FILE__, __LINE__);
 
     /// - Allocate CUDA memory for sparse matrix A.
     if (d_A) {
         cudaFree(d_A);
     }
     checkReturn(cudaMalloc(&d_A, nnz * sizeof(*d_A)), __FILE__, __LINE__);
-    /// - Allocate CUDA memory for rows indices in A.
-    if (d_A_RowIndices) {
-        cudaFree(d_A_RowIndices);
-    }
-    checkReturn(cudaMalloc(&d_A_RowIndices, (n + 1) * sizeof(*d_A_RowIndices)), __FILE__, __LINE__);
+
     /// - Allocate CUDA memory for column indices in A.
     if (d_A_ColIndices) {
         cudaFree(d_A_ColIndices);
@@ -139,8 +153,8 @@ void CudaSparseSolve::Decompose(double* A, int n)
     checkReturn(cudaMalloc(&d_A_ColIndices, nnz * sizeof(*d_A_ColIndices)), __FILE__, __LINE__);
 
     /// - Create sparse matrix from dense.
-    checkReturn(cusparseDdense2csr(p_handle, n, n, mat_desc, d_A_dense, n, d_nnzPerVector, d_A,
-                                   d_A_RowIndices, d_A_ColIndices), __FILE__, __LINE__);
+    checkReturn(cusparseDpruneDense2csr(p_handle, n, n, d_A_dense, n, &pThreshold,
+                                        mat_desc, d_A, d_A_RowIndices, d_A_ColIndices, p_buffer), __FILE__, __LINE__);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,6 +178,8 @@ void CudaSparseSolve::Solve(double* LDU __attribute__((unused)), double B[], dou
     /// - Solve the system.  The tolerance value of DBL_EPSILON * 1.0E-15 matches GUNNS minimum
     ///   value of a row diagonal.
     int singularity;
+    //TODO cusolverSpDcsrlsvchol is deprecated, replace with future cuDSS library, which
+    ///    isn't release yet (expect CUDA 13.X)
     cusolverStatus_t err = cusolverSpDcsrlsvchol(solver_handle, n, nnz, mat_desc,
                                                  d_A, d_A_RowIndices, d_A_ColIndices, d_b,
                                                  DBL_EPSILON * 1.0E-15,

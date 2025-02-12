@@ -160,7 +160,7 @@ protected:
     ChemicalCompound mCompoundOH;                    /**< (--) OH chemical compound */
     ChemicalCompound mCompoundO;                     /**< (--) O chemical compound */
     ChemicalCompound mCompoundHe;                    /**< (--) He chemical compound */
-    ChemicalCompound mCompoundAr;                    /**< (--) He chemical compound */
+    ChemicalCompound mCompoundAr;                    /**< (--) Ar chemical compound */
     ChemicalCompound* mCompounds[ChemicalCompound::NO_COMPOUND];  /**< (--) Compounds pointer array */
 
     /// --        Arrays to Hold the Thermodynamic Coefficients for each Compound

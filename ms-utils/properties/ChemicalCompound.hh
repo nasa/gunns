@@ -29,6 +29,7 @@ ASSUMPTIONS AND LIMITATIONS:
 
  PROGRAMMERS:
 - ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-05))
+- ((Maverick Thigpen) (Axiom Space) (2025))
 
 @{
  */
@@ -80,7 +81,8 @@ public:
         OH          = 26, ///<  Hydroxyl
         O           = 27, ///<  Singular Oxygen
         He          = 28, ///<  Helium
-        NO_COMPOUND = 29, ///<  Invalid or number of compounds - Keep this last!
+        Ar          = 29, ///<  Argon
+        NO_COMPOUND = 30, ///<  Invalid or number of compounds - Keep this last!
     };
     const ChemicalCompound::Type     mType;      /**< (--)    Type of this Chemical Compound. */
     const std::string                mName;      /**< (--)    Compound name. */
@@ -158,6 +160,7 @@ protected:
     ChemicalCompound mCompoundOH;                    /**< (--) OH chemical compound */
     ChemicalCompound mCompoundO;                     /**< (--) O chemical compound */
     ChemicalCompound mCompoundHe;                    /**< (--) He chemical compound */
+    ChemicalCompound mCompoundAr;                    /**< (--) He chemical compound */
     ChemicalCompound* mCompounds[ChemicalCompound::NO_COMPOUND];  /**< (--) Compounds pointer array */
 
     /// --        Arrays to Hold the Thermodynamic Coefficients for each Compound

@@ -14,8 +14,8 @@ TRICK_CXXFLAGS += -g -O2
 #TRICK_CFLAGS += -g
 #TRICK_CXXFLAGS += -g
 
-# uncomment this to build & enable the CUDA stuff, or comment out if using the trickified lib:
+# uncomment this to build & enable the CUDA stuff, or comment out if using the trickified lib above:
 #TRICK_CFLAGS += -fopenmp -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 #TRICK_CXXFLAGS += -fopenmp -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 #TRICK_EXCLUDE = /usr/local/cuda
-#TRICK_USER_LINK_LIBS += -lcublas_static -lculibos -lcudart_static -lcusolver -lcusparse_static -lculibos
+#TRICK_USER_LINK_LIBS += -L/usr/local/cuda/lib64 -lcublas_static -lculibos -lcudart_static -lcusolver -lcusparse_static -lculibos

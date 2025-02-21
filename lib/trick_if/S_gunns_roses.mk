@@ -70,5 +70,5 @@ else
 endif
 
 # Link in the CUDA libraries.
-TRICK_EXCLUDE = /usr/local/cuda-8.0
-TRICK_USER_LINK_LIBS += -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos
+TRICK_EXCLUDE = /usr/local/cuda
+TRICK_USER_LINK_LIBS += -L/usr/local/cuda/lib64 -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos

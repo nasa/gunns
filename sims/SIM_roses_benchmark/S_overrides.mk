@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 # uncomment this out to use the trickified lib:
@@ -15,7 +15,7 @@ TRICK_CXXFLAGS += -g -O2
 #TRICK_CXXFLAGS += -g
 
 # uncomment this to build & enable the CUDA stuff, or comment out if using the trickified lib:
-#TRICK_CFLAGS += -fopenmp -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
-#TRICK_CXXFLAGS += -fopenmp -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
-#TRICK_EXCLUDE = /usr/local/cuda-8.0
+#TRICK_CFLAGS += -fopenmp -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
+#TRICK_CXXFLAGS += -fopenmp -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
+#TRICK_EXCLUDE = /usr/local/cuda
 #TRICK_USER_LINK_LIBS += -lcublas_static -lculibos -lcudart_static -lcusolver -lcusparse_static -lculibos

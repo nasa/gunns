@@ -105,6 +105,9 @@ cd $MS_UTILS_HOME/$FOLDER; make clean;
 set FOLDER = fileSearch/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
+set FOLDER = interop/test
+cd $MS_UTILS_HOME/$FOLDER; make clean;
+
 set FOLDER = aspects/signal/effectors/thermostat/test
 cd $TS_MODELS_HOME/$FOLDER; make clean;
 

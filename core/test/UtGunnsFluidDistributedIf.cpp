@@ -116,7 +116,7 @@ void UtGunnsFluidDistributedIf::setUp()
                                                       tMalfBlockageValue);
 
     tArticle = new FriendlyGunnsFluidDistributedIf;
-    tArticleInterface = static_cast<FriendlyGunnsFluidDistributed2WayBus*>(&tArticle->mInterface);
+    tArticleInterface = static_cast<FriendlyDistributed2WayBusFluid*>(&tArticle->mInterface);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +240,7 @@ void UtGunnsFluidDistributedIf::testDefaultConstruction()
     GunnsFluidDistributedIf* article = new GunnsFluidDistributedIf();
     delete article;
 
-    GunnsFluidDistributed2WayBusInterfaceData* data = new GunnsFluidDistributed2WayBusInterfaceData();
+    Distributed2WayBusFluidInterfaceData* data = new Distributed2WayBusFluidInterfaceData();
     delete data;
 
     GunnsFluidDistributedIfData* data2 = new GunnsFluidDistributedIfData();
@@ -340,14 +340,14 @@ void UtGunnsFluidDistributedIf::testNominalInitialization()
 
     /// @test init with zero number of trace compounds, and force supply role.
     FriendlyGunnsFluidDistributedIf article;
-    FriendlyGunnsFluidDistributed2WayBus* articleInterface = static_cast<FriendlyGunnsFluidDistributed2WayBus*>(&article.mInterface);
+    FriendlyDistributed2WayBusFluid* articleInterface = static_cast<FriendlyDistributed2WayBusFluid*>(&article.mInterface);
     tLocalConfig->mTraceCompounds = 0;
     tInputData->mForceSupplyMode  = true;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
     CPPUNIT_ASSERT(article.mInterface.mInData.mMoleFractions);
     CPPUNIT_ASSERT(0.0   == article.mInterface.mInData.mMoleFractions[1]);
     CPPUNIT_ASSERT(0     == article.mInterface.mInData.mTcMoleFractions);
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::SUPPLY == articleInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::SUPPLY == articleInterface->mForcedRole);
 
     /// @test init with the fluid sizes override, and force demand role.
     tConfigData->mFluidSizesOverride = true;
@@ -356,12 +356,12 @@ void UtGunnsFluidDistributedIf::testNominalInitialization()
     tInputData->mForceSupplyMode     = false;
     tInputData->mForceDemandMode     = true;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::DEMAND == articleInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::DEMAND == articleInterface->mForcedRole);
     CPPUNIT_ASSERT(12 == articleInterface->mInData.getNumFluid());
     CPPUNIT_ASSERT(8  == articleInterface->mInData.getNumTc());
 
-    /// @test init of GunnsFluidDistributed2WayBusInterfaceData with zero number of fluids.
-    GunnsFluidDistributed2WayBusInterfaceData data;
+    /// @test init of Distributed2WayBusFluidInterfaceData with zero number of fluids.
+    Distributed2WayBusFluidInterfaceData data;
     data.initialize(0, 4);
     CPPUNIT_ASSERT(0 == data.mMoleFractions);
     CPPUNIT_ASSERT(data.mTcMoleFractions);

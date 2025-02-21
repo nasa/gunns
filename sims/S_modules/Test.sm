@@ -7,6 +7,9 @@
 ##include "core/network/GunnsBasicSuperNetwork.hh"
 ##include "core/network/GunnsFluidSuperNetwork.hh"
 
+//TODO
+##include "sims/networks/fluid/examples/CoolingTowerFluid.hh"
+
 class TestSimObject: public Trick::SimObject
 {
     public:
@@ -26,6 +29,9 @@ class TestSimObject: public Trick::SimObject
         GunnsBasicSuperNetwork superElect;         /**< (--) GUNNS elect super network */
         GunnsBasicSuperNetwork superThermal;       /**< (--) GUNNS thermal super network */
 
+        CoolingTowerFluid coolingTower;         /**< (--) GUNNS fluid super network */
+        double towerAccel[3]; /**< (m/s2) Tower local acceleration vector. */
+        
         TestSimObject(int thread_id_fluid   = 0,
                       int thread_id_elect   = 0,
                       int thread_id_thermal = 0)
@@ -44,7 +50,8 @@ class TestSimObject: public Trick::SimObject
             subThermal2("testSimObject.subThermal2"),
             superFluid("testSimObject.superFluid"),
             superElect("testSimObject.superElect"),
-            superThermal("testSimObject.superThermal")
+            superThermal("testSimObject.superThermal"),
+            coolingTower("testSimObject.coolingTower")
         {
             ("initialization")      fluid.initialize();
             ("initialization")      subFluid1.initialize();
@@ -58,6 +65,7 @@ class TestSimObject: public Trick::SimObject
             ("initialization")      superFluid.initialize();
             ("initialization")      superElect.initialize();
             ("initialization")      superThermal.initialize();
+            ("initialization")      coolingTower.initialize();
             ("restart")             fluid.restart();
             ("restart")             subFluid1.restart();
             ("restart")             subFluid2.restart();
@@ -82,6 +90,7 @@ class TestSimObject: public Trick::SimObject
             CthreadIdFluid   (ECLSS_LO, "scheduled") superFluid.update(ECLSS_LO);
             CthreadIdElect   (ECLSS_LO, "scheduled") superElect.update(ECLSS_LO);
             CthreadIdThermal (ECLSS_LO, "scheduled") superThermal.update(ECLSS_LO);
+            CthreadIdFluid   (ECLSS_LO, "scheduled") coolingTower.update(ECLSS_LO);
         }
 
         virtual ~TestSimObject() { /* nothing to do */ }

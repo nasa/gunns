@@ -24,7 +24,7 @@ LIBRARY DEPENDENCY:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GunnsFluidDistributedIfData::GunnsFluidDistributedIfData()
     :
-    GunnsFluidDistributed2WayBusInterfaceData()
+    Distributed2WayBusFluidInterfaceData()
 {
     // nothing to do
 }
@@ -425,7 +425,7 @@ void GunnsFluidDistributedIf::processInputs()
 double GunnsFluidDistributedIf::inputFluid(const double pressure, PolyFluid* fluid)
 {
     /// - Point to the working interface fluid state object based on interface role.
-    GunnsFluidDistributedMixtureData* workingState = &mWorkFlowState;
+    FluidDistributedMixtureData* workingState = &mWorkFlowState;
     if (mInterface.isInDemandRole()) {
         workingState = &mWorkFluidState;
     }
@@ -552,7 +552,7 @@ void GunnsFluidDistributedIf::processOutputs()
     /// - Copy the interface logic's output to our data object for output on data network (HLA).
     ///   We use the base class assignment operator to assign base = base.  There is no data lost
     ///   to slicing since the derived class adds no attributes.
-    mOutData.GunnsFluidDistributed2WayBusInterfaceData::operator=(mInterface.mOutData);
+    mOutData.Distributed2WayBusFluidInterfaceData::operator=(mInterface.mOutData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -562,7 +562,7 @@ void GunnsFluidDistributedIf::processOutputs()
 ///
 /// @details  Copies the given fluid state for output to the other side of the interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid, GunnsFluidDistributedMixtureData* work)
+double GunnsFluidDistributedIf::outputFluid(PolyFluid* fluid, FluidDistributedMixtureData* work)
 {
     /// - Output energy as either temperature or specific enthalpy as configured.
     if (mUseEnthalpy) {
@@ -872,22 +872,22 @@ bool GunnsFluidDistributedIf::checkNegativeFluidFractions(const PolyFluid* fluid
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidDistributedIf::processIfNotifications(const bool isInit __attribute__((unused)))
 {
-    GunnsDistributed2WayBusNotification notification;
+    Distributed2WayBusNotification notification;
     unsigned int numNotifs = 0;
     do {
         numNotifs = mInterface.popNotification(notification);
-        if (GunnsDistributed2WayBusNotification::NONE != notification.mLevel) {
+        if (Distributed2WayBusNotification::NONE != notification.mLevel) {
             std::ostringstream msg;
             msg << "from mInterface: " << notification.mMessage;
             switch (notification.mLevel) {
-                case GunnsDistributed2WayBusNotification::INFO:
+                case Distributed2WayBusNotification::INFO:
                     GUNNS_INFO(msg.str());
                     break;
-                case GunnsDistributed2WayBusNotification::WARN:
+                case Distributed2WayBusNotification::WARN:
                     GUNNS_WARNING(msg.str());
                     break;
 // The interface currently has no ERR outputs, so these are untestable:
-//                case GunnsDistributed2WayBusNotification::ERR:
+//                case Distributed2WayBusNotification::ERR:
 //                    if (isInit) {
 //                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
 //                    } else {

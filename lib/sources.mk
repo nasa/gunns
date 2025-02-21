@@ -45,6 +45,7 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/root_finding/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/time/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/fileSearch/*.cpp) \
+ $(wildcard $(GUNNS_HOME)/ms-utils/interop/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/parsing/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/parsing/tinyxml/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/simulation/hs/*.cpp) \

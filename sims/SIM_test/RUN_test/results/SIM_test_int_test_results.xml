@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="84" failures="0" disabled="0" errors="0" time="0.0" name="AllTests">
-  <testsuite name="GUNNS SIM_test : Basic Network Test" tests="12" failures="0" disabled="0" errors="0" time="0.0">
+<testsuites tests="84" failures="1" disabled="0" errors="0" time="0.0" name="AllTests">
+  <testsuite name="GUNNS SIM_test : Basic Network Test" tests="12" failures="1" disabled="0" errors="0" time="0.0">
     <testcase name=" Node 0 initial potential ::" status="run" time="0" classname="GUNNS SIM_test : Basic Network Test" />
     <testcase name=" Node 1 initial potential ::" status="run" time="0" classname="GUNNS SIM_test : Basic Network Test" />
     <testcase name=" SimpleVoltageSource initial flux ::" status="run" time="0" classname="GUNNS SIM_test : Basic Network Test" />
@@ -14,7 +14,7 @@
     <testcase name=" Data log convergence fail count ::" status="run" time="0" classname="GUNNS SIM_test : Basic Network Test" />
     <testcase name=" Data log average decomposition count ::" status="run" time="0" classname="GUNNS SIM_test : Basic Network Test" />
   </testsuite>
-  <testsuite name="GUNNS SIM_test : Fluid Network Test" tests="41" failures="0" disabled="0" errors="0" time="0.0">
+  <testsuite name="GUNNS SIM_test : Fluid Network Test" tests="41" failures="1" disabled="0" errors="0" time="0.0">
     <testcase name=" Node 0 initial pressure ::" status="run" time="0" classname="GUNNS SIM_test : Fluid Network Test" />
     <testcase name=" Node 0 initial temperature ::" status="run" time="0" classname="GUNNS SIM_test : Fluid Network Test" />
     <testcase name=" Node 0 initial H2  mass fraction ::" status="run" time="0" classname="GUNNS SIM_test : Fluid Network Test" />
@@ -57,7 +57,7 @@
     <testcase name=" Data log Node 0 final pressure ::" status="run" time="0" classname="GUNNS SIM_test : Fluid Network Test" />
     <testcase name=" Data log Node 1 final pressure ::" status="run" time="0" classname="GUNNS SIM_test : Fluid Network Test" />
   </testsuite>
-  <testsuite name="GUNNS SIM_test : Health and Status Log Test" tests="13" failures="0" disabled="0" errors="0" time="0.0">
+  <testsuite name="GUNNS SIM_test : Health and Status Log Test" tests="13" failures="1" disabled="0" errors="0" time="0.0">
     <testcase name=" fluid network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
     <testcase name=" elect network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
     <testcase name=" thermal network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
@@ -70,9 +70,11 @@
     <testcase name=" thermal super-network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
     <testcase name=" thermal super-network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
     <testcase name=" thermal super-network initialization ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
-    <testcase name=" no run messages from networks ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" />
+    <testcase name=" no run messages from networks ::" status="run" time="0" classname="GUNNS SIM_test : Health and Status Log Test" >
+       <failure message="TRICK_EXPECT_TRUE failed" type=""/>
+    </testcase>
   </testsuite>
-  <testsuite name="GUNNS SIM_test : Thermal Network Test" tests="18" failures="0" disabled="0" errors="0" time="0.0">
+  <testsuite name="GUNNS SIM_test : Thermal Network Test" tests="18" failures="1" disabled="0" errors="0" time="0.0">
     <testcase name=" Node 0 final potential ::" status="run" time="0" classname="GUNNS SIM_test : Thermal Network Test" />
     <testcase name=" Node 1 final potential ::" status="run" time="0" classname="GUNNS SIM_test : Thermal Network Test" />
     <testcase name=" Node 10 final potential ::" status="run" time="0" classname="GUNNS SIM_test : Thermal Network Test" />

@@ -8,7 +8,6 @@
 
 
 #include <cppunit/ui/text/TestRunner.h>
-#include "UtGunnsElectDistributed2WayBus.hh"
 #include "UtGunnsElectDistributedIf.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +21,6 @@
 int main(int argc, char** argv) {
     CppUnit::TextTestRunner runner;
 
-    runner.addTest(UtGunnsElectDistributed2WayBus::suite());
     runner.addTest(UtGunnsElectDistributedIf::suite());
 
     runner.run();

@@ -83,7 +83,7 @@ void UtGunnsElectDistributedIf::setUp()
 
     /// - Default construct the nominal test article.
     tArticle       = new FriendlyGunnsElectDistributedIf;
-    tInterface     = static_cast<FriendlyGunnsElectDistributed2WayBus*>(&tArticle->mInterface);
+    tInterface     = static_cast<FriendlyDistributed2WayBusElect*>(&tArticle->mInterface);
     tVoltageSource = static_cast<FriendlyGunnsElectConverterOutput*>(&tArticle->mVoltageSource);
     tPowerLoad     = static_cast<FriendlyGunnsElectConverterInput*>(&tArticle->mPowerLoad);
 
@@ -114,7 +114,7 @@ void UtGunnsElectDistributedIf::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectDistributedIf::testConfig()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("Power Bus Unit Tests");
 
     /// @test    Configuration nominal construction and addSupply method
     CPPUNIT_ASSERT(tName           == tConfigData->mName);
@@ -221,7 +221,7 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT(tConductance   == tVoltageSource->mOutputConductance);
 
     /// @test    Nominal input data.
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::NONE == tInterface->mForcedRole);
 
     /// @test    Initialization of child objects.
     CPPUNIT_ASSERT(0                         == tInterface->mNotifications.size());
@@ -256,14 +256,14 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     /// @test    Re-init with forcing interface to Demand mode.
     tInputData->mForceDemandMode = true;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::DEMAND == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::DEMAND == tInterface->mForcedRole);
     CPPUNIT_ASSERT(1        == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(1        == tArticle->mSupplies.size());
 
     /// @test    Re-init with forcing interface to Supply mode.
     tInputData->mForceSupplyMode = true;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::SUPPLY == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::SUPPLY == tInterface->mForcedRole);
     CPPUNIT_ASSERT(1        == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(1        == tArticle->mSupplies.size());
 

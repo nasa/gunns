@@ -31,7 +31,7 @@ PROGRAMMERS:
 */
 
 #include "GunnsFluidLink.hh"
-#include "GunnsFluidDistributed2WayBus.hh"
+#include "interop/Distributed2WayBusFluid.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include <vector>
 
@@ -40,11 +40,11 @@ PROGRAMMERS:
 ///
 /// @details  This class provides a data structure for the data shared between a pair of Fluid
 ///           Distributed Interface links that allows flow between separate fluid networks.  This
-///           extends the non-Trick-specific GunnsFluidDistributed2WayBusInterfaceData to override
-///           the initialize method.  This allocates the fluid mixture arrays using the Trick Memory
+///           extends the non-Trick-specific Distributed2WayBusFluidInterfaceData to override the
+///           initialize method.  This allocates the fluid mixture arrays using the Trick Memory
 ///           Manager instead of normal C++ new/delete, since TrickHLA works better with TMM arrays.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributedIfData : public GunnsFluidDistributed2WayBusInterfaceData
+class GunnsFluidDistributedIfData : public Distributed2WayBusFluidInterfaceData
 {
     TS_MAKE_SIM_COMPATIBLE(GunnsFluidDistributedIfData);
     public:
@@ -223,24 +223,24 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         const double* getNetCapDeltaPotential() const;
 
     protected:
-        GunnsFluidDistributed2WayBus           mInterface;              /**<    (1)                            The interface logic. */
-        bool                                   mUseEnthalpy;            /**<    (1)        trick_chkpnt_io(**) Transport energy as specific enthalpy instead of temperature. */
-        bool                                   mDemandOption;           /**<    (1)        trick_chkpnt_io(**) Demand mode option to trade stability for less restriction on flow rate. */
-        double                                 mSupplyVolume;           /**<    (m3)                           Stored volume of the node when in Demand mode. */
-        GunnsFluidCapacitor*                   mCapacitorLink;          /**< ** (1)        trick_chkpnt_io(**) Pointer to the node capacitor link. */
-        double                                 mEffectiveConductivity;  /**<    (m2)       trick_chkpnt_io(**) Effective conductivity of the link in Demand mode. */
-        double                                 mSourcePressure;         /**<    (kPa)      trick_chkpnt_io(**) Source pressure created in the node in Demand mode. */
-        double                                 mDemandFlux;             /**<    (kg*mol/s) trick_chkpnt_io(**) Source molar flow added to the node in Supply mode. */
-        double                                 mDemandFluxGain;         /**<    (1)        trick_chkpnt_io(**) Demand mode flow factor due to lag frames. */
-        double                                 mSuppliedCapacitance;    /**<    (mol/Pa)   trick_chkpnt_io(**) Network capacitance applied to the Demand node from the Supply side. */
-        double*                                mTempMassFractions;      /**< ** (1)        trick_chkpnt_io(**) Scratch array for mass-mole mixture conversions. */
-        double*                                mTempMoleFractions;      /**< ** (1)        trick_chkpnt_io(**) Scratch array for bulk fluid mole fraction adjustments. */
-        double*                                mTempTcMoleFractions;    /**< ** (1)        trick_chkpnt_io(**) Scratch array for trace compound mole fraction adjustments. */
-        GunnsFluidDistributed2WayBusFluidState mWorkFluidState;         /**<    (1)        trick_chkpnt_io(**) Fluid state object for exchange with the interface. */
-        GunnsFluidDistributed2WayBusFlowState  mWorkFlowState;          /**<    (1)        trick_chkpnt_io(**) Flow state object for exchange with the interface. */
-        std::vector<GunnsFluidDistributedIf*>  mOtherIfs;               /**< ** (1)        trick_chkpnt_io(**) Vector of other similar links to avoid capacitance interference with. */
-        PolyFluid                              mFluidState;             /**<    (1)        trick_chkpnt_io(**) Fluid state of the interface volume, for sensors. */
-        static const double                    mNetworkCapacitanceFlux; /**< ** (kg*mol/s) trick_chkpnt_io(**) Flux value to use in network node capacitance calculations. */
+        Distributed2WayBusFluid               mInterface;              /**<    (1)                            The interface logic. */
+        bool                                  mUseEnthalpy;            /**<    (1)        trick_chkpnt_io(**) Transport energy as specific enthalpy instead of temperature. */
+        bool                                  mDemandOption;           /**<    (1)        trick_chkpnt_io(**) Demand mode option to trade stability for less restriction on flow rate. */
+        double                                mSupplyVolume;           /**<    (m3)                           Stored volume of the node when in Demand mode. */
+        GunnsFluidCapacitor*                  mCapacitorLink;          /**< ** (1)        trick_chkpnt_io(**) Pointer to the node capacitor link. */
+        double                                mEffectiveConductivity;  /**<    (m2)       trick_chkpnt_io(**) Effective conductivity of the link in Demand mode. */
+        double                                mSourcePressure;         /**<    (kPa)      trick_chkpnt_io(**) Source pressure created in the node in Demand mode. */
+        double                                mDemandFlux;             /**<    (kg*mol/s) trick_chkpnt_io(**) Source molar flow added to the node in Supply mode. */
+        double                                mDemandFluxGain;         /**<    (1)        trick_chkpnt_io(**) Demand mode flow factor due to lag frames. */
+        double                                mSuppliedCapacitance;    /**<    (mol/Pa)   trick_chkpnt_io(**) Network capacitance applied to the Demand node from the Supply side. */
+        double*                               mTempMassFractions;      /**< ** (1)        trick_chkpnt_io(**) Scratch array for mass-mole mixture conversions. */
+        double*                               mTempMoleFractions;      /**< ** (1)        trick_chkpnt_io(**) Scratch array for bulk fluid mole fraction adjustments. */
+        double*                               mTempTcMoleFractions;    /**< ** (1)        trick_chkpnt_io(**) Scratch array for trace compound mole fraction adjustments. */
+        Distributed2WayBusFluidFluidState     mWorkFluidState;         /**<    (1)        trick_chkpnt_io(**) Fluid state object for exchange with the interface. */
+        Distributed2WayBusFluidFlowState      mWorkFlowState;          /**<    (1)        trick_chkpnt_io(**) Flow state object for exchange with the interface. */
+        std::vector<GunnsFluidDistributedIf*> mOtherIfs;               /**< ** (1)        trick_chkpnt_io(**) Vector of other similar links to avoid capacitance interference with. */
+        PolyFluid                             mFluidState;             /**<    (1)        trick_chkpnt_io(**) Fluid state of the interface volume, for sensors. */
+        static const double                   mNetworkCapacitanceFlux; /**< ** (kg*mol/s) trick_chkpnt_io(**) Flux value to use in network node capacitance calculations. */
         /// @brief Validates the initialization of this Gunns Fluid Distributed Interface.
         void validate(const GunnsFluidDistributedIfInputData& inputData) const;
         /// @brief Virtual method for derived links to perform their restart functions.
@@ -260,7 +260,7 @@ class GunnsFluidDistributedIf : public GunnsFluidLink
         /// @brief Copies incoming fluid state from the interface to the given fluid object.
         double inputFluid(const double pressure, PolyFluid* fluid);
         /// @brief Copies the given fluid object state to the outgoing interface.
-        double outputFluid(PolyFluid* fluid, GunnsFluidDistributedMixtureData* work);
+        double outputFluid(PolyFluid* fluid, FluidDistributedMixtureData* work);
         /// @brief Computes and outputs capacitance.
         double outputCapacitance();
         /// @brief Checks if any of the given fluid's mixture fractions are negative.

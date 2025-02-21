@@ -5,7 +5,7 @@
 /// @defgroup UT_FLUID_DISTRIBUTED_IF    GUNNS Fluid Distributed Interface Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Distributed Interface
@@ -18,7 +18,7 @@
 
 #include "core/GunnsFluidDistributedIf.hh"
 #include "core/test/UtGunnsFluidCapacitor.hh"
-#include "core/test/UtGunnsFluidDistributed2WayBus.hh"
+#include "interop/test/UtDistributed2WayBusFluid.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsFluidDistributedIf and befriend UtGunnsFluidDistributedIf.
@@ -39,31 +39,13 @@ inline FriendlyGunnsFluidDistributedIf::FriendlyGunnsFluidDistributedIf()
 inline FriendlyGunnsFluidDistributedIf::~FriendlyGunnsFluidDistributedIf() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsFluidDistributed2WayBus and befriend UtGunnsFluidDistributedIf.
+/// @brief    Inherit from Distributed2WayBusFluidInterfaceData and befriend UtGunnsFluidDistributedIf.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//class FriendlyGunnsFluidDistributed2WayBus : public GunnsFluidDistributed2WayBus
-//{
-//    public:
-//        FriendlyGunnsFluidDistributed2WayBus();
-//        virtual ~FriendlyGunnsFluidDistributed2WayBus();
-//        friend class UtGunnsFluidDistributedIf;
-//};
-//inline FriendlyGunnsFluidDistributed2WayBus::FriendlyGunnsFluidDistributed2WayBus()
-//    : GunnsFluidDistributed2WayBus() {};
-//inline FriendlyGunnsFluidDistributed2WayBus::~FriendlyGunnsFluidDistributed2WayBus() {}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsFluidDistributedIfData and befriend UtGunnsFluidDistributedIf.
-///
-/// @details  Class derived from the unit under test. It just has a constructor with the same
-///           arguments as the parent and a default destructor, but it befriends the unit test case
-///           driver class to allow it access to protected data members.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributed2WayBusInterfaceData
+class FriendlyGunnsFluidDistributedIfData : public Distributed2WayBusFluidInterfaceData
 {
     public:
         FriendlyGunnsFluidDistributedIfData();
@@ -71,7 +53,7 @@ class FriendlyGunnsFluidDistributedIfData : public GunnsFluidDistributed2WayBusI
         friend class UtGunnsFluidDistributedIf;
 };
 inline FriendlyGunnsFluidDistributedIfData::FriendlyGunnsFluidDistributedIfData()
-    : GunnsFluidDistributed2WayBusInterfaceData() {};
+    : Distributed2WayBusFluidInterfaceData() {};
 inline FriendlyGunnsFluidDistributedIfData::~FriendlyGunnsFluidDistributedIfData() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +90,7 @@ class UtGunnsFluidDistributedIf: public CppUnit::TestFixture
         GunnsFluidDistributedIfConfigData*    tConfigData;            /**< (--)   Nominal config data */
         GunnsFluidDistributedIfInputData*     tInputData;             /**< (--)   Nominal input data */
         FriendlyGunnsFluidDistributedIf*      tArticle;               /**< (--)   Article under test */
-        FriendlyGunnsFluidDistributed2WayBus* tArticleInterface;      /**< (--)   Interface logic article under test */
+        FriendlyDistributed2WayBusFluid*      tArticleInterface;      /**< (--)   Interface logic article under test */
         std::string                           tLinkName;              /**< (--)   Nominal config data */
         bool                                  tIsPairMaster;          /**< (--)   Nominal config data */
         bool                                  tUseEnthalpy;           /**< (--)   Nominal config data */

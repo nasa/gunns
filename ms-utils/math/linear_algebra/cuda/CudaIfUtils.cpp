@@ -40,8 +40,10 @@ CudaIfUtils::~CudaIfUtils()
 /// @details  This checks the given function return enum for errors.  For good status code, nothing
 ///           is done.  For any error status, an exception is thrown and an error message is sent to
 ///           H&S.
-///           This overloaded method services the CUDA runtime library return type, cudaError_t.
-///           CUDA provides the function to translate the enumeration to human-readable string.
+///
+///           This overloaded method services the CUDA runtime library return type, cudaError_t.  We
+///           put the integer value of the returned enum into the return string.  Meanings of the
+///           values can be found in the CUDA runtime library documentation for the cudaError enum.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CudaIfUtils::checkReturn(cudaError_t err, const char *file, const int line)
 {

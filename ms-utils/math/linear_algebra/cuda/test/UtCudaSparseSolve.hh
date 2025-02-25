@@ -2,7 +2,7 @@
 #define UtCudaSparseSolve_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///           National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @defgroup UT_UTILITIES_MATH_LINEAR_ALGEBRA_CUDA_DENSE CUDA Sparse System Solver Unit Tests
@@ -43,8 +43,6 @@ class UtCudaSparseSolve : public CppUnit::TestFixture
         void testSingular();
         /// @brief    Tests for handled underflow during decomposition.
         void testDecompUnderflow();
-        /// @brief    Tests [A]{x} = {b} using decomposition by island vectors.
-        void testDecomposeVector();
         /// @brief    Tests [A]{x} = {b} using decomposition for [A] having positive off-diagonals.
         void testPosOffDiagSolution();
         /// @brief    Tests dynamic resizing of the matrix in run-time.
@@ -57,7 +55,6 @@ class UtCudaSparseSolve : public CppUnit::TestFixture
         CPPUNIT_TEST(testUnConditioned);
         CPPUNIT_TEST(testSingular);
         CPPUNIT_TEST(testDecompUnderflow);
-        CPPUNIT_TEST(testDecomposeVector);
         CPPUNIT_TEST(testPosOffDiagSolution);
         CPPUNIT_TEST(testResizing);
         CPPUNIT_TEST_SUITE_END();

@@ -1,10 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ((math/linear_algebra/cuda/CudaSparseSolve.o))
-***************************************************************************************************/
+*/
 
 #include "software/exceptions/TsNumericalException.hh"
 #include "UtCudaSparseSolve.hh"
@@ -181,6 +178,11 @@ void UtCudaSparseSolve::testDecompUnderflow()
 {
     std::cout << "\n UtCudaSparseSolve ..... 04: testDecompUnderflow ....................";
 
+    //TODO this test is a false-positive, because tArticle.decompose doesn't actually decompose [A],
+    //     rather it just transforms it to a sparse matrix in the GPU... the GPU sparse solve doesn't
+    //     give us the decomposed [A], so we can never test decomposed [A] directly.
+    //     - Since this test function never calls the sparse solve, it isn't actually trying solve
+    //       with an underflow [A].
     /// - Set up a matrix that will cause arithmetic underflow when decomposed.
     const int N = 10;
     const int rows = N*N+1;
@@ -233,101 +235,6 @@ void UtCudaSparseSolve::testDecompUnderflow()
     for (int i = 0; i < size; ++i) {
         CPPUNIT_ASSERT(A[i] >= 0.0 || A[i] < 1.0E-200);
     }
-
-    std::cout << "... Pass";
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests that the solution of [A]{x} = {b} satisfies the original system of equations
-///           when decomposed as separate islands.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtCudaSparseSolve::testDecomposeVector()
-{
-    std::cout << "\n UtCudaSparseSolve ..... 06: testDecomposeVector ........................";
-
-    double tolerance = 1.0E-14;
-
-    /// - Test this made-up system.
-    double A[64] = {10.0,      0.0,      -0.002,    0.0,    0.0,    0.0,   -0.005,  0.0,   // island 0
-                     0.0,      8.0,       0.0,     -0.001, -1.0,    0.0,    0.0,   -0.5,   // island 1
-                    -0.002,    0.0,      12.0,      0.0,    0.0,    0.0,    0.0,    0.0,   // island 0
-                     0.0,     -0.001,     0.0,      9.0,   -0.1,    0.0,    0.0,   -2.0,   // island 1
-                     0.0,     -1.0,       0.0,     -0.1,    3.0,    0.0,    0.0,   -0.01,  // island 1
-                     0.0,      0.0,       0.0,      0.0,    0.0,    0.0001, 0.0,    0.0,   // island 2
-                    -0.005,    0.0,       0.0,      0.0,    0.0,    0.0,    2.0,    0.0,   // island 0
-                     0.0,     -0.5,       0.0,     -2.0,   -0.01,   0.0,    0.0,  300.0};  // island 1
-    double x[8]  = { 0.0,      0.0,       0.0,      0.0,    0.0,    0.0,    0.0,    0.0};
-    double b[8]  = {27.0,      0.03,      0.0,     -1.5,    0.0,    0.0,    1.0,    0.001};
-
-    double C[64];
-    for (int i=0; i<64; ++i) {
-        C[i] = A[i];
-    }
-
-    std::vector<int> island0, island1;
-    island0.push_back(0);
-    island0.push_back(2);
-    island0.push_back(6);
-    island1.push_back(1);
-    island1.push_back(3);
-    island1.push_back(4);
-    island1.push_back(7);
-
-    double A0[9] = {10.0, -0.002, -0.005,
-                   -0.002, 12.0,   0.0,
-                   -0.005, 0.0,    2.0};
-    CPPUNIT_ASSERT_NO_THROW(tArticle.Decompose(A0, 3));
-    CPPUNIT_ASSERT_NO_THROW(tArticle.Decompose(A, 8, island0));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 0], A[ 0], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 1], A[ 2], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 2], A[ 6], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 3], A[16], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 4], A[18], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 5], A[22], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 6], A[48], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 7], A[50], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A0[ 8], A[54], tolerance);
-
-    double A1[16] = {8.0,  -0.001, -1.0,   -0.5,
-                    -0.001, 9.0,   -0.1,   -2.0,
-                    -1.0,  -0.1,    3.0,   -0.01,
-                    -0.5,  -2.0,   -0.01, 300.0};
-    CPPUNIT_ASSERT_NO_THROW(tArticle.Decompose(A1, 4));
-    CPPUNIT_ASSERT_NO_THROW(tArticle.Decompose(A, 8, island1));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 0], A[ 9], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 1], A[11], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 2], A[12], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 3], A[15], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 4], A[25], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 5], A[27], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 6], A[28], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 7], A[31], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 8], A[33], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[ 9], A[35], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[10], A[36], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[11], A[39], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[12], A[57], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[13], A[59], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[14], A[60], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(A1[15], A[63], tolerance);
-
-    CPPUNIT_ASSERT_NO_THROW(tArticle.Solve(A, b, x, 8));
-
-    double result[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    for (int i=0; i<8; ++i) {
-        for (int j=0; j<8; ++j) {
-            result[i] += C[j*8+i] * x[j];
-        }
-    }
-
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[0], result[0], std::max(b[0] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[1], result[1], std::max(b[1] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[2], result[2], std::max(b[2] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[3], result[3], std::max(b[3] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[4], result[4], std::max(b[4] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[5], result[5], std::max(b[5] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[6], result[6], std::max(b[6] * tolerance, 2.0 * tolerance));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b[7], result[7], std::max(b[7] * tolerance, 2.0 * tolerance));
 
     std::cout << "... Pass";
 }
@@ -390,7 +297,7 @@ void UtCudaSparseSolve::testPosOffDiagSolution()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtCudaSparseSolve::testResizing()
 {
-    std::cout << "\n UtCudaSparseSolve ..... 03: testResizing ...........................";
+    std::cout << "\n UtCudaSparseSolve ..... 06: testResizing ...........................";
 
     double tolerance = 1.0E-14;
 

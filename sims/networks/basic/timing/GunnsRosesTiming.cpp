@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -48,7 +48,7 @@ GunnsRosesTiming::GunnsRosesTiming()
 
 GunnsRosesTiming::~GunnsRosesTiming()
 {
-    if (network) delete network;
+    delete network;  // No need to check if network is null
 }
 
 void GunnsRosesTiming::initialize()
@@ -72,21 +72,24 @@ void GunnsRosesTiming::initialize()
     } else {
         printf("\n");
     }
-    printf("----------------------------------------------\n");
+    printf("----------------------------------------------");
 }
 
 void GunnsRosesTiming::update(const double timestep)
 {
     if (N <= N_STOP) {
         if (0 == step) {
-            if (network) delete network;
+            delete network;  // No need to check for null
+
+            // Create a network with a unique_ptr
             std::ostringstream name;
             name << "rosesBenchmark.network_" << N;
+
             if (Gunns::GPU_SPARSE == gpuMode) {
                 name << "_gpu_sparse";
             } else if (Gunns::GPU_DENSE == gpuMode) {
                 name << "_gpu";
-            } else if (Gunns::NO_GPU == gpuMode) {
+            } else {
                 name << "_cpu";
             }
             std::string nameString = name.str();
@@ -94,30 +97,38 @@ void GunnsRosesTiming::update(const double timestep)
             network->N = N;
             network->initialize(nameString);
             network->netSolver.setGpuOptions(gpuMode, 1);
-            if (islands) network->netSolver.setIslandMode(Gunns::SOLVE);
+            if (islands) {
+                network->netSolver.setIslandMode(Gunns::SOLVE);
+            }
         }
+        
         network->update(timestep);
         step++;
+        
         if (N_STEPS <= step) {
             storePotentials();
 //            dumpA();
 //            dumpIslands();
+//            two lines above are for debugging - uncomment as needed
+
             if (Gunns::NO_GPU == gpuMode) {
                 cpuTimePrev = cpuTime;
                 cpuTime = network->mSolveTimeAvg;
-                printf("%7d    %9.2e", N*N+1, network->mSolveTimeAvg);
-                step = 0;
+                printf("\n%7d    %9.2e", N*N+1, network->mSolveTimeAvg);
+                
                 if (gpuEnabled) {
                     gpuMode = Gunns::GPU_DENSE;
                 } else {
-                    printf("\n");
+//                    printf("\n");
                     step = 0;
                     N += 2;
                 }
             } else if (Gunns::GPU_DENSE == gpuMode) {
+                // Handle GPU DENSE mode
                 gpuTimePrev = gpuTime;
                 gpuTime = network->mSolveTimeAvg;
                 printf("    %9.2e", network->mSolveTimeAvg);
+                
                 if (errCheck) {
                     double error = 0.0;
                     for (unsigned int i=0; i<5; ++i) {
@@ -125,37 +136,37 @@ void GunnsRosesTiming::update(const double timestep)
                     }
                     printf("  %9.2e", error);
                 }
-                step = 0;
                 predictGpuThreshold();
                 gpuMode = Gunns::GPU_SPARSE;
             } else if (Gunns::GPU_SPARSE == gpuMode) {
+                // Handle GPU SPARSE mode
                 gpuSparseTimePrev = gpuSparseTime;
                 gpuSparseTime = network->mSolveTimeAvg;
                 printf("    %9.2e", network->mSolveTimeAvg);
+                
                 if (errCheck) {
                     double error = 0.0;
-                    for (unsigned int i=0; i<5; ++i) {
+                    for (unsigned int i = 0; i < 5; ++i) {
                         error += std::fabs(gpuSparsePotentials[i] - cpuPotentials[i]);
                     }
                     printf("  %9.2e", error);
                 }
-                printf("\n");
-                step = 0;
                 predictGpuSparseThreshold();
                 gpuMode = Gunns::NO_GPU;
                 N += 2;
             }
+            
+            step = 0;
         }
     } else {
-        printf("----------------------------------------------\n");
+        printf("\n----------------------------------------------\n");
         if (gpuEnabled) {
             printf("GPU # nodes\n");
             printf("threshold estimates:      %7.0f      %7.0f\n", gpuThreshold, gpuSparseThreshold);
-            printf("\n");
-            printf("Your network's times and\n");
-            printf("best thresholds may vary.\n");
+            printf("\nYour network's times and best thresholds may vary.\n");
             printf("----------------------------------------------\n");
         }
+        
         printf("\nTerminating sim:\n");
         exec_terminate("", "");  // from Trick's exec_proto.h, tell Trick to kill the sim
     }

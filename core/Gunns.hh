@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_ORCHESTRATOR  GUNNS Orchestrator
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -712,7 +712,7 @@ inline int Gunns::getLinkResetStepFailCount() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @return int -- Returns the decomposition count.
 ///
-/// @details  This method gets the number of admittance matrix decompopsitions.
+/// @details  This method gets the number of admittance matrix decompositions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline int Gunns::getDecompositionCount() const
 {

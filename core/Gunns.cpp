@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Orchestrator implementation
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -970,7 +970,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
     }
     mStepLog.recordLinkContributions();
 
-    //if sorResult = -1, then sor didnt' converge, so throw a warning, reset mPotentialVector back
+    //if sorResult = -1, then sor didn't converge, so throw a warning, reset mPotentialVector back
     //to the previous minor step, and go to Cholesky.
     //if sor is not active, go to Cholesky like normal.
     mSorLastIteration = -1;
@@ -1456,7 +1456,7 @@ void Gunns::handleDecompose(CholeskyLdu* solver, double* A, const int size, cons
 /// @param[in] solver (--) Pointer to the linear algebra solver to call.
 /// @param[in] A      (--) The admittance matrix for the solution.
 /// @param[in] w      (--) The source vector for the solution.
-/// @param[in] p      (--) The solution vector for the soution.
+/// @param[in] p      (--) The solution vector for the solution.
 /// @param[in] size   (--) The size N of the N x N admittance matrix.
 /// @param[in] island (--) The optional network island number associated with this matrix.
 ///
@@ -1505,12 +1505,12 @@ inline void Gunns::cleanPotentialVector()
 void Gunns::perturbNetworkCapacitances()
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        const double fluxPerturbartion = mNodes[node]->getNetworkCapacitanceRequest();
-        if (fluxPerturbartion > DBL_EPSILON) {
+        const double fluxPerturbation = mNodes[node]->getNetworkCapacitanceRequest();
+        if (fluxPerturbation > DBL_EPSILON) {
             /// - When requested, perturb the node's source vector, solve, store the perturbed
             ///   potential in the node's capacitance term, and reset the source vector.
             const double savedSourceVector = mSourceVector[node];
-            mSourceVector[node] += fluxPerturbartion;
+            mSourceVector[node] += fluxPerturbation;
             solveCholesky();
             mNodes[node]->setNetworkCapacitance(mPotentialVector[node]);
             mSourceVector[node] = savedSourceVector;
@@ -1538,8 +1538,8 @@ void Gunns::perturbNetworkCapacitances()
 void Gunns::computeNetworkCapacitances(const double timeStep)
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        const double fluxPerturbartion = mNodes[node]->getNetworkCapacitanceRequest();
-        if (fluxPerturbartion > DBL_EPSILON) {
+        const double fluxPerturbation = mNodes[node]->getNetworkCapacitanceRequest();
+        if (fluxPerturbation > DBL_EPSILON) {
             /// - Generic GUNNS capacitance is the flux needed to cause a unit increase in node
             ///   potential.  The perturbed node potential was temporarily stored in the node in
             ///   perturbNetworkCapacitances(), and we overwrite that with the new capacitance
@@ -1547,7 +1547,7 @@ void Gunns::computeNetworkCapacitances(const double timeStep)
             const double deltaPotential = std::fabs(mNodes[node]->getNetworkCapacitance()
                                              - mPotentialVector[node]);
             if (deltaPotential > DBL_EPSILON) {
-                mNodes[node]->setNetworkCapacitance(timeStep * fluxPerturbartion / deltaPotential);
+                mNodes[node]->setNetworkCapacitance(timeStep * fluxPerturbation / deltaPotential);
             } else {
                 mNodes[node]->setNetworkCapacitance(0.0);
             }

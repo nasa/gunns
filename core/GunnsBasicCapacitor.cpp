@@ -192,37 +192,6 @@ void GunnsBasicCapacitor::restartModel()
     mEditCapacitance     = 0.0;
 }
 
-//TODO problems with this in a non-linear network:
-// - The capacitance effect, added to the network's SOE in step (minor step 1), keeps re-integrating
-//   the flow for the whole major step in each minor step network solution.  This makes the capacitor
-//   act like it's charging or discharging an entire major step on each minor step, instead of just
-//   once.  The capacitance effect, which is time-dependent, includes the integral of its
-//   charge/discharge current in the network solution, so each time the network is solved for a minor
-//   step, the integrated current gets doubled up again.
-// - because of above, nodes don't converge because on the next minor step, needed to check for
-//   node convergence by comparing subsequent node potential, the capacitor has re-integrated the
-//   full charge/discharge flow to a new potential, instead of keeping the same potential
-// - because this link doesn't report non-linear to the solver, solver doesn't call this link's
-//   confirmSolutionAcceptable
-//   - however, we don't really need this as this link has no reason to reject or delay
-// - solver doesn't call this resetLastMinorStep
-//   - might not need this either, if we stored our reference t-1 potentials
-// - We could do something like only apply the capacitance time effect on minor step 1, and
-//   then hold potential constant on subsequent minor steps, either by switching to infinite capacitance
-//   or an ideal potential source (these 2 would look similar in the SOE)
-//   - however, if the circuit changes due to a link rejecting like a switch tripping or a diode
-//     switching bias, the solver only resets potentials to the previous minor step, and not the
-//     previous major step.  The saved potential source of the capacitor's minor steps is no longer
-//     correct, and any further minor steps are pointless.
-//   - but we can't make the solver set potentials back to the major step, only to the previous
-//     minor step, which is also invalid.
-//   - so we have no way to fix this.
-// - we might have to redesign as essentially a battery, as a potential source that integrates the
-//   final current to update the potential source next pass.
-//   Can compute conductance of the potential source to mimic the
-// - It might get really complicated
-//   - maybe implement as new GunnsElectCapacitor instead of here, then would always be non-linear
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] dt (s) Integration time step
 ///

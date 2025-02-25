@@ -40,8 +40,3 @@ testSimObject.superThermal.registerSuperNodes()
 #testSimObject.turbine.netInput.LoadFan.mMotorSpeed = 563687;
 
 #trick.stop(0.444444444444444444444444444444444444444444445)
-
-testSimObject.towerAccel[0] = 0.0
-testSimObject.towerAccel[1] = 0.0
-testSimObject.towerAccel[2] = 9.81
-testSimObject.coolingTower.netConfig.columnAccel.mAcceleration = testSimObject.towerAccel

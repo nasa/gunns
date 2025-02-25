@@ -1,14 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup  UT_GUNNS_ELECT_POWERBUS   Power Bus Unit tests
-/// @ingroup   UT_GUNNS_ELECT
 /// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
-/// @details   Unit test class for Power Bus Elect.
+///
+/// @defgroup  UT_UTILITIES_INTEROP_INTEROP Interoperability Models Unit Tests
+/// @ingroup   UT_UTILITIES_INTEROP
+/// @details   Unit test classes for interoperability models.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include <cppunit/ui/text/TestRunner.h>
-#include "UtGunnsElectDistributedIf.hh"
+
+#include "UtDistributed2WayBusBase.hh"
+#include "UtDistributed2WayBusFluid.hh"
+#include "UtDistributed2WayBusElect.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param    argc  int     --  not used
@@ -16,16 +19,17 @@
 ///
 /// @return    --  status (always 0)
 ///
-/// @details  Main for unit tests in the CPPUNIT framework.
+/// @details  Main for interoperability models unit tests in the CPPUNIT framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-int main(int argc, char** argv) {
+int main() {
     CppUnit::TextTestRunner runner;
 
-    runner.addTest(UtGunnsElectDistributedIf::suite());
+    runner.addTest(UtDistributed2WayBusBase::suite());
+    runner.addTest(UtDistributed2WayBusFluid::suite());
+    runner.addTest(UtDistributed2WayBusElect::suite());
 
     runner.run();
 
     return 0;
 }
 
-/// @}

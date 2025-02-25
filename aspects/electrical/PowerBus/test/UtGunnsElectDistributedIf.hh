@@ -5,7 +5,7 @@
 /// @defgroup UT_ELECTRICAL_DISTRIBUTED_INTERFACE    Electrical Distributed Interface Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Distributed Interface Link

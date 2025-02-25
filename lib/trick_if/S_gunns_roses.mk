@@ -1,4 +1,4 @@
-# Copyright 2024 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # Make sure the user has defined $GUNNS_HOME.
@@ -25,7 +25,7 @@ GUNNS_TRICK    := $(GUNNS_HOME)/lib/trick/libgunnsroses.a
 GUNNS_TRICK_IF := $(GUNNS_HOME)/lib/trick_if/libgunns.o
 
 # Header file includes and compiler options for CUDA stuff.
-CUDA_FLAGS := -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
+CUDA_FLAGS := -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 
 # Enable library support if Trick >= 17.1 and the libraries are built.  Otherwise, let Trick
 # generate all of the io_* and py_* code as usual.
@@ -70,5 +70,5 @@ else
 endif
 
 # Link in the CUDA libraries.
-TRICK_EXCLUDE = /usr/local/cuda-8.0
-TRICK_USER_LINK_LIBS += -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos
+TRICK_EXCLUDE = /usr/local/cuda
+TRICK_USER_LINK_LIBS += -L/usr/local/cuda/lib64 -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos

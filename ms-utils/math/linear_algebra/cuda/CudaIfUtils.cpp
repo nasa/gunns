@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @file
@@ -41,9 +41,9 @@ CudaIfUtils::~CudaIfUtils()
 ///           is done.  For any error status, an exception is thrown and an error message is sent to
 ///           H&S.
 ///
-///           This overloaded method services the CUDA runtime library return type, cudaError_t.
-///           CUDA provides the function to translate the enumeration to human-readable string, so
-///           we use it instead of making our own.
+///           This overloaded method services the CUDA runtime library return type, cudaError_t.  We
+///           put the integer value of the returned enum into the return string.  Meanings of the
+///           values can be found in the CUDA runtime library documentation for the cudaError enum.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CudaIfUtils::checkReturn(cudaError_t err, const char *file, const int line)
 {
@@ -66,13 +66,14 @@ void CudaIfUtils::checkReturn(cudaError_t err, const char *file, const int line)
 ///           H&S.
 ///
 ///           This overloaded method services the CUDA cusparse library return type,
-///           cusparseStatus_t.
+///           cusparseStatus_t.  Meanings of the values can be found in the cusparse runtime library
+///           documentation for the cusparseStatus_t enum.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CudaIfUtils::checkReturn(cusparseStatus_t err, const char *file, const int line)
 {
     if(CUSPARSE_STATUS_SUCCESS != err) {
         std::ostringstream msg;
-        msg << "line " << line << ", cusparse error " << err << ": " << getCudaReturnString(err);
+        msg << "line " << line << ", cusparse error " << err;
         throw(TsNumericalException("", file, msg.str()));
     }
 }
@@ -89,13 +90,14 @@ void CudaIfUtils::checkReturn(cusparseStatus_t err, const char *file, const int 
 ///           H&S.
 ///
 ///           This overloaded method services the CUDA cusolver library return type,
-///           cusolverStatus_t.
+///           cusolverStatus_t.  Meanings of the values can be found in the cusolver runtime library
+///           documentation for the cusolverStatus_t enum.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CudaIfUtils::checkReturn(cusolverStatus_t err, const char *file, const int line)
 {
     if(CUSOLVER_STATUS_SUCCESS != err) {
         std::ostringstream msg;
-        msg << "line " << line << ", cusolver error " << err << ": " << getCudaReturnString(err);
+        msg << "line " << line << ", cusolver error " << err;
         throw(TsNumericalException("", file, msg.str()));
     }
 }

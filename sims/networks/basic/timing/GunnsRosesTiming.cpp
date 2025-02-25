@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -72,7 +72,7 @@ void GunnsRosesTiming::initialize()
     } else {
         printf("\n");
     }
-    printf("----------------------------------------------\n");
+    printf("----------------------------------------------");
 }
 
 void GunnsRosesTiming::update(const double timestep)
@@ -114,12 +114,12 @@ void GunnsRosesTiming::update(const double timestep)
             if (Gunns::NO_GPU == gpuMode) {
                 cpuTimePrev = cpuTime;
                 cpuTime = network->mSolveTimeAvg;
-                printf("%7d    %9.2e", N*N+1, network->mSolveTimeAvg);
+                printf("\n%7d    %9.2e", N*N+1, network->mSolveTimeAvg);
                 
                 if (gpuEnabled) {
                     gpuMode = Gunns::GPU_DENSE;
                 } else {
-                    printf("\n");
+//                    printf("\n");
                     step = 0;
                     N += 2;
                 }
@@ -147,7 +147,7 @@ void GunnsRosesTiming::update(const double timestep)
                 if (errCheck) {
                     double error = 0.0;
                     for (unsigned int i = 0; i < 5; ++i) {
-                        error += fabs(gpuSparsePotentials[i] - cpuPotentials[i]);
+                        error += std::fabs(gpuSparsePotentials[i] - cpuPotentials[i]);
                     }
                     printf("  %9.2e", error);
                 }
@@ -159,7 +159,7 @@ void GunnsRosesTiming::update(const double timestep)
             step = 0;
         }
     } else {
-        printf("----------------------------------------------\n");
+        printf("\n----------------------------------------------\n");
         if (gpuEnabled) {
             printf("GPU # nodes\n");
             printf("threshold estimates:      %7.0f      %7.0f\n", gpuThreshold, gpuSparseThreshold);

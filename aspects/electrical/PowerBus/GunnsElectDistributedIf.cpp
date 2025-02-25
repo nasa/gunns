@@ -2,13 +2,14 @@
 @file      GunnsElectDistributedIf.cpp
 @brief     GUNNS Electrical Distributed Bi-Directional Interface Link implementation.
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
     ((core/GunnsBasicLink.o)
      (software/exceptions/TsInitializationException.o)
-     (software/exceptions/TsOutOfBoundsException.o))
+     (software/exceptions/TsOutOfBoundsException.o)
+     (interop/GunnsElectDistributed2WayBus.o))
 */
 
 #include "GunnsElectDistributedIf.hh"
@@ -389,22 +390,22 @@ bool GunnsElectDistributedIf::checkSpecificPortRules(const int port, const int n
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectDistributedIf::processIfNotifications(const bool isInit __attribute__((unused)))
 {
-    GunnsDistributed2WayBusNotification notification;
+    Distributed2WayBusNotification notification;
     unsigned int numNotifs = 0;
     do {
         numNotifs = mInterface.popNotification(notification);
-        if (GunnsDistributed2WayBusNotification::NONE != notification.mLevel) {
+        if (Distributed2WayBusNotification::NONE != notification.mLevel) {
             std::ostringstream msg;
             msg << "from mInterface: " << notification.mMessage;
             switch (notification.mLevel) {
-                case GunnsDistributed2WayBusNotification::INFO:
+                case Distributed2WayBusNotification::INFO:
                     GUNNS_INFO(msg.str());
                     break;
 // The interface currently has no WARN or ERR outputs, so these are untestable:
-//                case GunnsDistributed2WayBusNotification::WARN:
+//                case Distributed2WayBusNotification::WARN:
 //                    GUNNS_WARNING(msg.str());
 //                    break;
-//                case GunnsDistributed2WayBusNotification::ERR:
+//                case Distributed2WayBusNotification::ERR:
 //                    if (isInit) {
 //                        GUNNS_ERROR(TsInitializationException, "Catch and re-throw", msg.str());
 //                    } else {

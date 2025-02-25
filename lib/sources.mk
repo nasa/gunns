@@ -1,4 +1,4 @@
-# Copyright 2024 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # All source folders containing run-time code to be compiled in libraries
@@ -45,6 +45,7 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/root_finding/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/math/time/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/fileSearch/*.cpp) \
+ $(wildcard $(GUNNS_HOME)/ms-utils/interop/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/parsing/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/parsing/tinyxml/*.cpp) \
  $(wildcard $(GUNNS_HOME)/ms-utils/simulation/hs/*.cpp) \

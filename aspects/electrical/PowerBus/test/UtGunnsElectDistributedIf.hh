@@ -5,7 +5,7 @@
 /// @defgroup UT_ELECTRICAL_DISTRIBUTED_INTERFACE    Electrical Distributed Interface Link Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Distributed Interface Link
@@ -16,7 +16,6 @@
 #include <cppunit/TestFixture.h>
 
 #include "aspects/electrical/PowerBus/GunnsElectDistributedIf.hh"
-#include "UtGunnsElectDistributed2WayBus.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Inherit from GunnsElectDistributedIf and befriend UtGunnsElectDistributedIf.
@@ -46,6 +45,14 @@ class FriendlyGunnsElectConverterInput : public GunnsElectConverterInput
     public:
         FriendlyGunnsElectConverterInput() {;}
         virtual ~FriendlyGunnsElectConverterInput() {;}
+        friend class UtGunnsElectDistributedIf;
+};
+
+class FriendlyDistributed2WayBusElect : public Distributed2WayBusElect
+{
+    public:
+        FriendlyDistributed2WayBusElect() {;}
+        virtual ~FriendlyDistributed2WayBusElect() {;}
         friend class UtGunnsElectDistributedIf;
 };
 
@@ -115,7 +122,7 @@ class UtGunnsElectDistributedIf: public CppUnit::TestFixture
         GunnsElectDistributedIfConfigData*    tConfigData;      /**< (--)    Pointer to config data. */
         GunnsElectDistributedIfInputData*     tInputData;       /**< (--)    Pointer to input data. */
         FriendlyGunnsElectDistributedIf*      tArticle;         /**< (--)    Pointer to article under test. */
-        FriendlyGunnsElectDistributed2WayBus* tInterface;       /**< (--)    Pointer the interface model within the test article. */
+        FriendlyDistributed2WayBusElect*      tInterface;       /**< (--)    Pointer the interface model within the test article. */
         FriendlyGunnsElectConverterOutput*    tVoltageSource;   /**< (--)    Pointer to the voltage source link within the test article. */
         FriendlyGunnsElectConverterInput*     tPowerLoad;       /**< (--)    Pointer to the power load link within the test article. */
         bool                                  tIsPairPrimary;   /**< (--)    Nominal config data. */

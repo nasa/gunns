@@ -1,11 +1,11 @@
-#ifndef UtGunnsElectDistributed2WayBus_EXISTS
-#define UtGunnsElectDistributed2WayBus_EXISTS
+#ifndef UtDistributed2WayBusElect_EXISTS
+#define UtDistributed2WayBusElect_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup UT_ELECTRICAL_2WAY_BUS    Electrical Distributed 2-Way Bus Interface Unit Test
-/// @ingroup  UT_GUNNS
+/// @defgroup UT_UTILS_INTEROP_DISTR_2WAY_BUS_ELECTRICAL    Electrical Distributed 2-Way Bus Interface Unit Test
+/// @ingroup  UT_UTILS_INTEROP
 ///
-/// @copyright Copyright 2023 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Electrical Distributed 2-Way Bus Interface
@@ -15,42 +15,42 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-#include "aspects/electrical/PowerBus/GunnsElectDistributed2WayBus.hh"
+#include "interop/Distributed2WayBusElect.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsElectDistributed2WayBus and befriend UtGunnsElectDistributed2WayBus.
+/// @brief    Inherit from Distributed2WayBusElect and befriend UtDistributed2WayBusElect.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsElectDistributed2WayBus : public GunnsElectDistributed2WayBus
+class FriendlyDistributed2WayBusElect : public Distributed2WayBusElect
 {
     public:
-        FriendlyGunnsElectDistributed2WayBus() {;}
-        virtual ~FriendlyGunnsElectDistributed2WayBus() {;}
-        friend class UtGunnsElectDistributed2WayBus;
+        FriendlyDistributed2WayBusElect() {;}
+        virtual ~FriendlyDistributed2WayBusElect() {;}
+        friend class UtDistributed2WayBusElect;
         friend class UtGunnsElectDistributedIf;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    GUNNS Electric Electrical Distributed 2-Way Bus Interface unit tests.
+/// @brief    Electrical Distributed 2-Way Bus Interface unit tests.
 ////
-/// @details  This class provides the unit tests for the GunnsElectDistributed2WayBus within the
+/// @details  This class provides the unit tests for the Distributed2WayBusElect within the
 ///           CPPUnit framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class UtGunnsElectDistributed2WayBus : public CppUnit::TestFixture
+class UtDistributed2WayBusElect : public CppUnit::TestFixture
 {
     public:
         /// @brief  Nominal constructor
-        UtGunnsElectDistributed2WayBus();
+        UtDistributed2WayBusElect();
         /// @brief  Nominal destructs
-        virtual ~UtGunnsElectDistributed2WayBus();
+        virtual ~UtDistributed2WayBusElect();
         /// @brief  Executes before each test.
         void setUp();
         /// @brief  Executes after each test.
         void tearDown();
-        /// @brief  Tests construction of the GunnsElectDistributed2WayBusNotification class.
+        /// @brief  Tests construction of the Distributed2WayBusElectNotification class.
         void testNotificationConstruction();
         /// @brief  Tests default construction.
         void testConstruction();
@@ -68,8 +68,8 @@ class UtGunnsElectDistributed2WayBus : public CppUnit::TestFixture
         void testAccessors();
 
     private:
-        /// @brief  Sets up the suite of tests for the GunnsElectDistributed2WayBus unit testing.
-        CPPUNIT_TEST_SUITE(UtGunnsElectDistributed2WayBus);
+        /// @brief  Sets up the suite of tests for the Distributed2WayBusElect unit testing.
+        CPPUNIT_TEST_SUITE(UtDistributed2WayBusElect);
         CPPUNIT_TEST(testNotificationConstruction);
         CPPUNIT_TEST(testConstruction);
         CPPUNIT_TEST(testNominalInitialization);
@@ -80,12 +80,12 @@ class UtGunnsElectDistributed2WayBus : public CppUnit::TestFixture
         CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         /// @brief  Enumeration for the number of nodes.
-        FriendlyGunnsElectDistributed2WayBus* tArticle; /**< (--) Pointer to article under test. */
-        static int                            TEST_ID;  /**< (--) Test identification number. */
+        FriendlyDistributed2WayBusElect* tArticle; /**< (--) Pointer to article under test. */
+        static int                       TEST_ID;  /**< (--) Test identification number. */
         /// @brief  Copy constructor unavailable since declared private and not implemented.
-        UtGunnsElectDistributed2WayBus(const UtGunnsElectDistributed2WayBus& that);
+        UtDistributed2WayBusElect(const UtDistributed2WayBusElect& that);
         /// @brief  Assignment operator unavailable since declared private and not implemented.
-        UtGunnsElectDistributed2WayBus& operator =(const UtGunnsElectDistributed2WayBus& that);
+        UtDistributed2WayBusElect& operator =(const UtDistributed2WayBusElect& that);
 };
 
 ///@}

@@ -1,14 +1,18 @@
 /*
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
-#include "UtGunnsFluidDistributed2WayBus.hh"
+#include "UtDistributed2WayBusFluid.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtDistributed2WayBusFluid::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default constructor for the UtGunnsFluidDistributed2WayBus class.
+/// @details  This is the default constructor for the UtDistributed2WayBusFluid class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsFluidDistributed2WayBus::UtGunnsFluidDistributed2WayBus()
+UtDistributed2WayBusFluid::UtDistributed2WayBusFluid()
     :
     tArticle(0),
     tIsPairMaster(),
@@ -23,9 +27,9 @@ UtGunnsFluidDistributed2WayBus::UtGunnsFluidDistributed2WayBus()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default destructor for the UtGunnsFluidDistributed2WayBus class.
+/// @details  This is the default destructor for the UtDistributed2WayBusFluid class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsFluidDistributed2WayBus::~UtGunnsFluidDistributed2WayBus()
+UtDistributed2WayBusFluid::~UtDistributed2WayBusFluid()
 {
     //do nothing
 }
@@ -33,7 +37,7 @@ UtGunnsFluidDistributed2WayBus::~UtGunnsFluidDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed after each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::tearDown()
+void UtDistributed2WayBusFluid::tearDown()
 {
     /// - Deletes for news in setUp
     delete tArticle;
@@ -42,23 +46,25 @@ void UtGunnsFluidDistributed2WayBus::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed before each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::setUp()
+void UtDistributed2WayBusFluid::setUp()
 {
     tIsPairMaster = true;
     tNumBulk      = 2;
     tNumTc        = 4;
     tNumIfBulk    = 6;
     tNumIfTc      = 6;
-    tArticle      = new FriendlyGunnsFluidDistributed2WayBus;
+    tArticle      = new FriendlyDistributed2WayBusFluid;
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for default construction without exceptions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testDefaultConstruction()
+void UtDistributed2WayBusFluid::testDefaultConstruction()
 {
-    std::cout << "\n -----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 01: testDefaultConstruction .........";
+    UT_RESULT_FIRST;
 
     /// @test state data
     CPPUNIT_ASSERT(false == tArticle->mIsPairMaster);
@@ -68,19 +74,19 @@ void UtGunnsFluidDistributed2WayBus::testDefaultConstruction()
     CPPUNIT_ASSERT(0.0   == tArticle->mDemandLimitFlowRate);
 
     /// @test new/delete for code coverage
-    GunnsFluidDistributed2WayBus* article = new GunnsFluidDistributed2WayBus();
+    Distributed2WayBusFluid* article = new Distributed2WayBusFluid();
     delete article;
 
-    GunnsFluidDistributedMixtureData* mixtureData = new GunnsFluidDistributedMixtureData();
+    FluidDistributedMixtureData* mixtureData = new FluidDistributedMixtureData();
     delete mixtureData;
 
-    GunnsFluidDistributed2WayBusFluidState* fluidData = new GunnsFluidDistributed2WayBusFluidState();
+    Distributed2WayBusFluidFluidState* fluidData = new Distributed2WayBusFluidFluidState();
     delete fluidData;
 
-    GunnsFluidDistributed2WayBusFlowState* flowData = new GunnsFluidDistributed2WayBusFlowState();
+    Distributed2WayBusFluidFlowState* flowData = new Distributed2WayBusFluidFlowState();
     delete flowData;
 
-    GunnsFluidDistributed2WayBusInterfaceData* ifData = new GunnsFluidDistributed2WayBusInterfaceData();
+    Distributed2WayBusFluidInterfaceData* ifData = new Distributed2WayBusFluidInterfaceData();
     delete ifData;
 
     /// @test call article class functions directly for code coverage
@@ -88,19 +94,19 @@ void UtGunnsFluidDistributed2WayBus::testDefaultConstruction()
     tFluidState.getMoleFractions(mix, 3);
     tFluidState.getTcMoleFractions(mix, 3);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for nominal initialization without exceptions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testInitialization()
+void UtDistributed2WayBusFluid::testInitialization()
 {
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 02: testInitialization ..............";
+    UT_RESULT;
 
     /// - Create some friendly type pointers for test visibility.
-    FriendlyGunnsFluidDistributed2WayBusData* inData  = static_cast<FriendlyGunnsFluidDistributed2WayBusData*>(&tArticle->mInData);
-    FriendlyGunnsFluidDistributed2WayBusData* outData = static_cast<FriendlyGunnsFluidDistributed2WayBusData*>(&tArticle->mOutData);
+    FriendlyDistributed2WayBusFluidData* inData  = static_cast<FriendlyDistributed2WayBusFluidData*>(&tArticle->mInData);
+    FriendlyDistributed2WayBusFluidData* outData = static_cast<FriendlyDistributed2WayBusFluidData*>(&tArticle->mOutData);
 
     /// @test initialize with nominal data.
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(tIsPairMaster, tNumIfBulk, tNumIfTc));
@@ -170,8 +176,8 @@ void UtGunnsFluidDistributed2WayBus::testInitialization()
     CPPUNIT_ASSERT(0             == outData->mNumTc);
 
     /// @test assignment operator for fluid and flow state classes.
-    GunnsFluidDistributed2WayBusFluidState* fluidState1 = new GunnsFluidDistributed2WayBusFluidState();
-    GunnsFluidDistributed2WayBusFluidState* fluidState2 = new GunnsFluidDistributed2WayBusFluidState();
+    Distributed2WayBusFluidFluidState* fluidState1 = new Distributed2WayBusFluidFluidState();
+    Distributed2WayBusFluidFluidState* fluidState2 = new Distributed2WayBusFluidFluidState();
     fluidState1->mPressure = 1.0;
     fluidState1->mEnergy   = 300.0;
     *fluidState2 = *fluidState1;
@@ -180,8 +186,8 @@ void UtGunnsFluidDistributed2WayBus::testInitialization()
     delete fluidState2;
     delete fluidState1;
 
-    GunnsFluidDistributed2WayBusFlowState* flowState1 = new GunnsFluidDistributed2WayBusFlowState();
-    GunnsFluidDistributed2WayBusFlowState* flowState2 = new GunnsFluidDistributed2WayBusFlowState();
+    Distributed2WayBusFluidFlowState* flowState1 = new Distributed2WayBusFluidFlowState();
+    Distributed2WayBusFluidFlowState* flowState2 = new Distributed2WayBusFluidFlowState();
     flowState1->mFlowRate = 1.0;
     flowState1->mEnergy   = 300.0;
     *flowState2 = *flowState1;
@@ -190,15 +196,15 @@ void UtGunnsFluidDistributed2WayBus::testInitialization()
     delete flowState2;
     delete flowState1;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test the processInputs method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testProcessInputs()
+void UtDistributed2WayBusFluid::testProcessInputs()
 {
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 03: testProcessInputs ...............";
+    UT_RESULT;
 
     /// - Initialize our fluid state objects and the test article.  For this test, we are making the
     ///   local model array sizes larger than the interface, to verify that the get fluid state
@@ -249,9 +255,9 @@ void UtGunnsFluidDistributed2WayBus::testProcessInputs()
     CPPUNIT_ASSERT(true  == tArticle->mOutData.mDemandMode);
     CPPUNIT_ASSERT(true  == tArticle->mInData.hasValidData());
 
-    GunnsDistributed2WayBusNotification notif;
+    Distributed2WayBusNotification notif;
     CPPUNIT_ASSERT(0 == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::INFO == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::INFO == notif.mLevel);
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("switched to Demand mode.", 0));
 
     /// @test getFluidState() from the previous call to processInputs().
@@ -299,7 +305,7 @@ void UtGunnsFluidDistributed2WayBus::testProcessInputs()
     CPPUNIT_ASSERT(3     == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(2     == tArticle->mOutData.mFrameLoopback);
     CPPUNIT_ASSERT(0     == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::INFO == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::INFO == notif.mLevel);
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("switched to Supply mode.", 0));
 
     /// @test getFlowState() from the previous call to processInputs().
@@ -377,15 +383,15 @@ void UtGunnsFluidDistributed2WayBus::testProcessInputs()
     CPPUNIT_ASSERT(true == tArticle->isInDemandRole());
     CPPUNIT_ASSERT(true == tArticle->mOutData.mDemandMode);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test the processOutput methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
+void UtDistributed2WayBusFluid::testProcessOutputs()
 {
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 04: testProcessOutputs ..............";
+    UT_RESULT;
 
     /// - Initialize our fluid state objects and the test article.
     tFluidState.initialize(tNumBulk, tNumTc);
@@ -423,9 +429,9 @@ void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
     CPPUNIT_ASSERT(0.0                            == tArticle->mOutData.mTcMoleFractions[4]);
     CPPUNIT_ASSERT(0.0                            == tArticle->mOutData.mTcMoleFractions[5]);
 
-    GunnsDistributed2WayBusNotification notif;
+    Distributed2WayBusNotification notif;
     CPPUNIT_ASSERT(0                                         == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::NONE == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::NONE == notif.mLevel);
 
     /// @test setFluidState() in demand mode results in a warning and doesn't change the out data.
     tArticle->setFluidState(tFluidState);
@@ -445,7 +451,7 @@ void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
     CPPUNIT_ASSERT(0.0                            == tArticle->mOutData.mTcMoleFractions[4]);
     CPPUNIT_ASSERT(0.0                            == tArticle->mOutData.mTcMoleFractions[5]);
     CPPUNIT_ASSERT(0                              == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::WARN == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::WARN == notif.mLevel);
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("setFluidState was called when in the Demand role.", 0));
 
     /// @test processOutput() in demand mode.
@@ -475,7 +481,7 @@ void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
     CPPUNIT_ASSERT(tFluidState.mTcMoleFractions[2] == tArticle->mOutData.mTcMoleFractions[2]);
     CPPUNIT_ASSERT(tFluidState.mTcMoleFractions[3] == tArticle->mOutData.mTcMoleFractions[3]);
     CPPUNIT_ASSERT(0                               == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::NONE == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::NONE == notif.mLevel);
 
     /// @test setFlowState() in demand mode results in a warning and doesn't change the out data.
     tFlowState.mFlowRate           = 0.0;
@@ -498,7 +504,7 @@ void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
     CPPUNIT_ASSERT(tFluidState.mTcMoleFractions[2] == tArticle->mOutData.mTcMoleFractions[2]);
     CPPUNIT_ASSERT(tFluidState.mTcMoleFractions[3] == tArticle->mOutData.mTcMoleFractions[3]);
     CPPUNIT_ASSERT(0                               == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::WARN == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::WARN == notif.mLevel);
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("setFlowState was called when in the Supply role.", 0));
 
     /// @test outputs in supply mode, without flipping to demand mode.
@@ -523,18 +529,18 @@ void UtGunnsFluidDistributed2WayBus::testProcessOutputs()
     CPPUNIT_ASSERT(capacitance  == tArticle->mOutData.mCapacitance);
     CPPUNIT_ASSERT(0.0          == tArticle->mOutData.mSource);
     CPPUNIT_ASSERT(0            == tArticle->popNotification(notif));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::INFO == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::INFO == notif.mLevel);
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("switched to Demand mode.", 0));
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for the computeDemandLimit and getDemandLimitGain methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testDemandLimit()
+void UtDistributed2WayBusFluid::testDemandLimit()
 {
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 05: testDemandLimit .................";
+    UT_RESULT;
 
     tArticle->initialize(tIsPairMaster, tNumIfBulk, tNumIfTc);
 
@@ -641,15 +647,15 @@ void UtGunnsFluidDistributed2WayBus::testDemandLimit()
     CPPUNIT_ASSERT(expectedNdot == actualNdot);
     CPPUNIT_ASSERT(expectedGain == actualGain);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for the mode forcing flags.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsFluidDistributed2WayBus::testForceModes()
+void UtDistributed2WayBusFluid::testForceModes()
 {
-    std::cout << "\n UtGunnsFluidDistributed2WayBus 06: testForceModes ..................";
+    UT_RESULT;
 
     /// @test Starts in Supply mode after initialization regardless of Demand force flag.
     tArticle->forceDemandRole();
@@ -680,5 +686,5 @@ void UtGunnsFluidDistributed2WayBus::testForceModes()
     tArticle->processOutputs(0.0);
     CPPUNIT_ASSERT(false == tArticle->isInDemandRole());
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

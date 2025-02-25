@@ -1,23 +1,23 @@
 /**
-@file     GunnsElectDistributed2WayBus.cpp
-@brief    GUNNS Electrical Distributed 2-Way Bus Interface implementation
+@file     Distributed2WayBusElect.cpp
+@brief    Electrical Distributed 2-Way Bus Interface implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-  ((core/GunnsDistributed2WayBusBase.o))
+  ((interop/Distributed2WayBusBase.o))
 */
 
-#include "GunnsElectDistributed2WayBus.hh"
+#include "Distributed2WayBusElect.hh"
 #include <sstream>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Electrical Distributed 2-Way Bus interface data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusInterfaceData::GunnsElectDistributed2WayBusInterfaceData()
+Distributed2WayBusElectInterfaceData::Distributed2WayBusElectInterfaceData()
     :
-    GunnsDistributed2WayBusBaseInterfaceData(),
+    Distributed2WayBusBaseInterfaceData(),
     mDemandPower(0.0),
     mSupplyVoltage(0.0)
 {
@@ -27,7 +27,7 @@ GunnsElectDistributed2WayBusInterfaceData::GunnsElectDistributed2WayBusInterface
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this Electrical Distributed 2-Way Bus interface data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusInterfaceData::~GunnsElectDistributed2WayBusInterfaceData()
+Distributed2WayBusElectInterfaceData::~Distributed2WayBusElectInterfaceData()
 {
     // nothing to do
 }
@@ -37,10 +37,10 @@ GunnsElectDistributed2WayBusInterfaceData::~GunnsElectDistributed2WayBusInterfac
 ///
 /// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBusInterfaceData& GunnsElectDistributed2WayBusInterfaceData::operator =(const GunnsElectDistributed2WayBusInterfaceData& that)
+Distributed2WayBusElectInterfaceData& Distributed2WayBusElectInterfaceData::operator =(const Distributed2WayBusElectInterfaceData& that)
 {
     if (this != &that) {
-        GunnsDistributed2WayBusBaseInterfaceData::operator = (that);
+        Distributed2WayBusBaseInterfaceData::operator = (that);
         mDemandPower   = that.mDemandPower;
         mSupplyVoltage = that.mSupplyVoltage;
     }
@@ -50,9 +50,9 @@ GunnsElectDistributed2WayBusInterfaceData& GunnsElectDistributed2WayBusInterface
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Electrical Distributed 2-Way Bus Interface default constructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBus::GunnsElectDistributed2WayBus()
+Distributed2WayBusElect::Distributed2WayBusElect()
     :
-    GunnsDistributed2WayBusBase(&mInData, &mOutData),
+    Distributed2WayBusBase(&mInData, &mOutData),
     mInData(),
     mOutData(),
     mSupplyDatas()
@@ -63,7 +63,7 @@ GunnsElectDistributed2WayBus::GunnsElectDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Electrical Distributed 2-Way Bus Interface default destructor.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsElectDistributed2WayBus::~GunnsElectDistributed2WayBus()
+Distributed2WayBusElect::~Distributed2WayBusElect()
 {
     /// - Delete the supply data objects that we allocated.
     for (unsigned int i=0; i<mSupplyDatas.size(); ++i) {
@@ -81,9 +81,9 @@ GunnsElectDistributed2WayBus::~GunnsElectDistributed2WayBus()
 ///           init, while the other side defaults to Demand.  If both sides initialize to the same
 ///           mode, they will sort it out at runtime.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributed2WayBus::initialize(const bool isPrimarySide, const float voltage)
+void Distributed2WayBusElect::initialize(const bool isPrimarySide, const float voltage)
 {
-    GunnsDistributed2WayBusBase::initialize(isPrimarySide);
+    Distributed2WayBusBase::initialize(isPrimarySide);
 
     mInData.mDemandMode    = isPrimarySide;
     mInData.mDemandPower   = 0.0;
@@ -100,7 +100,7 @@ void GunnsElectDistributed2WayBus::initialize(const bool isPrimarySide, const fl
 ///
 /// @note  This should be called exactly once per main model step, and before any calls to update.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributed2WayBus::processInputs()
+void Distributed2WayBusElect::processInputs()
 {
     updateFrameCounts();
 }
@@ -116,7 +116,7 @@ void GunnsElectDistributed2WayBus::processInputs()
 ///
 /// @note  This should be called after updateFrameCounts() during each main model step.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectDistributed2WayBus::update(const float localVoltage, const float localPowerDemand)
+void Distributed2WayBusElect::update(const float localVoltage, const float localPowerDemand)
 {
     /// - Find the highest available voltage that can be supplied here from the local model.
     float availV = 0.0;
@@ -146,7 +146,7 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
                     if (mInData.mDemandMode and (mFramesSinceFlip > mLoopLatency)) {
                         mOutData.mDemandMode = false;
                         mFramesSinceFlip     = 0;
-                        pushNotification(GunnsDistributed2WayBusNotification::INFO,
+                        pushNotification(Distributed2WayBusNotification::INFO,
                                 "flipping to Supply role in response to remote's takeover of Demand role.");
                     }
                 } else {
@@ -155,7 +155,7 @@ void GunnsElectDistributed2WayBus::update(const float localVoltage, const float 
                         mFramesSinceFlip     = 0;
                         std::ostringstream msg;
                         msg << "flipping to Demand role with available V: " << availV << " < remote V: " << mInData.mSupplyVoltage << ".";
-                        pushNotification(GunnsDistributed2WayBusNotification::INFO, msg.str());
+                        pushNotification(Distributed2WayBusNotification::INFO, msg.str());
                     }
                 }
             }

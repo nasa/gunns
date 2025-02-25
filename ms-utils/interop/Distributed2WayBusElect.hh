@@ -1,22 +1,22 @@
-#ifndef GunnsElectDistributed2WayBus_EXISTS
-#define GunnsElectDistributed2WayBus_EXISTS
+#ifndef Distributed2WayBusElect_EXISTS
+#define Distributed2WayBusElect_EXISTS
 
 /**
-@file     GunnsElectDistributed2WayBus.hh
-@brief    GUNNS Electrical Distributed 2-Way Bus Interface declarations
+@file     Distributed2WayBusElect.hh
+@brief    Electrical Distributed 2-Way Bus Interface declarations
 
-@defgroup  TSM_GUNNS_ELECTRICAL_2WAY_BUS    GUNNS Electrical Distributed 2-Way Bus Interface
-@ingroup   TSM_GUNNS_ELECTRICAL
+@defgroup  TSM_INTEROP_DISTR_2WAY_BUS_ELECTRICAL    Electrical Distributed 2-Way Bus Interface
+@ingroup   TSM_INTEROP
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
 PURPOSE:
-- (Classes for the GUNNS Electrical Distributed 2-Way Bus Interface.)
+- (Classes for the Electrical Distributed 2-Way Bus Interface.)
 
 REFERENCE:
-- ((GUNNS Wiki: https://github.com/nasa/gunns/wiki/Distributed-Bi-Directional-Flow-Electrical-Interface))
+- ((https://github.com/nasa/gunns/wiki/Distributed-Bi-Directional-Flow-Electrical-Interface))
 
 ASSUMPTIONS AND LIMITATIONS:
 - ((Only one side of the interface regulates the shared bus voltage at any given time.)
@@ -25,7 +25,7 @@ ASSUMPTIONS AND LIMITATIONS:
     data transport time, and is generally much slower than real-world circuits.))
 
 LIBRARY DEPENDENCY:
-- ((GunnsElectDistributed2WayBus.o))
+- ((Distributed2WayBusElect.o))
 
 PROGRAMMERS:
 - ((Jason Harvey) (CACI) (2023-03) (Initial))
@@ -33,7 +33,7 @@ PROGRAMMERS:
 @{
 */
 
-#include "core/GunnsDistributed2WayBusBase.hh"
+#include "Distributed2WayBusBase.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Electrical Distributed 2-Way Bus voltage supply data.
@@ -41,7 +41,7 @@ PROGRAMMERS:
 /// @details  This is a data structure to describe the ability of a voltage supply in the local
 ///           model to supply power to the interface location.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-struct GunnsElectDistributed2WayBusSupplyData
+struct Distributed2WayBusElectSupplyData
 {
     public:
         bool  mAvailable;      /**< (1) True if the voltage regulation is available if needed. */
@@ -52,34 +52,34 @@ struct GunnsElectDistributed2WayBusSupplyData
 /// @brief    Electrical Distributed 2-Way Bus voltage interface data.
 ///
 /// @details  This holds the data that is transferred between instances of
-///           GunnsElectDistributed2WayBus across the sim-sim interface.  The class variables,
+///           Distributed2WayBusElect across the sim-sim interface.  The class variables,
 ///           including the base class variables, map to the HLA FOM.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsElectDistributed2WayBusInterfaceData : public GunnsDistributed2WayBusBaseInterfaceData
+class Distributed2WayBusElectInterfaceData : public Distributed2WayBusBaseInterfaceData
 {
     public:
         float mDemandPower;   /**< (W) Demanded power load. */
         float mSupplyVoltage; /**< (V) Supplied voltage. */
         /// @brief  Default constructs this Electrical Distributed 2-Way Bus interface data.
-        GunnsElectDistributed2WayBusInterfaceData();
+        Distributed2WayBusElectInterfaceData();
         /// @brief  Default destructs this Electrical Distributed 2-Way Bus interface data.
-        virtual ~GunnsElectDistributed2WayBusInterfaceData();
+        virtual ~Distributed2WayBusElectInterfaceData();
         /// @brief  Returns whether this object has received valid data.
         virtual bool hasValidData() const;
         /// @brief Assignment operator for this Electrical Distributed 2-Way Bus interface data.
-        GunnsElectDistributed2WayBusInterfaceData& operator =(const GunnsElectDistributed2WayBusInterfaceData& that);
+        Distributed2WayBusElectInterfaceData& operator =(const Distributed2WayBusElectInterfaceData& that);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsElectDistributed2WayBusInterfaceData(const GunnsElectDistributed2WayBusInterfaceData&);
+        Distributed2WayBusElectInterfaceData(const Distributed2WayBusElectInterfaceData&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Electrical Distributed 2-Way Bus Interface.
 ///
-/// @details  See the GUNNS Wiki link in REFERENCE above.  Main features:
-///           - Designed to be generic and reusable outside of GUNNS/Trick.
-///           - No dependencies on any other GUNNS code or Trick code.
+/// @details  See the reference above.  Main features:
+///           - Designed to be generic and reusable.
+///           - No dependencies on any 3rd-party code.
 ///           - Implements handshaking and coordination of bi-directional power flow between
 ///             distributed models.
 ///           - Interfaces with another instance of itself over the data interface (HLA, etc.)
@@ -100,17 +100,17 @@ class GunnsElectDistributed2WayBusInterfaceData : public GunnsDistributed2WayBus
 ///             - The local model drives these during runtime from the current state of each
 ///               respective voltage regulator model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsElectDistributed2WayBus : public GunnsDistributed2WayBusBase
+class Distributed2WayBusElect : public Distributed2WayBusBase
 {
     public:
-        GunnsElectDistributed2WayBusInterfaceData mInData;  /**< (1) Input data received from the remote side. */
-        GunnsElectDistributed2WayBusInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
+        Distributed2WayBusElectInterfaceData mInData;  /**< (1) Input data received from the remote side. */
+        Distributed2WayBusElectInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
         /// @brief  Default constructor.
-        GunnsElectDistributed2WayBus();
+        Distributed2WayBusElect();
         /// @brief  Default destructor.
-        virtual ~GunnsElectDistributed2WayBus();
+        virtual ~Distributed2WayBusElect();
         /// @brief  Creates an interface for a voltage supply in the local model.
-        GunnsElectDistributed2WayBusSupplyData* createSupplyData();
+        Distributed2WayBusElectSupplyData* createSupplyData();
         /// @brief  Initializes this Distributed 2-Way Bus Interface.
         void initialize(const bool isPrimarySide = false, const float voltage = 0.0);
         /// @brief  Updates frame counters, should be called once per main model step.
@@ -123,13 +123,13 @@ class GunnsElectDistributed2WayBus : public GunnsDistributed2WayBusBase
         float getRemoteSupply() const;
 
     protected:
-        std::vector<GunnsElectDistributed2WayBusSupplyData*> mSupplyDatas; /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */
+        std::vector<Distributed2WayBusElectSupplyData*> mSupplyDatas; /**< ** (1) trick_chkpnt_io(**) Data objects for the local voltage supplies. */
 
     private:
         /// @brief  Copy constructor unavailable since declared private and not implemented.
-        GunnsElectDistributed2WayBus(const GunnsElectDistributed2WayBus& that);
+        Distributed2WayBusElect(const Distributed2WayBusElect& that);
         /// @brief  Assignment operator unavailable since declared private and not implemented.
-        GunnsElectDistributed2WayBus& operator =(const GunnsElectDistributed2WayBus& that);
+        Distributed2WayBusElect& operator =(const Distributed2WayBusElect& that);
 };
 
 /// @}
@@ -139,22 +139,22 @@ class GunnsElectDistributed2WayBus : public GunnsDistributed2WayBusBase
 ///
 /// @details  Checks for all of the following conditions to be met:  Frame count > 0.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectDistributed2WayBusInterfaceData::hasValidData() const
+inline bool Distributed2WayBusElectInterfaceData::hasValidData() const
 {
     return (mFrameCount > 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  GunnsElectDistributed2WayBusSupplyData* (--) Address of the created supply data object.
+/// @returns  Distributed2WayBusElectSupplyData* (--) Address of the created supply data object.
 ///
-/// @details  Creates a new GunnsElectDistributed2WayBusSupplyData and returns its address to the
+/// @details  Creates a new Distributed2WayBusElectSupplyData and returns its address to the
 ///           caller.  Users should call this for each voltage supply in the local model that can
 ///           supply power to this interface location, and then drive the object to describe the
 ///           ability of the voltage supply to supply power during runtime.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline GunnsElectDistributed2WayBusSupplyData* GunnsElectDistributed2WayBus::createSupplyData()
+inline Distributed2WayBusElectSupplyData* Distributed2WayBusElect::createSupplyData()
 {
-    GunnsElectDistributed2WayBusSupplyData* newSupplyData = new GunnsElectDistributed2WayBusSupplyData();
+    Distributed2WayBusElectSupplyData* newSupplyData = new Distributed2WayBusElectSupplyData();
     mSupplyDatas.push_back(newSupplyData);
     return newSupplyData;
 }
@@ -165,7 +165,7 @@ inline GunnsElectDistributed2WayBusSupplyData* GunnsElectDistributed2WayBus::cre
 /// @details  If in the Supply role, returns the demanded power from the remote model, otherwise
 ///           returns zero.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline float GunnsElectDistributed2WayBus::getRemoteLoad() const
+inline float Distributed2WayBusElect::getRemoteLoad() const
 {
     if (mOutData.mDemandMode) {
         return 0.0;
@@ -178,7 +178,7 @@ inline float GunnsElectDistributed2WayBus::getRemoteLoad() const
 ///
 /// @details  Returns the supplied voltage from the remote model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline float GunnsElectDistributed2WayBus::getRemoteSupply() const
+inline float Distributed2WayBusElect::getRemoteSupply() const
 {
     return mInData.mSupplyVoltage;
 }

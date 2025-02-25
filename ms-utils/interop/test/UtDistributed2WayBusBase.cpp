@@ -1,14 +1,18 @@
 /*
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
-#include "UtGunnsDistributed2WayBusBase.hh"
+#include "UtDistributed2WayBusBase.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtDistributed2WayBusBase::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default constructor for the UtGunnsDistributed2WayBusBase class.
+/// @details  This is the default constructor for the UtDistributed2WayBusBase class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsDistributed2WayBusBase::UtGunnsDistributed2WayBusBase()
+UtDistributed2WayBusBase::UtDistributed2WayBusBase()
     :
     tArticle(0),
     tIsPairMaster(),
@@ -19,9 +23,9 @@ UtGunnsDistributed2WayBusBase::UtGunnsDistributed2WayBusBase()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default destructor for the UtGunnsDistributed2WayBusBase class.
+/// @details  This is the default destructor for the UtDistributed2WayBusBase class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsDistributed2WayBusBase::~UtGunnsDistributed2WayBusBase()
+UtDistributed2WayBusBase::~UtDistributed2WayBusBase()
 {
     //do nothing
 }
@@ -29,7 +33,7 @@ UtGunnsDistributed2WayBusBase::~UtGunnsDistributed2WayBusBase()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed after each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::tearDown()
+void UtDistributed2WayBusBase::tearDown()
 {
     /// - Deletes for news in setUp
     delete tArticle;
@@ -38,30 +42,32 @@ void UtGunnsDistributed2WayBusBase::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed before each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::setUp()
+void UtDistributed2WayBusBase::setUp()
 {
     tIsPairMaster = true;
-    tArticle      = new FriendlyGunnsDistributed2WayBusBase(&tInData, &tOutData);
+    tArticle      = new FriendlyDistributed2WayBusBase(&tInData, &tOutData);
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for default construction without exceptions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::testDefaultConstruction()
+void UtDistributed2WayBusBase::testDefaultConstruction()
 {
-    std::cout << "\n -----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsDistributed2WayBusBase 01: testDefaultConstruction ..........";
+    UT_RESULT_INITIAL("Interoperability Models Unit Tests");
 
     /// @test state data
-    CPPUNIT_ASSERT(false                             == tArticle->mIsPairMaster);
-    CPPUNIT_ASSERT(false                             == tArticle->mInDataLastDemandMode);
-    CPPUNIT_ASSERT(0                                 == tArticle->mFramesSinceFlip);
-    CPPUNIT_ASSERT(0                                 == tArticle->mLoopLatency);
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::NONE == tArticle->mForcedRole);
-    CPPUNIT_ASSERT(0                                 == tArticle->mNotifications.size());
+    CPPUNIT_ASSERT(false                        == tArticle->mIsPairMaster);
+    CPPUNIT_ASSERT(false                        == tArticle->mInDataLastDemandMode);
+    CPPUNIT_ASSERT(0                            == tArticle->mFramesSinceFlip);
+    CPPUNIT_ASSERT(0                            == tArticle->mLoopLatency);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::NONE == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(0                            == tArticle->mNotifications.size());
 
     /// @test new/delete for code coverage
-    GunnsDistributed2WayBusBase* article = new GunnsDistributed2WayBusBase(&tInData, &tOutData);
+    Distributed2WayBusBase* article = new Distributed2WayBusBase(&tInData, &tOutData);
     delete article;
 
     /// @test interface data assignment operator
@@ -80,15 +86,15 @@ void UtGunnsDistributed2WayBusBase::testDefaultConstruction()
     CPPUNIT_ASSERT(tInData.mFrameLoopback == tOutData.mFrameLoopback);
     CPPUNIT_ASSERT(tInData.mDemandMode    == tOutData.mDemandMode);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for the initialization method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::testInitialization()
+void UtDistributed2WayBusBase::testInitialization()
 {
-    std::cout << "\n UtGunnsDistributed2WayBusBase 02: testInitialization ...............";
+    UT_RESULT;
 
     tArticle->initialize(tIsPairMaster);
 
@@ -98,15 +104,15 @@ void UtGunnsDistributed2WayBusBase::testInitialization()
     CPPUNIT_ASSERT(0             == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(false         == tOutData.mDemandMode);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for the updateFrameCounts method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::testFrameCounts()
+void UtDistributed2WayBusBase::testFrameCounts()
 {
-    std::cout << "\n UtGunnsDistributed2WayBusBase 03: testFrameCounts ..................";
+    UT_RESULT;
 
     tArticle->initialize(tIsPairMaster);
 
@@ -122,67 +128,67 @@ void UtGunnsDistributed2WayBusBase::testFrameCounts()
     CPPUNIT_ASSERT(expectedLoopLatency   == static_cast<unsigned int>(tArticle->mLoopLatency));
     CPPUNIT_ASSERT(tInData.mFrameCount   == tOutData.mFrameLoopback);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test the push and pop notifications methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::testNotifications()
+void UtDistributed2WayBusBase::testNotifications()
 {
-    std::cout << "\n UtGunnsDistributed2WayBusBase 04: testNotifications ................";
+    UT_RESULT;
 
     tArticle->initialize(tIsPairMaster);
 
     /// @test pushNotification
     const std::string message1 = "1test1";
-    tArticle->pushNotification(GunnsDistributed2WayBusNotification::ERR, message1);
+    tArticle->pushNotification(Distributed2WayBusNotification::ERR, message1);
     CPPUNIT_ASSERT(1 == tArticle->mNotifications.size());
 
     const std::string message2 = "2test2";
-    tArticle->pushNotification(GunnsDistributed2WayBusNotification::INFO, message2);
+    tArticle->pushNotification(Distributed2WayBusNotification::INFO, message2);
     CPPUNIT_ASSERT(2 == tArticle->mNotifications.size());
 
     /// @test popNotification
-    GunnsDistributed2WayBusNotification notif;
+    Distributed2WayBusNotification notif;
     unsigned int numMessages = tArticle->popNotification(notif);
     CPPUNIT_ASSERT(1 == numMessages);
     CPPUNIT_ASSERT(1 == tArticle->mNotifications.size());
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("2test2", 0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::INFO == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::INFO == notif.mLevel);
 
     numMessages = tArticle->popNotification(notif);
     CPPUNIT_ASSERT(0 == numMessages);
     CPPUNIT_ASSERT(0 == tArticle->mNotifications.size());
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("1test1", 0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::ERR == notif.mLevel);
 
     numMessages = tArticle->popNotification(notif);
     CPPUNIT_ASSERT(0 == numMessages);
     CPPUNIT_ASSERT(0 == tArticle->mNotifications.size());
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("", 0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::NONE == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::NONE == notif.mLevel);
 
     /// @test assignment operator for code coverage
-    GunnsDistributed2WayBusNotification notif2(GunnsDistributed2WayBusNotification::WARN, "notif2");
+    Distributed2WayBusNotification notif2(Distributed2WayBusNotification::WARN, "notif2");
     notif = notif2;
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("notif2", 0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::WARN == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::WARN == notif.mLevel);
 
     /// @test self assign
     notif = notif;
     CPPUNIT_ASSERT(0 == notif.mMessage.rfind("notif2", 0));
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::WARN == notif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::WARN == notif.mLevel);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Test for the mode forcing flags.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDistributed2WayBusBase::testAccessors()
+void UtDistributed2WayBusBase::testAccessors()
 {
-    std::cout << "\n UtGunnsDistributed2WayBusBase 05: testAccessors ....................";
+    UT_RESULT;
 
     /// @test isInDemandRole
     tArticle->initialize(tIsPairMaster);
@@ -192,15 +198,15 @@ void UtGunnsDistributed2WayBusBase::testAccessors()
 
     /// @test forceSupplyRole
     tArticle->forceSupplyRole();
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::SUPPLY == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::SUPPLY == tArticle->mForcedRole);
 
     /// @test forceSupplyRole
     tArticle->forceDemandRole();
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::DEMAND == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::DEMAND == tArticle->mForcedRole);
 
     /// @test resetForceRole
     tArticle->resetForceRole();
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusBase::NONE   == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusBase::NONE   == tArticle->mForcedRole);
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

@@ -1,6 +1,6 @@
 #!/bin/tcsh -f
 
-# Copyright 2024 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 #TODO Clean this up and improve it to work on a list of test folders....
@@ -378,6 +378,16 @@ endif
 
 #
 set FOLDER = fileSearch/test
+
+cd $MS_UTILS_HOME/$FOLDER; make clean; make;
+if ( -f $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then
+    echo $FOLDER\: `grep -E 'OK \(*|FAILURES\!|Failures \!' $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log` `grep 'ERROR SUMMARY' $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log | grep -v ' 0 errors'` >> $OUT
+else
+    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
+endif
+
+#
+set FOLDER = interop/test
 
 cd $MS_UTILS_HOME/$FOLDER; make clean; make;
 if ( -f $MS_UTILS_HOME/$FOLDER/output/unit-tests-valgrind.log ) then

@@ -1,28 +1,28 @@
-#ifndef GunnsFluidDistributed2WayBus_EXISTS
-#define GunnsFluidDistributed2WayBus_EXISTS
+#ifndef Distributed2WayBusFluid_EXISTS
+#define Distributed2WayBusFluid_EXISTS
 
 /**
-@file     GunnsFluidDistributed2WayBus.hh
-@brief    GUNNS Fluid Distributed 2-Way Bus Interface declarations
+@file     Distributed2WayBusFluid.hh
+@brief    Fluid Distributed 2-Way Bus Interface declarations
 
-@defgroup  TSM_GUNNS_CORE_LINK_FLUID_2WAY_BUS    GUNNS Fluid Distributed 2-Way Bus Interface
-@ingroup   TSM_GUNNS_CORE_LINK_FLUID
+@defgroup  TSM_INTEROP_DISTR_2WAY_BUS_FLUID    Fluid Distributed 2-Way Bus Interface
+@ingroup   TSM_INTEROP
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
 PURPOSE:
-- (Classes for the GUNNS Fluid Distributed 2-Way Bus Interface.)
+- (Classes for the Fluid Distributed 2-Way Bus Interface.)
 
 REFERENCE:
-- ((GUNNS Wiki: https://github.com/nasa/gunns/wiki/Distributed-Bi-Directional-Flow-Fluid-Interface))
+- ((https://github.com/nasa/gunns/wiki/Distributed-Bi-Directional-Flow-Fluid-Interface))
 
 ASSUMPTIONS AND LIMITATIONS:
 - (TBD)
 
 LIBRARY DEPENDENCY:
-- ((GunnsFluidDistributed2WayBus.o))
+- ((Distributed2WayBusFluid.o))
 
 PROGRAMMERS:
 - ((Jason Harvey) (CACI) (2023-05) (Initial))
@@ -30,7 +30,7 @@ PROGRAMMERS:
 @{
 */
 
-#include "GunnsDistributed2WayBusBase.hh"
+#include "Distributed2WayBusBase.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Distributed Fluid Mixture Data
@@ -41,18 +41,18 @@ PROGRAMMERS:
 /// @note     This must remain a base class, since it it used in multiple inheritance below, to
 ///           avoid the diamond inheritance problem.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class, see above !!!
+class FluidDistributedMixtureData // !!! NOTE this must remain a base class, see above !!!
 {
     public:
         double  mEnergy;          /**< (1)                     Fluid temperature (K) or specific enthalpy (J/kg). */
         double* mMoleFractions;   /**< (1) trick_chkpnt_io(**) Fluid mole fractions. */
         double* mTcMoleFractions; /**< (1) trick_chkpnt_io(**) Trace compounds mole fractions. */
         /// @brief  Default constructs this Fluid Distributed mixture data.
-        GunnsFluidDistributedMixtureData();
+        FluidDistributedMixtureData();
         /// @brief  Default destructs this Fluid Distributed mixture data.
-        virtual ~GunnsFluidDistributedMixtureData();
+        virtual ~FluidDistributedMixtureData();
         /// @brief  Assignment operator for this Fluid Distributed mixture data.
-        GunnsFluidDistributedMixtureData& operator =(const GunnsFluidDistributedMixtureData& that);
+        FluidDistributedMixtureData& operator =(const FluidDistributedMixtureData& that);
         /// @brief  Allocates dynamic arrays for bulk fluid and trace compounds and mole fractions.
         virtual void initialize(const unsigned int nBulk,
                                 const unsigned int nTc,
@@ -76,33 +76,33 @@ class GunnsFluidDistributedMixtureData // !!! NOTE this must remain a base class
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributedMixtureData(const GunnsFluidDistributedMixtureData&);
+        FluidDistributedMixtureData(const FluidDistributedMixtureData&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Distributed Fluid 2-Way Bus Interface Data
 ///
 /// @details  This holds the data that is transferred between instances of
-///           GunnsFluidDistributed2WayBus across the sim-sim interface (HLA, etc.)  The class
+///           Distributed2WayBusFluid across the sim-sim interface (HLA, etc.)  The class
 ///           variables, including the base class variables, map to the HLA FOM.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMixtureData, public GunnsDistributed2WayBusBaseInterfaceData
+class Distributed2WayBusFluidInterfaceData : public FluidDistributedMixtureData, public Distributed2WayBusBaseInterfaceData
 {
     public:
         double mCapacitance; /**< (mol/Pa) Model capacitance. */
         double mSource;      /**< (1)      Fluid pressure (Pa) or molar flow (mol/s). */
         /// @brief  Default constructs this Fluid Distributed 2-Way Bus interface data.
-        GunnsFluidDistributed2WayBusInterfaceData();
+        Distributed2WayBusFluidInterfaceData();
         /// @brief  Default destructs this Fluid Distributed 2-Way Bus interface data.
-        virtual ~GunnsFluidDistributed2WayBusInterfaceData();
+        virtual ~Distributed2WayBusFluidInterfaceData();
         /// @brief  Returns whether this object has received valid data.
         virtual bool hasValidData() const;
         /// @brief Assignment operator for this Fluid Distributed 2-Way Bus interface data.
-        GunnsFluidDistributed2WayBusInterfaceData& operator =(const GunnsFluidDistributed2WayBusInterfaceData& that);
+        Distributed2WayBusFluidInterfaceData& operator =(const Distributed2WayBusFluidInterfaceData& that);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBusInterfaceData(const GunnsFluidDistributed2WayBusInterfaceData&);
+        Distributed2WayBusFluidInterfaceData(const Distributed2WayBusFluidInterfaceData&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,20 +111,20 @@ class GunnsFluidDistributed2WayBusInterfaceData : public GunnsFluidDistributedMi
 /// @details  This describes the properties of a fluid state (pressure, energy & mixture) for
 ///           communication across a distributed modeling interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBusFluidState : public GunnsFluidDistributedMixtureData
+class Distributed2WayBusFluidFluidState : public FluidDistributedMixtureData
 {
     public:
         double mPressure; /**< (Pa) Fluid pressure. */
         /// @brief Default constructor.
-        GunnsFluidDistributed2WayBusFluidState();
+        Distributed2WayBusFluidFluidState();
         /// @brief Default destructor.
-        virtual ~GunnsFluidDistributed2WayBusFluidState();
+        virtual ~Distributed2WayBusFluidFluidState();
         /// @brief Assignment operator.
-        GunnsFluidDistributed2WayBusFluidState& operator =(const GunnsFluidDistributed2WayBusFluidState& that);
+        Distributed2WayBusFluidFluidState& operator =(const Distributed2WayBusFluidFluidState& that);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBusFluidState(const GunnsFluidDistributed2WayBusFluidState&);
+        Distributed2WayBusFluidFluidState(const Distributed2WayBusFluidFluidState&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,28 +133,28 @@ class GunnsFluidDistributed2WayBusFluidState : public GunnsFluidDistributedMixtu
 /// @details  This describes the properties of a fluid flow (flow rate, energy & mixture) for
 ///           communication across a distributed modeling interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBusFlowState : public GunnsFluidDistributedMixtureData
+class Distributed2WayBusFluidFlowState : public FluidDistributedMixtureData
 {
     public:
         double  mFlowRate; /**< (mol/s) Fluid molar flow rate. */
         /// @brief Default constructor.
-        GunnsFluidDistributed2WayBusFlowState();
+        Distributed2WayBusFluidFlowState();
         /// @brief Default destructor.
-        virtual ~GunnsFluidDistributed2WayBusFlowState();
+        virtual ~Distributed2WayBusFluidFlowState();
         /// @brief Assignment operator.
-        GunnsFluidDistributed2WayBusFlowState& operator =(const GunnsFluidDistributed2WayBusFlowState& that);
+        Distributed2WayBusFluidFlowState& operator =(const Distributed2WayBusFluidFlowState& that);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBusFlowState(const GunnsFluidDistributed2WayBusFlowState&);
+        Distributed2WayBusFluidFlowState(const Distributed2WayBusFluidFlowState&);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Fluid Distributed 2-Way Bus Interface.
 ///
-/// @details  See the GUNNS Wiki link in REFERENCE above.  Main features:
-///           - Designed to be generic and reusable outside of GUNNS/Trick.
-///           - No dependencies on any other GUNNS code or Trick code.
+/// @details  See the reference above.  Main features:
+///           - Designed to be generic and reusable.
+///           - No dependencies on any 3rd-party code.
 ///           - Implements handshaking and coordination of bi-directional fluid flow between
 ///             distributed models.
 ///           - Interfaces with another instance of itself over the data interface (HLA, etc.)
@@ -196,15 +196,15 @@ class GunnsFluidDistributed2WayBusFlowState : public GunnsFluidDistributedMixtur
 ///               transfers notification to the sim's messaging system as desired.
 ///           13. this->mOutData transmitted across the interface data network to the other side.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
+class Distributed2WayBusFluid : public Distributed2WayBusBase
 {
     public:
-        GunnsFluidDistributed2WayBusInterfaceData mInData;  /**< (1) Input data received from the remote side. */
-        GunnsFluidDistributed2WayBusInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
+        Distributed2WayBusFluidInterfaceData mInData;  /**< (1) Input data received from the remote side. */
+        Distributed2WayBusFluidInterfaceData mOutData; /**< (1) Output data to transmit to the remote side. */
         /// @brief Default Constructor.
-        GunnsFluidDistributed2WayBus();
+        Distributed2WayBusFluid();
         /// @brief Default Destructor.
-        virtual ~GunnsFluidDistributed2WayBus();
+        virtual ~Distributed2WayBusFluid();
         /// @brief Initializes this Distributed 2-Way Bus Interface.
         void initialize(const bool         isPairMaster,
                         const unsigned int nIfBulk,
@@ -218,13 +218,13 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
         /// @brief Special processing of data outputs from the model after the network update.
         void processOutputs(const double capacitance);
         /// @brief Sets the outgoing fluid state of the interface volume when in the Supply role.
-        void setFluidState(const GunnsFluidDistributed2WayBusFluidState& fluid);
+        void setFluidState(const Distributed2WayBusFluidFluidState& fluid);
         /// @brief Gets the incoming fluid state of the interface volume when in the Demand role.
-        bool getFluidState(GunnsFluidDistributed2WayBusFluidState& fluid) const;
+        bool getFluidState(Distributed2WayBusFluidFluidState& fluid) const;
         /// @brief Sets the outgoing state of flows to/from the interface volume when in the Demand role.
-        void setFlowState(const GunnsFluidDistributed2WayBusFlowState& flow);
+        void setFlowState(const Distributed2WayBusFluidFlowState& flow);
         /// @brief Gets the incoming state of flows to/from the interface volume when in the Supply role.
-        bool getFlowState(GunnsFluidDistributed2WayBusFlowState& flow) const;
+        bool getFlowState(Distributed2WayBusFluidFlowState& flow) const;
 
     protected:
         double              mDemandLimitGain;        /**<    (1)                         The current Demand-side flow rate limit filter gain. */
@@ -243,9 +243,9 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBus(const GunnsFluidDistributed2WayBus& that);
+        Distributed2WayBusFluid(const Distributed2WayBusFluid& that);
         /// @brief Assignment operator unavailable since declared private and not implemented.
-        GunnsFluidDistributed2WayBus& operator =(const GunnsFluidDistributed2WayBus& that);
+        Distributed2WayBusFluid& operator =(const Distributed2WayBusFluid& that);
 };
 
 /// @}
@@ -253,7 +253,7 @@ class GunnsFluidDistributed2WayBus : public GunnsDistributed2WayBusBase
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mNumFluid.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
+inline unsigned int FluidDistributedMixtureData::getNumFluid() const
 {
     return mNumFluid;
 }
@@ -261,7 +261,7 @@ inline unsigned int GunnsFluidDistributedMixtureData::getNumFluid() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mNumTc.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline unsigned int GunnsFluidDistributedMixtureData::getNumTc() const
+inline unsigned int FluidDistributedMixtureData::getNumTc() const
 {
     return mNumTc;
 }
@@ -269,7 +269,7 @@ inline unsigned int GunnsFluidDistributedMixtureData::getNumTc() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Returns the value of mDemandLimitGain.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double GunnsFluidDistributed2WayBus::getDemandLimitGain() const
+inline double Distributed2WayBusFluid::getDemandLimitGain() const
 {
     return mDemandLimitGain;
 }

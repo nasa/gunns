@@ -1,22 +1,22 @@
 /**
-@file     GunnsFluidDistributed2WayBus.cpp
-@brief    GUNNS Fluid Distributed 2-Way Bus Interface implementation
+@file     Distributed2WayBusFluid.cpp
+@brief    Fluid Distributed 2-Way Bus Interface implementation
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
-   ()
+  ((interop/Distributed2WayBusBase.o))
 */
 
-#include "GunnsFluidDistributed2WayBus.hh"
+#include "Distributed2WayBusFluid.hh"
 #include <cfloat>
 #include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this distributed fluid mixture data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedMixtureData::GunnsFluidDistributedMixtureData()
+FluidDistributedMixtureData::FluidDistributedMixtureData()
     :
     mEnergy(0.0),
     mMoleFractions(0),
@@ -30,7 +30,7 @@ GunnsFluidDistributedMixtureData::GunnsFluidDistributedMixtureData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this distributed fluid mixture data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedMixtureData::~GunnsFluidDistributedMixtureData()
+FluidDistributedMixtureData::~FluidDistributedMixtureData()
 {
     if (mTcMoleFractions) {
         delete [] mTcMoleFractions;
@@ -53,7 +53,7 @@ GunnsFluidDistributedMixtureData::~GunnsFluidDistributedMixtureData()
 ///           arrays, which are not resized.  This doesn't assume the objects have been initialized,
 ///           so we avoid setting or referencing mixture arrays that haven't been allocated.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributedMixtureData& GunnsFluidDistributedMixtureData::operator =(const GunnsFluidDistributedMixtureData& that)
+FluidDistributedMixtureData& FluidDistributedMixtureData::operator =(const FluidDistributedMixtureData& that)
 {
     if (this != &that) {
         mEnergy = that.mEnergy;
@@ -76,7 +76,7 @@ GunnsFluidDistributedMixtureData& GunnsFluidDistributedMixtureData::operator =(c
 ///           virtual and the name argument exists to support derived types needing to allocate the
 ///           mixture arrays using a specific sim memory manager.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::initialize(const unsigned int nBulk,
+void FluidDistributedMixtureData::initialize(const unsigned int nBulk,
                                                   const unsigned int nTc,
                                                   const std::string& name __attribute__((unused)))
 {
@@ -114,7 +114,7 @@ void GunnsFluidDistributedMixtureData::initialize(const unsigned int nBulk,
 ///           array can be larger or smaller than our internal array.  If our array is larger, then
 ///           the remaining values in the our array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::setMoleFractions(const double* fractions, const unsigned int size)
+void FluidDistributedMixtureData::setMoleFractions(const double* fractions, const unsigned int size)
 {
     const unsigned int smallerSize = std::min(mNumFluid, size);
     for (unsigned int i=0; i<smallerSize; ++i) {
@@ -133,7 +133,7 @@ void GunnsFluidDistributedMixtureData::setMoleFractions(const double* fractions,
 ///           array can be larger or smaller than our internal array.  If our array is larger, then
 ///           the remaining values in the our array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::setTcMoleFractions(const double* fractions, const unsigned int size)
+void FluidDistributedMixtureData::setTcMoleFractions(const double* fractions, const unsigned int size)
 {
     const unsigned int smallerSize = std::min(mNumTc, size);
     for (unsigned int i=0; i<smallerSize; ++i) {
@@ -152,7 +152,7 @@ void GunnsFluidDistributedMixtureData::setTcMoleFractions(const double* fraction
 ///           array can be larger or smaller than our internal array.  If our array is smaller, then
 ///           the remaining values in the given array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::getMoleFractions(double* fractions, const unsigned int size) const
+void FluidDistributedMixtureData::getMoleFractions(double* fractions, const unsigned int size) const
 {
     const unsigned int smallerSize = std::min(mNumFluid, size);
     for (unsigned int i=0; i<smallerSize; ++i) {
@@ -171,7 +171,7 @@ void GunnsFluidDistributedMixtureData::getMoleFractions(double* fractions, const
 ///           array can be larger or smaller than our internal array.  If our array is smaller, then
 ///           the remaining values in the given array are filled with zeroes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedMixtureData::getTcMoleFractions(double* fractions, const unsigned int size) const
+void FluidDistributedMixtureData::getTcMoleFractions(double* fractions, const unsigned int size) const
 {
     const unsigned int smallerSize = std::min(mNumTc, size);
     for (unsigned int i=0; i<smallerSize; ++i) {
@@ -185,9 +185,9 @@ void GunnsFluidDistributedMixtureData::getTcMoleFractions(double* fractions, con
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this distributed fluid state data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFluidState::GunnsFluidDistributed2WayBusFluidState()
+Distributed2WayBusFluidFluidState::Distributed2WayBusFluidFluidState()
     :
-    GunnsFluidDistributedMixtureData(),
+    FluidDistributedMixtureData(),
     mPressure(0.0)
 {
     // nothing to do
@@ -196,7 +196,7 @@ GunnsFluidDistributed2WayBusFluidState::GunnsFluidDistributed2WayBusFluidState()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this distributed fluid state data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFluidState::~GunnsFluidDistributed2WayBusFluidState()
+Distributed2WayBusFluidFluidState::~Distributed2WayBusFluidFluidState()
 {
     // nothing to do
 }
@@ -206,10 +206,10 @@ GunnsFluidDistributed2WayBusFluidState::~GunnsFluidDistributed2WayBusFluidState(
 ///
 /// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFluidState& GunnsFluidDistributed2WayBusFluidState::operator =(const GunnsFluidDistributed2WayBusFluidState& that)
+Distributed2WayBusFluidFluidState& Distributed2WayBusFluidFluidState::operator =(const Distributed2WayBusFluidFluidState& that)
 {
     if (this != &that) {
-        GunnsFluidDistributedMixtureData::operator = (that);
+        FluidDistributedMixtureData::operator = (that);
         mPressure = that.mPressure;
     }
     return *this;
@@ -218,9 +218,9 @@ GunnsFluidDistributed2WayBusFluidState& GunnsFluidDistributed2WayBusFluidState::
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this distributed flow state data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFlowState::GunnsFluidDistributed2WayBusFlowState()
+Distributed2WayBusFluidFlowState::Distributed2WayBusFluidFlowState()
     :
-    GunnsFluidDistributedMixtureData(),
+    FluidDistributedMixtureData(),
     mFlowRate(0.0)
 {
     // nothing to do
@@ -229,7 +229,7 @@ GunnsFluidDistributed2WayBusFlowState::GunnsFluidDistributed2WayBusFlowState()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this distributed flow state data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFlowState::~GunnsFluidDistributed2WayBusFlowState()
+Distributed2WayBusFluidFlowState::~Distributed2WayBusFluidFlowState()
 {
     // nothing to do
 }
@@ -239,10 +239,10 @@ GunnsFluidDistributed2WayBusFlowState::~GunnsFluidDistributed2WayBusFlowState()
 ///
 /// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusFlowState& GunnsFluidDistributed2WayBusFlowState::operator =(const GunnsFluidDistributed2WayBusFlowState& that)
+Distributed2WayBusFluidFlowState& Distributed2WayBusFluidFlowState::operator =(const Distributed2WayBusFluidFlowState& that)
 {
     if (this != &that) {
-        GunnsFluidDistributedMixtureData::operator = (that);
+        FluidDistributedMixtureData::operator = (that);
         mFlowRate = that.mFlowRate;
     }
     return *this;
@@ -251,10 +251,10 @@ GunnsFluidDistributed2WayBusFlowState& GunnsFluidDistributed2WayBusFlowState::op
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Fluid Distributed 2-Way Bus interface data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusInterfaceData::GunnsFluidDistributed2WayBusInterfaceData()
+Distributed2WayBusFluidInterfaceData::Distributed2WayBusFluidInterfaceData()
     :
-    GunnsFluidDistributedMixtureData(),
-    GunnsDistributed2WayBusBaseInterfaceData(),
+    FluidDistributedMixtureData(),
+    Distributed2WayBusBaseInterfaceData(),
     mCapacitance(0.0),
     mSource(0.0)
 {
@@ -264,7 +264,7 @@ GunnsFluidDistributed2WayBusInterfaceData::GunnsFluidDistributed2WayBusInterface
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this Fluid Distributed 2-Way Bus interface data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusInterfaceData::~GunnsFluidDistributed2WayBusInterfaceData()
+Distributed2WayBusFluidInterfaceData::~Distributed2WayBusFluidInterfaceData()
 {
     // nothing to do
 }
@@ -274,11 +274,11 @@ GunnsFluidDistributed2WayBusInterfaceData::~GunnsFluidDistributed2WayBusInterfac
 ///
 /// @details  Assigns values of this object's attributes to the given object's values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBusInterfaceData& GunnsFluidDistributed2WayBusInterfaceData::operator =(const GunnsFluidDistributed2WayBusInterfaceData& that)
+Distributed2WayBusFluidInterfaceData& Distributed2WayBusFluidInterfaceData::operator =(const Distributed2WayBusFluidInterfaceData& that)
 {
     if (this != &that) {
-        GunnsDistributed2WayBusBaseInterfaceData::operator = (that);
-        GunnsFluidDistributedMixtureData::operator = (that);
+        Distributed2WayBusBaseInterfaceData::operator = (that);
+        FluidDistributedMixtureData::operator = (that);
         mCapacitance = that.mCapacitance;
         mSource      = that.mSource;
     }
@@ -291,7 +291,7 @@ GunnsFluidDistributed2WayBusInterfaceData& GunnsFluidDistributed2WayBusInterface
 /// @details  Checks for all of the following conditions to be met:  Frame count > 0, energy > 0,
 ///           capacitance >= 0, pressure >= 0 (only in Supply mode), and all mixture fractions >= 0.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidDistributed2WayBusInterfaceData::hasValidData() const
+bool Distributed2WayBusFluidInterfaceData::hasValidData() const
 {
     if (mFrameCount < 1 or mEnergy <= 0.0 or mCapacitance < 0.0 or (mSource < 0.0 and not mDemandMode)) {
         return false;
@@ -311,18 +311,18 @@ bool GunnsFluidDistributed2WayBusInterfaceData::hasValidData() const
 
 /// @details  Upper limit of ratio of Supply-side capacitance over Demand-side capacitance, above
 ///           which the stability filter imposes no limit on Demand-side flow rate.
-const double GunnsFluidDistributed2WayBus::mModingCapacitanceRatio = 1.25;
+const double Distributed2WayBusFluid::mModingCapacitanceRatio = 1.25;
 /// @details  Constant in the lag gain equation: lag_gain = 1.5 * 0.75^lag_frames
-const double GunnsFluidDistributed2WayBus::mDemandFilterConstA = 1.5;
+const double Distributed2WayBusFluid::mDemandFilterConstA = 1.5;
 /// @details  Constant in the lag gain equation: lag_gain = 1.5 * 0.75^lag_frames
-const double GunnsFluidDistributed2WayBus::mDemandFilterConstB = 0.75;
+const double Distributed2WayBusFluid::mDemandFilterConstB = 0.75;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Fluid Distributed 2-Way Bus Interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBus::GunnsFluidDistributed2WayBus()
+Distributed2WayBusFluid::Distributed2WayBusFluid()
     :
-    GunnsDistributed2WayBusBase(&mInData, &mOutData),
+    Distributed2WayBusBase(&mInData, &mOutData),
     mInData                (),
     mOutData               (),
     mDemandLimitGain       (0.0),
@@ -334,7 +334,7 @@ GunnsFluidDistributed2WayBus::GunnsFluidDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default destructs this Fluid Distributed 2-Way Bus Interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidDistributed2WayBus::~GunnsFluidDistributed2WayBus()
+Distributed2WayBusFluid::~Distributed2WayBusFluid()
 {
     // nothing to do
 }
@@ -346,7 +346,7 @@ GunnsFluidDistributed2WayBus::~GunnsFluidDistributed2WayBus()
 ///
 /// @details  Initializes this Fluid Distributed 2-Way Bus Interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
+void Distributed2WayBusFluid::initialize(const bool         isPairMaster,
                                               const unsigned int nIfBulk,
                                               const unsigned int nIfTc)
 {
@@ -355,7 +355,7 @@ void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
     mOutData.initialize(nIfBulk, nIfTc);
 
     /// - Initialize remaining state variables.
-    GunnsDistributed2WayBusBase::initialize(isPairMaster);
+    Distributed2WayBusBase::initialize(isPairMaster);
     mDemandLimitGain     = 0.0;
     mDemandLimitFlowRate = 0.0;
 }
@@ -370,10 +370,10 @@ void GunnsFluidDistributed2WayBus::initialize(const bool         isPairMaster,
 /// @note  This should only be called when this interface is in the Supply role, and this will push
 ///        a warning notification if called in the Demand role.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::setFluidState(const GunnsFluidDistributed2WayBusFluidState& fluid)
+void Distributed2WayBusFluid::setFluidState(const Distributed2WayBusFluidFluidState& fluid)
 {
     if (isInDemandRole()) {
-        pushNotification(GunnsDistributed2WayBusNotification::WARN,
+        pushNotification(Distributed2WayBusNotification::WARN,
                 "setFluidState was called when in the Demand role.");
     } else {
         mOutData.mSource = fluid.mPressure;
@@ -397,7 +397,7 @@ void GunnsFluidDistributed2WayBus::setFluidState(const GunnsFluidDistributed2Way
 ///        briefly during run start or role swaps.  The returned bool value indicates whether the
 ///        supplied fluid state object was updated.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidDistributed2WayBus::getFluidState(GunnsFluidDistributed2WayBusFluidState& fluid) const
+bool Distributed2WayBusFluid::getFluidState(Distributed2WayBusFluidFluidState& fluid) const
 {
     if (isInDemandRole() and mInData.hasValidData() and not mInData.mDemandMode) {
         fluid.mPressure = mInData.mSource;
@@ -422,10 +422,10 @@ bool GunnsFluidDistributed2WayBus::getFluidState(GunnsFluidDistributed2WayBusFlu
 /// @note  This should only be called when this interface is in the Supply role, and this will push
 ///        a warning notification if called in the Demand role.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::setFlowState(const GunnsFluidDistributed2WayBusFlowState& flow)
+void Distributed2WayBusFluid::setFlowState(const Distributed2WayBusFluidFlowState& flow)
 {
     if (not isInDemandRole()) {
-        pushNotification(GunnsDistributed2WayBusNotification::WARN,
+        pushNotification(Distributed2WayBusNotification::WARN,
                 "setFlowState was called when in the Supply role.");
     } else {
         mOutData.mSource = flow.mFlowRate;
@@ -453,7 +453,7 @@ void GunnsFluidDistributed2WayBus::setFlowState(const GunnsFluidDistributed2WayB
 ///        briefly during run start or role swaps.  The returned bool value indicates whether the
 ///        supplied flow state object was updated.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidDistributed2WayBus::getFlowState(GunnsFluidDistributed2WayBusFlowState& flow) const
+bool Distributed2WayBusFluid::getFlowState(Distributed2WayBusFluidFlowState& flow) const
 {
     if (not isInDemandRole() and mInData.hasValidData() and mInData.mDemandMode) {
         flow.mFlowRate = mInData.mSource;
@@ -469,7 +469,7 @@ bool GunnsFluidDistributed2WayBus::getFlowState(GunnsFluidDistributed2WayBusFlow
 /// @details  Processes incoming data from the other side of the interface: checks for role swaps,
 ///           and updates the frame counters and loop latency measurement.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::processInputs()
+void Distributed2WayBusFluid::processInputs()
 {
     /// - Update frame counters and loop latency measurement.
     updateFrameCounts();
@@ -487,7 +487,7 @@ void GunnsFluidDistributed2WayBus::processInputs()
 ///           capacitances of the interfacing sides.  When the Demand-side model limits its flow
 ///           rate to/from the interface volume to this limit, the interface will be stable.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-double GunnsFluidDistributed2WayBus::computeDemandLimit(const double timestep,
+double Distributed2WayBusFluid::computeDemandLimit(const double timestep,
                                                         const double demandSidePressure)
 {
     double gain      = 0.0;
@@ -518,7 +518,7 @@ double GunnsFluidDistributed2WayBus::computeDemandLimit(const double timestep,
 /// @details  Handles mode flips in response to incoming data, and the initial mode flip at run
 ///           start.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::flipModesOnInput()
+void Distributed2WayBusFluid::flipModesOnInput()
 {
     /// - Force mode swap based on the mode force flags.
     if (DEMAND == mForcedRole and not isInDemandRole()) {
@@ -547,7 +547,7 @@ void GunnsFluidDistributed2WayBus::flipModesOnInput()
 /// @details  Flips from supply to demand mode whenever the supply side capacitance drops below
 ///           some fraction of the demand side's capacitance.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::flipModesOnCapacitance()
+void Distributed2WayBusFluid::flipModesOnCapacitance()
 {
     /// - We do not check until we've been in supply mode for at least one full lag cycle.  This
     ///   prevents unwanted extra mode flips during large transients.
@@ -564,24 +564,24 @@ void GunnsFluidDistributed2WayBus::flipModesOnCapacitance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Processes flipping to Demand mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::flipToDemandMode()
+void Distributed2WayBusFluid::flipToDemandMode()
 {
     if (SUPPLY != mForcedRole) {
         mOutData.mDemandMode = true;
         mFramesSinceFlip = 0;
-        pushNotification(GunnsDistributed2WayBusNotification::INFO, "switched to Demand mode.");
+        pushNotification(Distributed2WayBusNotification::INFO, "switched to Demand mode.");
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Processes flipping to Supply mode.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::flipToSupplyMode()
+void Distributed2WayBusFluid::flipToSupplyMode()
 {
     if (DEMAND != mForcedRole) {
         mOutData.mDemandMode = false;
         mFramesSinceFlip = 0;
-        pushNotification(GunnsDistributed2WayBusNotification::INFO, "switched to Supply mode.");
+        pushNotification(Distributed2WayBusNotification::INFO, "switched to Supply mode.");
     }
 }
 
@@ -590,7 +590,7 @@ void GunnsFluidDistributed2WayBus::flipToSupplyMode()
 ///           capacitance to the given value.  Flips from Supply to Demand role if the new
 ///           capacitance is low enough, and updates the count of frames since the last mode flip.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributed2WayBus::processOutputs(const double capacitance)
+void Distributed2WayBusFluid::processOutputs(const double capacitance)
 {
     mOutData.mCapacitance = capacitance;
     if (not isInDemandRole()) {

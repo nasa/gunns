@@ -1,19 +1,19 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
 //#include <iostream>
-#include "UtGunnsElectDistributed2WayBus.hh"
+#include "UtDistributed2WayBusElect.hh"
 #include "strings/UtResult.hh"
 
 /// @details  Test identification number.
-int UtGunnsElectDistributed2WayBus::TEST_ID = 0;
+int UtDistributed2WayBusElect::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default constructor for the UtGunnsElectDistributed2WayBus class.
+/// @details  This is the default constructor for the UtDistributed2WayBusElect class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsElectDistributed2WayBus::UtGunnsElectDistributed2WayBus()
+UtDistributed2WayBusElect::UtDistributed2WayBusElect()
     :
     tArticle(0)
 {
@@ -21,9 +21,9 @@ UtGunnsElectDistributed2WayBus::UtGunnsElectDistributed2WayBus()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This is the default destructor for the UtGunnsElectDistributed2WayBus class.
+/// @details  This is the default destructor for the UtDistributed2WayBusElect class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsElectDistributed2WayBus::~UtGunnsElectDistributed2WayBus()
+UtDistributed2WayBusElect::~UtDistributed2WayBusElect()
 {
     // nothing to do
 }
@@ -31,10 +31,10 @@ UtGunnsElectDistributed2WayBus::~UtGunnsElectDistributed2WayBus()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed before each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::setUp()
+void UtDistributed2WayBusElect::setUp()
 {
     /// - Default construct the nominal test article.
-    tArticle = new FriendlyGunnsElectDistributed2WayBus;
+    tArticle = new FriendlyDistributed2WayBusElect;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -43,7 +43,7 @@ void UtGunnsElectDistributed2WayBus::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Executed after each unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::tearDown()
+void UtDistributed2WayBusElect::tearDown()
 {
     /// - Deletes for news in setUp
     delete tArticle;
@@ -52,37 +52,37 @@ void UtGunnsElectDistributed2WayBus::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for construction of the Electrical Distributed 2-Way Bus notification message.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testNotificationConstruction()
+void UtDistributed2WayBusElect::testNotificationConstruction()
 {
-    UT_RESULT_INITIAL("GUNNS Electrical Aspect Power Bus Unit Tests");
+    UT_RESULT_FIRST;
 
     /// @test Default construction.
-    GunnsDistributed2WayBusNotification defaultNotif;
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::NONE == defaultNotif.mLevel);
+    Distributed2WayBusNotification defaultNotif;
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::NONE == defaultNotif.mLevel);
     CPPUNIT_ASSERT(""                                        == defaultNotif.mMessage);
 
     /// @test Nominal construction.
-    GunnsDistributed2WayBusNotification nominalNotif(GunnsDistributed2WayBusNotification::ERR, "Error!");
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == nominalNotif.mLevel);
+    Distributed2WayBusNotification nominalNotif(Distributed2WayBusNotification::ERR, "Error!");
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::ERR == nominalNotif.mLevel);
     CPPUNIT_ASSERT("Error!"                                 == nominalNotif.mMessage);
 
     /// @test Copy construction.
-    GunnsDistributed2WayBusNotification copyNotif(nominalNotif);
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == copyNotif.mLevel);
+    Distributed2WayBusNotification copyNotif(nominalNotif);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::ERR == copyNotif.mLevel);
     CPPUNIT_ASSERT("Error!"                                 == copyNotif.mMessage);
 
     /// @test Assignment operator.
     defaultNotif = copyNotif;
-    CPPUNIT_ASSERT(GunnsDistributed2WayBusNotification::ERR == defaultNotif.mLevel);
+    CPPUNIT_ASSERT(Distributed2WayBusNotification::ERR == defaultNotif.mLevel);
     CPPUNIT_ASSERT("Error!"                                 == defaultNotif.mMessage);
 
     UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests the constructor of the GunnsElectDistributed2WayBus class.
+/// @details  Tests the constructor of the Distributed2WayBusElect class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testConstruction()
+void UtDistributed2WayBusElect::testConstruction()
 {
     UT_RESULT;
 
@@ -98,19 +98,19 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
     CPPUNIT_ASSERT(0.0F                               == tArticle->mOutData.mDemandPower);
     CPPUNIT_ASSERT(0.0F                               == tArticle->mOutData.mSupplyVoltage);
     CPPUNIT_ASSERT(false                              == tArticle->mIsPairMaster);
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::NONE == tArticle->mForcedRole);
     CPPUNIT_ASSERT(0                                  == tArticle->mSupplyDatas.size());
     CPPUNIT_ASSERT(0                                  == tArticle->mLoopLatency);
     CPPUNIT_ASSERT(0                                  == tArticle->mFramesSinceFlip);
     CPPUNIT_ASSERT(0                                  == tArticle->mNotifications.size());
 
     /// @test    New/delete for code coverage.
-    GunnsElectDistributed2WayBus* testArticle = new GunnsElectDistributed2WayBus();
+    Distributed2WayBusElect* testArticle = new Distributed2WayBusElect();
     delete testArticle;
 
     /// @test    Interface data functions.
-    GunnsElectDistributed2WayBusInterfaceData* ifData1 = new GunnsElectDistributed2WayBusInterfaceData();
-    GunnsElectDistributed2WayBusInterfaceData* ifData2 = new GunnsElectDistributed2WayBusInterfaceData();
+    Distributed2WayBusElectInterfaceData* ifData1 = new Distributed2WayBusElectInterfaceData();
+    Distributed2WayBusElectInterfaceData* ifData2 = new Distributed2WayBusElectInterfaceData();
     ifData1->mDemandMode    = true;
     ifData1->mDemandPower   = 1.0;
     ifData1->mFrameCount    = 42;
@@ -132,14 +132,14 @@ void UtGunnsElectDistributed2WayBus::testConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for Electrical Distributed 2-Way Bus Interface initialization without errors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testNominalInitialization()
+void UtDistributed2WayBusElect::testNominalInitialization()
 {
     UT_RESULT;
 
     /// @test    Adding some voltage supply interfaces.
-    GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
-    GunnsElectDistributed2WayBusSupplyData* supply2 = tArticle->createSupplyData();
-    GunnsElectDistributed2WayBusSupplyData* supply3 = tArticle->createSupplyData();
+    Distributed2WayBusElectSupplyData* supply1 = tArticle->createSupplyData();
+    Distributed2WayBusElectSupplyData* supply2 = tArticle->createSupplyData();
+    Distributed2WayBusElectSupplyData* supply3 = tArticle->createSupplyData();
 
     CPPUNIT_ASSERT(3       == tArticle->mSupplyDatas.size());
     CPPUNIT_ASSERT(supply1 == tArticle->mSupplyDatas.at(0));
@@ -159,7 +159,7 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
     CPPUNIT_ASSERT(voltage == tArticle->mOutData.mSupplyVoltage);
 
     /// @test    Initialize function as secondary side.
-    FriendlyGunnsElectDistributed2WayBus article2;
+    FriendlyDistributed2WayBusElect article2;
     article2.initialize(false, voltage);
 
     CPPUNIT_ASSERT(false   == article2.mIsPairMaster);
@@ -177,7 +177,7 @@ void UtGunnsElectDistributed2WayBus::testNominalInitialization()
 /// @details  Tests for Electrical Distributed 2-Way Bus Interface nominal initialization with
 ///           exceptions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testInitializationErrors()
+void UtDistributed2WayBusElect::testInitializationErrors()
 {
     UT_RESULT;
 
@@ -189,7 +189,7 @@ void UtGunnsElectDistributed2WayBus::testInitializationErrors()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for Electrical Distributed 2-Way Bus Interface updateFrameCounts method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testUpdateFrameCounts()
+void UtDistributed2WayBusElect::testUpdateFrameCounts()
 {
     UT_RESULT;
 
@@ -213,21 +213,21 @@ void UtGunnsElectDistributed2WayBus::testUpdateFrameCounts()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for Electrical Distributed 2-Way Bus Interface update method.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testUpdate()
+void UtDistributed2WayBusElect::testUpdate()
 {
     UT_RESULT;
 
     /// - Initialize default constructed test article with nominal initialization data.
-    GunnsElectDistributed2WayBusSupplyData* supply1 = tArticle->createSupplyData();
-    GunnsElectDistributed2WayBusSupplyData* supply2 = tArticle->createSupplyData();
+    Distributed2WayBusElectSupplyData* supply1 = tArticle->createSupplyData();
+    Distributed2WayBusElectSupplyData* supply2 = tArticle->createSupplyData();
     tArticle->initialize(true, 120.0F);
     tArticle->mOutData.mFrameCount = 43;
 
-    GunnsDistributed2WayBusNotification notif;
-    GunnsDistributed2WayBusNotification::NotificationLevel NONE =
-            GunnsDistributed2WayBusNotification::NONE;
-    GunnsDistributed2WayBusNotification::NotificationLevel INFO =
-            GunnsDistributed2WayBusNotification::INFO;
+    Distributed2WayBusNotification notif;
+    Distributed2WayBusNotification::NotificationLevel NONE =
+            Distributed2WayBusNotification::NONE;
+    Distributed2WayBusNotification::NotificationLevel INFO =
+            Distributed2WayBusNotification::INFO;
 
     /// @test    Remain in Supply mode.
     supply1->mAvailable              = true;
@@ -306,7 +306,7 @@ void UtGunnsElectDistributed2WayBus::testUpdate()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests for Electrical Distributed 2-Way Bus Interface update method with forced roles.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
+void UtDistributed2WayBusElect::testUpdateForcedRole()
 {
     UT_RESULT;
 
@@ -344,14 +344,14 @@ void UtGunnsElectDistributed2WayBus::testUpdateForcedRole()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Tests the Electrical Distributed 2-Way Bus Interface getter and setter methods.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsElectDistributed2WayBus::testAccessors()
+void UtDistributed2WayBusElect::testAccessors()
 {
     UT_RESULT;
 
     /// @test    resetForceRole()
-    tArticle->mForcedRole = GunnsElectDistributed2WayBus::SUPPLY;
+    tArticle->mForcedRole = Distributed2WayBusElect::SUPPLY;
     tArticle->resetForceRole();
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tArticle->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::NONE == tArticle->mForcedRole);
 
     /// @test    isInDemandRole()
     tArticle->mOutData.mDemandMode = true;
@@ -370,5 +370,5 @@ void UtGunnsElectDistributed2WayBus::testAccessors()
     tArticle->mInData.mSupplyVoltage = 100.0F;
     CPPUNIT_ASSERT(100.0F == tArticle->getRemoteSupply());
 
-    UT_PASS_LAST;
+    UT_PASS_FINAL;
 }

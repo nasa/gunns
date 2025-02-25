@@ -1,14 +1,14 @@
-#ifndef UtGunnsFluidDistributed2WayBus_EXISTS
-#define UtGunnsFluidDistributed2WayBus_EXISTS
+#ifndef UtDistributed2WayBusFluid_EXISTS
+#define UtDistributed2WayBusFluid_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @defgroup UT_FLUID_DISTRIBUTED_2WAY_BUS    GUNNS Fluid Distributed 2-Way Bus Interface Unit Test
-/// @ingroup  UT_GUNNS
+/// @defgroup UT_UTILS_INTEROP_FLUID_DISTRIBUTED_2WAY_BUS    Fluid Distributed 2-Way Bus Interface Unit Test
+/// @ingroup  UT_UTILS_INTEROP
 ///
-/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
-/// @details  Unit Tests for the GUNNS Fluid Distributed 2-Way Bus Interface
+/// @details  Unit Tests for the Fluid Distributed 2-Way Bus Interface
 /// @{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,55 +16,55 @@
 #include <cppunit/TestFixture.h>
 #include <iostream>
 
-#include "core/GunnsFluidDistributed2WayBus.hh"
+#include "interop/Distributed2WayBusFluid.hh"
 #include "core/test/UtGunnsFluidCapacitor.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsFluidDistributed2WayBus and befriend UtGunnsFluidDistributed2WayBus.
+/// @brief    Inherit from Distributed2WayBusFluid and befriend UtDistributed2WayBusFluid.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsFluidDistributed2WayBus : public GunnsFluidDistributed2WayBus
+class FriendlyDistributed2WayBusFluid : public Distributed2WayBusFluid
 {
     public:
-        FriendlyGunnsFluidDistributed2WayBus() {;}
-        virtual ~FriendlyGunnsFluidDistributed2WayBus() {;}
-        friend class UtGunnsFluidDistributed2WayBus;
+        FriendlyDistributed2WayBusFluid() {;}
+        virtual ~FriendlyDistributed2WayBusFluid() {;}
+        friend class UtDistributed2WayBusFluid;
         friend class UtGunnsFluidDistributedIf;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    Inherit from GunnsFluidDistributed2WayBusData and befriend UtGunnsFluidDistributed2WayBus.
+/// @brief    Inherit from Distributed2WayBusFluidData and befriend UtDistributed2WayBusFluid.
 ///
 /// @details  Class derived from the unit under test. It just has a constructor with the same
 ///           arguments as the parent and a default destructor, but it befriends the unit test case
 ///           driver class to allow it access to protected data members.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class FriendlyGunnsFluidDistributed2WayBusData : public GunnsFluidDistributed2WayBusInterfaceData
+class FriendlyDistributed2WayBusFluidData : public Distributed2WayBusFluidInterfaceData
 {
     public:
-        FriendlyGunnsFluidDistributed2WayBusData() {;}
-        virtual ~FriendlyGunnsFluidDistributed2WayBusData() {;}
-        friend class UtGunnsFluidDistributed2WayBus;
+        FriendlyDistributed2WayBusFluidData() {;}
+        virtual ~FriendlyDistributed2WayBusFluidData() {;}
+        friend class UtDistributed2WayBusFluid;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Fluid Distributed 2-Way Bus Interface unit tests.
 ////
-/// @details  This class provides the unit tests for the GunnsFluidDistributed2WayBus class within
+/// @details  This class provides the unit tests for the Distributed2WayBusFluid class within
 ///           the CPPUnit framework.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class UtGunnsFluidDistributed2WayBus: public CppUnit::TestFixture
+class UtDistributed2WayBusFluid: public CppUnit::TestFixture
 {
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        UtGunnsFluidDistributed2WayBus(const UtGunnsFluidDistributed2WayBus& that);
+        UtDistributed2WayBusFluid(const UtDistributed2WayBusFluid& that);
         /// @brief Assignment operator unavailable since declared private and not implemented.
-        UtGunnsFluidDistributed2WayBus& operator =(const UtGunnsFluidDistributed2WayBus& that);
+        UtDistributed2WayBusFluid& operator =(const UtDistributed2WayBusFluid& that);
 
-        CPPUNIT_TEST_SUITE(UtGunnsFluidDistributed2WayBus);
+        CPPUNIT_TEST_SUITE(UtDistributed2WayBusFluid);
         CPPUNIT_TEST(testDefaultConstruction);
         CPPUNIT_TEST(testInitialization);
         CPPUNIT_TEST(testProcessInputs);
@@ -73,18 +73,19 @@ class UtGunnsFluidDistributed2WayBus: public CppUnit::TestFixture
         CPPUNIT_TEST(testForceModes);
         CPPUNIT_TEST_SUITE_END();
 
-        FriendlyGunnsFluidDistributed2WayBus*  tArticle;      /**< (--) Article under test */
-        bool                                   tIsPairMaster; /**< (--) Nominal initialization data */
-        unsigned int                           tNumBulk;      /**< (--) Nominal initialization data */
-        unsigned int                           tNumTc;        /**< (--) Nominal initialization data */
-        unsigned int                           tNumIfBulk;    /**< (--) Nominal initialization data */
-        unsigned int                           tNumIfTc;      /**< (--) Nominal initialization data */
-        GunnsFluidDistributed2WayBusFluidState tFluidState;   /**< (--) Test fluid state data */
-        GunnsFluidDistributed2WayBusFlowState  tFlowState;    /**< (--) Test flow state data */
+        FriendlyDistributed2WayBusFluid*  tArticle;      /**< (--) Article under test */
+        bool                              tIsPairMaster; /**< (--) Nominal initialization data */
+        unsigned int                      tNumBulk;      /**< (--) Nominal initialization data */
+        unsigned int                      tNumTc;        /**< (--) Nominal initialization data */
+        unsigned int                      tNumIfBulk;    /**< (--) Nominal initialization data */
+        unsigned int                      tNumIfTc;      /**< (--) Nominal initialization data */
+        Distributed2WayBusFluidFluidState tFluidState;   /**< (--) Test fluid state data */
+        Distributed2WayBusFluidFlowState  tFlowState;    /**< (--) Test flow state data */
+        static int                        TEST_ID;       /**< (--) Test identification number. */
 
     public:
-        UtGunnsFluidDistributed2WayBus();
-        virtual ~UtGunnsFluidDistributed2WayBus();
+        UtDistributed2WayBusFluid();
+        virtual ~UtDistributed2WayBusFluid();
         void tearDown();
         void setUp();
         void testDefaultConstruction();

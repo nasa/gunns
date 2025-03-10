@@ -17,6 +17,7 @@
 #include "UtGunnsFluidFireSource.hh"
 #include "UtGunnsFluidMetabolic.hh"
 #include "UtGunnsFluidMetabolic2.hh"
+#include "UtGunnsFluidMetabolic3.hh"
 #include "UtGunnsFluidMultiAdsorber.hh"
 #include "UtGunnsFluidMultiSeparator.hh"
 #include "UtGunnsFluidReactor.hh"
@@ -52,6 +53,7 @@ int main(int, char**) {
     runner.addTest(UtGunnsFluidFireSource::suite());
     runner.addTest(UtGunnsFluidMetabolic::suite());
     runner.addTest(UtGunnsFluidMetabolic2::suite());
+    runner.addTest(UtGunnsFluidMetabolic3::suite());
     runner.addTest(UtGunnsFluidMultiAdsorber::suite());
     runner.addTest(UtGunnsFluidMultiSeparator::suite());
     runner.addTest(UtGunnsFluidPhaseChangeSource::suite());

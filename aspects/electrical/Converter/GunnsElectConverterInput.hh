@@ -119,14 +119,29 @@ class GunnsElectConverterInput : public GunnsBasicLink
         void setInputPower(const double inputPower);
         /// @biref  Sets the reference power for efficiency calculation.
         void setReferencePower(const double referencePower);
+        /// @brief  Returns the enabled bool.
+        bool getEnabled();
         /// @brief  Returns the input voltage.
         double getInputVoltage() const;
         /// @brief  Returns the input voltage valid flag.
         bool getInputVoltageValid() const;
+        /// @brief  Returns the malf blockage flag.
+        bool getMalfBlockageFlag() const;
         /// @brief  Returns the input under-voltage trip logic.
         GunnsTripLogic* getInputUnderVoltageTrip();
         /// @brief  Returns the input over-voltage trip logic.
         GunnsTripLogic* getInputOverVoltageTrip();
+
+        /// @brief Returns the last-calculated mConverterEfficiency.
+        inline double getConverterEfficiency() {
+            return this->mConverterEfficiency;
+        }
+
+        /// @brief Calculates what mConverterEfficiency would be at given load.
+        double getConverterEfficiencyAtLoad(double load) {
+            const double powerFraction = load / std::max(DBL_EPSILON, mReferencePower);
+            return mEfficiencyTable->get(powerFraction);
+        }
 
     protected:
         SensorAnalog*              mInputVoltageSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input voltage sensor. */
@@ -295,6 +310,16 @@ inline void GunnsElectConverterInput::setReferencePower(const double referencePo
 ///
 /// @details  Returns the value of mInputVoltage.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterInput::getEnabled()
+{
+    return mEnabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (V)  Input voltage.
+///
+/// @details  Returns the value of mInputVoltage.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsElectConverterInput::getInputVoltage() const
 {
     return mInputVoltage;
@@ -308,6 +333,16 @@ inline double GunnsElectConverterInput::getInputVoltage() const
 inline bool GunnsElectConverterInput::getInputVoltageValid() const
 {
     return mInputVoltageValid;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  Whether the malfunction blockage flag is true.
+///
+/// @details  Returns the value of mMalfBlockageFlag.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterInput::getMalfBlockageFlag() const
+{
+    return mMalfBlockageFlag;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

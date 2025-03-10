@@ -35,7 +35,7 @@ ASSUMPTIONS AND LIMITATIONS:
 ///@brief       Combustion Model Factory
 ///
 ///@details     This model creates Combustion models. The program using these models calls
-///             CombustFactory()'s sole method, and receives a pointer to the desired combustion model
+///             CombustFactory()'s solve method, and receives a pointer to the desired combustion model
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CombustFactory {

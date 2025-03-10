@@ -271,14 +271,14 @@ const double DefinedFluidProperties::mN2DensityTable[] =
              0.0,     21.5784, 42.3345, 62.2837, 81.4481, 99.8539, 117.53,  134.508, 150.818, 166.492, 181.562, 196.058, 210.012, 223.45,   // T = 696.364 K
              0.0,     20.0459, 39.3539, 57.9427, 75.8351, 93.0564, 109.633, 125.593, 140.963, 155.772, 170.044, 183.808, 197.089, 209.91 }; // T = 750.000 K
 
-/// @details  Reference: NIST Chemisty Webbook.  The temperature and pressure scales are evenly
+/// @details  Reference: NIST Chemisty Webbook.  The temperature (K) and pressure (kPa) scales are evenly
 ///           distributed.
 const double DefinedFluidProperties::mO2TemperatureScale[] =
             {160.0,   213.636, 267.273, 320.909, 374.545, 428.182, 481.818, 535.455, 589.091, 642.727, 696.364, 750.0};
 const double DefinedFluidProperties::mO2PressureScale[] =
             {0.0,     4545.45, 9090.9,  13636.4, 18181.8, 22727.3, 27272.7, 31818.2, 36363.6, 40909.1, 45454.5, 50000.0, 54545.5, 59090.9};
 const double DefinedFluidProperties::mO2DensityTable[] =
-            {0.0,     170.956, 692.903, 776.857, 824.302, 858.682, 886.107, 909.143, 929.126, 946.847, 962.817, 977.386, 990.804, 1003.26,  // T = 160.0   K
+            {0.0,     170.956, 692.903, 776.857, 824.302, 858.682, 886.107, 909.143, 929.126, 946.847, 962.817, 977.386, 990.804, 1003.26,  // T = 160.000 K
              0.0,     92.0654, 208.324, 341.79,  461.592, 550.727, 615.778, 665.461, 705.239, 738.302, 766.57,  791.267, 813.208, 832.96,   // T = 213.636 K
              0.0,     68.5238, 142.423, 219.084, 294.36,  364.204, 426.301, 480.28,  526.92,  567.372, 602.753, 634.008, 661.892, 687.0,    // T = 267.273 K
              0.0,     55.4577, 112.188, 169.001, 224.54,  277.575, 327.229, 373.05,  414.959, 453.127, 487.86,  519.515, 548.447, 574.989,  // T = 320.909 K
@@ -290,6 +290,26 @@ const double DefinedFluidProperties::mO2DensityTable[] =
              0.0,     26.886,  53.0879, 78.5789, 103.338, 127.351, 150.61,  173.115, 194.871, 215.89,  236.187, 255.781, 274.694, 292.949,  // T = 642.727 K
              0.0,     24.8079, 48.9786, 72.4994, 95.3613, 117.56,  139.094, 159.968, 180.191, 199.772, 218.727, 237.072, 254.825, 272.006,  // T = 696.364 K
              0.0,     23.0325, 45.476,  67.3262, 88.5811, 109.242, 129.311, 148.796, 167.705, 186.05,  203.843, 221.099, 237.834, 254.064}; // T = 750.000 K
+
+/// @details  Reference: NIST Chemisty Webbook.  The temperature (K) and pressure (kPa) scales are evenly
+///           distributed.
+const double DefinedFluidProperties::mCH4TemperatureScale[] =
+            {160.0,   213.636, 267.273, 320.909, 374.545, 428.182, 481.818, 535.455, 589.091, 642.727, 696.364, 750.0};
+const double DefinedFluidProperties::mCH4PressureScale[] =
+            {0.0,     4545.45, 9090.9,  13636.4, 18181.8, 22727.3, 27272.7, 31818.2, 36363.6, 40909.1, 45454.5, 50000.0, 54545.5, 59090.9};
+const double DefinedFluidProperties::mCH4DensityTable[] =
+            {0.0,    345.781, 356.898, 365.708, 373.113, 379.555, 385.288, 390.475, 395.225, 399.617, 403.709, 407.546, 411.161, 414.584,   // T = 160.000 K
+             0.0,    56.919,  195.235, 255.987, 282.365, 299.642, 312.687, 323.262, 332.206, 339.990, 346.901, 353.132, 358.816, 364.051,   // T = 213.636 K
+             0.0,    37.095,  84.084,  136.471, 180.945, 213.142, 236.626, 254.655, 269.166, 281.276, 291.663, 300.760, 308.857, 316.157,   // T = 267.273 K
+             0.0,    28.943,  60.729,  93.822,  125.686, 154.161, 178.458, 198.880, 216.110, 230.825, 243.570, 254.764, 264.717, 273.665,   // T = 320.909 K
+             0.0,    24.059,  49.038,  74.183,  98.590,  121.475, 142.362, 161.110, 177.811, 192.674, 205.941, 217.846, 228.595, 238.360,   // T = 374.545 K
+             0.0,    20.706,  41.613,  62.310,  82.377,  101.465, 119.337, 135.883, 151.092, 165.025, 177.780, 189.469, 200.208, 210.104,   // T = 428.182 K
+             0.0,    18.229,  36.351,  54.130,  71.345,  87.819,  103.429, 118.108, 131.841, 144.647, 156.571, 167.672, 178.013, 187.661,   // T = 481.818 K
+             0.0,    16.309,  32.375,  48.057,  63.230,  77.798,  91.694,  104.882, 117.351, 129.110, 140.183, 150.606, 160.417, 169.658,   // T = 535.455 K
+             0.0,    14.770,  29.240,  43.323,  56.947,  70.056,  82.615,  94.604,  106.018, 116.865, 127.160, 136.927, 146.190, 154.979,   // T = 589.091 K
+             0.0,    13.506,  26.693,  39.507,  51.904,  63.855,  75.339,  86.348,  96.880,  106.943, 116.548, 125.713, 134.457, 142.800,   // T = 642.727 K
+             0.0,    12.448,  24.575,  36.351,  47.748,  58.751,  69.350,  79.541,  89.327,  98.716,  107.716, 116.341, 124.607, 132.528,   // T = 696.364 K
+             0.0,    11.547,  22.783,  33.689,  44.252,  54.462,  64.316,  73.815,  82.963,  91.766,  100.234, 108.378, 116.209, 123.740};  // T = 750.000 K
 
 /// @details  Reference: NIST Chemisty Webbook.  The temperature and pressure scales are evenly
 ///           distributed.
@@ -559,6 +579,12 @@ DefinedFluidProperties::DefinedFluidProperties()
     ************************************************************************/
     mDensityO2Real (mO2TemperatureScale, mO2PressureScale, mO2DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
     mPressureO2Real(mO2TemperatureScale, mO2PressureScale, mO2DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
+
+    /************************************************************************
+                   Properties for methane (real-gas compressibility)
+    ************************************************************************/
+    mDensityCH4Real (mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
+    mPressureCH4Real(mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
 
     /************************************************************************
                    Properties for hydrogen (real-gas compressibility)
@@ -1003,6 +1029,19 @@ DefinedFluidProperties::DefinedFluidProperties()
                       &mSaturationTemperatureO2,   &mHeatOfVaporizationO2),
 
     /************************************************************************
+                   Properties for methane, (Real-Gas compressibility).  These are the same as the
+                   GUNNS_CH4, except the density & pressures are table look-ups that model real-gas
+                   compression.
+    ************************************************************************/
+    mPropertiesCH4Real(FluidProperties::GUNNS_CH4_REAL_GAS, FluidProperties::GAS,
+                      mMWeightCH4,                  mCriticalTemperatureCH4,
+                      &mDensityCH4Real,             &mViscosityCH4,        &mSpecificHeatCH4,
+                      &mThermalConductivityCH4,     &mPrandtlNumberCH4,    &mAdiabaticIndexCH4,
+                      &mPressureCH4Real,            &mTemperatureCH4,      &mSaturationPressureCH4,
+                      &mSaturationTemperatureCH4,   &mHeatOfVaporizationCH4),
+
+
+    /************************************************************************
                    Properties for hydrogen, (Real-Gas compressibility).  These are the same as the
                    GUNNS_H2, except the density & pressures are table look-ups that model real-gas
                    compression.
@@ -1208,38 +1247,39 @@ DefinedFluidProperties::DefinedFluidProperties()
                    &mHeatOfVaporizationN2H4)
 {
     /// - Load the fluid properties array with the pointer to the properties for each fluid type
-    mProperties[FluidProperties::GUNNS_CO]          = &mPropertiesCO;
-    mProperties[FluidProperties::GUNNS_CO2]         = &mPropertiesCO2;
-    mProperties[FluidProperties::GUNNS_H2O]         = &mPropertiesH2O;
-    mProperties[FluidProperties::GUNNS_N2]          = &mPropertiesN2;
-    mProperties[FluidProperties::GUNNS_O2]          = &mPropertiesO2;
-    mProperties[FluidProperties::GUNNS_NH3]         = &mPropertiesNH3;
-    mProperties[FluidProperties::GUNNS_H2]          = &mPropertiesH2;
-    mProperties[FluidProperties::GUNNS_CH4]         = &mPropertiesCH4;
-    mProperties[FluidProperties::GUNNS_HCL]         = &mPropertiesHCL;
-    mProperties[FluidProperties::GUNNS_HCN]         = &mPropertiesHCN;
-    mProperties[FluidProperties::GUNNS_HE]          = &mPropertiesHe;
-    mProperties[FluidProperties::GUNNS_HE_REAL_GAS] = &mPropertiesHeReal;
-    mProperties[FluidProperties::GUNNS_XE_REAL_GAS] = &mPropertiesXe;
-    mProperties[FluidProperties::GUNNS_N2_REAL_GAS] = &mPropertiesN2Real;
-    mProperties[FluidProperties::GUNNS_O2_REAL_GAS] = &mPropertiesO2Real;
-    mProperties[FluidProperties::GUNNS_H2_REAL_GAS] = &mPropertiesH2Real;
-    mProperties[FluidProperties::GUNNS_WATER]       = &mPropertiesWATER;
-    mProperties[FluidProperties::GUNNS_HFE7000]     = &mPropertiesHFE7000;
-    mProperties[FluidProperties::GUNNS_HFE7100]     = &mPropertiesHFE7100;
-    mProperties[FluidProperties::GUNNS_PG30]        = &mPropertiesPG30;
-    mProperties[FluidProperties::GUNNS_PG40]        = &mPropertiesPG40;
-    mProperties[FluidProperties::GUNNS_PG50]        = &mPropertiesPG50;
-    mProperties[FluidProperties::GUNNS_AMMONIA]     = &mPropertiesAMMONIA;
-    mProperties[FluidProperties::GUNNS_OXYGEN]      = &mPropertiesOXYGEN;
-    mProperties[FluidProperties::GUNNS_HYDROGEN]    = &mPropertiesHYDROGEN;
-    mProperties[FluidProperties::GUNNS_METHANE]     = &mPropertiesMETHANE;
-    mProperties[FluidProperties::GUNNS_NAK78]       = &mPropertiesNAK78;
-    mProperties[FluidProperties::GUNNS_GALDEN170]   = &mPropertiesGALDEN170;
-    mProperties[FluidProperties::GUNNS_WATER_PVT]   = &mPropertiesWATERPVT;
-    mProperties[FluidProperties::GUNNS_NTO]         = &mPropertiesNTO;
-    mProperties[FluidProperties::GUNNS_MMH]         = &mPropertiesMMH;
-    mProperties[FluidProperties::GUNNS_HYDRAZINE]   = &mPropertiesHYDRAZINE;
+    mProperties[FluidProperties::GUNNS_CO]           = &mPropertiesCO;
+    mProperties[FluidProperties::GUNNS_CO2]          = &mPropertiesCO2;
+    mProperties[FluidProperties::GUNNS_H2O]          = &mPropertiesH2O;
+    mProperties[FluidProperties::GUNNS_N2]           = &mPropertiesN2;
+    mProperties[FluidProperties::GUNNS_O2]           = &mPropertiesO2;
+    mProperties[FluidProperties::GUNNS_NH3]          = &mPropertiesNH3;
+    mProperties[FluidProperties::GUNNS_H2]           = &mPropertiesH2;
+    mProperties[FluidProperties::GUNNS_CH4]          = &mPropertiesCH4;
+    mProperties[FluidProperties::GUNNS_HCL]          = &mPropertiesHCL;
+    mProperties[FluidProperties::GUNNS_HCN]          = &mPropertiesHCN;
+    mProperties[FluidProperties::GUNNS_HE]           = &mPropertiesHe;
+    mProperties[FluidProperties::GUNNS_HE_REAL_GAS]  = &mPropertiesHeReal;
+    mProperties[FluidProperties::GUNNS_XE_REAL_GAS]  = &mPropertiesXe;
+    mProperties[FluidProperties::GUNNS_N2_REAL_GAS]  = &mPropertiesN2Real;
+    mProperties[FluidProperties::GUNNS_O2_REAL_GAS]  = &mPropertiesO2Real;
+    mProperties[FluidProperties::GUNNS_CH4_REAL_GAS] = &mPropertiesCH4Real;
+    mProperties[FluidProperties::GUNNS_H2_REAL_GAS]  = &mPropertiesH2Real;
+    mProperties[FluidProperties::GUNNS_WATER]        = &mPropertiesWATER;
+    mProperties[FluidProperties::GUNNS_HFE7000]      = &mPropertiesHFE7000;
+    mProperties[FluidProperties::GUNNS_HFE7100]      = &mPropertiesHFE7100;
+    mProperties[FluidProperties::GUNNS_PG30]         = &mPropertiesPG30;
+    mProperties[FluidProperties::GUNNS_PG40]         = &mPropertiesPG40;
+    mProperties[FluidProperties::GUNNS_PG50]         = &mPropertiesPG50;
+    mProperties[FluidProperties::GUNNS_AMMONIA]      = &mPropertiesAMMONIA;
+    mProperties[FluidProperties::GUNNS_OXYGEN]       = &mPropertiesOXYGEN;
+    mProperties[FluidProperties::GUNNS_HYDROGEN]     = &mPropertiesHYDROGEN;
+    mProperties[FluidProperties::GUNNS_METHANE]      = &mPropertiesMETHANE;
+    mProperties[FluidProperties::GUNNS_NAK78]        = &mPropertiesNAK78;
+    mProperties[FluidProperties::GUNNS_GALDEN170]    = &mPropertiesGALDEN170;
+    mProperties[FluidProperties::GUNNS_WATER_PVT]    = &mPropertiesWATERPVT;
+    mProperties[FluidProperties::GUNNS_NTO]          = &mPropertiesNTO;
+    mProperties[FluidProperties::GUNNS_MMH]          = &mPropertiesMMH;
+    mProperties[FluidProperties::GUNNS_HYDRAZINE]    = &mPropertiesHYDRAZINE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

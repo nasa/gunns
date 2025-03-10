@@ -148,6 +148,9 @@ class GunnsElectBatteryCell
         /// @brief   Sets and resets the cell thermal runaway malfunction.
         void   setMalfThermalRunaway(const bool flag = false, const double duration = 0.0);
 
+        /// @brief   Gets the maximum capacity of the cell.
+        double getMaxCapacity() const;
+
     protected:
         std::string mName;             /**< *o (1)      trick_chkpnt_io(**) Instance name for error messages. */
         double      mResistance;       /**<    (ohm)    trick_chkpnt_io(**) Internal resistance. */
@@ -217,6 +220,16 @@ inline void GunnsElectBatteryCell::setMalfThermalRunaway(const bool flag, const 
 {
     mMalfThermalRunawayFlag     = flag;
     mMalfThermalRunawayDuration = duration;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (A*hr) The maximum capacity of the battery.
+///
+/// @details  Returns the value of mMaxCapacity.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBatteryCell::getMaxCapacity() const
+{
+    return mMaxCapacity;
 }
 
 #endif

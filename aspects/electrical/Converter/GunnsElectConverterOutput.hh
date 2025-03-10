@@ -143,6 +143,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         double getInputPower() const;
         /// @brief  Returns the input power valid flag.
         bool getInputPowerValid() const;
+        /// @brief  Returns the malf blockage flag.
+        bool getMalfBlockageFlag() const;
         /// @brief  Returns whether the controller is in a current/voltage limiting state.
         bool getLimitingState() const;
         /// @brief  Returns the enabled flag.
@@ -155,6 +157,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputUnderVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
+        /// @brief  Returns the converter efficiency.
+        double getConverterEfficiency() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;          /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -427,7 +431,17 @@ inline bool GunnsElectConverterOutput::getInputPowerValid() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  True if the converter is in a current/voltage limiting state.
+/// @returns  bool  (--)  Whether the malfunction blockage flag is true.
+///
+/// @details  Returns the value of mMalfBlockageFlag.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterOutput::getMalfBlockageFlag() const
+{
+    return mMalfBlockageFlag;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  True if the converter is in the current/voltage limiting state.
 ///
 /// @details  Returns true if the value of mLimitState is other than NO_LIMIT.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -542,6 +556,16 @@ inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedSte
 {
     mInputPowerValid = false;
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (--) The link's mConverterEfficiency term.
+///
+/// @details  Returns the converter efficiency.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::getConverterEfficiency() const
+{
+    return mConverterEfficiency;
 }
 
 #endif

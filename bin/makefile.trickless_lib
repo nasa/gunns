@@ -204,3 +204,4 @@
 	./aspects/electrical/Diode/DiodeElect.o \
 	./aspects/electrical/FetSwitch/FetSwitch.o \
 	./aspects/electrical/FetSwitch/FetSwitchElect.o \
+	./aspects/electrical/LosslessSource/GunnsLosslessSource.o \

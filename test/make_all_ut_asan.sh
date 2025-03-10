@@ -274,6 +274,17 @@ else
 endif
 echo `grep -s 'SUMMARY' $GUNNS_HOME/$FOLDER/output/asan.log*` >> $OUT
 
+#
+set FOLDER = aspects/electrical/LosslessSource/test
+
+cd $GUNNS_HOME/$FOLDER; make clean; $UT_RECIPE;
+if ( -f $GUNNS_HOME/$FOLDER/output/unit-tests.log ) then
+    echo $FOLDER\: `grep -s -E 'OK \(*|FAILURES\!|Failures \!' $GUNNS_HOME/$FOLDER/output/unit-tests.log` >> $OUT
+else
+    echo $FOLDER\: NO TEST OUTPUT, possibly failed to build! >> $OUT
+endif
+echo `grep -s 'SUMMARY' $GUNNS_HOME/$FOLDER/output/asan.log*` >> $OUT
+
 
 ########################################################
 # test relevent folders in ms-utils

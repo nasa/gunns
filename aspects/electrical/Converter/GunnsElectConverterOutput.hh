@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -143,8 +143,6 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         double getInputPower() const;
         /// @brief  Returns the input power valid flag.
         bool getInputPowerValid() const;
-        /// @brief  Returns the malf blockage flag.
-        bool getMalfBlockageFlag() const;
         /// @brief  Returns whether the controller is in a current/voltage limiting state.
         bool getLimitingState() const;
         /// @brief  Returns the enabled flag.
@@ -428,16 +426,6 @@ inline double GunnsElectConverterOutput::getInputPower() const
 inline bool GunnsElectConverterOutput::getInputPowerValid() const
 {
     return mInputPowerValid;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  Whether the malfunction blockage flag is true.
-///
-/// @details  Returns the value of mMalfBlockageFlag.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::getMalfBlockageFlag() const
-{
-    return mMalfBlockageFlag;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_METABOLICS_3  GUNNS Improved Human Metabolics Model
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -36,8 +36,7 @@ ASSUMPTIONS AND LIMITATIONS:
 
  PROGRAMMERS:
 - (
-    (Jason Harvey) (L-3 Communications) (Initial) (2015-10)
-    (Kyle Fondon) (Axiom Space) (Update) (2023-08)
+    (Kyle Fondon) (Axiom Space) (Extending to Metabolic2 to new BVAD values.) (2023-08)
   )
 
 @{

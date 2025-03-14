@@ -137,7 +137,7 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
         double         getTemperature() const;
         /// @brief  Returns the previous pressure of tank node (kPa).
         double         getPreviousPressure() const;
-        /// @brief  Returns the density of the tank node (kg/m^3).
+        /// @brief  Returns the density of the tank node (kg/m3).
         double         getDensity() const;
         /// @brief  Returns the delta pressure/delta time.
         double         getDpdt() const;
@@ -183,7 +183,7 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
         float   mSurfaceArea;                        /**<    (m2)       trick_chkpnt_io(**) Inner surface area of tank shell */
         float   mShellRadius;                        /**<    (m)        trick_chkpnt_io(**) Distance from tank shell to center */
         double  mPreviousPressure;                   /**<    (kPa)                          Previous pressure in the node */
-        double  mDensity;                            /**<    (kg/m^3)                       Density in the node */
+        double  mDensity;                            /**<    (kg/m3)                       Density in the node */
         double  mDpdt;                               /**<    (kPa/s)                        Delta-Pressure / delta-time */
         double  mDpdtFilterGain;                     /**<    (--)       trick_chkpnt_io(**) Gain for the dP/dt filter (0-1) */
         double* mPartialPressure;                    /**<    (kPa)      trick_chkpnt_io(**) Constituent partial pressures */
@@ -273,7 +273,7 @@ inline double GunnsFluidTank::getPreviousPressure() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   double (kg/m^3) Density.
+/// @return   double (kg/m3) Density.
 ///
 /// @details  This method returns the density of the tank node.
 ////////////////////////////////////////////////////////////////////////////////////////////////////

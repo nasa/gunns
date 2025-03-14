@@ -241,6 +241,7 @@ void UtGunnsFluidTank::testDefaultConstruction()
     CPPUNIT_ASSERT(0.0   == mArticle->mHeatFluxFromShell);
     CPPUNIT_ASSERT(0.0   == mArticle->mHeatFluxToShell);
     CPPUNIT_ASSERT(0.0   == mArticle->mPreviousPressure);
+    CPPUNIT_ASSERT(0.0   == mArticle->mDensity);
     CPPUNIT_ASSERT(0.0   == mArticle->mDpdt);
     CPPUNIT_ASSERT(0.0   == mArticle->mDpdtFilterGain);
     CPPUNIT_ASSERT(0     == mArticle->mPartialPressure);
@@ -299,6 +300,7 @@ void UtGunnsFluidTank::testNominalInitialization()
     CPPUNIT_ASSERT(0.0                        == article.mHeatFluxToShell);
     CPPUNIT_ASSERT(mFluidInput0->mTemperature == article.mTemperature);
     CPPUNIT_ASSERT(mNodes[0].getPotential()   == article.mPreviousPressure);
+    CPPUNIT_ASSERT(0.0                        == article.mDensity);
     CPPUNIT_ASSERT(0.0                        == article.mDpdt);
     CPPUNIT_ASSERT(mDpdtFilterGain            == article.mDpdtFilterGain);
     CPPUNIT_ASSERT(mEditFluxTarget            == article.mEditFluxTarget);
@@ -346,6 +348,18 @@ void UtGunnsFluidTank::testAccessors()
     mArticle->mPartialPressure[1] = 7.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, mArticle->getPartialPressure()[0], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(7.0, mArticle->getPartialPressure()[1], 0.0);
+
+    /// @test    Get temperature.
+    mArticle->mTemperature = 200.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(200, mArticle->getTemperature(),   0.0);
+
+    /// @test    Get previous pressure.
+    mArticle->mPreviousPressure = 27579.03;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(27579.03, mArticle->getPreviousPressure(),   0.0);
+
+    /// @test    Get density.
+    mArticle->mDensity = 80.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(80.0, mArticle->getDensity(),   0.0);
 
     /// @test    Set temperature edit.
     mArticle->editTemperature(true, 290.0);
@@ -961,6 +975,7 @@ void UtGunnsFluidTank::testProcessOutputs()
     const double ppN2 = moleFractN2 * mNodes[0].getPotential();
     const double ppO2 = moleFractO2 * mNodes[0].getPotential();
     const double temperature = mNodes[0].getContent()->getTemperature();
+    const double density = mNodes[0].getContent()->getDensity();
 
     /// - Call the method under test and verify outputs.
     mArticle->processOutputs();
@@ -972,6 +987,7 @@ void UtGunnsFluidTank::testProcessOutputs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(ppN2,        mArticle->mPartialPressure[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(ppO2,        mArticle->mPartialPressure[1], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature, mArticle->mTemperature,        DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(density,     mArticle->mDensity,            DBL_EPSILON);
 
     UT_PASS;
 }

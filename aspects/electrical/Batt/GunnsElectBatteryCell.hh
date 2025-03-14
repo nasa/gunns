@@ -147,7 +147,6 @@ class GunnsElectBatteryCell
         void   setMalfCapacity(const bool flag = false, const double value = 0.0);
         /// @brief   Sets and resets the cell thermal runaway malfunction.
         void   setMalfThermalRunaway(const bool flag = false, const double duration = 0.0);
-
         /// @brief   Gets the maximum capacity of the cell.
         double getMaxCapacity() const;
 

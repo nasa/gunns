@@ -844,6 +844,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     article2.setSetpoint(1.0);
     CPPUNIT_ASSERT(1.0F == article2.computeCurrentControlSetpoint());
 
+    /// @test    Get the converter efficiency.
+    tArticle->mConverterEfficiency = 0.75;
+    CPPUNIT_ASSERT(0.75 == tArticle->getConverterEfficiency());
+
     UT_PASS;
 }
 

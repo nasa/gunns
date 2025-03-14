@@ -63,6 +63,7 @@ class UtGunnsElectBatteryCell: public CppUnit::TestFixture
         void testUpdateMalfBoth();
         void testUpdateMalfCapacity();
         void testUpdateMalfRunaway();
+        void testAccessors();
 
     private:
         CPPUNIT_TEST_SUITE(UtGunnsElectBatteryCell);
@@ -77,6 +78,7 @@ class UtGunnsElectBatteryCell: public CppUnit::TestFixture
         CPPUNIT_TEST(testUpdateMalfBoth);
         CPPUNIT_TEST(testUpdateMalfCapacity);
         CPPUNIT_TEST(testUpdateMalfRunaway);
+        CPPUNIT_TEST(testAccessors);
         CPPUNIT_TEST_SUITE_END();
         GunnsElectBatteryCellConfigData* tConfigData;                 /**< (--)     Pointer to nominal config data. */
         GunnsElectBatteryCellInputData*  tInputData;                  /**< (--)     Pointer to nominal input data. */

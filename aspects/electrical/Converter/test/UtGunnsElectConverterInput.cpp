@@ -671,6 +671,10 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->setEnabled(true);
     CPPUNIT_ASSERT(true == tArticle->mEnabled);
 
+    /// @test    Get the enabled flag.
+    tArticle->setEnabled(true);
+    CPPUNIT_ASSERT(true == tArticle->getEnabled());
+
     /// @test    Can set the input power.
     tArticle->setInputPower(15.0);
     CPPUNIT_ASSERT(15.0 == tArticle->mInputPower);
@@ -691,6 +695,15 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->mInputVoltageValid = true;
     CPPUNIT_ASSERT(true == tArticle->getInputVoltageValid());
 
+    /// @test    Get the converter efficiency.
+    tArticle->mConverterEfficiency = 0.6;
+    CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiency());
+    UT_PASS;
+
+    /// @test    Get the converter efficiency at load.
+    tArticle->setReferencePower(42.0);
+    const double load = 20.0;
+    CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiencyAtLoad(load));
     UT_PASS;
 }
 

@@ -521,5 +521,22 @@ void UtGunnsElectBatteryCell::testUpdateMalfRunaway()
     CPPUNIT_ASSERT(0.0 == tArticle->mRunawayPower);
     CPPUNIT_ASSERT(0.0 == tArticle->mRunawayPowerRate);
 
+    UT_PASS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Tests for GUNNS Elect Battery Cell accessors.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsElectBatteryCell::testAccessors()
+{
+    UT_RESULT;
+
+    /// - Initialize default test article with nominal initialization data.
+    tArticle->initialize(*tConfigData, *tInputData, tName);
+
+    /// @test    Get max capacity.
+    tArticle->mMaxCapacity = 4.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, tArticle->getMaxCapacity(),   0.0);
+
     UT_PASS_LAST;
 }

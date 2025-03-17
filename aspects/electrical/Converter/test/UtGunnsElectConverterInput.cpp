@@ -698,12 +698,19 @@ void UtGunnsElectConverterInput::testAccessors()
     /// @test    Get the converter efficiency.
     tArticle->mConverterEfficiency = 0.6;
     CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiency());
-    UT_PASS;
 
-    /// @test    Get the converter efficiency at load.
-    tArticle->setReferencePower(42.0);
+    /// @test    Get the converter efficiency at load before initialization.
+    CPPUNIT_ASSERT(nullptr == tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(0.0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e6), DBL_EPSILON);
+
+    /// @test    Get the converter efficiency at load after initialization.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tArticle->setReferencePower(30.0);
     const double load = 20.0;
-    CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiencyAtLoad(load));
+    CPPUNIT_ASSERT(nullptr != tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0/6.0 , tArticle->getConverterEfficiencyAtLoad(load), FLT_EPSILON);
     UT_PASS;
 }
 

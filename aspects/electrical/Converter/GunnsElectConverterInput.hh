@@ -29,7 +29,6 @@ PROGRAMMERS:
 
 @{
 */
-
 #include "core/GunnsBasicLink.hh"
 #include "aspects/electrical/TripLogic/GunnsTripLogic.hh"
 #include "core/GunnsSensorAnalogWrapper.hh"
@@ -365,6 +364,10 @@ inline double GunnsElectConverterInput::getConverterEfficiency() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsElectConverterInput::getConverterEfficiencyAtLoad(const double load) const
 {
+    if (mEfficiencyTable == nullptr) {
+        // If no efficiency table, efficiency will be 1.0 and potentially reduced my mMalfBlockageFlag
+        return this->mConverterEfficiency;
+    }
     const double powerFraction = load / std::max(DBL_EPSILON, mReferencePower);
     return mEfficiencyTable->get(powerFraction);
 }

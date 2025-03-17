@@ -287,27 +287,27 @@ void UtGunnsFluidTank::testNominalInitialization()
                                  article.mNodes[0]->getContent()->getPressure(),
                                  mTolerance);
     CPPUNIT_ASSERT(article.mNodes[0]->getMass() > 0.0);
-    CPPUNIT_ASSERT(0                          != article.mInternalFluid);
-    CPPUNIT_ASSERT(2                          == article.mNConstituents);
-    CPPUNIT_ASSERT(false                      == article.mEditPartialPressureRateFlag[1]);
-    CPPUNIT_ASSERT(0.0                        == article.mEditPartialPressureValue[1]);
-    CPPUNIT_ASSERT(0.0                        == article.mEditPartialPressureRateValue[1]);
-    CPPUNIT_ASSERT(0.0                        <  article.mPartialPressure[1]);
-    CPPUNIT_ASSERT(0.0                        <  article.mMassFraction[1]);
-    CPPUNIT_ASSERT(0.0                        <  article.mMoleFraction[1]);
-    CPPUNIT_ASSERT(mThermalDampingMass        == mNodes[0].mThermalDampingMass);
-    CPPUNIT_ASSERT(0.0                        == article.mHeatFluxFromShell);
-    CPPUNIT_ASSERT(0.0                        == article.mHeatFluxToShell);
-    CPPUNIT_ASSERT(mFluidInput0->mTemperature == article.mTemperature);
-    CPPUNIT_ASSERT(mNodes[0].getPotential()   == article.mPreviousPressure);
-    CPPUNIT_ASSERT(0.0                        == article.mDensity);
-    CPPUNIT_ASSERT(0.0                        == article.mDpdt);
-    CPPUNIT_ASSERT(mDpdtFilterGain            == article.mDpdtFilterGain);
-    CPPUNIT_ASSERT(mEditFluxTarget            == article.mEditFluxTarget);
-    CPPUNIT_ASSERT(mSurfaceArea               == article.mSurfaceArea);
-    CPPUNIT_ASSERT(mShellRadius               == article.mShellRadius);
-    CPPUNIT_ASSERT(mShellTemperature          == article.mShellTemperature);
-    CPPUNIT_ASSERT(mBiasHeatFlux              == article.mBiasHeatFlux);
+    CPPUNIT_ASSERT(0                                    != article.mInternalFluid);
+    CPPUNIT_ASSERT(2                                    == article.mNConstituents);
+    CPPUNIT_ASSERT(false                                == article.mEditPartialPressureRateFlag[1]);
+    CPPUNIT_ASSERT(0.0                                  == article.mEditPartialPressureValue[1]);
+    CPPUNIT_ASSERT(0.0                                  == article.mEditPartialPressureRateValue[1]);
+    CPPUNIT_ASSERT(0.0                                  <  article.mPartialPressure[1]);
+    CPPUNIT_ASSERT(0.0                                  <  article.mMassFraction[1]);
+    CPPUNIT_ASSERT(0.0                                  <  article.mMoleFraction[1]);
+    CPPUNIT_ASSERT(mThermalDampingMass                  == mNodes[0].mThermalDampingMass);
+    CPPUNIT_ASSERT(0.0                                  == article.mHeatFluxFromShell);
+    CPPUNIT_ASSERT(0.0                                  == article.mHeatFluxToShell);
+    CPPUNIT_ASSERT(mFluidInput0->mTemperature           == article.mTemperature);
+    CPPUNIT_ASSERT(mNodes[0].getPotential()             == article.mPreviousPressure);
+    CPPUNIT_ASSERT(mNodes[0].getContent()->getDensity() == article.mDensity);
+    CPPUNIT_ASSERT(0.0                                  == article.mDpdt);
+    CPPUNIT_ASSERT(mDpdtFilterGain                      == article.mDpdtFilterGain);
+    CPPUNIT_ASSERT(mEditFluxTarget                      == article.mEditFluxTarget);
+    CPPUNIT_ASSERT(mSurfaceArea                         == article.mSurfaceArea);
+    CPPUNIT_ASSERT(mShellRadius                         == article.mShellRadius);
+    CPPUNIT_ASSERT(mShellTemperature                    == article.mShellTemperature);
+    CPPUNIT_ASSERT(mBiasHeatFlux                        == article.mBiasHeatFlux);
 
     /// @test    Nominal initialization flag.
     CPPUNIT_ASSERT(article.mInitFlag);

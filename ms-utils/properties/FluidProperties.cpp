@@ -309,8 +309,7 @@ const double DefinedFluidProperties::mCH4DensityTable[] =
              0.0,    18.319,   36.540,   54.420,   71.734,   88.300,   103.991,  118.740,  132.530,  145.382,  157.342,  168.470,  178.831,  188.493,  // T = 479.596 K
              0.0,    16.547,   32.865,   48.801,   64.222,   79.021,   93.128,   106.502,  119.132,  131.027,  142.215,  152.731,  162.618,  171.920,  // T = 528.064 K
              0.0,    15.103,   29.914,   44.337,   58.290,   71.710,   84.555,   96.803,   108.447,  119.495,  129.965,  139.880,  149.271,  158.166,  // T = 576.532 K
-             0.0,    13.898,   27.481,   40.685,   53.459,   65.766,   77.581,   88.893,   99.700,   110.009,  119.833,  129.190,  138.101,  146.589,  // T = 625.000 K
-            };
+             0.0,    13.898,   27.481,   40.685,   53.459,   65.766,   77.581,   88.893,   99.700,   110.009,  119.833,  129.190,  138.101,  146.589}; // T = 625.000 K
 
 /// @details  Reference: NIST Chemisty Webbook.  The temperature and pressure scales are evenly
 ///           distributed.
@@ -584,8 +583,8 @@ DefinedFluidProperties::DefinedFluidProperties()
     /************************************************************************
                    Properties for methane (real-gas compressibility)
     ************************************************************************/
-    mDensityCH4Real (mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
-    mPressureCH4Real(mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 160.0, 750.0, 0.0, 59090.9),
+    mDensityCH4Real (mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 91.853, 625.0, 0.0, 59090.9),
+    mPressureCH4Real(mCH4TemperatureScale, mCH4PressureScale, mCH4DensityTable, 12, 14, 91.853, 625.0, 0.0, 59090.9),
 
     /************************************************************************
                    Properties for hydrogen (real-gas compressibility)

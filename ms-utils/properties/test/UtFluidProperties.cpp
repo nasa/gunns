@@ -959,16 +959,16 @@ void UtFluidProperties::testCH4Table()
 
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
-                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(160.0, 0.0),
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(91.853, 0.0),
                                  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(414.584,
-                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(160.0, 59090.9),
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(480.434,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(91.853, 59090.9),
                                  FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
-                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(750.0, 0.0),
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(625.0, 0.0),
                                  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(123.740,
-                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(750.0, 59090.9),
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(146.589,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(625.0, 59090.9),
                                  FLT_EPSILON);
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
@@ -1121,13 +1121,15 @@ void UtFluidProperties::testSaturationCurveConsistency()
 
     // Pick test Ts points for each fluid type in between triple & critical points.  Use all
     // unique values so we can find which fluid type fails.
-    const double temperature[] = {100.0, 200.0, 300.0, 101.0, 102.0,
-                                  202.0,  20.0, 103.0, 203.0, 204.0,
-                                    4.0,   4.0, 205.0, 106.0, 107.0,
-                                   21.0, 207.0, 308.0, 309.0, 400.0,
-                                  401.0, 402.0, 310.0,  60.0,  20.0,
-                                  150.0, 311.0, 312.0, 313.0, 314.0,
-                                  315.0, 316.0, 108.0};
+    const double temperature[] = {
+        100.0, 200.0, 300.0, 101.0, 102.0,
+        202.0, 20.0,  103.0, 203.0, 204.0,
+        4.0,   4.0,   205.0, 106.0, 107.0,
+        108.0, 21.0,  207.0, 308.0, 309.0,
+        400.0, 401.0, 402.0, 310.0,  60.0,
+        20.0,  150.0, 311.0, 312.0, 313.0,
+        314.0, 315.0, 316.0
+    };
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);

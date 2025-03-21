@@ -69,6 +69,9 @@ cd $GUNNS_HOME/$FOLDER; make clean;
 set FOLDER = aspects/electrical/UserLoad/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
+set FOLDER = aspects/electrical/LosslessSource/test
+cd $GUNNS_HOME/$FOLDER; make clean;
+
 set FOLDER = math/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 

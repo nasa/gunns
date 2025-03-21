@@ -54,12 +54,18 @@ function isNotInExcludeList {
 # Get the full environment from a tcsh shell that sourced the bin/cshrc, then
 # add quotes to the env lines so that var=bleh blah becomes var="bleh blah"
 # and replace every line ending with a ? as a delimeter
-fullTcshEnv=`tcsh -f  -c "source bin/cshrc $@; env | sed 's/=/=\"/' | sed 's/$/\"?/'"`;
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# echo $SCRIPT_DIR
+GUNNS_HOME=$( dirname -- ${SCRIPT_DIR})
+# echo "THIS IS MY ${GUNNS_HOME}"
+
+fullTcshEnv=`tcsh -f  -c "source ${SCRIPT_DIR}/cshrc $@; env | sed 's/=/=\"/' | sed 's/$/\"?/'"`;
 
 # Collapse newlines to make all variables on one line
-#echo "$fullTcshEnv"
+# echo "$fullTcshEnv"
 allOneLine=`echo $fullTcshEnv`
-#echo "alloneline $allOneLine"
+# echo "alloneline $allOneLine"
 
 # Split environment by newline and match to VAR= form
 # Then store the variable as an export line to be executed later
@@ -77,7 +83,7 @@ for line in "${ADDR[@]}"; do
    #echo "regex is $regex"
    if [[ $line =~ $regex ]]; then
        if [[ $included == 1 ]]; then
-          #echo "STORING line $line"
+         #  echo "STORING line $line"
           bashExportLines[j]="export $line"
           j=`expr $j + 1`
        fi
@@ -89,7 +95,7 @@ unset IFS
 # Now bashExportLines contains every 'export VAR="value"' line we need
 # just eval each line and walk away in slow motion like a boss
 for line in "${bashExportLines[@]}"; do
-   #echo "Evaling $line"
+   # echo "Evaling $line"
    eval $line
 done
 

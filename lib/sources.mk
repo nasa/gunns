@@ -17,6 +17,7 @@ SOURCES := \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/UserLoad/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/resistive/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/electrical/TripLogic/*.cpp) \
+ $(wildcard $(GUNNS_HOME)/aspects/electrical/LosslessSource/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/fluid/capacitor/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/fluid/conductor/*.cpp) \
  $(wildcard $(GUNNS_HOME)/aspects/fluid/fluid/*.cpp) \

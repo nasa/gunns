@@ -975,8 +975,8 @@ void UtFluidProperties::testCH4Table()
     ///       at all points.
     const double maxP = 59090.9;
     const double minP = 0.0;
-    const double maxT = 750.0;
-    const double minT = 160.0;
+    const double maxT = 625.0;
+    const double minT = 91.853;
     double maxE  = 0.0;
     double maxEP = 0.0;
     double maxET = 0.0;

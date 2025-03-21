@@ -11,19 +11,16 @@ Instructions:
 """
 
 # Standard imports
-#-
-
-# Additional imports
-import CoolProp.CoolProp as CP
-import numpy as np
-
-# Local imports
-#-
-
 import subprocess
 import re
 import argparse
 from pathlib import Path
+
+# Additional imports
+#-
+
+# Local imports
+#-
 
 # Match "Copyright 20XX" anywhere in the line
 COPYRIGHT_PATTERN = re.compile(r"(Copyright\s+)(20\d{2})")

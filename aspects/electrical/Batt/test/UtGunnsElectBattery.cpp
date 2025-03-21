@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -568,6 +568,9 @@ void UtGunnsElectBattery::testAccessors()
 
     tArticle->mCapacity = tMaxCapacity;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tMaxCapacity, tArticle->getCapacity(), DBL_EPSILON);
+
+    tArticle->mCurrent = 4.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, tArticle->getCurrent(), DBL_EPSILON);
 
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);

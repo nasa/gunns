@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -843,6 +843,10 @@ void UtGunnsElectConverterOutput::testAccessors()
     article2.mLoadResistance = 1.0;
     article2.setSetpoint(1.0);
     CPPUNIT_ASSERT(1.0F == article2.computeCurrentControlSetpoint());
+
+    /// @test    Get the converter efficiency.
+    tArticle->mConverterEfficiency = 0.75;
+    CPPUNIT_ASSERT(0.75 == tArticle->getConverterEfficiency());
 
     UT_PASS;
 }

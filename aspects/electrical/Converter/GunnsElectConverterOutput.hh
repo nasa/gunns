@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -155,6 +155,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputUnderVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
+        /// @brief  Returns the converter efficiency.
+        double getConverterEfficiency() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;          /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -427,7 +429,7 @@ inline bool GunnsElectConverterOutput::getInputPowerValid() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  True if the converter is in a current/voltage limiting state.
+/// @returns  bool  (--)  True if the converter is in the current/voltage limiting state.
 ///
 /// @details  Returns true if the value of mLimitState is other than NO_LIMIT.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -542,6 +544,16 @@ inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedSte
 {
     mInputPowerValid = false;
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (--) The link's mConverterEfficiency term.
+///
+/// @details  Returns the converter efficiency.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::getConverterEfficiency() const
+{
+    return mConverterEfficiency;
 }
 
 #endif

@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -671,6 +671,10 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->setEnabled(true);
     CPPUNIT_ASSERT(true == tArticle->mEnabled);
 
+    /// @test    Get the enabled flag.
+    tArticle->setEnabled(true);
+    CPPUNIT_ASSERT(true == tArticle->getEnabled());
+
     /// @test    Can set the input power.
     tArticle->setInputPower(15.0);
     CPPUNIT_ASSERT(15.0 == tArticle->mInputPower);
@@ -691,6 +695,22 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->mInputVoltageValid = true;
     CPPUNIT_ASSERT(true == tArticle->getInputVoltageValid());
 
+    /// @test    Get the converter efficiency.
+    tArticle->mConverterEfficiency = 0.6;
+    CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiency());
+
+    /// @test    Get the converter efficiency at load before initialization.
+    CPPUNIT_ASSERT(nullptr == tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(0.0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e6), DBL_EPSILON);
+
+    /// @test    Get the converter efficiency at load after initialization.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tArticle->setReferencePower(30.0);
+    const double load = 20.0;
+    CPPUNIT_ASSERT(nullptr != tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0/6.0 , tArticle->getConverterEfficiencyAtLoad(load), FLT_EPSILON);
     UT_PASS;
 }
 

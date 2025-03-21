@@ -1,0 +1,2 @@
+CoolProp==6.7.0
+numpy==2.2.3

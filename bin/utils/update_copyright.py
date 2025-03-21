@@ -4,6 +4,10 @@
 Purpose: Gets fluid property tables that can be loaded into FluidProperties.cpp
 Author: Sam Evani - Axiom Space - 2025
 Copyright 2025 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
+
+Instructions: 
+1) Add NASA GUNNS github master to your upstream with: git remote add upstream https://github.com/nasa/gunns.git
+2) Run this script with python update_copyright.py
 """
 
 # Standard imports
@@ -15,7 +19,6 @@ import numpy as np
 
 # Local imports
 #-
-
 
 import subprocess
 import re

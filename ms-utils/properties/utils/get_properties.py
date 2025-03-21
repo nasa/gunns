@@ -3,6 +3,7 @@
 """
 Purpose: Gets fluid property tables that can be loaded into FluidProperties.cpp
 Author: Sam Evani - Axiom Space - 2024
+Copyright 2025 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 """
 
 # Standard imports

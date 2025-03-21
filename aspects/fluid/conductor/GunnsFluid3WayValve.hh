@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_FLUID_CONDUCTOR_THREE_WAY_VALVE    Three Way Valve Model
 @ingroup   TSM_GUNNS_FLUID_CONDUCTOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details

@@ -124,8 +124,6 @@ class GunnsElectConverterInput : public GunnsBasicLink
         double getInputVoltage() const;
         /// @brief  Returns the input voltage valid flag.
         bool getInputVoltageValid() const;
-        /// @brief  Returns the malf blockage flag.
-        bool getMalfBlockageFlag() const;
         /// @brief  Returns the input under-voltage trip logic.
         GunnsTripLogic* getInputUnderVoltageTrip();
         /// @brief  Returns the input over-voltage trip logic.

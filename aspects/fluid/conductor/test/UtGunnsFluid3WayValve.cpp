@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -734,6 +734,10 @@ void UtGunnsFluid3WayValve::testAccessMethods()
     CPPUNIT_ASSERT(0.6    == tArticle->mPosition);
     CPPUNIT_ASSERT(tPathA == tArticle->getPathA());
     CPPUNIT_ASSERT(tPathB == tArticle->getPathB());
+
+    /// @test    Get position.
+    tArticle->setPosition(0.6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getPosition(),   0.0);
 
     UT_PASS_LAST;
 }

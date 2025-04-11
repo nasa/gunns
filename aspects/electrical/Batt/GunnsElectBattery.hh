@@ -8,7 +8,7 @@
 @defgroup GUNNS_ELECTRICAL_BATTERY_LINK    GUNNS Electrical Battery Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -147,6 +147,8 @@ class GunnsElectBattery: public GunnsBasicPotential
         virtual void   updateFlux(const double timeStep, const double flux);
         /// @brief   Returns the output closed-circuit voltage under load.
         virtual double getVoltage() const;
+        /// @brief   Returns the current.
+        virtual double getCurrent() const;
         /// @brief   Returns the state of charge.
         virtual double getSoc() const;
         /// @brief   Returns the capacity.
@@ -210,6 +212,16 @@ class GunnsElectBattery: public GunnsBasicPotential
 inline double GunnsElectBattery::getVoltage() const
 {
     return mVoltage;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns double (A) Output Current.
+///
+/// @details Returns the battery's output current.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBattery::getCurrent() const
+{
+    return mCurrent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 @defgroup GUNNS_ELECTRICAL_BATTERY_CELL    GUNNS Electrical Battery Cell Model
 @ingroup  GUNNS_ELECTRICAL_BATTERY
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -147,6 +147,8 @@ class GunnsElectBatteryCell
         void   setMalfCapacity(const bool flag = false, const double value = 0.0);
         /// @brief   Sets and resets the cell thermal runaway malfunction.
         void   setMalfThermalRunaway(const bool flag = false, const double duration = 0.0);
+        /// @brief   Gets the maximum capacity of the cell.
+        double getMaxCapacity() const;
 
     protected:
         std::string mName;             /**< *o (1)      trick_chkpnt_io(**) Instance name for error messages. */
@@ -217,6 +219,16 @@ inline void GunnsElectBatteryCell::setMalfThermalRunaway(const bool flag, const 
 {
     mMalfThermalRunawayFlag     = flag;
     mMalfThermalRunawayDuration = duration;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (A*hr) The maximum capacity of the battery.
+///
+/// @details  Returns the value of mMaxCapacity.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectBatteryCell::getMaxCapacity() const
+{
+    return mMaxCapacity;
 }
 
 #endif

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @defgroup  UT_GUNNS_FLUID_SOURCE   Source Unit tests
 /// @ingroup   UT_GUNNS_FLUID
-/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @details   Unit test classes for GUNNS fluid source link models.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +17,7 @@
 #include "UtGunnsFluidFireSource.hh"
 #include "UtGunnsFluidMetabolic.hh"
 #include "UtGunnsFluidMetabolic2.hh"
+#include "UtGunnsFluidMetabolic3.hh"
 #include "UtGunnsFluidMultiAdsorber.hh"
 #include "UtGunnsFluidMultiSeparator.hh"
 #include "UtGunnsFluidReactor.hh"
@@ -52,6 +53,7 @@ int main(int, char**) {
     runner.addTest(UtGunnsFluidFireSource::suite());
     runner.addTest(UtGunnsFluidMetabolic::suite());
     runner.addTest(UtGunnsFluidMetabolic2::suite());
+    runner.addTest(UtGunnsFluidMetabolic3::suite());
     runner.addTest(UtGunnsFluidMultiAdsorber::suite());
     runner.addTest(UtGunnsFluidMultiSeparator::suite());
     runner.addTest(UtGunnsFluidPhaseChangeSource::suite());

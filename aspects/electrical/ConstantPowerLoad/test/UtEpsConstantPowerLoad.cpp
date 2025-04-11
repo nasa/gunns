@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -207,6 +207,10 @@ void UtEpsConstantPowerLoad::testAccessors() {
     const bool expected = true;
     const bool returned = mArticle->isNonLinear();
     CPPUNIT_ASSERT_EQUAL(expected, returned);
+
+    /// @test    Get power draw.
+    mArticle->mPowerDraw = 20.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, mArticle->getPowerDraw(),   0.0);
 
     std::cout << "... Pass";
 }

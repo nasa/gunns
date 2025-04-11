@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_INPUT_LINK    GUNNS Electrical Converter Input Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -29,7 +29,6 @@ PROGRAMMERS:
 
 @{
 */
-
 #include "core/GunnsBasicLink.hh"
 #include "aspects/electrical/TripLogic/GunnsTripLogic.hh"
 #include "core/GunnsSensorAnalogWrapper.hh"
@@ -119,6 +118,8 @@ class GunnsElectConverterInput : public GunnsBasicLink
         void setInputPower(const double inputPower);
         /// @biref  Sets the reference power for efficiency calculation.
         void setReferencePower(const double referencePower);
+        /// @brief  Returns the enabled bool.
+        bool getEnabled() const;
         /// @brief  Returns the input voltage.
         double getInputVoltage() const;
         /// @brief  Returns the input voltage valid flag.
@@ -127,6 +128,10 @@ class GunnsElectConverterInput : public GunnsBasicLink
         GunnsTripLogic* getInputUnderVoltageTrip();
         /// @brief  Returns the input over-voltage trip logic.
         GunnsTripLogic* getInputOverVoltageTrip();
+        /// @brief Returns the last-calculated mConverterEfficiency.
+        double getConverterEfficiency() const;
+        /// @brief Calculates what mConverterEfficiency would be at given load.
+        double getConverterEfficiencyAtLoad(const double load) const;
 
     protected:
         SensorAnalog*              mInputVoltageSensor;    /**<    (1) trick_chkpnt_io(**) Pointer to the input voltage sensor. */
@@ -291,6 +296,16 @@ inline void GunnsElectConverterInput::setReferencePower(const double referencePo
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool (--) True if the converter is enabled.
+///
+/// @details  Returns the value of mEnabled.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectConverterInput::getEnabled() const
+{
+    return mEnabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @returns  double (V)  Input voltage.
 ///
 /// @details  Returns the value of mInputVoltage.
@@ -328,6 +343,31 @@ inline GunnsTripLogic* GunnsElectConverterInput::getInputUnderVoltageTrip()
 inline GunnsTripLogic* GunnsElectConverterInput::getInputOverVoltageTrip()
 {
     return &mInputOverVoltageTrip;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (%) Converter efficiency.
+///
+/// @details  Returns the last-calculated mConverterEfficiency.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterInput::getConverterEfficiency() const
+{
+    return mConverterEfficiency;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (%) Converter efficiency.
+///
+/// @details Returns what mConverterEfficiency would be at given load.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterInput::getConverterEfficiencyAtLoad(const double load) const
+{
+    if (mEfficiencyTable == nullptr) {
+        // If no efficiency table, efficiency will be 1.0 and potentially reduced my mMalfBlockageFlag
+        return this->mConverterEfficiency;
+    }
+    const double powerFraction = load / std::max(DBL_EPSILON, mReferencePower);
+    return mEfficiencyTable->get(powerFraction);
 }
 
 #endif

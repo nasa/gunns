@@ -204,6 +204,7 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
         /// @}
 
         /// @brief Enumeration of the Photovoltaic Array Shunting Regulator states.
+// pragma added to suppress warining about OFF shadowing Trick's Flag of the same name.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
         enum PvRegStates {

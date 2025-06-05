@@ -117,6 +117,7 @@ class Gunns
 
         /// @brief Enumeration of the island modes.
         //TODO maybe also have a mode where islands are pre-determined & fixed or supplied external
+// pragma added to suppress warining about OFF shadowing Trick's Flag of the same name.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
         enum IslandMode {

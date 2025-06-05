@@ -204,11 +204,14 @@ class GunnsElectPvRegShunt : public GunnsBasicLink
         /// @}
 
         /// @brief Enumeration of the Photovoltaic Array Shunting Regulator states.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
         enum PvRegStates {
             OFF = 0,    ///< Powered off or otherwise inactive.
             REG = 1,    ///< On and actively regulating output voltage and PV load.
             SAG = 2     ///< (No longer used.)
         };
+#pragma GCC diagnostic pop
 
         /// @brief Default Constructor.
         GunnsElectPvRegShunt();

@@ -450,7 +450,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
 /// @details  Computes the source effects of the link (conductance, voltage, current) based on
 ///           regulation type and limiting state.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConverterOutput::computeRegulationSources(double& conductance, double& voltage, double& current)
+void GunnsElectConverterOutput::computeRegulationSources(double& conductance, double& voltage __attribute__((unused)), double& current)
 {
     if (isVoltageRegulator()) {
         if (LIMIT_OC == mLimitState) {

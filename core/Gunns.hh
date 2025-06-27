@@ -117,11 +117,15 @@ class Gunns
 
         /// @brief Enumeration of the island modes.
         //TODO maybe also have a mode where islands are pre-determined & fixed or supplied external
+// pragma added to suppress warining about OFF shadowing Trick's Flag of the same name.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
         enum IslandMode {
             OFF     = 0, ///< Islands are not found or used in the solver.
             FIND    = 1, ///< Islands are determined & output to nodes but not used in solver.
             SOLVE   = 2  ///< Islands are decomposed separately by building new island admittance matrices.
         };
+#pragma GCC diagnostic pop
 
         /// @brief Enumeration of the valid run modes.
         enum RunMode {

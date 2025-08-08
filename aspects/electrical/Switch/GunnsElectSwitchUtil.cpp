@@ -9,6 +9,7 @@ LIBRARY DEPENDENCY:
  )
 */
 
+#include <cmath>
 #include "GunnsElectSwitchUtil.hh"
 #include "math.h"
 #include "software/exceptions/TsHsException.hh"

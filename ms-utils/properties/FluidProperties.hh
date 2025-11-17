@@ -90,29 +90,30 @@ class FluidProperties {
             GUNNS_HCL          =  8,  ///<  hydrogen chloride (ideal gas)
             GUNNS_HCN          =  9,  ///<  hydrogen cyanide (ideal gas)
             GUNNS_HE           = 10,  ///<  helium (ideal gas)
-            GUNNS_HE_REAL_GAS  = 11,  ///<  helium (real-gas compressibility)
-            GUNNS_XE_REAL_GAS  = 12,  ///<  xenon (monatomic gas) (real-gas compressibility)
-            GUNNS_N2_REAL_GAS  = 13,  ///<  nitrogen (real-gas compressibility)
-            GUNNS_O2_REAL_GAS  = 14,  ///<  oxygen (real-gas compressibility)
-            GUNNS_CH4_REAL_GAS = 15,  ///<  methane (real-gas compressibility)
-            GUNNS_H2_REAL_GAS  = 16,  ///<  hydrogen (real-gas compressibility)
-            GUNNS_WATER        = 17,  ///<  water (liquid)
-            GUNNS_HFE7000      = 18,  ///<  HFE-7000 (liquid)
-            GUNNS_HFE7100      = 19,  ///<  HFE-7100 (liquid)
-            GUNNS_PG30         = 20,  ///<  propylene glycol 30% (liquid)
-            GUNNS_PG40         = 21,  ///<  propylene glycol 40% (liquid)
-            GUNNS_PG50         = 22,  ///<  propylene glycol 50% (liquid)
-            GUNNS_AMMONIA      = 23,  ///<  ammonia (liquid)
-            GUNNS_OXYGEN       = 24,  ///<  oxygen (cryogenic liquid)
-            GUNNS_HYDROGEN     = 25,  ///<  hydrogen (cryogenic liquid)
-            GUNNS_METHANE      = 26,  ///<  methane (cryogenic liquid)
-            GUNNS_NAK78        = 27,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
-            GUNNS_GALDEN170    = 28,  ///<  Galden HT-170 (liquid)
-            GUNNS_WATER_PVT    = 29,  ///<  water (liquid with table lookup density)
-            GUNNS_NTO          = 30,  ///<  nitrogen tetroxide (liquid)
-            GUNNS_MMH          = 31,  ///<  monomethylhydrazine (liquid)
-            GUNNS_HYDRAZINE    = 32,  ///<  anhydrous hydrazine (liquid)
-            NO_FLUID           = 33   ///<  Invalid or number of fluids - Keep this last!
+            GUNNS_AR           = 11,  ///<. argon (ideal gas)
+            GUNNS_HE_REAL_GAS  = 12,  ///<  helium (real-gas compressibility)
+            GUNNS_XE_REAL_GAS  = 13,  ///<  xenon (monatomic gas) (real-gas compressibility)
+            GUNNS_N2_REAL_GAS  = 14,  ///<  nitrogen (real-gas compressibility)
+            GUNNS_O2_REAL_GAS  = 15,  ///<  oxygen (real-gas compressibility)
+            GUNNS_CH4_REAL_GAS = 16,  ///<  methane (real-gas compressibility)
+            GUNNS_H2_REAL_GAS  = 17,  ///<  hydrogen (real-gas compressibility)
+            GUNNS_WATER        = 18,  ///<  water (liquid)
+            GUNNS_HFE7000      = 19,  ///<  HFE-7000 (liquid)
+            GUNNS_HFE7100      = 20,  ///<  HFE-7100 (liquid)
+            GUNNS_PG30         = 21,  ///<  propylene glycol 30% (liquid)
+            GUNNS_PG40         = 22,  ///<  propylene glycol 40% (liquid)
+            GUNNS_PG50         = 23,  ///<  propylene glycol 50% (liquid)
+            GUNNS_AMMONIA      = 24,  ///<  ammonia (liquid)
+            GUNNS_OXYGEN       = 25,  ///<  oxygen (cryogenic liquid)
+            GUNNS_HYDROGEN     = 26,  ///<  hydrogen (cryogenic liquid)
+            GUNNS_METHANE      = 27,  ///<  methane (cryogenic liquid)
+            GUNNS_NAK78        = 28,  ///<  eutectic potassium 78% sodium 22& (liquid metal)
+            GUNNS_GALDEN170    = 29,  ///<  Galden HT-170 (liquid)
+            GUNNS_WATER_PVT    = 30,  ///<  water (liquid with table lookup density)
+            GUNNS_NTO          = 31,  ///<  nitrogen tetroxide (liquid)
+            GUNNS_MMH          = 32,  ///<  monomethylhydrazine (liquid)
+            GUNNS_HYDRAZINE    = 33,  ///<  anhydrous hydrazine (liquid)
+            NO_FLUID           = 34   ///<  Invalid or number of fluids - Keep this last!
         };
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief    Enumeration of the phases of Fluids.
@@ -345,6 +346,17 @@ class DefinedFluidProperties {
         QuadraticFit      mSaturationPressureHe;           /**< (--) He saturation pressure curve fit */
         FluidTsatFit      mSaturationTemperatureHe;        /**< (--) He saturation temperature curve fit */
         FluidHvapFit      mHeatOfVaporizationHe;           /**< (--) He heat of vaporization curve fit */
+        QuotientFit       mDensityAr;                      /**< (--) Ar density curve fit */
+        LinearFit         mViscosityAr;                    /**< (--) Ar dynamic viscosity curve fit */
+        LinearFit         mSpecificHeatAr;                 /**< (--) Ar specific heat curve fit */
+        LinearFit         mThermalConductivityAr;          /**< (--) Ar thermal conductivity curve fit */
+        LinearFit         mPrandtlNumberAr;                /**< (--) Ar prandtl number curve fit */
+        LinearFit         mAdiabaticIndexAr;               /**< (--) Ar adiabatic index curve fit */
+        ProductFit        mPressureAr;                     /**< (--) Ar pressure curve fit */
+        QuadraticRootFit  mTemperatureAr;                  /**< (--) Ar temperature curve fit */
+        QuadraticFit      mSaturationPressureAr;           /**< (--) Ar saturation pressure curve fit */
+        FluidTsatFit      mSaturationTemperatureAr;        /**< (--) Ar saturation temperature curve fit */
+        FluidHvapFit      mHeatOfVaporizationAr;           /**< (--) Ar heat of vaporization curve fit */
         TsBilinearInterpolator mDensityHeReal;             /**< (--) He real-gas density table */
         TsBilinearInterpolatorReverse mPressureHeReal;     /**< (--) He real-gas pressure table */
         TsBilinearInterpolator mDensityXe;                 /**< (--) Xe density table */
@@ -525,6 +537,7 @@ class DefinedFluidProperties {
         FluidProperties   mPropertiesHCL;                  /**< (--) HCL fluid properties (ideal gas) */
         FluidProperties   mPropertiesHCN;                  /**< (--) HCN fluid properties (ideal gas) */
         FluidProperties   mPropertiesHe;                   /**< (--) He fluid properties (ideal gas) */
+        FluidProperties   mPropertiesAr;                   /**< (--) Ar fluid properties (ideal gas) */
         FluidProperties   mPropertiesHeReal;               /**< (--) He real-gas fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesXe;                   /**< (--) Xe fluid properties (real-gas compressibility) */
         FluidProperties   mPropertiesN2Real;               /**< (--) N2 real-gas fluid properties (real-gas compressibility) */
@@ -585,6 +598,7 @@ class DefinedFluidProperties {
         static const double mMWeightHCL;             /**< (1/mol) Molecular weight of HCL */
         static const double mMWeightHCN;             /**< (1/mol) Molecular weight of HCN */
         static const double mMWeightHe;              /**< (1/mol) Molecular weight of He */
+        static const double mMWeightAr;              /**< (1/mol) Molecular weight of Ar */
         static const double mMWeightXe;              /**< (1/mol) Molecular weight of Xe */
         static const double mMWeightN2O4;            /**< (1/mol) Molecular weight of N2O4 */
         static const double mMWeightN2H4;            /**< (1/mol) Molecular weight of N2H4 */
@@ -613,6 +627,7 @@ class DefinedFluidProperties {
         static const double mCriticalTemperatureHCL; /**< (K) Critical temperature of HCL */
         static const double mCriticalTemperatureHCN; /**< (K) Critical temperature of HCN */
         static const double mCriticalTemperatureHe;  /**< (K) Critical temperature of He */
+        static const double mCriticalTemperatureAr;  /**< (K) Critical temperature of Ar */
         static const double mCriticalTemperatureXe;  /**< (K) Critical temperature of Xe */
         static const double mCriticalTemperatureN2O4;    /**< (K) Critical temperature of N2O4 */
         static const double mCriticalTemperatureN2H4;    /**< (K) Critical temperature of N2H4 */

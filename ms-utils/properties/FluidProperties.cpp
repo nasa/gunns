@@ -128,6 +128,8 @@ const double DefinedFluidProperties::mMWeightHCN        = 27.0254;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightHe         = 4.002602;
 /// @details  Reference: NIST Chemistry Webbook.
+const double DefinedFluidProperties::mMWeightAr         = 39.948;
+/// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightXe         = 131.293;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mMWeightN2O4       = 92.011;
@@ -175,6 +177,8 @@ const double DefinedFluidProperties::mCriticalTemperatureHCL        = 324.68;
 const double DefinedFluidProperties::mCriticalTemperatureHCN        = 319.38;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mCriticalTemperatureHe         = 5.1953;
+/// @details  Reference: NIST Chemistry Webbook.
+const double DefinedFluidProperties::mCriticalTemperatureAr         = 150.687;
 /// @details  Reference: NIST Chemistry Webbook.
 const double DefinedFluidProperties::mCriticalTemperatureXe         = 289.733;
 /// @details  Reference: "USAF Propellant Handbooks, Nitric Acid/Nitrogen Tetroxide Oxidizers, Vol. II",
@@ -543,6 +547,22 @@ DefinedFluidProperties::DefinedFluidProperties()
     mSaturationPressureHe(4.055375, -1.930662, 0.2191484, 1.0, mCriticalTemperatureHe/2.1768),
     mSaturationTemperatureHe(4.055375, -1.930662, 0.2191484, 4.964031e0, 2.207300e2),
     mHeatOfVaporizationHe(19.800, -0.927, 0.421274, 2.1768/mCriticalTemperatureHe, 1.0),
+
+
+    /************************************************************************
+                   Properties for argon
+    ************************************************************************/
+    mDensityAr(mMWeightAr / mGasK, 83.8058, 2000.0, 1.0e-64, 1.0e+06),
+    mViscosityAr(8.2215e-6, 4.83741e-8, 83.8058, 2000.0),
+    mSpecificHeatAr(525.0021, -9.446e-3, 83.8058, 2000.0),
+    mThermalConductivityAr(6.48678e-3, 3.7819e-5, 83.8058, 2000.0),
+    mPrandtlNumberAr(6.6988e-1, -1.3235e-5, 83.8058, 2000.0),
+    mAdiabaticIndexAr(1.677, -2.06e-5, 83.8058, 2000.0),
+    mPressureAr(mGasK / mMWeightAr, 83.8058, 2000.0, 1.0e-64, 1.0e+06),
+    mTemperatureAr(525.0021, -9.446e-3, 42284.0, 1040710.0),
+    mSaturationPressureAr(5.79326396, -2.0379426, -0.0901245, 1.0, mCriticalTemperatureAr/83.8058),
+    mSaturationTemperatureAr(5.79326396, -2.0379426, -0.0901245, 68.7973, 4625.9),
+    mHeatOfVaporizationAr(1607.565, 1.58156, 1.58156, 83.8058/mCriticalTemperatureAr, 1.0),
 
 
     /************************************************************************
@@ -985,6 +1005,16 @@ DefinedFluidProperties::DefinedFluidProperties()
                   &mSaturationTemperatureHe,  &mHeatOfVaporizationHe),
 
     /************************************************************************
+                   Properties for argon (Ideal Gas)
+    ************************************************************************/
+    mPropertiesAr(FluidProperties::GUNNS_AR, FluidProperties::GAS,
+                  mMWeightAr,                 mCriticalTemperatureAr,
+                  &mDensityAr,                &mViscosityAr,       &mSpecificHeatAr,
+                  &mThermalConductivityAr,    &mPrandtlNumberAr,   &mAdiabaticIndexAr,
+                  &mPressureAr,               &mTemperatureAr,     &mSaturationPressureAr,
+                  &mSaturationTemperatureAr,  &mHeatOfVaporizationAr),
+
+    /************************************************************************
                    Properties for helium (Real-Gas compressibility)
     ************************************************************************/
     mPropertiesHeReal(FluidProperties::GUNNS_HE_REAL_GAS, FluidProperties::GAS,
@@ -1258,6 +1288,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     mProperties[FluidProperties::GUNNS_HCL]          = &mPropertiesHCL;
     mProperties[FluidProperties::GUNNS_HCN]          = &mPropertiesHCN;
     mProperties[FluidProperties::GUNNS_HE]           = &mPropertiesHe;
+    mProperties[FluidProperties::GUNNS_AR]           = &mPropertiesAr;
     mProperties[FluidProperties::GUNNS_HE_REAL_GAS]  = &mPropertiesHeReal;
     mProperties[FluidProperties::GUNNS_XE_REAL_GAS]  = &mPropertiesXe;
     mProperties[FluidProperties::GUNNS_N2_REAL_GAS]  = &mPropertiesN2Real;

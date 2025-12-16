@@ -18,7 +18,7 @@ RUN yum install -y epel-release && yum update -y
 WORKDIR /home
 
 # Use some cores
-ENV MAKEFLAGS -j4
+ENV MAKEFLAGS=-j4
 
 # Install all the packages!
 # Note we're using tk-devel as a substitute for tkinter since tkinter is not currently available
@@ -35,7 +35,6 @@ RUN yum install -y \
  git \
  glibc-devel \
  gtest-devel \
- https://github.com/jgraph/drawio-desktop/releases/download/v20.8.16/drawio-x86_64-20.8.16.rpm \
  java-11-openjdk-devel \
  lcov \
  libX11-devel \
@@ -71,6 +70,11 @@ RUN yum install -y \
  zip \
  zlib-devel
 
+# Try installing drawio with a couple different architectures
+RUN yum install -y --skip-broken \
+ https://github.com/jgraph/drawio-desktop/releases/download/v20.8.16/drawio-x86_64-20.8.16.rpm \
+ https://github.com/jgraph/drawio-desktop/releases/download/v29.0.3/drawio-aarch64-29.0.3.rpm
+
 # Clone Trick
 RUN git clone https://github.com/nasa/trick.git
 
@@ -80,7 +84,7 @@ RUN ./configure && make
 WORKDIR ..
 
 # Set environment variables, assuming GUNNS will be cloned or mapped to /home/gunns.
-ENV TRICK_HOME /home/trick
-ENV GUNNS_TRICK_HOME /home/trick
-ENV GUNNS_HOME /home/gunns
-ENV PATH "$PATH:/home/trick/bin"
+ENV TRICK_HOME=/home/trick
+ENV GUNNS_TRICK_HOME=/home/trick
+ENV GUNNS_HOME=/home/gunns
+ENV PATH="$PATH:/home/trick/bin"

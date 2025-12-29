@@ -334,7 +334,7 @@ void GunnsFluidHiFiOrifice::computeConductance(const PolyFluid* fluid0, const Po
 
     /// - Conductance from conductivity and actual throat area: fixed area (at full open) is reduced
     ///   by optional derived class open/close position scalar and blockage malfunction.
-    const double conductance = conductivity * getEffectiveArea();
+    const double conductance = mFlowTuningFactor * conductivity * getEffectiveArea();
 
     /// - Convert mass to molar conductance by average molecular weight of the inlet & exit fluids.
     ///   This avoids using the Ground node's MW since it is zero.  If both ports are on Ground

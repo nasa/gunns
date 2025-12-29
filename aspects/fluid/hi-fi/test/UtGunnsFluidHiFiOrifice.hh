@@ -36,6 +36,23 @@ inline FriendlyGunnsFluidHiFiOrifice::FriendlyGunnsFluidHiFiOrifice() : GunnsFlu
 inline FriendlyGunnsFluidHiFiOrifice::~FriendlyGunnsFluidHiFiOrifice() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from PolyFluid and befriend UtGunnsFluidHiFiOrifice.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class ArticleFriendlyPolyFluid : public PolyFluid
+{
+    public:
+        ArticleFriendlyPolyFluid();
+        virtual ~ArticleFriendlyPolyFluid();
+        friend class UtGunnsFluidHiFiOrifice;
+};
+inline ArticleFriendlyPolyFluid::ArticleFriendlyPolyFluid() : PolyFluid() {};
+inline ArticleFriendlyPolyFluid::~ArticleFriendlyPolyFluid() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Basis Conductor  unit tests.
 ////
 /// @details  This class provides the unit tests for the Base Valve within the CPPUnit framework.
@@ -88,6 +105,7 @@ class UtGunnsFluidHiFiOrifice: public CppUnit::TestFixture
         PolyFluidInputData*                         tFluidInput2;            /**< (--) Nominal input data */
         PolyFluidInputData*                         tFluidInput3;            /**< (--) Nominal input data */
         double*                                     fractions;               /**< (--) Nominal input data */
+        ArticleFriendlyPolyFluid*                   tPolyFluidBlank;         /**< (--) Blank PolyFluid for test */ 
 
     public:
         UtGunnsFluidHiFiOrifice();

@@ -1,0 +1,4 @@
+# Ignore the sim bus build products in this sim
+alloc_simbus.out
+icd_files.out
+thread_safe_bus

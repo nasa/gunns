@@ -1,4 +1,4 @@
-<mxGraphModel dx="684" dy="408" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+<mxGraphModel dx="1300" dy="815" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="FOoPTWS-CfsLpGhFDae3-1" value="Notices" parent="0" />
@@ -69,7 +69,7 @@
         <mxGeometry x="150" y="393" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
-    <object About="Liquid Displacement Pump" Ports="0=in, 1=out" c00.cycleVolume="6.944e-7" c01.driveRatio="1.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" c05.checkValveActive="false" c06.liquidType="FluidProperties::GUNNS_PG50" c07.autoCavitationDuration="10.0" c08.autoCavitationAmplitude="100.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.flowDemand="0.0" i03.motorSpeed="6000.0" i04.wallTemperature="294.261" i05.enableAutoCavitation="true" label="pump" id="PC2ZCV6VTTBZU3RU4UMU-16">
+    <object About="Liquid Displacement Pump" Ports="0=in, 1=out" c00.cycleVolume="6.5e-7" c01.driveRatio="1.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" c05.checkValveActive="false" c06.liquidType="FluidProperties::GUNNS_PG50" c07.autoCavitationDuration="10.0" c08.autoCavitationAmplitude="100.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.flowDemand="0.0" i03.motorSpeed="6000.0" i04.wallTemperature="294.261" i05.enableAutoCavitation="true" label="pump" id="PC2ZCV6VTTBZU3RU4UMU-16">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/source/GunnsLiquidDisplacementPump" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;html=1;verticalAlign=top;shape=stencil(pVTLboMwEPwaXyuCGyU9ViTtDVWKqp4dZ1Os+CXbCe3f19hEARFTaBES2hnvzqzXBuHCVkQDyjNiNVCH8Abl+YUYRvbcw7lnqgg+ZTGUREBEXt/LcueRDbOaEwoCpPPh21nouNQ6o05Qs4NrazBZgWEusnW3Lt6i7NmDzYsLqqT0bpiStsd0eF+bsKB3M1TGwtprCHBgItr6/mqjh2WMv7vsyxyZ3R9kFvNlPqbI9HtpRWfJbCfILCbI4MIjqcHhYk/o6dOoszzcNQecM21heNzqfni/75SdhCgujsrAiJsj4zwe3tRmNiuo4sr4MH6DE5TjLDwjc9CkuQ4D4koLdYFbo+t1r9PH9ICv+ZzJTv6qfwzx6n/5S/xrPuXKJrfN44n2xzY95A1GFtD4+wrADw==);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#007FFF;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="480" y="383" width="40" height="40" as="geometry" />
@@ -81,19 +81,19 @@
         <mxGeometry x="220" y="383" width="80" height="40" as="geometry" />
       </mxCell>
     </object>
-    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="500.0" i03.initialSegmentTemperature="280.0" label="chx" id="PC2ZCV6VTTBZU3RU4UMU-18">
+    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="500.0" i03.initialSegmentTemperature="280.0" label="chx" id="PC2ZCV6VTTBZU3RU4UMU-18">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=1;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="660" y="383" width="80" height="40" as="geometry" />
       </mxCell>
     </object>
-    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="2000.0" i03.initialSegmentTemperature="260.0" label="radiator" id="PC2ZCV6VTTBZU3RU4UMU-19">
+    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="2000.0" i03.initialSegmentTemperature="260.0" label="radiator" id="PC2ZCV6VTTBZU3RU4UMU-19">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=1;flipV=0;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="400" y="933" width="80" height="40" as="geometry" />
       </mxCell>
     </object>
-    <object About="3-Way Valve" Ports="0=A, 1=B, 2=out" c00.positionPathB="false" c01.maxConductivityA="5.0e-6" c02.maxConductivityB="5.0e-6" c03.expansionScaleFactorA="0.0" c04.expansionScaleFactorB="0.0" c05.thermalLengthA="0.0" c06.thermalLengthB="0.0" c07.thermalDiameterA="0.0" c08.thermalDiameterB="0.0" c09.surfaceRoughnessA="0.0" c10.surfaceRoughnessB="0.0" c11.nonMixingBand="0.0" i00.position="0.4" i01.wallTemperatureA="294.261" i02.wallTemperatureB="294.261" label="radBypassVlv" id="PC2ZCV6VTTBZU3RU4UMU-20">
+    <object About="3-Way Valve" Ports="0=A, 1=B, 2=out" c00.positionPathB="false" c01.maxConductivityA="5.0e-5" c02.maxConductivityB="5.0e-5" c03.expansionScaleFactorA="0.0" c04.expansionScaleFactorB="0.0" c05.thermalLengthA="0.0" c06.thermalLengthB="0.0" c07.thermalDiameterA="0.0" c08.thermalDiameterB="0.0" c09.surfaceRoughnessA="0.0" c10.surfaceRoughnessB="0.0" c11.nonMixingBand="0.0" i00.position="0.4" i01.wallTemperatureA="294.261" i02.wallTemperatureB="294.261" label="radBypassVlv" id="PC2ZCV6VTTBZU3RU4UMU-20">
       <gunns numPorts="3" reqPorts="0,1,2" subtype="aspects/fluid/conductor/GunnsFluid3WayValve" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rZVNb4MwDIZ/TY6rgHSh14l93HqZtp1dmo1oIUFJ1q7/fiFhU01p1YhJSCivefPYMQZCK9tAx0mRge147Qi9J0WxAyNgI71c+EgTRZbFpYKWR+XpZb1+9gq9eYODv7+C3A0e64z+5HuxdYNbqIYb4WJ0H7VV2JE+kOzOi/1Fq1or5fMQWlkUOYr7vUEoh1KBuHHnGS133ER1yPgbrQ7DasFYGZTHFNDmClD+HyChrilpcYtZExxaeeXcsdLqXRv+YfSX2k5m10HfwZPAb7jVfcf/CsdHPJkO9kuhjvwl9rOZ/mR+nsyvpbb88iP4iJYYsUxNcfQW56l+luxPLnFmhXmyH+PLmfzVTP6ow6n4kf1Cg8Jgn5lPP9dCyvgVnvwgnIx9UOPPIAg/);fontSize=12;fontColor=#000000;direction=east;rotation=90.0;flipH=0;flipV=0;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="500" y="843" width="80" height="60" as="geometry" />
@@ -105,7 +105,7 @@
         <mxGeometry x="460" y="223" width="80" height="60" as="geometry" />
       </mxCell>
     </object>
-    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="200.0" i03.initialSegmentTemperature="320.0" label="coldplate" id="PC2ZCV6VTTBZU3RU4UMU-22">
+    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="200.0" i03.initialSegmentTemperature="320.0" label="coldplate" id="PC2ZCV6VTTBZU3RU4UMU-22">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=1;flipV=0;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="660" y="853" width="80" height="40" as="geometry" />
@@ -147,7 +147,7 @@
         <mxGeometry x="490" y="323" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
-    <object About="Fluid Sensor" Ports="0=node &amp;amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" label="sensorFlowRate" id="PC2ZCV6VTTBZU3RU4UMU-29">
+    <object About="Fluid Sensor" Ports="0=node &amp;amp; +P, 1= -P" TypeLabel="F" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" label="sensorFlowRate" id="PC2ZCV6VTTBZU3RU4UMU-29">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/fluid/conductor/GunnsFluidSensor" type="Link" />
       <mxCell style="verticalLabelPosition=middle;align=left;fillColor=#FFFFFF;html=1;verticalAlign=middle;strokeWidth=1;shape=stencil(nVTRboMgFP0aH7dYWPe+uLYviy9u2TPKtZIiGKC17uuHXJtoWju7xATvuXDP4XAhoomtWAMRiZltoHARfY8IOTEjWC49THymQvA1xlCxGhDZfaVp5pGtPAruxwyU1QZnWWf0AVrB3bBcqAqMcJhtxyXpJorfPNh/NCm0Ul6I0MpOMqO8r82EchMtKRZuPEcNDgyig+TzED2vMe7G2e0jNNk/aFaP03wvoZnuZSB9iGazgGa1gIYmHpk7OJrkrDjsjT4qflOc6fvuqs3aaXh703NaZhhpUmoDd6SUQkrs3DknS62cFT/9jQlD0PFC7ngfVrhOhiVh/LMrHJwd3iGcG5H1Z9fAB8tB+v+JI3RqySVkUuwVQgWo/mwDfBrhteD8cscD/IRvwdjoRrICKi05GDuvO3h+ZW1Ah5I98As=);fontSize=12;strokeColor=#000000;fontColor=#000000;direction=east;rotation=0;flipH=0;flipV=0;labelPosition=right;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="350" y="483" width="20" height="20" as="geometry" />
@@ -581,7 +581,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="200.0" i03.initialSegmentTemperature="280.0" label="nh3BoilerHx" id="S7qu1GhojKLq7XKDBeF7-7">
+    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="200.0" i03.initialSegmentTemperature="280.0" label="nh3BoilerHx" id="S7qu1GhojKLq7XKDBeF7-7">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" type="Link" />
       <mxCell style="verticalLabelPosition=middle;align=left;fillColor=#ffffff;html=1;verticalAlign=middle;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=south;rotation=-0.0;flipH=1;flipV=0;labelPosition=right;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="260" y="653" width="40" height="80" as="geometry" />
@@ -791,54 +791,54 @@
       <gunns subtype="State" type="Fluid" />
       <mxCell style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" parent="PC2ZCV6VTTBZU3RU4UMU-2" collapsed="1" vertex="1">
         <mxGeometry x="20" y="200" width="160" height="20" as="geometry">
-          <mxRectangle x="20" y="340" width="240" height="179" as="alternateBounds" />
+          <mxRectangle x="20" y="200" width="240" height="179" as="alternateBounds" />
         </mxGeometry>
       </mxCell>
     </object>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-55" value="101.325" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="19" width="160" height="20" as="geometry" />
+      <mxGeometry y="19" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-56" value="Pressure" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-55" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-57" value="294.261" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="39" width="160" height="20" as="geometry" />
+      <mxGeometry y="39" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-58" value="Temperature" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-57" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-59" value="1.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="59" width="160" height="20" as="geometry" />
+      <mxGeometry y="59" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-60" value="Mass" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-59" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-61" value="0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=1;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="79" width="160" height="20" as="geometry" />
+      <mxGeometry y="79" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-62" value="TC State" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-61" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-63" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="99" width="160" height="20" as="geometry" />
+      <mxGeometry y="99" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-64" value="GUNNS_PG50" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-63" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-65" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="119" width="160" height="20" as="geometry" />
+      <mxGeometry y="119" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-66" value="GUNNS_N2" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-65" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-67" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="139" width="160" height="20" as="geometry" />
+      <mxGeometry y="139" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-68" value="GUNNS_NH3" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-67" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-69" value="1.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-54" vertex="1">
-      <mxGeometry y="159" width="160" height="20" as="geometry" />
+      <mxGeometry y="159" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-70" value="GUNNS_AMMONIA" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-69" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
@@ -851,50 +851,50 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <mxCell id="PC2ZCV6VTTBZU3RU4UMU-81" value="1000.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="19" width="160" height="20" as="geometry" />
+    <mxCell id="PC2ZCV6VTTBZU3RU4UMU-81" value="120.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
+      <mxGeometry y="19" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-82" value="Pressure" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-81" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-83" value="294.261" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="39" width="160" height="20" as="geometry" />
+      <mxGeometry y="39" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-84" value="Temperature" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-83" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-85" value="1.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="59" width="160" height="20" as="geometry" />
+      <mxGeometry y="59" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-86" value="Mass" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-85" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-87" value="0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=1;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="79" width="160" height="20" as="geometry" />
+      <mxGeometry y="79" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-88" value="TC State" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-87" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-89" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="99" width="160" height="20" as="geometry" />
+      <mxGeometry y="99" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-90" value="GUNNS_PG50" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-89" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-91" value="1.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="119" width="160" height="20" as="geometry" />
+      <mxGeometry y="119" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-92" value="GUNNS_N2" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-91" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-33" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="139" width="160" height="20" as="geometry" />
+      <mxGeometry y="139" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-34" value="GUNNS_NH3" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-33" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-35" value="0.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-80" vertex="1">
-      <mxGeometry y="159" width="160" height="20" as="geometry" />
+      <mxGeometry y="159" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="S7qu1GhojKLq7XKDBeF7-36" value="GUNNS_AMMONIA" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="S7qu1GhojKLq7XKDBeF7-35" connectable="0" vertex="1">
       <mxGeometry width="120" height="20" as="geometry" />
@@ -905,7 +905,7 @@
         <mxGeometry x="230" y="543" width="20" height="40" as="geometry" />
       </mxCell>
     </object>
-    <object label="contingencyOutVlv" About="Valve" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.position="0.0" i03.malfLeakThruFlag="false" i04.malfLeakThruValue="0.0" i05.wallTemperature="242.261" id="X2OrhvXz2Zr1zc7FczZz-2">
+    <object label="contingencyOutVlv" About="Valve" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.position="0.0" i03.malfLeakThruFlag="false" i04.malfLeakThruValue="0.0" i05.wallTemperature="242.261" id="X2OrhvXz2Zr1zc7FczZz-2">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidValve" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=middle;align=right;fillColor=#FFFFFF;html=1;verticalAlign=middle;strokeColor=#000000;strokeWidth=1;shape=stencil(pVTLboMwEPwaXyOCUyXXiD5uuVTN3SFuWdWske08+vddvCSKm1CBkLjsjGdn1iwIWfhKNVrkmfKNLoOQzyLPj8qB2hmCc2IqBhcZl6hqzcjbx2bzTshWmWN31gdnv/UJ9qFTAVbaQWD2xNgqdpIvIlsT2D6yKC0i+YNFnzA3PPVWgCGJAMidGzKpddCO4S7qOal+umr2FOvXMT72EAYYzQcYyYKQvmll8Wmd/nL2gPuH8RrVXuwdcaFr276Ia5w/g/eOfZEbwBv5MpUvJurHyuej7Utjvf7/SHpBqcPUhAP0qf1yov9qsD4uXc/u0M6BMfzhPlzWu5WMKP83IvAL);fontSize=12;fontColor=#000000;direction=south;labelPosition=left;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="350" y="160" width="20" height="30" as="geometry" />
@@ -960,7 +960,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="contingencyInVlv" About="Valve" Ports="0=in, 1=out" c00.maxConductivity="5.0e-6" c01.expansionScaleFactor="0.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.position="0.0" i03.malfLeakThruFlag="false" i04.malfLeakThruValue="0.0" i05.wallTemperature="242.261" id="X2OrhvXz2Zr1zc7FczZz-15">
+    <object label="contingencyInVlv" About="Valve" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.position="0.0" i03.malfLeakThruFlag="false" i04.malfLeakThruValue="0.0" i05.wallTemperature="242.261" id="X2OrhvXz2Zr1zc7FczZz-15">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidValve" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=middle;align=right;fillColor=#FFFFFF;html=1;verticalAlign=middle;strokeColor=#000000;strokeWidth=1;shape=stencil(pVTLboMwEPwaXyOCUyXXiD5uuVTN3SFuWdWske08+vddvCSKm1CBkLjsjGdn1iwIWfhKNVrkmfKNLoOQzyLPj8qB2hmCc2IqBhcZl6hqzcjbx2bzTshWmWN31gdnv/UJ9qFTAVbaQWD2xNgqdpIvIlsT2D6yKC0i+YNFnzA3PPVWgCGJAMidGzKpddCO4S7qOal+umr2FOvXMT72EAYYzQcYyYKQvmll8Wmd/nL2gPuH8RrVXuwdcaFr276Ia5w/g/eOfZEbwBv5MpUvJurHyuej7Utjvf7/SHpBqcPUhAP0qf1yov9qsD4uXc/u0M6BMfzhPlzWu5WMKP83IvAL);fontSize=12;fontColor=#000000;direction=south;labelPosition=left;" parent="PC2ZCV6VTTBZU3RU4UMU-2" vertex="1">
         <mxGeometry x="600" y="160" width="20" height="30" as="geometry" />
@@ -1023,7 +1023,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <mxCell id="PC2ZCV6VTTBZU3RU4UMU-68" value="1000.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-67" vertex="1">
+    <mxCell id="PC2ZCV6VTTBZU3RU4UMU-68" value="120.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-67" vertex="1">
       <mxGeometry y="19" width="240" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PC2ZCV6VTTBZU3RU4UMU-69" value="Pressure" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PC2ZCV6VTTBZU3RU4UMU-68" connectable="0" vertex="1">

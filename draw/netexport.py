@@ -339,16 +339,75 @@ def getPortTargetName(port, links, nodes, gnds):
 
 # Copies attributes from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
-def forceCopyAttrib(to_attr, from_attr, name):
+def forceCopyStyleAttrib(to_attr, from_attr, name):
     if name in from_attr:
         if name in to_attr:
             if to_attr[name] != from_attr[name]:
-                to_attr[name] = from_attr[name]
-                return True
+                # the style field is of the form:
+                # shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;
+
+                # convert style properties into dictionary
+                # e.g. {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
+                to_style_properties   =   to_attr[name].split(';')[0:-1]
+                from_style_properties = from_attr[name].split(';')[0:-1]
+
+                to_style_properties   = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   to_style_properties)),
+                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   to_style_properties))))
+                from_style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 , from_style_properties)),
+                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '', from_style_properties))))
+
+
+                # add default colors to master dictionary in case we need to overwrite them
+                for prop in ['strokeColor','fontColor','fillColor','swimlaneFillColor']:
+                    if prop not in from_style_properties:
+                        from_style_properties[prop] = 'default'
+
+                # remove properies from master we don't want to ever overwrite
+                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction']:
+                    if prop in from_style_properties:
+                        del from_style_properties[prop]
+
+                # loop through master style properties
+                for style_property in from_style_properties:
+                    # overwrite style property if there's a mismatch between shape and master
+                    if style_property in to_style_properties:
+                        if to_style_properties[style_property] != from_style_properties[style_property]:
+                            to_style_properties[style_property] = from_style_properties[style_property]
+                    # if style propery doesn't exist in the shape, create it
+                    else:
+                        # list of style properies we want to overwrite only if it already exists in the shape
+                        if style_property not in ['swimlaneFillColor']:
+                            to_style_properties[style_property] = from_style_properties[style_property]
+
+
+                # convert dictionary back to string
+                new_to_attr = ';'.join(list(map(lambda k: k if to_style_properties[k] == '' else k + '=' + to_style_properties[k], to_style_properties.keys()))) + ';'
+
+                # check if there was an update
+                if to_attr[name] == new_to_attr:
+                    # shape style didn't change
+                    return False
+                else:
+                    to_attr[name] = new_to_attr
+                    return True
         else:
             to_attr[name] = from_attr[name]
             return True
     return False
+
+def forceCopyAttrib(to_attr, from_attr, name):
+    if name == 'style':
+        return forceCopyStyleAttrib(to_attr, from_attr, name)
+    else:
+        if name in from_attr:
+            if name in to_attr:
+                if to_attr[name] != from_attr[name]:
+                    to_attr[name] = from_attr[name]
+                    return True
+            else:
+                to_attr[name] = from_attr[name]
+                return True
+        return False
 
 # Updates the config and input data in to_attr to match the keys in from_attr.
 # Returns True if there were any changes.
@@ -422,9 +481,11 @@ def updateLinkShapeData(link, master):
         return
     link_attr         = link.attrib
     link_gunns_attr   = link.find('./gunns').attrib
+    link_cell_attr    = link.find('./mxCell').attrib
     master_attr       = master.attrib
     master_gunns_attr = master.find('./gunns').attrib
-    # Do the forced-sync items: <object> About, Ports, <gunns> numPorts, reqPorts, <gunnsShapedata>
+    master_cell_attr  = master.find('./mxCell').attrib
+    # Do the forced-sync items: <object> About, Ports, <gunns> numPorts, reqPorts, <gunnsShapedata>, <mxCell> style
     if updateShapeDataTargets(link, master):
         print('    ' + console.note('updated shape data targets in link: ' + link_attr['label'] + '.'))
         updated = True
@@ -440,6 +501,9 @@ def updateLinkShapeData(link, master):
     if forceCopyAttrib(link_gunns_attr, master_gunns_attr, 'reqPorts'):
         print('    ' + console.note('updated shape data: reqPorts in link: ' + link_attr['label'] + '.'))
         updated = True
+    if forceCopyAttrib(link_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated shape data: style in link: ' + link_cell_attr['style'] + '.'))
+        updated = True
     # Do config & input data items
     if updateConfigInputData(link_attr, master_attr, 'link'):
         updated = True
@@ -453,18 +517,76 @@ def updateSpotterShapeData(spotter, master):
         return
     spotter_attr       = spotter.attrib
     spotter_gunns_attr = spotter.find('./gunns').attrib
+    spotter_cell_attr  = spotter.find('./mxCell').attrib
     master_attr        = master.attrib
     master_gunns_attr  = master.find('./gunns').attrib
-    # Do the forced-sync items: <object> About, <gunnsShapeData>
+    master_cell_attr   = master.find('./mxCell').attrib
+    # Do the forced-sync items: <object> About, <gunnsShapeData>, <mxCell> style
     if updateShapeDataTargets(spotter, master):
         print('    ' + console.note('updated shape data targets in spotter: ' + spotter_attr['label'] + '.'))
         updated = True
     if forceCopyAttrib(spotter_attr, master_attr, 'About'):
         print('    ' + console.note('updated shape data: About in spotter: ' + spotter_attr['label'] + '.'))
         updated = True
+    if forceCopyAttrib(spotter_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated shape data: style in spotter: ' + spotter_cell_attr['style'] + '.'))
+        updated = True
     # Do config & input data items
     if updateConfigInputData(spotter_attr, master_attr, 'spotter'):
         updated = True
+    return updated
+
+# Performs shape updates for the given shape, returns True if
+# there were any changes.
+def updateShapeData(shape, master):
+    updated = False
+    if None == master:
+        return
+    shape_attr       = shape.attrib
+    shape_cell_attr  = shape.find('./mxCell').attrib
+    master_attr      = master.attrib
+    master_cell_attr = master.find('./mxCell').attrib
+    # Do the forced-sync items: <mxCell> style
+    if forceCopyAttrib(shape_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated shape data: style in ' + shape_attr['About'] + ': ' + shape_cell_attr['style'] + '.'))
+        updated = True
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateTableData(table, master):
+    updated = False
+    if None == master:
+        return
+    table_attr       = table.attrib
+    table_cell_attr  = table.find('./mxCell').attrib
+    master_attr      = master.attrib
+    master_cell_attr = master.find('./mxCell').attrib
+    # Do the forced-sync items: <mxCell> style
+    if forceCopyAttrib(table_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated table data: style in ' + table_attr['About'] + ': ' + table_cell_attr['style'] + '.'))
+        updated = True
+
+    # update shape data for table rows, which aren't in the <object> objects but in separate floating <mxcell> objects
+    for cell in mxcells:
+        cell_attribs = cell.attrib
+        if isDescendant(cell,table,objects_and_cells):
+            cell_style = cell_attribs['style'].split(';')
+            for prop in range(len(cell_style)):
+                if 'fillColor' in cell_style[prop] and cell_style[prop] != 'fillColor=none':
+                    cell_style[prop] = 'fillColor=none'
+                elif 'strokeColor' in cell_style[prop] and cell_style[prop] != 'strokeColor=none':
+                    cell_style[prop] = 'strokeColor=none'
+                elif 'fontColor' in cell_style[prop] and cell_style[prop] != 'fontColor=default':
+                    cell_style[prop] = 'fontColor=default'
+            cell_style = ';'.join(cell_style)
+
+            if cell_style != cell_attribs['style']:
+                cell_attribs['style'] = cell_style
+
+                print('    ' + console.note('updated table row data: style in ' + table_attr['About'] + ': ' + cell_attribs['style'] + '.'))
+                updated = True
+
     return updated
 
 # Assumes obj has already been checked for a valid <gunns> type.
@@ -879,7 +1001,7 @@ for node in nodeList:
 
 # Shape data updates
 for shapeLib in shapeLibs.shapeLibs:
-    shapeLibs.loadShapeLibs(homepath + '/' + shapeLib, True)
+    shapeLibs.loadShapeLibs(homepath + '/' + shapeLib, False)
 
 # Collect a list of custom libraries needed by the links & spotters.
 customLibs = []
@@ -910,7 +1032,7 @@ if 0 < len(customLibs):
         for path in customPaths:
             libPathFile = path + '/' + customLib
             if os.path.isfile(libPathFile):
-                shapeLibs.loadShapeLibs(libPathFile, True)
+                shapeLibs.loadShapeLibs(libPathFile, False)
                 shapeLibs.shapeLibs.append(customLib)
                 missing = False
                 break
@@ -918,13 +1040,62 @@ if 0 < len(customLibs):
             print('    ' + console.warn('can\'t find custom shape library ' + customLib + '.'))
 
 allShapeMasters = shapeLibs.shapeTree.findall('./object')
+
 for link in links:
     master = shapeLibs.getLinkShapeMaster(link, allShapeMasters)
     if updateLinkShapeData(link, master) or cleanLabel(link):
         contentsUpdated = True
+
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
     if updateSpotterShapeData(spotter, master) or cleanLabel(spotter):
+        contentsUpdated = True
+
+master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
+for netContainer in netConfig:
+    if updateShapeData(netContainer, master) or cleanLabel(netContainer):
+        contentsUpdated = True
+
+for interface in subNetIfs:
+    master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(interface),shapeLibs.getShapeSubtype(interface))
+    if updateShapeData(interface, master) or cleanLabel(interface):
+        contentsUpdated = True
+
+if basic_network:
+    for netNode in netNodes:
+        master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Basic','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
+        if updateShapeData(netNode, master) or cleanLabel(netNode):
+            contentsUpdated = True
+
+if fluid_network:
+    for netNode in netNodes:
+        master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Fluid','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
+        if updateShapeData(netNode, master) or cleanLabel(netNode):
+            contentsUpdated = True
+
+for refNode in refNodes:
+    master = shapeLibs.getRefNodeShapeMaster(allShapeMasters,'Reference','(Vent)' in refNode.attrib['About'])
+    if updateShapeData(refNode, master) or cleanLabel(refNode):
+        contentsUpdated = True
+
+master = shapeLibs.getGroundShapeMaster(allShapeMasters)
+for gndNode in gndNodes:
+    if updateShapeData(gndNode, master) or cleanLabel(gndNode):
+        contentsUpdated = True
+
+master = shapeLibs.getPortShapeMaster(allShapeMasters,'0')
+for port in ports:
+    if updateShapeData(port, master) or cleanLabel(port):
+        contentsUpdated = True
+
+for textBox in doxNotices+doxCopyrights+doxLicenses+doxData:
+    master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(textBox),shapeLibs.getShapeSubtype(textBox))
+    if updateShapeData(textBox, master):
+        contentsUpdated = True
+
+for table in doxReferences+doxAssumptions+extFluidConfigs+intFluidConfigs+fluidStates+intTcConfigs+tcStates+dataTables+rxnReactions+rxnCompounds+socketLists:
+    master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(table),shapeLibs.getShapeSubtype(table))
+    if updateTableData(table, master):
         contentsUpdated = True
 
 # Check the port connections, each must connect between a node and a link.
@@ -1057,7 +1228,7 @@ for link in links:
                  port_map[port_number] = node.attrib['label']
     port_maps.append(port_map)
 
-# Update the sub-network interface containers with link connections to Ground nodes and nuber of sub-network nodes.
+# Update the sub-network interface containers with link connections to Ground nodes and number of sub-network nodes.
 # In the super-network, the only ports that will be moved are those that connect to Ground nodes in the sub-network interface.
 updatedSubNetIfsNodeCount = False
 updatedSubNetIfLabels     = []

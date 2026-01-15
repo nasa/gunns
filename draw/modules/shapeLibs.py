@@ -24,7 +24,8 @@ shapeLibs = ['libraries/GUNNS_Generic.xml',
              'libraries/GUNNS_Fluid.xml',
              'libraries/GUNNS_Super.xml',
              'libraries/GUNNS_Obsolete.xml',
-             'libraries/GUNNS_Spotters.xml']
+             'libraries/GUNNS_Spotters.xml',
+             'libraries/GUNNS_Doxygen.xml']
 shapeTree = ET.ElementTree()
 shapeTree._setroot(ET.fromstring('<shapeTree></shapeTree>'))
 
@@ -57,7 +58,7 @@ def loadShapeLibs(libFile, linksOnly):
             compressedXml = shape['xml']
             if 'mxGraphModel' in compressedXml:
                 if '&gt;' in compressedXml and '&lt;' in compressedXml:
-                    xmlStr = compressedXml.replace('&gt;', '>').replace('&lt;', '<')
+                    xmlStr = compressedXml.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;#xa;','')
                 else:
                     xmlStr = compressedXml # it's already not compressed
             else:
@@ -96,6 +97,14 @@ def getSuperNetworkShapeMaster(allShapes):
             return shape
     return None
 
+# Returns the Sub-Network Config shape master from the shapeTree, or None.
+def getSubNetworkShapeMaster(allShapes):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if 'Network' == shape_gunns_attr['type'] and 'Sub' == shape_gunns_attr['subtype']:
+            return shape
+    return None
+
 # Returns the Ground Node shape master from the shapeTree, or None.
 def getGroundShapeMaster(allShapes):
     for shape in allShapes:
@@ -116,6 +125,21 @@ def getNetNodeShapeMaster(allShapes, subtype, frame):
                         return shape
                 else:
                     if 'shape=mxgraph.basic.rounded_frame' not in mxcell_attr['style']:
+                        return shape
+    return None
+
+# Returns the given subtype reference node shape master from the shapeTree, or None.
+def getRefNodeShapeMaster(allShapes, subtype, vent):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if 'Node' == shape_gunns_attr['type']:
+            if subtype == shape_gunns_attr['subtype']:
+                mxcell_attr = shape.find('mxCell').attrib
+                if vent:
+                    if 'ellipse' not in mxcell_attr['style']:
+                        return shape
+                else:
+                    if 'ellipse' in mxcell_attr['style']:
                         return shape
     return None
 
@@ -190,6 +214,23 @@ def getPortShapeMaster(allShapes, portNum):
             return shape
     return None
 
+# Returns the Super Port shape master from the shapeTree, or None.
+# portNum is the port number label as a string.
+def getSuperPortShapeMaster(allShapes, portNum):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if ('Super Port' == shape_gunns_attr['type']) and (portNum == shape.attrib['label']):
+            return shape
+    return None
+
+# Returns the Subnetwork Interface Connection shape master from the shapeTree, or None.
+def getSubNetworkIFConnectionShapeMaster(allShapes):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if ('Subnet Interface Connection' == shape_gunns_attr['type']):
+            return shape
+    return None
+
 # Returns the shape master from the shapeTree matching the
 # given GUNNS type and subtype, or None.
 def getShapeMaster(allShapes, intype, subtype):
@@ -206,6 +247,11 @@ def getBlankSpotterShapeMaster(allShapes):
         if ('Spotter' == shape_gunns_attr['type']) and ('' == shape.attrib['Class']):
             return shape
     return None
+
+# Returns the type from the given shape.
+def getShapeType(shape):
+    gunns_attr = shape.find('./gunns').attrib
+    return gunns_attr['type']
 
 # Returns the subtype from the given shape.
 def getShapeSubtype(shape):

@@ -18,6 +18,9 @@
 // // Health and status sim object.
 // #include "../S_modules/hs.sm"
 
+#ifdef HLA
+  #include "DistIf/THLA_interface.sm"
+#endif
 
 class HarveySimObject: public Trick::SimObject
 {

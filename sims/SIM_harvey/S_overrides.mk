@@ -25,27 +25,15 @@ RED_TXT   =[31m
 GREEN_TXT =[32m
 RESET_TXT =[00m
 
-# Check for required packages.
-ifeq ("$(wildcard ${TRICKHLA_HOME})","")
-   $(error ${RED_TXT}This sim requires you to define TRICKHLA_HOME or have it installed at the default location!${RESET_TXT})
-endif
-
-#============================================================================
-# HLA Build Environment
-#============================================================================
-# Define the HLA RTI installation folder.
-# Default environment:
-# export RTI_HOME ?= /users/hla/prti1516e_5.5.1.0
-
-# Include the HLA RTI.
+# Include TrickHLA and the HLA RTI.
 ifneq ("$(wildcard $(RTI_HOME))","")
+	ifeq ("$(wildcard ${TRICKHLA_HOME})","")
+	   $(error ${RED_TXT}This sim requires you to define TRICKHLA_HOME or have it installed at the default location!${RESET_TXT})
+	endif
    $(info ${GREEN_TXT}Building the sim with HLA.${RESET_TXT})
    include ${TRICKHLA_HOME}/makefiles/S_hla.mk
    TRICK_GTE_EXT += RTI_HOME
    TRICK_SFLAGS  += -DHLA -I${TRICKHLA_HOME}/S_modules
-else
-   $(info ${GREEN_TXT}Building the sim without HLA.${RESET_TXT})
-endif
 
 # Links to the FOM and Modified_data folders in the sim folder.
 all: build_links
@@ -71,3 +59,7 @@ clean_links:
 		echo "${GREEN_TXT}Cleaning link to Modified_data/TrickHLA folder.${RESET_TXT}" ;\
 		rm -r -f Modified_data/TrickHLA ;\
 	fi
+
+else
+   $(info ${GREEN_TXT}Building the sim without HLA.${RESET_TXT})
+endif

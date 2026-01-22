@@ -2,9 +2,27 @@
 <trickView>
     <cyclePeriod>0.1</cyclePeriod>
     <variable>
+        <name>harvey.signal.pc.mCommandSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">7000.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>harvey.signal.pc.mMalfFailPower</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
         <name>harvey.fluid.flowSensor.mFlowRate</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.06725116291930305</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -13,7 +31,7 @@
     <variable>
         <name>harvey.fluid.pressSensor.mDeltaPressure</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">4.617563009932965</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">4.263256414560601E-13</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -22,7 +40,7 @@
     <variable>
         <name>harvey.fluid.pump.mMotorSpeed</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">7000.0</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -40,7 +58,7 @@
     <variable>
         <name>harvey.fluid.netNodes[0].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">108.9181278678602</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9995160031269</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -49,7 +67,7 @@
     <variable>
         <name>harvey.fluid.netNodes[1].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">113.5356908777932</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9995160031273</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -58,7 +76,7 @@
     <variable>
         <name>harvey.fluid.netNodes[2].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">112.4196514160797</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9995160031272</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -67,7 +85,7 @@
     <variable>
         <name>harvey.fluid.netNodes[3].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">110.6688738708117</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9995160031271</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -76,7 +94,7 @@
     <variable>
         <name>harvey.fluid.netNodes[4].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">131.5717937659838</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">120.0000000004697</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -94,7 +112,7 @@
     <variable>
         <name>harvey.fluid.accumluator.mBellowsPosition</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.4163419062032418</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.4999979769633083</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -142,7 +160,7 @@
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
                 <lower>0.0</lower>
-                <upper>2531.13</upper>
+                <upper>102.55875</upper>
             </range>
         </domainAxis>
         <rangeAxis>
@@ -162,8 +180,8 @@
             </tickLabelFont>
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
-                <lower>-0.005956879634981191</lower>
-                <upper>0.06640663539631692</upper>
+                <lower>-0.08390788650014835</lower>
+                <upper>1.7617190477121072</upper>
             </range>
         </rangeAxis>
         <bounds>
@@ -171,6 +189,79 @@
             <y>367</y>
             <width>720</width>
             <height>573</height>
+        </bounds>
+    </stripChart>
+    <stripChart>
+        <domainVariable>Simulation Time (seconds)</domainVariable>
+        <plottedVariable>harvey.fluid.pump.mMotorSpeed</plottedVariable>
+        <mode>Strip</mode>
+        <fixedAutoRange>30.0</fixedAutoRange>
+        <areLinesVisible>true</areLinesVisible>
+        <arePointsVisible>false</arePointsVisible>
+        <isLegendVisible>true</isLegendVisible>
+        <areSettingsVisible>true</areSettingsVisible>
+        <isAntiAliased>false</isAntiAliased>
+        <isBackgroundSet>false</isBackgroundSet>
+        <backgroundRgb>0</backgroundRgb>
+        <title>
+            <text>Strip Chart</text>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>20</size>
+            </font>
+            <rgb>-16777216</rgb>
+        </title>
+        <isHorizontal>false</isHorizontal>
+        <outlineRgb>-16777216</outlineRgb>
+        <plotBackgroundRgb>-1</plotBackgroundRgb>
+        <domainAxis>
+            <label>Simulation Time (seconds)</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>67.675</lower>
+                <upper>97.675</upper>
+            </range>
+        </domainAxis>
+        <rangeAxis>
+            <label>Value</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>0.0</lower>
+                <upper>7351.570826948067</upper>
+            </range>
+        </rangeAxis>
+        <bounds>
+            <x>1021</x>
+            <y>370</y>
+            <width>693</width>
+            <height>579</height>
         </bounds>
     </stripChart>
 </trickView>

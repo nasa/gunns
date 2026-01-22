@@ -27,19 +27,19 @@ class HarveySimObject: public Trick::SimObject
 {
     public:
         HarveySignal signal;
-        int threadIdFluid;   /**< (--) Thread ID for the fluid networks */
-        HarveyFluid fluid;   /**< (--) GUNNS fluid network */
+        HarveyFluid  fluid;   /**< (--) GUNNS fluid network */
         HarveySimObject()
             :
             signal(),
-            threadIdFluid(0),
             fluid("harvey.fluid")
         {
             ("initialization")      signal.initialize();
             ("initialization")      fluid.initialize();
             ("restart")             fluid.restart();
-            CthreadIdFluid  (MODELS_10HZ, "scheduled") signal.update(MODELS_10HZ);
-            CthreadIdFluid  (MODELS_10HZ, "scheduled") fluid.update(MODELS_10HZ);
+
+            (MODELS_10HZ, "scheduled") signal.update(MODELS_10HZ);
+            (MODELS_10HZ, "scheduled") fluid.pumpController.setMotorSpeed(signal.pc.getMotorSpeed());
+            (MODELS_10HZ, "scheduled") fluid.update(MODELS_10HZ);
         }
 
         virtual ~HarveySimObject() { /* nothing to do */ }

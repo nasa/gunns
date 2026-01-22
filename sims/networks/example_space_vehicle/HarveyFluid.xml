@@ -28,12 +28,6 @@
     <mxCell id="zCFe_HnzCjq0bnNqexsT-28" value="GUNNS_PG50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="zCFe_HnzCjq0bnNqexsT-27" vertex="1">
       <mxGeometry y="19" width="160" height="20" as="geometry" />
     </mxCell>
-    <object label="pump" About="Liquid Displacement Pump" Ports="0=in, 1=out" c00.cycleVolume="6.5e-7" c01.driveRatio="1.0" c02.thermalLength="0.0" c03.thermalDiameter="0.0" c04.surfaceRoughness="0.0" c05.checkValveActive="false" c06.liquidType="FluidProperties::GUNNS_PG50" c07.autoCavitationDuration="10.0" c08.autoCavitationAmplitude="100.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.flowDemand="0.0" i03.motorSpeed="6000.0" i04.wallTemperature="294.261" i05.enableAutoCavitation="false" id="zCFe_HnzCjq0bnNqexsT-31">
-      <gunns type="Link" subtype="aspects/fluid/source/GunnsLiquidDisplacementPump" numPorts="2" reqPorts="0,1" />
-      <mxCell style="verticalLabelPosition=bottom;align=center;html=1;verticalAlign=top;shape=stencil(pVTLboMwEPwaXyuCGyU9ViTtDVWKqp4dZ1Os+CXbCe3f19hEARFTaBES2hnvzqzXBuHCVkQDyjNiNVCH8Abl+YUYRvbcw7lnqgg+ZTGUREBEXt/LcueRDbOaEwoCpPPh21nouNQ6o05Qs4NrazBZgWEusnW3Lt6i7NmDzYsLqqT0bpiStsd0eF+bsKB3M1TGwtprCHBgItr6/mqjh2WMv7vsyxyZ3R9kFvNlPqbI9HtpRWfJbCfILCbI4MIjqcHhYk/o6dOoszzcNQecM21heNzqfni/75SdhCgujsrAiJsj4zwe3tRmNiuo4sr4MH6DE5TjLDwjc9CkuQ4D4koLdYFbo+t1r9PH9ICv+ZzJTv6qfwzx6n/5S/xrPuXKJrfN44n2xzY95A1GFtD4+wrADw==);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#007FFF;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
-        <mxGeometry x="220" y="110" width="40" height="40" as="geometry" />
-      </mxCell>
-    </object>
     <object label="0" About="Fluid Node" i00.initialFluidState="fluidCoolant" id="zCFe_HnzCjq0bnNqexsT-33">
       <gunns type="Node" subtype="Fluid" />
       <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=#000000;fontColor=#000000;fillOpacity=25;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
@@ -49,15 +43,6 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="0" About="Link Port" id="zCFe_HnzCjq0bnNqexsT-36">
-      <gunns type="Port" />
-      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="zCFe_HnzCjq0bnNqexsT-33" target="zCFe_HnzCjq0bnNqexsT-31" edge="1">
-        <mxGeometry width="50" height="50" relative="1" as="geometry">
-          <mxPoint x="190" y="160" as="sourcePoint" />
-          <mxPoint x="210" y="160" as="targetPoint" />
-        </mxGeometry>
-      </mxCell>
-    </object>
     <object label="accumluator" About="Accumulator, Spring" Ports="1=liquid" c00.maxConductivity="3.2e-5" c01.minConductivityScale="0.1" c02.accumVolume="0.05" c03.minChamberVolPercent="5.0" c04.minChamberVolDeadBandPercent="10.0" c05.forceBellowsMaxRate="0.1" c06.editHoldTime="5.0" c07.minTemperature="120.0" c08.maxTemperature="636.0" c09.maxPressure="3000.0" c10.springCoeff0="0.0" c11.springCoeff1="240.0" c12.springCoeff2="0.0" c13.fillModePressureThreshold="10.0" c14.effCondScaleOneWayRate="1.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialBellowsPosition="0.5" i03.liquidFluidInputData="&amp;fluidCoolant" id="zCFe_HnzCjq0bnNqexsT-37">
       <gunns type="Link" subtype="aspects/fluid/capacitor/GunnsFluidAccum" numPorts="2" reqPorts="1" />
       <mxCell style="shape=stencil(tVXLbsMgEPwaH1352fYapU1vuUT9AOpsbFQMCEjs/H2xcdTgl4poJA7sLLM7uwsiSLeyQhyCJEKSQ6GC9C1IkgsSGH0RDSfaUxkwi4xJUQ0G+fjc7w8aOXCBaak3m6I41+aUVIJ9Q4OPaqBjWoHAyngbg732IdP3INposFvptmCUaiGYUWl57vw6NsJUWVoGcVznqEGBsNDWsq6D9ZT39m4kQCNLGtLtiQkoBTvT46w4jrpyJ46bu2YX+JWT2XoGc7fCJ5je8RNnPhKF3hAkSgj1PjwRVBpybEKJIXQ8hBZXO5VsAPiUNhLUhqjFMhRMoa6Hs813rDVzpReESZg/0o94YVJ6wpgQc3mX2D5Ddq372ZX+4BHf9PxhxM732f092K1+sfnuvc49+Xb+2JOfuvJzz/y5Z/7Ms3+j+a/w11/wP75ezxsVP7SinjP5kHrUfOo98AM=);html=1;align=center;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=#000000;strokeWidth=1;fillColor=#007FFF;fontSize=11;fontColor=#000000;direction=west;fontFamily=Helvetica;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
@@ -68,15 +53,6 @@
       <gunns type="Node" subtype="Fluid" />
       <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=#000000;fontColor=#000000;fillOpacity=25;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="330" y="120" width="20" height="20" as="geometry" />
-      </mxCell>
-    </object>
-    <object label="1" About="Link Port" id="l_9_sYNUEEIeyalSiqjt-2">
-      <gunns type="Port" />
-      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="zCFe_HnzCjq0bnNqexsT-31" target="l_9_sYNUEEIeyalSiqjt-1" edge="1">
-        <mxGeometry width="50" height="50" relative="1" as="geometry">
-          <mxPoint x="300" y="230" as="sourcePoint" />
-          <mxPoint x="320" y="230" as="targetPoint" />
-        </mxGeometry>
       </mxCell>
     </object>
     <object label="2" About="Fluid Node" i00.initialFluidState="fluidCoolant" id="l_9_sYNUEEIeyalSiqjt-3">
@@ -282,7 +258,7 @@
     <object label="vlv" About="3-Way Valve" Ports="0=A, 1=B, 2=out" c00.positionPathB="false" c01.maxConductivityA="5.0e-5" c02.maxConductivityB="5.0e-5" c03.expansionScaleFactorA="0.0" c04.expansionScaleFactorB="0.0" c05.thermalLengthA="0.0" c06.thermalLengthB="0.0" c07.thermalDiameterA="0.0" c08.thermalDiameterB="0.0" c09.surfaceRoughnessA="0.0" c10.surfaceRoughnessB="0.0" c11.nonMixingBand="0.0" i00.position="0.0" i01.wallTemperatureA="0.0" i02.wallTemperatureB="0.0" id="gMfHQuLkZWP5ScA7_1M1-1">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluid3WayValve" numPorts="3" reqPorts="0,1,2" />
       <mxCell style="verticalLabelPosition=middle;align=right;fillColor=#FFFFFF;html=1;verticalAlign=middle;strokeColor=#000000;strokeWidth=1;shape=stencil(rZVNb4MwDIZ/TY6rgHSh14l93HqZtp1dmo1oIUFJ1q7/fiFhU01p1YhJSCivefPYMQZCK9tAx0mRge147Qi9J0WxAyNgI71c+EgTRZbFpYKWR+XpZb1+9gq9eYODv7+C3A0e64z+5HuxdYNbqIYb4WJ0H7VV2JE+kOzOi/1Fq1or5fMQWlkUOYr7vUEoh1KBuHHnGS133ER1yPgbrQ7DasFYGZTHFNDmClD+HyChrilpcYtZExxaeeXcsdLqXRv+YfSX2k5m10HfwZPAb7jVfcf/CsdHPJkO9kuhjvwl9rOZ/mR+nsyvpbb88iP4iJYYsUxNcfQW56l+luxPLnFmhXmyH+PLmfzVTP6ow6n4kf1Cg8Jgn5lPP9dCyvgVnvwgnIx9UOPPIAg/);fontSize=12;fontColor=#000000;direction=south;labelPosition=left;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
-        <mxGeometry x="320" y="180" width="60" height="80" as="geometry" />
+        <mxGeometry x="330" y="200" width="30" height="40" as="geometry" />
       </mxCell>
     </object>
     <object label="2" About="Link Port" id="20m3hXrh0JMpGIOK2VWG-2">
@@ -310,6 +286,62 @@
         <mxGeometry width="50" height="50" relative="1" as="geometry">
           <mxPoint x="400" y="280" as="sourcePoint" />
           <mxPoint x="420" y="280" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Liquid Centrifugal Pump" Ports="0=in, 1=out" c00.maxConductivity="5.0E-4" c01.expansionScaleFactor="0.0" c02.referenceDensity="1020.649" c03.referenceSpeed="9040" c04.referenceCoeff0="284.1447548" c05.referenceCoeff1="534257.2926" c06.referenceCoeff2="-22223201511.5084" c07.referenceCoeff3="-1486389057747760" c08.referenceCoeff4="7.25089E+19" c09.referenceCoeff5="-9.06154795044095E+23" c10.bestEfficiency="0.86" c11.referenceQBep="0.000039757" c12.filterGain="0.5" c13.driveRatio="1.0" c14.thermalLength="0.2" c15.thermalDiameter="0.0065" c16.surfaceRoughness="1.0E-6" c17.checkValveActive="false" c18.liquidType="FluidProperties::GUNNS_PG50" c19.autoCavitationDuration="10.0" c20.autoCavitationAmplitude="0.1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.sourcePressure="0.0" i03.motorSpeed="7000.0" i04.wallTemperature="283.0" i05.enableAutoCavitation="false" label="pump" id="6k-xVod9Dr4rQ-xcu6Jo-1">
+      <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/potential/GunnsLiquidCentrifugalPump" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;html=1;verticalAlign=top;shape=stencil(7VbLbsIwEPyaHINCzKvHKoXeuKCq5yUsYGHsyHYJ/H0NTmisJNRBlVAlpBy8s7FnvGNrHZBEbSHDII5AZZjqgLwFcXwASWHJDBybzNaCL5ENOezRIu8f8/nCIDPgNqW0FDvM6UoXcyjfoqTaZvPqOmQaRK8GPH8kSQXnhp0KrpxMJW/WBsq1I2BuF84Mxx41SosWOo9F1Bva+FTNzrrQLO6g6Xen+fShcfdSkHaimXrQ9D1oSGKQNuNIsoR0t5Hii68axSFjNFNYP165Gzbvu01OCylJ1kLiDTVrypg9vG3FzOB8pmuJMr0XB/xRO3DPQrtJ5XSQqRkwkBsMzThcM9g4G5fFyqSMT26scsSsMq3vVK/UcwzhSFUohYazZU2lHTxAbHSv2MnvYl1jxqRH3Gs66o2f7nRw51owH7nXcvs7NBk+fMP/2J0/1frL1fEy92mOc3X85V5/bm5HBm/pSOZFd7OR1RrvKKj23ZFb39itYXxDUnsPvcitdeALal+fF+Ab);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#007FFF;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
+        <mxGeometry x="230" y="110" width="40" height="40" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Link Port" label="1" id="6k-xVod9Dr4rQ-xcu6Jo-2">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="6k-xVod9Dr4rQ-xcu6Jo-1" target="l_9_sYNUEEIeyalSiqjt-1" edge="1">
+        <mxGeometry x="-0.6667" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="290" y="150" as="sourcePoint" />
+          <mxPoint x="220" y="100" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="6k-xVod9Dr4rQ-xcu6Jo-3">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="6k-xVod9Dr4rQ-xcu6Jo-1" target="zCFe_HnzCjq0bnNqexsT-33" edge="1">
+        <mxGeometry x="-0.4286" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="280" y="110" as="sourcePoint" />
+          <mxPoint x="290" y="130" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Fluid Sensor" Ports="0=node &amp;amp; +P, 1= -P" TypeLabel="dP" c00.maxConductivity="0.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" label="pressSensor" id="6k-xVod9Dr4rQ-xcu6Jo-4">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/fluid/conductor/GunnsFluidSensor" type="Link" />
+      <mxCell style="verticalLabelPosition=top;align=center;fillColor=#FFFFFF;html=1;verticalAlign=bottom;strokeWidth=1;shape=stencil(nVTBboMwDP0ajpsoWXefWLsdpl66aecAplgNCUpSKPv6hZhKoJaWVoqU+Dn2e4mdBCw2Ba8giEJuKkhtwN6DKKq5Rp4IB0fOUxD4GpIpeQmEfPxsNluHrMUBMzdvQRqlaZexWu2hwcz24SgL0GjJ2wxTslUQvjmwGyxOlZROCCppRp6B3+XmKO1Iy4YSV46jBAua0F7ysbeel2S3Q+/6HprtAzSL+2l+59CMz9KT3kWzmkGzmEHDYodMFY7FCU/3O60OMrsoTnd9d9Zmzdi8fOgpLROMLM6VhitSchSCOnfqJnMlbc5LFK2z+4XX8gmiBospv1KGLtjgX/fc/OQDX6JbEbYVPsTPN1vKwtHSA6S9QbT8biv44gkItx5dJxvf58nkAneSoBRk1xgergd4iVl2+iA8/EQfybBKleApFEpkoM20bl+ws7p4tE/ZAf8=);fontSize=12;strokeColor=#000000;fontColor=#000000;labelPosition=center;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
+        <mxGeometry x="240" y="80" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="6k-xVod9Dr4rQ-xcu6Jo-5">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="6k-xVod9Dr4rQ-xcu6Jo-4" target="l_9_sYNUEEIeyalSiqjt-1" edge="1">
+        <mxGeometry x="-0.5636" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="280" y="70" as="sourcePoint" />
+          <mxPoint x="300" y="120" as="targetPoint" />
+          <mxPoint as="offset" />
+          <Array as="points">
+            <mxPoint x="300" y="90" />
+            <mxPoint x="300" y="130" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="1" id="6k-xVod9Dr4rQ-xcu6Jo-6">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="zCFe_HnzCjq0bnNqexsT-33" target="6k-xVod9Dr4rQ-xcu6Jo-4" edge="1">
+        <mxGeometry x="0.5999" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="190" y="120" as="sourcePoint" />
+          <mxPoint x="220" y="70" as="targetPoint" />
           <mxPoint as="offset" />
         </mxGeometry>
       </mxCell>

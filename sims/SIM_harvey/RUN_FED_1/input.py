@@ -127,15 +127,10 @@ trick_sys.sched.set_freeze_command(True)
 ################################################################################
 harvey.fluid.netConfig.harveyIn.mIsPairMaster = True
 harvey.fluid.netConfig.harveyOut.mIsPairMaster = True
-harvey.fluid.netInput.harveyInVlv.mPosition = 1.0
-harvey.fluid.netInput.harveyOutVlv.mPosition = 1.0
 harvey.fluid.netInput.vol1.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol2.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol3.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol4.mInitialVolume = 3e-3
-harvey.fluid.netInput.vol5.mInitialVolume = 3e-3
-harvey.fluid.netInput.pipe12.mMalfBlockageValue = 1.0
-harvey.fluid.netInput.pipe12.mMalfBlockageFlag = True
 
 ################################################################################
 # HLA Setup

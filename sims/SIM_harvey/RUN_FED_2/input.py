@@ -125,13 +125,6 @@ trick_sys.sched.set_enable_freeze(True)
 trick_sys.sched.set_freeze_command(True)
 
 ################################################################################
-harvey.fluid.netInput.harveyInVlv.mPosition = 1.0
-harvey.fluid.netInput.harveyOutVlv.mPosition = 1.0
-harvey.fluid.netInput.pipe12.mMalfBlockageValue = 1.0
-harvey.fluid.netInput.pipe12.mMalfBlockageFlag = True
-harvey.fluid.netInput.pump.mMotorSpeed = 0.0
-
-################################################################################
 # HLA Setup
 ################################################################################
 from Modified_data.TrickHLA.TrickHLAFederateConfig import *

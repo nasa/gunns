@@ -42,6 +42,7 @@ spotless: clean_links
 
 build_links:
 	@ echo "${GREEN_TXT}Creating links to FOM and Modified_data folders.${RESET_TXT}"
+	mkdir -p FOMs Modified_data
 	ln -s -fn ${TRICKHLA_HOME}/FOMs/DistIf FOMs/DistIf
 	ln -s -fn ${TRICKHLA_HOME}/Modified_data/DistIf Modified_data/DistIf     #TrickHLA v3.2 changes "Modified_data" to "TrickHLA_data"
 	ln -s -fn ${TRICKHLA_HOME}/Modified_data/TrickHLA Modified_data/TrickHLA #TrickHLA v3.2 changes "Modified_data" to "TrickHLA_data"

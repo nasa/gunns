@@ -5,6 +5,7 @@
 
 ##include "sims/networks/example_space_vehicle/HarveyFluid.hh"
 ##include "sims/networks/example_space_vehicle/models/HarveySignal.hh"
+##include "sims/networks/example_space_vehicle/ExamplePowerElect.hh"
 
 // // Needed for sim bus multithreading
 // #include "../S_modules/ChildThreadHandler.sm"
@@ -26,17 +27,24 @@
 class HarveySimObject: public Trick::SimObject
 {
     public:
+        ExamplePowerElect  elect;   /**< (--) GUNNS fluid network */
         HarveySignal signal;
         HarveyFluid  fluid;   /**< (--) GUNNS fluid network */
         HarveySimObject()
             :
+            elect("harvey.elect"),
             signal(),
             fluid("harvey.fluid")
         {
+            ("initialization")      elect.initialize();
             ("initialization")      signal.initialize();
             ("initialization")      fluid.initialize();
+
+            ("restart")             elect.restart();
             ("restart")             fluid.restart();
 
+            (MODELS_10HZ, "scheduled") elect.update(MODELS_10HZ);
+            (MODELS_10HZ, "scheduled") signal.pc.setVoltage(elect.loadSwitch6.mSwitch.getOutputVolts());
             (MODELS_10HZ, "scheduled") signal.update(MODELS_10HZ);
             (MODELS_10HZ, "scheduled") fluid.pump.setMotorSpeed(signal.pc.getMotorSpeed());
             (MODELS_10HZ, "scheduled") fluid.update(MODELS_10HZ);

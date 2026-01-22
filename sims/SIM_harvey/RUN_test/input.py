@@ -15,3 +15,8 @@ trick.TMM_reduced_checkpoint(False)
 trick_mm.mm.set_expanded_arrays(True)
 trick_sys.sched.set_enable_freeze(True)
 trick_sys.sched.set_freeze_command(True)
+
+################################################################################
+# GUNNS config and input settings
+################################################################################
+harvey.elect.netInput.loadSwitch6.mSwitch.mSwitchIsAutoClosed = False

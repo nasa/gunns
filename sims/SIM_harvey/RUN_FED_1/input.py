@@ -131,6 +131,7 @@ harvey.fluid.netInput.vol1.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol2.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol3.mInitialVolume = 3e-3
 harvey.fluid.netInput.vol4.mInitialVolume = 3e-3
+harvey.elect.netInput.loadSwitch6.mSwitch.mSwitchIsAutoClosed = False
 
 ################################################################################
 # HLA Setup

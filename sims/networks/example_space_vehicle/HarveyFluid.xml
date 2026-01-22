@@ -346,12 +346,6 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="pumpController" About="Spotter" Class="models/PumpMotorSpotter" ConstructorArgs="pump" id="KDBJ5AFWiRA0xFsaww3v-1">
-      <gunns type="Spotter" />
-      <mxCell style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
-        <mxGeometry x="210" y="150" width="20" height="20" as="geometry" />
-      </mxCell>
-    </object>
     <mxCell id="KN7Ig62nXS6v7mEr8KCG-2" value="Notes" parent="0" />
     <object About="List of assumptions and limitations" label="Assumptions and Limitations" id="KN7Ig62nXS6v7mEr8KCG-9">
       <gunns subtype="assumptions" type="Dox" />

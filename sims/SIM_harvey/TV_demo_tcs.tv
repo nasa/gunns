@@ -22,7 +22,7 @@
     <variable>
         <name>harvey.fluid.pump.mMotorSpeed</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">7000.005309843357</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">6999.988525707156</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -31,7 +31,7 @@
     <variable>
         <name>harvey.fluid.flowSensor.mFlowRate</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.05376257671239167</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.05403379626304228</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -40,7 +40,7 @@
     <variable>
         <name>harvey.fluid.pressSensor.mDeltaPressure</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">3.356353760376905</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">3.3732121695529</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -58,7 +58,7 @@
     <variable>
         <name>harvey.fluid.netNodes[0].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9980706556759</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">119.9633255126093</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -67,7 +67,7 @@
     <variable>
         <name>harvey.fluid.netNodes[1].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">123.3544244160529</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">123.3365376821622</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -76,7 +76,7 @@
     <variable>
         <name>harvey.fluid.netNodes[2].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">122.235627342495</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">122.2117516606684</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -85,7 +85,7 @@
     <variable>
         <name>harvey.fluid.netNodes[3].mPotential</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">121.1168409089696</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">121.0874283464736</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
@@ -112,11 +112,47 @@
     <variable>
         <name>harvey.fluid.accumluator.mBellowsPosition</name>
         <tvDouble>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.4999964267543459</value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.4998913319950671</value>
             <format>Decimal</format>
         </tvDouble>
         <state>Valid</state>
         <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.elect.loadSwitch2.mSwitch.mSwitchCommandedClosed</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.avionics.mSumExternalHeatFluxes</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">160.000058354889</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>W</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.avionics.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">284.2474410695717</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.coldplate.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">284.7547375012198</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
     </variable>
     <stripChart>
         <domainVariable>Simulation Time (seconds)</domainVariable>
@@ -160,7 +196,7 @@
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
                 <lower>0.0</lower>
-                <upper>68.90625</upper>
+                <upper>107.0475</upper>
             </range>
         </domainAxis>
         <rangeAxis>
@@ -180,8 +216,8 @@
             </tickLabelFont>
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
-                <lower>-0.07440542787907374</lower>
-                <upper>1.5625043949805988</upper>
+                <lower>-0.7190413595460327</lower>
+                <upper>15.099228295219895</upper>
             </range>
         </rangeAxis>
         <bounds>
@@ -193,8 +229,9 @@
     </stripChart>
     <stripChart>
         <domainVariable>Simulation Time (seconds)</domainVariable>
-        <plottedVariable>harvey.fluid.pump.mMotorSpeed</plottedVariable>
-        <mode>Strip</mode>
+        <plottedVariable>harvey.thermal.avionics.mTemperature</plottedVariable>
+        <plottedVariable>harvey.thermal.coldplate.mTemperature</plottedVariable>
+        <mode>All</mode>
         <fixedAutoRange>30.0</fixedAutoRange>
         <areLinesVisible>true</areLinesVisible>
         <arePointsVisible>false</arePointsVisible>
@@ -232,8 +269,8 @@
             </tickLabelFont>
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
-                <lower>35.625</lower>
-                <upper>65.625</upper>
+                <lower>0.0</lower>
+                <upper>107.0475</upper>
             </range>
         </domainAxis>
         <rangeAxis>
@@ -253,14 +290,87 @@
             </tickLabelFont>
             <tickLabelRgb>-12566464</tickLabelRgb>
             <range>
-                <lower>6997.075337000936</lower>
-                <upper>7001.418330908322</upper>
+                <lower>263.53695</lower>
+                <upper>295.72405000000003</upper>
             </range>
         </rangeAxis>
         <bounds>
-            <x>1021</x>
-            <y>370</y>
-            <width>693</width>
+            <x>1053</x>
+            <y>390</y>
+            <width>814</width>
+            <height>579</height>
+        </bounds>
+    </stripChart>
+    <stripChart>
+        <domainVariable>Simulation Time (seconds)</domainVariable>
+        <plottedVariable>harvey.fluid.pump.mMotorSpeed</plottedVariable>
+        <mode>All</mode>
+        <fixedAutoRange>30.0</fixedAutoRange>
+        <areLinesVisible>true</areLinesVisible>
+        <arePointsVisible>false</arePointsVisible>
+        <isLegendVisible>true</isLegendVisible>
+        <areSettingsVisible>true</areSettingsVisible>
+        <isAntiAliased>false</isAntiAliased>
+        <isBackgroundSet>false</isBackgroundSet>
+        <backgroundRgb>0</backgroundRgb>
+        <title>
+            <text>Strip Chart</text>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>20</size>
+            </font>
+            <rgb>-16777216</rgb>
+        </title>
+        <isHorizontal>false</isHorizontal>
+        <outlineRgb>-16777216</outlineRgb>
+        <plotBackgroundRgb>-1</plotBackgroundRgb>
+        <domainAxis>
+            <label>Simulation Time (seconds)</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>0.0</lower>
+                <upper>107.0475</upper>
+            </range>
+        </domainAxis>
+        <rangeAxis>
+            <label>Value</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>0.0</lower>
+                <upper>7382.480037803349</upper>
+            </range>
+        </rangeAxis>
+        <bounds>
+            <x>668</x>
+            <y>174</y>
+            <width>814</width>
             <height>579</height>
         </bounds>
     </stripChart>

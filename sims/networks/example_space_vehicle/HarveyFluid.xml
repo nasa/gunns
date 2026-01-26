@@ -73,26 +73,20 @@
         <mxGeometry x="400" y="210" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
-    <object About="Fluid Conductor" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" label="pipe" id="l_9_sYNUEEIeyalSiqjt-11">
-      <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsFluidConductor" type="Link" />
-      <mxCell style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=#000000;direction=west;labelPosition=center;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
-        <mxGeometry x="210" y="290" width="60" height="20" as="geometry" />
-      </mxCell>
-    </object>
     <object About="Link Port" label="0" id="l_9_sYNUEEIeyalSiqjt-12">
       <gunns type="Port" />
-      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="l_9_sYNUEEIeyalSiqjt-11" target="l_9_sYNUEEIeyalSiqjt-3" edge="1">
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="-I7hG3D1DLc1M97-BG0k-1" target="l_9_sYNUEEIeyalSiqjt-3" edge="1">
         <mxGeometry width="50" height="50" relative="1" as="geometry">
-          <mxPoint x="310" y="300" as="sourcePoint" />
+          <mxPoint x="290" y="300" as="sourcePoint" />
           <mxPoint x="260" y="290" as="targetPoint" />
         </mxGeometry>
       </mxCell>
     </object>
     <object About="Link Port" label="1" id="l_9_sYNUEEIeyalSiqjt-13">
       <gunns type="Port" />
-      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="l_9_sYNUEEIeyalSiqjt-11" target="l_9_sYNUEEIeyalSiqjt-4" edge="1">
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" source="-I7hG3D1DLc1M97-BG0k-1" target="l_9_sYNUEEIeyalSiqjt-4" edge="1">
         <mxGeometry width="50" height="50" relative="1" as="geometry">
-          <mxPoint x="220" y="380" as="sourcePoint" />
+          <mxPoint x="190" y="300" as="sourcePoint" />
           <mxPoint x="190" y="390" as="targetPoint" />
         </mxGeometry>
       </mxCell>
@@ -344,6 +338,12 @@
           <mxPoint x="220" y="70" as="targetPoint" />
           <mxPoint as="offset" />
         </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="5.0e-5" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="200.0" i03.initialSegmentTemperature="320.0" label="coldplate" id="-I7hG3D1DLc1M97-BG0k-1">
+      <gunns numPorts="2" reqPorts="0,1" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=1;flipV=0;" vertex="1" parent="KN7Ig62nXS6v7mEr8KCG-1">
+        <mxGeometry x="200" y="280" width="80" height="40" as="geometry" />
       </mxCell>
     </object>
     <mxCell id="KN7Ig62nXS6v7mEr8KCG-2" value="Notes" parent="0" />

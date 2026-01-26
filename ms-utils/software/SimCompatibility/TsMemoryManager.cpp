@@ -195,6 +195,7 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
         tsName = tsNameFix(tsName, "+", "__");
         tsName = tsNameFix(tsName, "[", "_");
         tsName = tsNameFix(tsName, "]", "_");
+        tsName = tsNameFix(tsName, "#", "_");
         tsAllocName = tsAllocName + " " + tsName;
 //fprintf(stderr, "tsAllocSpec fixed name           = <%s>\n", tsAllocName.c_str()); //DEBUG
     }

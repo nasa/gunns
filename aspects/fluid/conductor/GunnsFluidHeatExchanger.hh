@@ -138,6 +138,8 @@ class GunnsFluidHeatExchanger : public  GunnsFluidConductor
         void setMalfSegDegrade(const int segment, const bool flag = false, const double value = 0.0);
         /// @brief Sets Temperature Override.
         void setTemperatureOverride(const double value = 0.0);
+        /// @brief Sets a segment temperature.
+        void setSegTemperature(const int segment, const double value = 0.0);
 
     protected:
         int     mNumSegs;                 /**< *o (--)  trick_chkpnt_io(**) Number of segment for this Heat Exchanger */

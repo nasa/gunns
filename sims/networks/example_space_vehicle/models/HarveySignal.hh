@@ -43,4 +43,10 @@ class HarveySignal
             pc.setSensedSpeed(pc.mMotor.getSpeed());
             pc.step(dt);
         }
+        
+    private:
+        /// @brief  Copy constructor unavailable since declared private and not implemented.
+        HarveySignal(const HarveySignal&);
+        /// @brief  Assignment operator unavailable since declared private and not implemented.
+        HarveySignal& operator=(const HarveySignal&);
 };

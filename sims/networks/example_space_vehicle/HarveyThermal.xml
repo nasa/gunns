@@ -29,13 +29,13 @@
         <mxGeometry x="170" y="90" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
-    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="5.0 * 900.0" i03.potential="265.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="294.261" label="coldplate" id="qxV49psfQpYZoQUc0s-e-3">
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="5.0 * 900.0" i03.potential="290.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="294.261" label="coldplate" id="qxV49psfQpYZoQUc0s-e-3">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=south;rotation=-0.0;flipH=0;flipV=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="360" y="140" width="20" height="10" as="geometry" />
       </mxCell>
     </object>
-    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="5.0 * 900.0" i03.potential="294.261" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="294.261" label="avionics" id="qxV49psfQpYZoQUc0s-e-4">
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="5.0 * 900.0" i03.potential="290.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="294.261" label="avionics" id="qxV49psfQpYZoQUc0s-e-4">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=south;rotation=-0.0;flipH=1;flipV=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="170" y="140" width="20" height="10" as="geometry" />

@@ -127,11 +127,8 @@ trick_sys.sched.set_freeze_command(True)
 ################################################################################
 harvey.fluid.netConfig.harveyIn.mIsPairMaster = True
 harvey.fluid.netConfig.harveyOut.mIsPairMaster = True
-harvey.fluid.netInput.vol1.mInitialVolume = 3e-3
-harvey.fluid.netInput.vol2.mInitialVolume = 3e-3
-harvey.fluid.netInput.vol3.mInitialVolume = 3e-3
-harvey.fluid.netInput.vol4.mInitialVolume = 3e-3
 harvey.elect.netInput.loadSwitch6.mSwitch.mSwitchIsAutoClosed = False
+harvey.elect.loadSwitch6.mSwitch.mMalfFailOpen = True #start with malf'd pump
 
 ################################################################################
 # HLA Setup
@@ -176,28 +173,28 @@ from Modified_data.DistIf.FluidDistIfObjectConfig import *
 
 # Interfaces
 data_obj = FluidDistIfAToBObjectConfig(
-   thla_federate_name = 'FluidDistIf_harveyOut_to_esvIn',
+   thla_federate_name = 'FluidDistIf_harvey1Out_to_harvey2In',
    bus_name           = 'harvey.fluid.harveyOut',
    isBusA             = True,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfBToAObjectConfig(
-   thla_federate_name = 'FluidDistIf_esvIn_to_harveyOut',
+   thla_federate_name = 'FluidDistIf_harvey2In_to_harvey1Out',
    bus_name           = 'harvey.fluid.harveyOut',
    isBusA             = True,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfAToBObjectConfig(
-   thla_federate_name = 'FluidDistIf_harveyIn_to_esvOut',
+   thla_federate_name = 'FluidDistIf_harvey1In_to_harvey2Out',
    bus_name           = 'harvey.fluid.harveyIn',
    isBusA             = True,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfBToAObjectConfig(
-   thla_federate_name = 'FluidDistIf_esvOut_to_harveyIn',
+   thla_federate_name = 'FluidDistIf_harvey2Out_to_harvey1In',
    bus_name           = 'harvey.fluid.harveyIn',
    isBusA             = True,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )

@@ -32,7 +32,7 @@ class HarveySignal
             pcConfig.mNoiseFrequency           = 0.0;
             pcConfig.mStartupCurrentLimit      = 20.0;    
             pcInput.mCommandEnable = true;
-            pcInput.mCommandSpeed  = 7000.0;
+            pcInput.mCommandSpeed  = 6000.0;
             pcInput.mVoltage       = 32.0;
         }
 

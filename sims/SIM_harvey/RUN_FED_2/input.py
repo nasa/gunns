@@ -172,28 +172,28 @@ from Modified_data.DistIf.FluidDistIfObjectConfig import *
 
 # Interfaces
 data_obj = FluidDistIfAToBObjectConfig(
-   thla_federate_name = 'FluidDistIf_harveyOut_to_esvIn',
+   thla_federate_name = 'FluidDistIf_harvey1Out_to_harvey2In',
    bus_name           = 'harvey.fluid.harveyIn',
    isBusA             = False,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfBToAObjectConfig(
-   thla_federate_name = 'FluidDistIf_esvIn_to_harveyOut',
+   thla_federate_name = 'FluidDistIf_harvey2In_to_harvey1Out',
    bus_name           = 'harvey.fluid.harveyIn',
    isBusA             = False,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfAToBObjectConfig(
-   thla_federate_name = 'FluidDistIf_harveyIn_to_esvOut',
+   thla_federate_name = 'FluidDistIf_harvey1In_to_harvey2Out',
    bus_name           = 'harvey.fluid.harveyOut',
    isBusA             = False,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )
 federate.add_fed_object( data_obj )
 
 data_obj = FluidDistIfBToAObjectConfig(
-   thla_federate_name = 'FluidDistIf_esvOut_to_harveyIn',
+   thla_federate_name = 'FluidDistIf_harvey2Out_to_harvey1In',
    bus_name           = 'harvey.fluid.harveyOut',
    isBusA             = False,
    FOM_type           = 'FluidDistIfDataBase.FluidDistIfData_6_4' )

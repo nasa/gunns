@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<trickView>
+    <cyclePeriod>0.1</cyclePeriod>
+    <variable>
+        <name>harvey.elect.solarSwitch.mSwitch.mSwitchCommandedClosed</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.elect.battery.mSoc</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.5</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>1</units>
+    </variable>
+    <variable>
+        <name>harvey.elect.loadSwitch2.mSwitch.mSwitchCommandedClosed</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">false</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.avionics.mSumExternalHeatFluxes</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>W</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.avionics.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">290.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>harvey.thermal.coldplate.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">290.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>harvey.elect.loadSwitch6.mSwitch.mSwitchCommandedClosed</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">false</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.signal.pc.mCommandSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">6000.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.pump.mMotorSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.flowSensor.mFlowRate</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kg/s</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.pressSensor.mDeltaPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.vlv.mPosition</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.accumluator.mBellowsPosition</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.5</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.ifhx.mSegTemperature[0]</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">277.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>harvey.fluid.coldplate.mSegTemperature[0]</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">290.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>harvey.elect.loadSwitch6.mSwitch.mMalfFailOpen</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+</trickView>

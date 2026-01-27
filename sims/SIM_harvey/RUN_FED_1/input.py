@@ -167,6 +167,9 @@ federate.set_time_constrained( True )
 # Add the sim configuration FOM.
 federate.add_FOM_module( 'FOMs/DistIf/SimpleSimConfigFOM.xml' )
 
+##########################################################################
+# 1 #
+##########################################################################
 # Configure the Fluid Distributed Interface messages
 federate.add_FOM_module( 'FOMs/DistIf/FluidDistIfFOM.xml' )
 from Modified_data.DistIf.FluidDistIfObjectConfig import *

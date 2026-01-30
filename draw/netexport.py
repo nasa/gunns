@@ -385,26 +385,15 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                 # check if from_attr has TypeLabel and to_addr doesn't
                 if 'shape' in to_style_properties and 'shape' in from_style_properties:
                     if to_style_properties['shape'].startswith('stencil(') and from_style_properties['shape'].startswith('stencil('):
-                        # print(''.rjust(100,'='))
-                        # print(to_style_properties['shape'])
-                        # print(''.rjust(100,'='))
-
                         to_stencil   = decompress(  to_style_properties['shape'][len('stencil('):-1])
                         from_stencil = decompress(from_style_properties['shape'][len('stencil('):-1])
 
                         if 'TypeLabel' not in to_stencil and 'TypeLabel' in from_stencil:
-                            print(''.rjust(100,'='))
-                            print(to_stencil)
-                            print(''.rjust(100,'='))
-                            print(from_stencil)
-                            print(''.rjust(100,'='))
-
                             text_field = next((item for item in to_stencil.splitlines() if item.lstrip(' ').startswith("<text")), None)
                             if text_field:
                                 str_attr = next((item for item in text_field.split(' ') if item.startswith("str=")), None)
                                 if str_attr:
                                     type_label_text = str_attr.split('"')[1]
-                                    print(type_label_text)
 
 
                 # add default colors to master dictionary in case we need to overwrite them

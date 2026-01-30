@@ -12,6 +12,9 @@ import sys
 import collections
 import re
 import unicodedata
+import zlib
+import base64
+from urllib.parse import unquote
 
 # Import Tkinter for Python 2.7 vs. 3 imports by feature detection.
 # Since Tkinter isn't installed on many platforms, and it's only needed
@@ -337,24 +340,71 @@ def getPortTargetName(port, links, nodes, gnds):
         result = getPortNodeName(port, links)
     return result
 
+# Returns uncompressed XML, used to decompress link shape data
+def decompress(compressed_string):
+    decoded_data = base64.b64decode(compressed_string)
+    inflated_data = zlib.decompress(decoded_data,-15)
+    return unquote(inflated_data.decode('utf-8'))
+
+# Convert style properties into a dictionary
+# start with form:
+# shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;etc...
+# end with form:
+# {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
+def stylePropsToDict(style_properties):
+    style_properties = style_properties.split(';')[0:-1]
+    style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   style_properties)),
+                                list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   style_properties))))
+    return style_properties
+
+# Convert dictionary back to style properties
+def dictToStyleProps(style_dict):
+    return ';'.join(list(map(lambda k: k if style_dict[k] == '' else k + '=' + style_dict[k], style_dict.keys()))) + ';'
+
 # Copies attributes from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
-def forceCopyStyleAttrib(to_attr, from_attr, name):
+def forceCopyAttrib(to_attr, from_attr, name):
     if name in from_attr:
         if name in to_attr:
             if to_attr[name] != from_attr[name]:
-                # the style field is of the form:
-                # shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;
+                to_attr[name] = from_attr[name]
+                return True
+        else:
+            to_attr[name] = from_attr[name]
+            return True
+    return False
 
-                # convert style properties into dictionary
-                # e.g. {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
-                to_style_properties   =   to_attr[name].split(';')[0:-1]
-                from_style_properties = from_attr[name].split(';')[0:-1]
+def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
+    type_label_text = ''
+    if name in from_attr:
+        if name in to_attr:
+            if to_attr[name] != from_attr[name]:
+                to_style_properties   = stylePropsToDict(  to_attr[name])
+                from_style_properties = stylePropsToDict(from_attr[name])
+                
+                # check if from_attr has TypeLabel and to_addr doesn't
+                if 'shape' in to_style_properties and 'shape' in from_style_properties:
+                    if to_style_properties['shape'].startswith('stencil(') and from_style_properties['shape'].startswith('stencil('):
+                        # print(''.rjust(100,'='))
+                        # print(to_style_properties['shape'])
+                        # print(''.rjust(100,'='))
 
-                to_style_properties   = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   to_style_properties)),
-                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   to_style_properties))))
-                from_style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 , from_style_properties)),
-                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '', from_style_properties))))
+                        to_stencil   = decompress(  to_style_properties['shape'][len('stencil('):-1])
+                        from_stencil = decompress(from_style_properties['shape'][len('stencil('):-1])
+
+                        if 'TypeLabel' not in to_stencil and 'TypeLabel' in from_stencil:
+                            print(''.rjust(100,'='))
+                            print(to_stencil)
+                            print(''.rjust(100,'='))
+                            print(from_stencil)
+                            print(''.rjust(100,'='))
+
+                            text_field = next((item for item in to_stencil.splitlines() if item.lstrip(' ').startswith("<text")), None)
+                            if text_field:
+                                str_attr = next((item for item in text_field.split(' ') if item.startswith("str=")), None)
+                                if str_attr:
+                                    type_label_text = str_attr.split('"')[1]
+                                    print(type_label_text)
 
 
                 # add default colors to master dictionary in case we need to overwrite them
@@ -363,7 +413,7 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
                         from_style_properties[prop] = 'default'
 
                 # remove properies from master we don't want to ever overwrite
-                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction']:
+                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction','flipV','flipH']:
                     if prop in from_style_properties:
                         del from_style_properties[prop]
 
@@ -381,33 +431,23 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
 
 
                 # convert dictionary back to string
-                new_to_attr = ';'.join(list(map(lambda k: k if to_style_properties[k] == '' else k + '=' + to_style_properties[k], to_style_properties.keys()))) + ';'
+                new_to_attr = dictToStyleProps(to_style_properties)
 
                 # check if there was an update
                 if to_attr[name] == new_to_attr:
                     # shape style didn't change
-                    return False
+                    return [False, type_label_text]
                 else:
                     to_attr[name] = new_to_attr
-                    return True
+                    return [True, type_label_text]
         else:
             to_attr[name] = from_attr[name]
             return True
-    return False
+    return [False, type_label_text]
 
-def forceCopyAttrib(to_attr, from_attr, name):
-    if name == 'style':
-        return forceCopyStyleAttrib(to_attr, from_attr, name)
-    else:
-        if name in from_attr:
-            if name in to_attr:
-                if to_attr[name] != from_attr[name]:
-                    to_attr[name] = from_attr[name]
-                    return True
-            else:
-                to_attr[name] = from_attr[name]
-                return True
-        return False
+def forceCopyLabelAttrib(to_attr, new_label, name='TypeLabel'):
+    to_attr[name] = new_label
+    return True
 
 # Updates the config and input data in to_attr to match the keys in from_attr.
 # Returns True if there were any changes.
@@ -501,9 +541,13 @@ def updateLinkShapeData(link, master):
     if forceCopyAttrib(link_gunns_attr, master_gunns_attr, 'reqPorts'):
         print('    ' + console.note('updated shape data: reqPorts in link: ' + link_attr['label'] + '.'))
         updated = True
-    if forceCopyAttrib(link_cell_attr, master_cell_attr, 'style'):
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(link_cell_attr, master_cell_attr)
+    if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + link_cell_attr['style'] + '.'))
         updated = True
+        if type_label_txt != '':
+            if forceCopyLabelAttrib(link_attr, type_label_txt):
+                print('    ' + console.note('updated shape data: TypeLabel in link: ' + link_attr['label'] + '.'))
     # Do config & input data items
     if updateConfigInputData(link_attr, master_attr, 'link'):
         updated = True
@@ -528,8 +572,9 @@ def updateSpotterShapeData(spotter, master):
     if forceCopyAttrib(spotter_attr, master_attr, 'About'):
         print('    ' + console.note('updated shape data: About in spotter: ' + spotter_attr['label'] + '.'))
         updated = True
-    if forceCopyAttrib(spotter_cell_attr, master_cell_attr, 'style'):
-        print('    ' + console.note('updated shape data: style in spotter: ' + spotter_cell_attr['style'] + '.'))
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(spotter_cell_attr, master_cell_attr)
+    if style_updated:
+        print('    ' + console.note('updated shape data: style in link: ' + spotter_cell_attr['style'] + '.'))
         updated = True
     # Do config & input data items
     if updateConfigInputData(spotter_attr, master_attr, 'spotter'):
@@ -547,8 +592,9 @@ def updateShapeData(shape, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    if forceCopyAttrib(shape_cell_attr, master_cell_attr, 'style'):
-        print('    ' + console.note('updated shape data: style in ' + shape_attr['About'] + ': ' + shape_cell_attr['style'] + '.'))
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(shape_cell_attr, master_cell_attr)
+    if style_updated:
+        print('    ' + console.note('updated shape data: style in link: ' + shape_cell_attr['style'] + '.'))
         updated = True
     return updated
 
@@ -563,8 +609,9 @@ def updateTableData(table, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    if forceCopyAttrib(table_cell_attr, master_cell_attr, 'style'):
-        print('    ' + console.note('updated table data: style in ' + table_attr['About'] + ': ' + table_cell_attr['style'] + '.'))
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(table_cell_attr, master_cell_attr)
+    if style_updated:
+        print('    ' + console.note('updated shape data: style in link: ' + table_cell_attr['style'] + '.'))
         updated = True
 
     # update shape data for table rows, which aren't in the <object> objects but in separate floating <mxcell> objects

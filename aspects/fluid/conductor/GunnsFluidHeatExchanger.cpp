@@ -426,3 +426,18 @@ void GunnsFluidHeatExchanger::setTemperatureOverride(double value)
 {
     mTemperatureOverride = std::max(0.0, value);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] segment (--) The segment number to apply the temperature to
+/// @param[in] value   (K)  Temperature
+///
+/// @details  Sets the segment temperature to given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidHeatExchanger::setSegTemperature(const int segment, const double value)
+{
+    if (MsMath::isInRange(0, segment, mNumSegs-1)) {
+        mSegTemperature[segment] = std::max(0.0, value);
+    } else {
+        GUNNS_WARNING("ignored invalid segment " << segment << ".");
+    }
+}

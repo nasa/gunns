@@ -321,6 +321,16 @@ void UtGunnsFluidHeatExchanger::testAccessors()
     /// - @test getNumSegs method
     CPPUNIT_ASSERT( mNumSegs == mArticle->getNumSegs());
 
+    /// - @test setSegTemperature method
+    mArticle->setSegTemperature(0, 123.456);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(123.456, mArticle->mSegTemperature[0], mTolerance);
+    mArticle->setSegTemperature(mNumSegs-1, 321.654);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(321.654, mArticle->mSegTemperature[mNumSegs-1], mTolerance);
+    mArticle->setSegTemperature(1, -123.456);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mSegTemperature[1], mTolerance);
+    CPPUNIT_ASSERT_NO_THROW(mArticle->setSegTemperature(-1, 0.0));
+    CPPUNIT_ASSERT_NO_THROW(mArticle->setSegTemperature(mNumSegs+1, 0.0));
+
     UT_PASS;
 }
 

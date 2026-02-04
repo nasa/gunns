@@ -79,3 +79,8 @@ make_all_ut_asan.out
 # Ignore trick-generated makefiles for unit tests
 Makefile.trick
 
+# DrawIO backup files
+*.xml.bkp
+
+# Mac-generated
+.DS_Store

@@ -15,6 +15,7 @@ PROGRAMMERS:
 #include "software/exceptions/TsInitializationException.hh"
 #include "common/sensors/TsNoise.hh"
 #include "math/UnitConversion.hh"
+#include "math/MsMath.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructor
@@ -380,7 +381,7 @@ void UtSensorAnalog::testInitialize()
 
     /// - Based on the config & input data, verify the initial sensor output.
     float expected =  static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * std::round(expected/tNominalResolution);
+    expected = tNominalResolution * MsMath::round(expected/tNominalResolution);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
     std::cout << "... Pass";
@@ -734,7 +735,7 @@ void UtSensorAnalog::testUpdateNominal()
 
     /// - Based on the nominal config & input data, verify the sensor output.
     float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = 0.18F * std::round(expected/0.18F);
+    expected = 0.18F * MsMath::round(expected/0.18F);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
@@ -834,7 +835,7 @@ void UtSensorAnalog::testMalfStuck()
 
     /// - Verify nominal sensed output of sensor.
     float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * std::round(expected/tNominalResolution);
+    expected = tNominalResolution * MsMath::round(expected/tNominalResolution);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
 
@@ -848,7 +849,7 @@ void UtSensorAnalog::testMalfStuck()
     /// - Remove the malf and verify the sensor goes back to the new truth value.
     article.mMalfFailStuckFlag = false;
     expected = static_cast<float>(article.getTruthInput()) * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = tNominalResolution * std::round(expected/tNominalResolution);
+    expected = tNominalResolution * MsMath::round(expected/tNominalResolution);
     article.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article.mSensedOutput, FLT_EPSILON * expected);
     CPPUNIT_ASSERT(false == article.mDegradedFlag);
@@ -966,7 +967,7 @@ void UtSensorAnalog::testMalfInteractions()
     article2.mMalfResolutionValue = 0.175F;
     expected = static_cast<float>(tTruthInput) * tNominalScale * 1.2F + tNominalBias - 0.6F +
                0.05F * static_cast<float>(tTimeStep) + tNominalNoiseScale * 5.0F;
-    expected = 0.175F * std::round(expected/0.175F);
+    expected = 0.175F * MsMath::round(expected/0.175F);
     article2.update(tTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, article2.getSensedOutput(), FLT_EPSILON * expected);
     CPPUNIT_ASSERT(true  == article.mDegradedFlag);
@@ -1019,7 +1020,7 @@ void UtSensorAnalog::testSense()
 
     /// - Based on the nominal config & input data, verify the sensor output.
     float expected = static_cast<float>(tTruthInput) * tNominalScale + tNominalBias + tNominalNoiseScale;
-    expected = 0.18F * std::round(expected/0.18F);
+    expected = 0.18F * MsMath::round(expected/0.18F);
     const float result = article.sense(tTimeStep, true, tTruthInput);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, result, FLT_EPSILON * expected);
 

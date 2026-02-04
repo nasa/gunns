@@ -103,6 +103,7 @@ class UtGunnsThermalPhaseChangeBattery: public CppUnit::TestFixture
         double                                    tMalfHotPhaseLeakRate;   /**< (kg/s)  Nominal input data. */
         int                                       tPort0;                  /**< (--)    Nominal inlet port index. */
         double                                    tTimeStep;               /**< (s)     Nominal time step. */
+        double                                    tTolerance;              /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static int                                TEST_ID;                 /**< (--)    Test identification number. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtGunnsThermalPhaseChangeBattery(const UtGunnsThermalPhaseChangeBattery& that);

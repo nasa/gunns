@@ -96,6 +96,7 @@ class UtGunnsThermoelectricEffect: public CppUnit::TestFixture
         double                               tCurrent;                         /**< (amp)   Nominal input data. */
         double                               tTemperatureHot;                  /**< (K)     Nominal input data. */
         double                               tTemperatureCold;                 /**< (K)     Nominal input data. */
+        double                               tTolerance;                       /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static int                           TEST_ID;                          /**< (--)    Test identification number. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         UtGunnsThermoelectricEffect(const UtGunnsThermoelectricEffect& that);

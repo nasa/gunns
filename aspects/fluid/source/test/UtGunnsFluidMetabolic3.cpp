@@ -146,7 +146,7 @@ void UtGunnsFluidMetabolic3::setUp()
     tArticle = new FriendlyGunnsFluidMetabolic3();
 
     /// - Set tolerance for comparing doubles.
-    tTolerance = 1e-12;
+    tTolerance = 1.0e-12;
 
     /// - Increment the test identification number.
     ++TEST_ID;

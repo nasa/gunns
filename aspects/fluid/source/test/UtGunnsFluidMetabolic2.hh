@@ -129,6 +129,7 @@ class UtGunnsFluidMetabolic2: public CppUnit::TestFixture
         double                              tNExercise1;         /**< (--) Nominal number of crew members in exercise 1 state. */
         GunnsFluidMetabolic2InputData*      tInputData;          /**< (--) Nominal input data. */
         FriendlyGunnsFluidMetabolic2*       tArticle;            /**< (--) Article under test. */
+        double                              tTolerance;          /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static int                          TEST_ID;             /**< (--) Test identification number. */
         /// @brief  Verifies the given trace compound quantity in the node's fluid inflow.
         void verifyTraceCompoundInFlow(const double                 mdot,

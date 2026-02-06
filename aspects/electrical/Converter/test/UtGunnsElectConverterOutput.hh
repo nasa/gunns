@@ -110,6 +110,7 @@ class UtGunnsElectConverterOutput: public CppUnit::TestFixture
         GunnsElectConverterInputConfigData*      tInputConfigData;     /**< (--)    Pointer to config data. */
         GunnsElectConverterInputInputData*       tInputInputData;      /**< (--)    Pointer to input data. */
         FriendlyGunnsElectConverterInput         tInputLink;           /**< (--)    Test converter input link. */
+        double                                   tTolerance;           /**< (--)    Nominal tolerance for comparison of expected and returned values. */
         static int                               TEST_ID;              /**< (--)    Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.

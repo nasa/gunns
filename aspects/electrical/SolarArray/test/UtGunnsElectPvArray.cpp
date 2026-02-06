@@ -49,7 +49,8 @@ UtGunnsElectPvArray::UtGunnsElectPvArray()
     tSourceFluxMagnitude(0.0),
     tSourceAngle(0.0),
     tSourceExposedFraction(0.0),
-    tTemperature(0.0)
+    tTemperature(0.0),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -128,6 +129,9 @@ void UtGunnsElectPvArray::setUp()
 
     /// - Default construct the nominal test article.
     tArticle = new FriendlyGunnsElectPvArray;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-13;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -561,17 +565,17 @@ void UtGunnsElectPvArray::testStep()
         const double expectedA    = (expectedIsc - expectedIivc) / expectedVivc;
         const double expectedW    = expectedA * expectedVivc;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSol,  tArticle->mPercentInsolation,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,  tArticle->mShortCircuitCurrent, FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIivc, tArticle->mIvCornerCurrent,     FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVivc, tArticle->mIvCornerVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpp, tArticle->mMpp.mCurrent,        FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVmpp, tArticle->mMpp.mVoltage,        DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp, tArticle->mMpp.mPower,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp, tArticle->mMpp.mConductance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA,    tArticle->mAdmittanceMatrix[0], FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,    tArticle->mSourceVector[0],     FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSol,  tArticle->mPercentInsolation,   tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,  tArticle->mShortCircuitCurrent, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIivc, tArticle->mIvCornerCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVivc, tArticle->mIvCornerVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpp, tArticle->mMpp.mCurrent,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVmpp, tArticle->mMpp.mVoltage,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp, tArticle->mMpp.mPower,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp, tArticle->mMpp.mConductance,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA,    tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,    tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
     } {
         /// @test    Mismatched strings, open-circuit side.
@@ -604,17 +608,17 @@ void UtGunnsElectPvArray::testStep()
         const double expectedA    = expectedIivc / (expectedVoc - expectedVivc);
         const double expectedW    = expectedA * expectedVoc;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSol,  tArticle->mPercentInsolation,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,  tArticle->mShortCircuitCurrent, FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIivc, tArticle->mIvCornerCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVivc, tArticle->mIvCornerVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVmpp, tArticle->mMpp.mVoltage,        FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp, tArticle->mMpp.mPower,          FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpp, tArticle->mMpp.mCurrent,        FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp, tArticle->mMpp.mConductance,    FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA,    tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,    tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSol,  tArticle->mPercentInsolation,   tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIsc,  tArticle->mShortCircuitCurrent, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIivc, tArticle->mIvCornerCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVivc, tArticle->mIvCornerVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVmpp, tArticle->mMpp.mVoltage,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPmpp, tArticle->mMpp.mPower,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpp, tArticle->mMpp.mCurrent,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedGmpp, tArticle->mMpp.mConductance,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA,    tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW,    tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
     } {
         /// @test    All strings shaded.
@@ -624,17 +628,17 @@ void UtGunnsElectPvArray::testStep()
 
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPercentInsolation,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mShortCircuitCurrent, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mOpenCircuitVoltage,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mIvCornerCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mIvCornerVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mVoltage,        DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mPower,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mCurrent,        DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mConductance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPercentInsolation,   tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mShortCircuitCurrent, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mOpenCircuitVoltage,  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mIvCornerCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mIvCornerVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mVoltage,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mPower,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mCurrent,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mMpp.mConductance,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(tArticle->needAdmittanceUpdate());
     } {
         /// @test    All strings zero light source.
@@ -649,17 +653,17 @@ void UtGunnsElectPvArray::testStep()
 
         const double expectedVoc  = tArticle->mSections[0].mStrings[0].getOpenCircuitVoltage();
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mPercentInsolation,   DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mShortCircuitCurrent, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mIvCornerCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mIvCornerVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mVoltage,        DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mPower,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mCurrent,        DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mConductance,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mPercentInsolation,   tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mShortCircuitCurrent, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoc,  tArticle->mOpenCircuitVoltage,  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mIvCornerCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mIvCornerVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mVoltage,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mPower,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mCurrent,        tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mMpp.mConductance,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(!tArticle->needAdmittanceUpdate());
     }
 
@@ -690,27 +694,27 @@ void UtGunnsElectPvArray::testAccessors()
 
     /// @test    Can get MPP state.
     tArticle->mMpp.mVoltage = 1.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->getMpp().mVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tArticle->getMpp().mVoltage, tTolerance);
 
     /// @test    Can get terminal state.
     tArticle->mTerminal.mVoltage = 2.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, tArticle->getTerminal().mVoltage, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, tArticle->getTerminal().mVoltage, tTolerance);
 
     /// @test    Can get short-circuit current.
     tArticle->mShortCircuitCurrent = 3.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, tArticle->getShortCircuitCurrent(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0, tArticle->getShortCircuitCurrent(), tTolerance);
 
     /// @test    Can get open-circuit voltage.
     tArticle->mOpenCircuitVoltage = 4.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, tArticle->getOpenCircuitVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, tArticle->getOpenCircuitVoltage(), tTolerance);
 
     /// @test    Can get I-V corner voltage.
     tArticle->mIvCornerVoltage = 5.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, tArticle->getIvCornerVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, tArticle->getIvCornerVoltage(), tTolerance);
 
     /// @test    Can get I-V corner current.
     tArticle->mIvCornerCurrent = 6.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0, tArticle->getIvCornerCurrent(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0, tArticle->getIvCornerCurrent(), tTolerance);
 
     UT_PASS;
 }
@@ -782,10 +786,10 @@ void UtGunnsElectPvArray::testComputeFlows()
 
     tArticle->computeFlows(0.0);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,    tArticle->mPotentialDrop, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getInflux(),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,    tArticle->mPotentialDrop, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getInflux(),    tTolerance);
     CPPUNIT_ASSERT(0.0 == tArticle->mSections[0].mStrings[0].getTerminal().mVoltage);
     CPPUNIT_ASSERT(0.0 == tArticle->mSections[0].mStrings[0].getTerminal().mPower);
     CPPUNIT_ASSERT(0.0 == tArticle->mSections[0].mStrings[0].getTerminal().mCurrent);
@@ -843,8 +847,8 @@ void UtGunnsElectPvArray::testLoadAtVoltage()
         double resultP, resultG;
         tArticle->predictLoadAtVoltage(resultP, resultG, voltage);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, resultP, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, resultG, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, resultP, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, resultG, tTolerance);
     } {
         /// @test    Open-circuit side of the array I-V curve.
         const double voltage   = tArticle->mIvCornerVoltage
@@ -856,22 +860,22 @@ void UtGunnsElectPvArray::testLoadAtVoltage()
         double resultP, resultG;
         tArticle->predictLoadAtVoltage(resultP, resultG, voltage);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, resultP, FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, resultG, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, resultP, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, resultG, tTolerance);
     } {
         /// @test    Voltage higher than max.
         double resultP, resultG;
         tArticle->predictLoadAtVoltage(resultP, resultG, tArticle->mOpenCircuitVoltage * 1.01);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultP, FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultG, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultP, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultG, tTolerance);
     } {
         /// @test    Zero voltage.
         double resultP, resultG;
         tArticle->predictLoadAtVoltage(resultP, resultG, 0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultP, FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultG, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultP, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, resultG, tTolerance);
     }
 
     UT_PASS;
@@ -903,12 +907,12 @@ void UtGunnsElectPvArray::testLoadAtPower()
         const double expectedV = tArticle->mOpenCircuitVoltage - factorI
                                * (tArticle->mOpenCircuitVoltage -tArticle->mIvCornerVoltage);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, actualP,                          FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, actualP,                          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, tTolerance);
         CPPUNIT_ASSERT(factorI > 0.0);
         CPPUNIT_ASSERT(factorI < 1.0);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     tTolerance);
     } {
         /// @test    Terminal outputs on short-circuit side of the I-V curve.
         const double expectedP = 0.5 * tArticle->mMpp.mPower;
@@ -922,12 +926,12 @@ void UtGunnsElectPvArray::testLoadAtPower()
         const double expectedI = tArticle->mShortCircuitCurrent - factorV
                                * (tArticle->mShortCircuitCurrent -tArticle->mIvCornerCurrent);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, actualP,                          FLT_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, actualP,                          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, tTolerance);
         CPPUNIT_ASSERT(factorV > 0.0);
         CPPUNIT_ASSERT(factorV < 1.0);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     tTolerance);
     } {
         /// @test    Terminal outputs given zero power load.
         const double expectedP = 0.0;
@@ -939,10 +943,10 @@ void UtGunnsElectPvArray::testLoadAtPower()
         const double expectedI = 0.0;
         const double expectedG = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, tTolerance);
     } {
         /// @test    Terminal outputs given power load > maximum.
         const double expectedP = 0.0;
@@ -954,10 +958,10 @@ void UtGunnsElectPvArray::testLoadAtPower()
         const double expectedI = 0.0;
         const double expectedG = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, tTolerance);
     } {
         /// @test    Terminal outputs with no active strings.
         tArticle->mSections[0].setSourceExposedFraction(0.0);
@@ -977,10 +981,10 @@ void UtGunnsElectPvArray::testLoadAtPower()
         const double expectedI = 0.0;
         const double expectedG = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->mTerminal.mVoltage,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mTerminal.mCurrent,     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTerminal.mPower,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mTerminal.mConductance, tTolerance);
     }
 
     UT_PASS_LAST;

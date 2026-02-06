@@ -46,7 +46,8 @@ UtGunnsElectPvRegConv::UtGunnsElectPvRegConv()
     tVoltageSetpoint(0.0),
     tVoltageSetpointDelta(0.0),
     tPowered(false),
-    tEnabled(false)
+    tEnabled(false),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -137,6 +138,9 @@ void UtGunnsElectPvRegConv::setUp()
 
     /// - Default construct the nominal test article.
     tArticle           = new FriendlyGunnsElectPvRegConv;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-13;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -454,18 +458,18 @@ void UtGunnsElectPvRegConv::testStep()
         tArray->predictLoadAtVoltage(p, g, expectedVarr);
         const double expectedImax = p * tVoltageConvEfficiency / (expectedVarr * tVoltageConvLimit);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,   tArticle->mRegulatedVoltage,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAoff,   tArticle->mStateAdmittance[0],  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAreg,   tArticle->mStateAdmittance[1],  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAsag,   tArticle->mStateAdmittance[2],  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAshort, tArticle->mStateAdmittance[3],  DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWoff,   tArticle->mStateSource[0],      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWreg,   tArticle->mStateSource[1],      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWsag,   tArticle->mStateSource[2],      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWshort, tArticle->mStateSource[3],      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImax,   tArticle->mMaxRegCurrent,       DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAreg,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWreg,   tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,   tArticle->mRegulatedVoltage,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAoff,   tArticle->mStateAdmittance[0],  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAreg,   tArticle->mStateAdmittance[1],  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAsag,   tArticle->mStateAdmittance[2],  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAshort, tArticle->mStateAdmittance[3],  tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWoff,   tArticle->mStateSource[0],      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWreg,   tArticle->mStateSource[1],      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWsag,   tArticle->mStateSource[2],      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWshort, tArticle->mStateSource[3],      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImax,   tArticle->mMaxRegCurrent,       tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAreg,   tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWreg,   tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(GunnsElectPvRegConv::REG == tArticle->mState);
         CPPUNIT_ASSERT(true                     == tArticle->mStateUpmodeLatch);
         CPPUNIT_ASSERT(true                     == tArticle->needAdmittanceUpdate());
@@ -476,10 +480,10 @@ void UtGunnsElectPvRegConv::testStep()
         const double expectedPin  = expectedPout / tVoltageConvEfficiency;
 
         tArticle->step(0.0);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,   tArticle->mOutputPower,         DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArticle->mInputPower,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArray->getTerminal().mPower,   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,                tTolerance * expectedAreg);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,   tArticle->mOutputPower,         tTolerance * expectedAreg);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArticle->mInputPower,          tTolerance * expectedAreg);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArray->getTerminal().mPower,   tTolerance * expectedAreg);
     } {
         /// @test    Regulated voltage with setpoint malf, transition to OFF when disabled,
         ///          outputs in OFF state.
@@ -495,15 +499,15 @@ void UtGunnsElectPvRegConv::testStep()
         const double expectedAoff = 1.0e-8;
         const double expectedWoff = 0.0;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,   tArticle->mRegulatedVoltage,    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAoff,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWoff,   tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,   tArticle->mRegulatedVoltage,    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAoff,   tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWoff,   tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(GunnsElectPvRegConv::OFF == tArticle->mState);
         CPPUNIT_ASSERT(true                     == tArticle->needAdmittanceUpdate());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,   tArticle->mOutputPower,         DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArticle->mInputPower,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArray->getTerminal().mPower,   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,   tArticle->mFlux,                tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,   tArticle->mOutputPower,         tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArticle->mInputPower,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,    tArray->getTerminal().mPower,   tTolerance);
     } {
         /// @test    Transition from REG -> SAG.
         tArray->mSections[0].setSourceExposedFraction(0.5);
@@ -521,8 +525,8 @@ void UtGunnsElectPvRegConv::testStep()
         tArticle->mEnabled              = true;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAsag,   tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWsag,   tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAsag,   tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWsag,   tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(GunnsElectPvRegConv::SAG == tArticle->mState);
         CPPUNIT_ASSERT(true                     == tArticle->needAdmittanceUpdate());
     } {
@@ -541,7 +545,7 @@ void UtGunnsElectPvRegConv::testStep()
 
         const double expectedVreg = DBL_EPSILON;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,  tArticle->mRegulatedVoltage,    DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVreg,  tArticle->mRegulatedVoltage,    tTolerance);
         CPPUNIT_ASSERT(GunnsElectPvRegConv::OFF == tArticle->mState);
         CPPUNIT_ASSERT(true                     == tArticle->needAdmittanceUpdate());
     } {
@@ -625,9 +629,9 @@ void UtGunnsElectPvRegConv::testMinorStep()
         tArticle->minorStep(0.0, 2);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateAdmittance[GunnsElectPvRegConv::SAG],
-                                     tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+                                     tArticle->mAdmittanceMatrix[0], tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateSource[GunnsElectPvRegConv::SAG],
-                                     tArticle->mSourceVector[0],     DBL_EPSILON);
+                                     tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    [A] and {w} outputs are updated in minorStep for OFF state.
@@ -636,9 +640,9 @@ void UtGunnsElectPvRegConv::testMinorStep()
         tArticle->minorStep(0.0, 3);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateAdmittance[GunnsElectPvRegConv::OFF],
-                                     tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+                                     tArticle->mAdmittanceMatrix[0], tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateSource[GunnsElectPvRegConv::OFF],
-                                     tArticle->mSourceVector[0],     DBL_EPSILON);
+                                     tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    [A] and {w} outputs are updated in minorStep for SHORT state.
@@ -647,9 +651,9 @@ void UtGunnsElectPvRegConv::testMinorStep()
         tArticle->minorStep(0.0, 4);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateAdmittance[GunnsElectPvRegConv::SHORT],
-                                     tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+                                     tArticle->mAdmittanceMatrix[0], tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateSource[GunnsElectPvRegConv::SHORT],
-                                     tArticle->mSourceVector[0],     DBL_EPSILON);
+                                     tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    [A] and {w} outputs are updated in minorStep for REG state.
@@ -658,9 +662,9 @@ void UtGunnsElectPvRegConv::testMinorStep()
         tArticle->minorStep(0.0, 5);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateAdmittance[GunnsElectPvRegConv::REG],
-                                     tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
+                                     tArticle->mAdmittanceMatrix[0], tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mStateSource[GunnsElectPvRegConv::REG],
-                                     tArticle->mSourceVector[0],     DBL_EPSILON);
+                                     tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     }
 
@@ -741,10 +745,10 @@ void UtGunnsElectPvRegConv::testConfirmSolutionAcceptable()
     double actualSensedIin    = tArticle->mSensors.mInCurrent->getSensedOutput();
     double actualSensedVout   = tArticle->mSensors.mOutVoltage->getSensedOutput();
     double actualSensedIout   = tArticle->mSensors.mOutCurrent->getSensedOutput();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  static_cast<double>(FLT_EPSILON));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  static_cast<double>(FLT_EPSILON));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, static_cast<double>(FLT_EPSILON) * expectedSensedVout);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVin,  actualSensedVin,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIin,  actualSensedIin,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedVout, actualSensedVout, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSensedIout, actualSensedIout, tTolerance);
 
     /// @test    Trips occur on prioritized converged minor step.
     CPPUNIT_ASSERT(tOutOverCurrentTrip < static_cast<double>(tArticle->mSensors.mOutCurrent->getSensedOutput()));
@@ -845,12 +849,12 @@ void UtGunnsElectPvRegConv::testComputeFlows()
 
     tArticle->computeFlows(0.0);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,      tArticle->mPotentialDrop, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,       tArticle->mPower,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,    tArticle->mOutputPower,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,     tArticle->mInputPower,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->mWasteHeat,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux, tNodes[0].getInflux(),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp,      tArticle->mPotentialDrop, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,       tArticle->mPower,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPout,    tArticle->mOutputPower,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPin,     tArticle->mInputPower,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHeat,    tArticle->mWasteHeat,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlux, tNodes[0].getInflux(),    tTolerance);
 
     UT_PASS_FINAL;
 }

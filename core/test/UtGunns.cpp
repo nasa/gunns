@@ -136,6 +136,7 @@ UtGunns::UtGunns()
     tMinLinearizationPotential(),
     tMinorStepLimit(),
     tDecompositionLimit(),
+    tTolerance(),
     tBasicNodes(),
     tFluidNodes(),
     tNodeList(),
@@ -207,6 +208,7 @@ void UtGunns::setUp()
     tMinLinearizationPotential = 1.0;
     tMinorStepLimit            = 7;
     tDecompositionLimit        = 5;
+    tTolerance                 = 1.0e-13;
 
     tNetworkConfig.mName                      = tNetworkName;
     tNetworkConfig.mConvergenceTolerance      = tConvergenceTolerance;
@@ -236,8 +238,8 @@ void UtGunns::testConfigData()
     /// - Check default GunnsConfigData construction.
     GunnsConfigData* tDefaultConfig = new GunnsConfigData;
     CPPUNIT_ASSERT("" == tDefaultConfig->mName);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, tDefaultConfig->mConvergenceTolerance,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, tDefaultConfig->mMinLinearizationPotential, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, tDefaultConfig->mConvergenceTolerance,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, tDefaultConfig->mMinLinearizationPotential, tTolerance);
     CPPUNIT_ASSERT_EQUAL(0, tDefaultConfig->mMinorStepLimit);
     CPPUNIT_ASSERT_EQUAL(0, tDefaultConfig->mDecompositionLimit);
     delete tDefaultConfig;
@@ -251,9 +253,9 @@ void UtGunns::testConfigData()
 
     CPPUNIT_ASSERT(tNetworkName == tNetConfig->mName);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tConvergenceTolerance,
-            tNetConfig->mConvergenceTolerance,      DBL_EPSILON);
+            tNetConfig->mConvergenceTolerance,      tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tMinLinearizationPotential,
-            tNetConfig->mMinLinearizationPotential, DBL_EPSILON);
+            tNetConfig->mMinLinearizationPotential, tTolerance);
     CPPUNIT_ASSERT_EQUAL(tMinorStepLimit,     tNetConfig->mMinorStepLimit);
     CPPUNIT_ASSERT_EQUAL(tDecompositionLimit, tNetConfig->mDecompositionLimit);
 
@@ -261,9 +263,9 @@ void UtGunns::testConfigData()
     GunnsConfigData copyConfig(*tNetConfig);
     CPPUNIT_ASSERT(tNetConfig->mName == copyConfig.mName);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetConfig->mConvergenceTolerance,
-            copyConfig.mConvergenceTolerance,      DBL_EPSILON);
+            copyConfig.mConvergenceTolerance,      tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetConfig->mMinLinearizationPotential,
-            copyConfig.mMinLinearizationPotential, DBL_EPSILON);
+            copyConfig.mMinLinearizationPotential, tTolerance);
     CPPUNIT_ASSERT_EQUAL(tNetConfig->mMinorStepLimit,     copyConfig.mMinorStepLimit);
     CPPUNIT_ASSERT_EQUAL(tNetConfig->mDecompositionLimit, copyConfig.mDecompositionLimit);
 
@@ -466,11 +468,11 @@ void UtGunns::testNominalInitialization()
     /// - Check Nodes vector.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(101.32501,
             tNetwork.mNodes[2]->getContent()->getPartialPressure(FluidProperties::GUNNS_O2),
-            DBL_EPSILON);
+            tTolerance);
     CPPUNIT_ASSERT(std::string("FluidNode4") == tFluidNodes[3].mName);
 
     /// - Check vacuum node.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNetwork.mNodes[3]->getPotential(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNetwork.mNodes[3]->getPotential(), tTolerance);
 
     /// - Setup the links config and input data.
     tFluidConductor1Config.mName                  = "tFluidConductor1";
@@ -516,9 +518,9 @@ void UtGunns::testNominalInitialization()
     /// - Check the links vector and link initialization.
     CPPUNIT_ASSERT_EQUAL(2, *(tLinks[1]->getNodeMap()+1));
     CPPUNIT_ASSERT_EQUAL(2, *tLinks[3]->getNodeMap());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tFluidConductor1.mEffectiveConductivity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.3, tFluidConductor3.mExpansionScaleFactor,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tFluidConductor2.mMalfBlockageValue,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tFluidConductor1.mEffectiveConductivity, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.3, tFluidConductor3.mExpansionScaleFactor,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, tFluidConductor2.mMalfBlockageValue,     tTolerance);
 
     /// - Initialize the network with configuration data.
     tNetwork.initialize(tNetworkConfig, tLinks);
@@ -532,20 +534,20 @@ void UtGunns::testNominalInitialization()
     CPPUNIT_ASSERT_EQUAL(tDecompositionLimit,     tNetwork.mDecompositionLimit);
 
     /// - Check initial system of equation values.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSourceVector[2],         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMinorPotentialVector[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMajorPotentialVector[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSlavePotentialVector[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mNetCapDeltaPotential[8], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(101.32501,  tNetwork.mPotentialVector[0],      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mPotentialVector[2],      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSourceVector[2],         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMinorPotentialVector[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mMajorPotentialVector[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mSlavePotentialVector[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,        tNetwork.mNetCapDeltaPotential[8], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(101.32501,  tNetwork.mPotentialVector[0],      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tNetwork.mPotentialVector[2],      tTolerance);
 
     /// - Check initial potential distributed to incident links.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tFluidConductor2.mPotentialVector[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(689.475728, tFluidConductor2.mPotentialVector[1], tTolerance);
 
     /// - Check Config data transfer to links.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tMinLinearizationPotential,
-            tFluidConductor1.mMinLinearizationPotential, DBL_EPSILON);
+            tFluidConductor1.mMinLinearizationPotential, tTolerance);
 
     /// - Check final init flags for a linear network.
     CPPUNIT_ASSERT(tNetwork.mInitAttempted == true);
@@ -844,25 +846,25 @@ void UtGunns::testLinearStep()
 
     /// - Verify the source vector.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.25E7,
-            tNetwork.mSourceVector[0], DBL_EPSILON);
+            tNetwork.mSourceVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.25E3,
-            tNetwork.mSourceVector[1], DBL_EPSILON);
+            tNetwork.mSourceVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.0E-2,
-            tNetwork.mSourceVector[2], DBL_EPSILON);
+            tNetwork.mSourceVector[2], tTolerance);
 
     /// - Verify the upper diagonal of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0000000999999999E05,
-            tNetwork.mAdmittanceMatrix[0], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.9999990000001005E-8,
-            tNetwork.mAdmittanceMatrix[1], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[2], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0010999998999999E1,
-            tNetwork.mAdmittanceMatrix[4], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[4], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.9890120877024299E-5,
-            tNetwork.mAdmittanceMatrix[5], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[5], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 9.9990010987912399E-4,
-            tNetwork.mAdmittanceMatrix[8], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[8], tTolerance);
 
     /// - Verify the symmetry of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mAdmittanceMatrix[1],
@@ -874,11 +876,11 @@ void UtGunns::testLinearStep()
 
     /// - Verify the potential vector solution.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999990010e+02,
-            tNetwork.mPotentialVector[0], DBL_EPSILON);
+            tNetwork.mPotentialVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499900099900091e+02,
-            tNetwork.mPotentialVector[1], DBL_EPSILON);
+            tNetwork.mPotentialVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1499900099900080e+02,
-            tNetwork.mPotentialVector[2], DBL_EPSILON);
+            tNetwork.mPotentialVector[2], tTolerance);
 
     /// - Verify potential vector output to the links.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNetwork.mLinkPotentialVectors[1][1],
@@ -914,11 +916,11 @@ void UtGunns::testLinearStep()
 
     /// - Verify the potential vector solution.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999980031e+02,
-            tNetwork.mPotentialVector[0], DBL_EPSILON);
+            tNetwork.mPotentialVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499800299600473e+02,
-            tNetwork.mPotentialVector[1], DBL_EPSILON);
+            tNetwork.mPotentialVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1499800299600462e+02,
-            tNetwork.mPotentialVector[2], DBL_EPSILON);
+            tNetwork.mPotentialVector[2], tTolerance);
 
     /// - Verify outputs to the minor step log.
     CPPUNIT_ASSERT(2 == log->mBuffer[1].mMajorStep);
@@ -1006,33 +1008,33 @@ void UtGunns::testNonLinearStep()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2500000000000000e+16,
             tNetwork.mSourceVector[0], DBL_EPSILON * 1.0E-15);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[1], DBL_EPSILON);
+            tNetwork.mSourceVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[2], DBL_EPSILON);
+            tNetwork.mSourceVector[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[3], DBL_EPSILON);
+            tNetwork.mSourceVector[3], tTolerance);
 
     /// - Verify the upper diagonal of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0000000000000100e+14,
-            tNetwork.mAdmittanceMatrix[0], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.9999999999999006e-15,
-            tNetwork.mAdmittanceMatrix[1], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[2], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[3], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[3], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.04604229541273e+00,
-            tNetwork.mAdmittanceMatrix[5], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[5], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-5.4627673654735604e-04,
-            tNetwork.mAdmittanceMatrix[6], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[6], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[7], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[7], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7111641329340224e-04,
-            tNetwork.mAdmittanceMatrix[10], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[10], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.4900544528372528e-01,
-            tNetwork.mAdmittanceMatrix[11], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[11], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.8509945547162747e-04,
-            tNetwork.mAdmittanceMatrix[15], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[15], tTolerance);
 
     /// - Verify the symmetry of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mAdmittanceMatrix[1],
@@ -1050,13 +1052,13 @@ void UtGunns::testNonLinearStep()
 
     /// - Verify the potential vector solution.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-            tNetwork.mPotentialVector[0], DBL_EPSILON);
+            tNetwork.mPotentialVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.195580929517748e+02,
-            tNetwork.mPotentialVector[1], DBL_EPSILON);
+            tNetwork.mPotentialVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993847627749395e+02,
-            tNetwork.mPotentialVector[2], DBL_EPSILON);
+            tNetwork.mPotentialVector[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969238138746974e+01,
-            tNetwork.mPotentialVector[3], DBL_EPSILON);
+            tNetwork.mPotentialVector[3], tTolerance);
 
     /// - Verify the potential vector is saved for next step.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -1069,16 +1071,16 @@ void UtGunns::testNonLinearStep()
             tNetwork.mMinorPotentialVector[3], 0.0);
 
     /// - Verify minor step iteration & convergence metrics.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, tTolerance);
     CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mMinorStepCount);
     CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mDecompositionCount);
     CPPUNIT_ASSERT_EQUAL( 1, tNetwork.mMajorStepCount);
     CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mMaxMinorStepCount);
     CPPUNIT_ASSERT_EQUAL( 0, tNetwork.mConvergenceFailCount);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,                    tNetwork.mNodesConvergence[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0509654027355282e-03, tNetwork.mNodesConvergence[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.8054854277996810e-03, tNetwork.mNodesConvergence[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4027427138927351e-03, tNetwork.mNodesConvergence[3], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,                    tNetwork.mNodesConvergence[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0509654027355282e-03, tNetwork.mNodesConvergence[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.8054854277996810e-03, tNetwork.mNodesConvergence[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4027427138927351e-03, tNetwork.mNodesConvergence[3], tTolerance);
 
     /// - Verify outputs to the minor step log.
     CPPUNIT_ASSERT(1                                   == log->mBuffer[0].mMajorStep);
@@ -1146,35 +1148,35 @@ void UtGunns::testNonLinearStep()
 
     /// - Verify the source vector.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2500000000000000e+16,
-            tNetwork.mSourceVector[0], DBL_EPSILON);
+            tNetwork.mSourceVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[1], DBL_EPSILON);
+            tNetwork.mSourceVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[2], DBL_EPSILON);
+            tNetwork.mSourceVector[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mSourceVector[3], DBL_EPSILON);
+            tNetwork.mSourceVector[3], tTolerance);
 
     /// - Verify the upper diagonal of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0000000000000100e+14,
-            tNetwork.mAdmittanceMatrix[0], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.9999999999999006e-15,
-            tNetwork.mAdmittanceMatrix[1], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[2], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[3], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[3], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0460446161558639e+00,
-            tNetwork.mAdmittanceMatrix[5], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[5], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-5.4627552458376871e-04,
-            tNetwork.mAdmittanceMatrix[6], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[6], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
-            tNetwork.mAdmittanceMatrix[7], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[7], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7111641398595286e-04,
-            tNetwork.mAdmittanceMatrix[10], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[10], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.4900544512996086e-01,
-            tNetwork.mAdmittanceMatrix[11], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[11], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.8509945548700392e-04,
-            tNetwork.mAdmittanceMatrix[15], DBL_EPSILON);
+            tNetwork.mAdmittanceMatrix[15], tTolerance);
 
     /// - Verify the symmetry of the decomposed admittance matrix.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mAdmittanceMatrix[1],
@@ -1192,13 +1194,13 @@ void UtGunns::testNonLinearStep()
 
     /// - Verify the potential vector solution.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-            tNetwork.mPotentialVector[0], DBL_EPSILON);
+            tNetwork.mPotentialVector[0], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1955782756819053e+02,
-            tNetwork.mPotentialVector[1], DBL_EPSILON);
+            tNetwork.mPotentialVector[1], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993823224661188e+02,
-            tNetwork.mPotentialVector[2], DBL_EPSILON);
+            tNetwork.mPotentialVector[2], tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969116123305930e+01,
-            tNetwork.mPotentialVector[3], DBL_EPSILON);
+            tNetwork.mPotentialVector[3], tTolerance);
 
     /// - Verify the potential vector is saved for next step.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -1211,7 +1213,7 @@ void UtGunns::testNonLinearStep()
             tNetwork.mMinorPotentialVector[3], 0.0);
 
     /// - Verify minor step iteration & convergence metrics.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 4.0, tNetwork.mAvgMinorStepCount, tTolerance);
     CPPUNIT_ASSERT_EQUAL( 8, tNetwork.mMinorStepCount);
     CPPUNIT_ASSERT_EQUAL( 6, tNetwork.mDecompositionCount);
     CPPUNIT_ASSERT_EQUAL( 2, tNetwork.mMajorStepCount);
@@ -1318,8 +1320,8 @@ void UtGunns::testLinearStepExceptions()
     //    zero on a diagonal.
     /// - Expect a TsNumericalException for forward/backwards substitution error.
 //    tLink.mAdmittanceMatrix[0] = 1.0;
-//    tLink.mAdmittanceMatrix[1] =-std::sqrt(0.01+DBL_EPSILON);
-//    tLink.mAdmittanceMatrix[2] =-std::sqrt(0.01+DBL_EPSILON);
+//    tLink.mAdmittanceMatrix[1] =-std::sqrt(0.01+tTolerance);
+//    tLink.mAdmittanceMatrix[2] =-std::sqrt(0.01+tTolerance);
 //    tLink.mAdmittanceMatrix[3] = 0.01;
 //    tLink.mAdmittanceUpdate = true;
 //    CPPUNIT_ASSERT_THROW(tNetwork.step(), TsNumericalException);
@@ -1353,10 +1355,10 @@ void UtGunns::testNonConvergence()
     CPPUNIT_ASSERT_EQUAL        (5,   tNetwork.mMaxDecompositionCount);
     CPPUNIT_ASSERT_EQUAL        (5,   tNetwork.mLastDecomposition);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, tNetwork.mAvgDecompositionCount, 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5631940186722204e-13, tNetwork.mNodesConvergence[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5277576986464879e+01, tNetwork.mNodesConvergence[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4048346654220552e+01, tNetwork.mNodesConvergence[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.0241733271102795e+00, tNetwork.mNodesConvergence[3], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5631940186722204e-13, tNetwork.mNodesConvergence[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5277576986464879e+01, tNetwork.mNodesConvergence[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.4048346654220552e+01, tNetwork.mNodesConvergence[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.0241733271102795e+00, tNetwork.mNodesConvergence[3], tTolerance);
 
     /// - Verify outputs to the minor step log.
     FriendlyGunnsMinorStepLog* log = static_cast<FriendlyGunnsMinorStepLog*>(&tNetwork.mStepLog);
@@ -1448,8 +1450,8 @@ void UtGunns::testFluidNetworkStep()
     /// - Step the network and verify the fluid nodes get their integrateFlows method called.
     tNetwork.step(tDeltaTime);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.9715166132501332e+02, tFluidNodes[1].mInfluxRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.8377328374256626e+07, tFluidNodes[2].mNetHeatFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.9715166132501332e+02, tFluidNodes[1].mInfluxRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.8377328374256626e+07, tFluidNodes[2].mNetHeatFlux, tTolerance*1.0e6); //allow larger tol for large number
 
     /// - Step again with the link conductivities shut off and verify the fluid nodes get their
     ///   restFlows method called.
@@ -1460,8 +1462,8 @@ void UtGunns::testFluidNetworkStep()
     tFluidConductor2.mMalfBlockageValue = 1.0;
     tFluidConductor3.mMalfBlockageValue = 1.0;
     tNetwork.step(tDeltaTime);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tFluidNodes[1].mInfluxRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tFluidNodes[1].mNetHeatFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tFluidNodes[1].mInfluxRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tFluidNodes[1].mNetHeatFlux, tTolerance);
     CPPUNIT_ASSERT(2 == tNetwork.mDecompositionCount);
 
     std::cout << "... Pass";
@@ -1656,7 +1658,7 @@ void UtGunns::testSlaveMode()
     tNetwork.setNormalMode();
     tNetwork.step(tDeltaTime);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(9.990009990009990e+01, tConductor1.getPotentialVector()[0],
-                                 DBL_EPSILON);
+                                 tTolerance);
 
     /// - Verify setSlavePotentials does nothing when not in SLAVE mode.
     tNetwork.mSlavePotentialVector[0] = 0.0;
@@ -1876,10 +1878,10 @@ void UtGunns::testDebugPreDecomposition()
 
     /// - Verify the saved slice, values taken from the pre-Decomposition comments in the
     ///   testNonLinearStep test.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0000000000000000e+00, tNetwork.mDebugSavedSlice[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-5.7142857142857147e-04, tNetwork.mDebugSavedSlice[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7142857142857163e-04, tNetwork.mDebugSavedSlice[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.0000000000000000e-04, tNetwork.mDebugSavedSlice[3], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0000000000000000e+00, tNetwork.mDebugSavedSlice[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-5.7142857142857147e-04, tNetwork.mDebugSavedSlice[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7142857142857163e-04, tNetwork.mDebugSavedSlice[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.0000000000000000e-04, tNetwork.mDebugSavedSlice[3], tTolerance);
 
     /// - Set the debug controls to record the diagonal on minor step 1.
     tNetwork.mDebugDesiredStep  =  1;
@@ -1890,10 +1892,10 @@ void UtGunns::testDebugPreDecomposition()
 
     /// - Verify the saved slice, values taken from the pre-Decomposition comments in the
     ///   testNonLinearStep test.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0000000000000100e+14, tNetwork.mDebugSavedSlice[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0460446161558739e+00, tNetwork.mDebugSavedSlice[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7142857142857163e-04, tNetwork.mDebugSavedSlice[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0000000000000001e-04, tNetwork.mDebugSavedSlice[3], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0000000000000100e+14, tNetwork.mDebugSavedSlice[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0460446161558739e+00, tNetwork.mDebugSavedSlice[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.7142857142857163e-04, tNetwork.mDebugSavedSlice[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0000000000000001e-04, tNetwork.mDebugSavedSlice[3], tTolerance);
 
     std::cout << "... Pass";
 }
@@ -1915,11 +1917,11 @@ void UtGunns::testDebugNode()
 
     /// - Verify the saved node minor step potentials.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0,                    tNetwork.mDebugSavedNode[0],  0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.1493724426463116e+02, tNetwork.mDebugSavedNode[1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.1034661406574261e+02, tNetwork.mDebugSavedNode[2],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0997354938683942e+02, tNetwork.mDebugSavedNode[3],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0994128176292175e+02, tNetwork.mDebugSavedNode[4],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0993847627749395e+02, tNetwork.mDebugSavedNode[5],  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.1493724426463116e+02, tNetwork.mDebugSavedNode[1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.1034661406574261e+02, tNetwork.mDebugSavedNode[2],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0997354938683942e+02, tNetwork.mDebugSavedNode[3],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0994128176292175e+02, tNetwork.mDebugSavedNode[4],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0993847627749395e+02, tNetwork.mDebugSavedNode[5],  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tNetwork.mDebugSavedNode[6],  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tNetwork.mDebugSavedNode[7],  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                    tNetwork.mDebugSavedNode[8],  0.0);
@@ -2061,7 +2063,7 @@ void UtGunns::testWorstCaseTimingConverging()
     tNetwork.step(tDeltaTime);
 
     /// - Verify minor step iteration & convergence metrics for a converging network.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 10.0, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 10.0, tNetwork.mAvgMinorStepCount, tTolerance);
     CPPUNIT_ASSERT_EQUAL(10, tNetwork.mMinorStepCount);
     CPPUNIT_ASSERT_EQUAL( 1, tNetwork.mMajorStepCount);
     CPPUNIT_ASSERT_EQUAL(10, tNetwork.mMaxMinorStepCount);
@@ -2160,7 +2162,7 @@ void UtGunns::testNetworkCapacitance()
     const double expectedCapacitance = tCapacitorInput.mCapacitance
                                      * tConductor1Config.mDefaultConductivity
                                      / (1.0/tDeltaTime + tConductor1Config.mDefaultConductivity);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCapacitance, tBasicNodes[0].getNetworkCapacitance(),        FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCapacitance, tBasicNodes[0].getNetworkCapacitance(),        tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                 tBasicNodes[0].getNetworkCapacitanceRequest(), 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,                 tBasicNodes[1].getNetworkCapacitance(),        0.0);
     CPPUNIT_ASSERT(tNetwork.mNetCapDeltaPotential[3] == 0.0);
@@ -2285,13 +2287,13 @@ void UtGunns::testGpuSparse()
         ///   since this test is the same.  We set a slightly larger tolerance since the GPU
         ///   solution is not exactly identical to the CPU solution.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-                tNetwork.mPotentialVector[0], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[0], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.195580929517748e+02,
-                tNetwork.mPotentialVector[1], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[1], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993847627749395e+02,
-                tNetwork.mPotentialVector[2], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[2], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969238138746974e+01,
-                tNetwork.mPotentialVector[3], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[3], 100.0*tTolerance);
 
         /// - Verify the potential vector is saved for next step.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -2304,7 +2306,7 @@ void UtGunns::testGpuSparse()
                 tNetwork.mMinorPotentialVector[3], 0.0);
 
         /// - Verify minor step iteration & convergence metrics.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, tTolerance);
         CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mMinorStepCount);
         CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mDecompositionCount);
         CPPUNIT_ASSERT_EQUAL( 1, tNetwork.mMajorStepCount);
@@ -2316,13 +2318,13 @@ void UtGunns::testGpuSparse()
 
         /// - Verify the potential vector solution.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-                tNetwork.mPotentialVector[0], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[0], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1955782756819053e+02,
-                tNetwork.mPotentialVector[1], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[1], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993823224661188e+02,
-                tNetwork.mPotentialVector[2], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[2], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969116123305930e+01,
-                tNetwork.mPotentialVector[3], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[3], 1000.0*tTolerance);
 
         /// - Verify the potential vector is saved for next step.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -2335,7 +2337,7 @@ void UtGunns::testGpuSparse()
                 tNetwork.mMinorPotentialVector[3], 0.0);
 
         /// - Verify minor step iteration & convergence metrics.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 3, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 3, tNetwork.mAvgMinorStepCount, tTolerance);
         CPPUNIT_ASSERT_EQUAL( 6, tNetwork.mMinorStepCount);
         CPPUNIT_ASSERT_EQUAL( 6, tNetwork.mDecompositionCount);
         CPPUNIT_ASSERT_EQUAL( 2, tNetwork.mMajorStepCount);
@@ -2369,13 +2371,13 @@ void UtGunns::testGpuDense()
         ///   since this test is the same.  We set a slightly larger tolerance since the GPU
         ///   solution is not exactly identical to the CPU solution.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-                tNetwork.mPotentialVector[0], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[0], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.195580929517748e+02,
-                tNetwork.mPotentialVector[1], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[1], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993847627749395e+02,
-                tNetwork.mPotentialVector[2], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[2], 100.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969238138746974e+01,
-                tNetwork.mPotentialVector[3], 100.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[3], 100.0*tTolerance);
 
         /// - Verify the potential vector is saved for next step.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -2388,7 +2390,7 @@ void UtGunns::testGpuDense()
                 tNetwork.mMinorPotentialVector[3], 0.0);
 
         /// - Verify minor step iteration & convergence metrics.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0, tNetwork.mAvgMinorStepCount, tTolerance);
         CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mMinorStepCount);
         CPPUNIT_ASSERT_EQUAL( 5, tNetwork.mDecompositionCount);
         CPPUNIT_ASSERT_EQUAL( 1, tNetwork.mMajorStepCount);
@@ -2400,13 +2402,13 @@ void UtGunns::testGpuDense()
 
         /// - Verify the potential vector solution.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2499999999999994e+02,
-                tNetwork.mPotentialVector[0], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[0], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1955782756819053e+02,
-                tNetwork.mPotentialVector[1], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[1], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0993823224661188e+02,
-                tNetwork.mPotentialVector[2], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[2], 1000.0*tTolerance);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.4969116123305930e+01,
-                tNetwork.mPotentialVector[3], 1000.0*DBL_EPSILON);
+                tNetwork.mPotentialVector[3], 1000.0*tTolerance);
 
         /// - Verify the potential vector is saved for next step.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( tNetwork.mPotentialVector[0],
@@ -2419,7 +2421,7 @@ void UtGunns::testGpuDense()
                 tNetwork.mMinorPotentialVector[3], 0.0);
 
         /// - Verify minor step iteration & convergence metrics.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 3, tNetwork.mAvgMinorStepCount, DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 3, tNetwork.mAvgMinorStepCount, tTolerance);
         CPPUNIT_ASSERT_EQUAL( 6, tNetwork.mMinorStepCount);
         CPPUNIT_ASSERT_EQUAL( 6, tNetwork.mDecompositionCount);
         CPPUNIT_ASSERT_EQUAL( 2, tNetwork.mMajorStepCount);

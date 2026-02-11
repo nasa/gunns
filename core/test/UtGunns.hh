@@ -166,6 +166,7 @@ class UtGunns : public CppUnit::TestFixture
         double                           tMinLinearizationPotential;
         int                              tMinorStepLimit;
         int                              tDecompositionLimit;
+        double                           tTolerance;
 
         GunnsBasicNodeUtGunns            tBasicNodes[10];
         GunnsFluidNodeUtGunns            tFluidNodes[10];

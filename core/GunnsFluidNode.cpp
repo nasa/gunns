@@ -606,7 +606,23 @@ void GunnsFluidNode::integrateFlows(const double dt)
         const double oldMass = std::max(0.0, lastMass - contentOutMass);
 
         /// - Final contents mass (kg) in the node after outflows and inflows.
-        const double newMass = std::max(DBL_EPSILON, oldMass + inMass - inflowOutMass);
+        double newMass = oldMass + inMass - inflowOutMass;
+
+        /// - The new enthalpy is a mix of the old and inflow enthalpy.  Because we haven't
+        ///   called setTemperature yet, getSpecificiEnthalpy still represents the last mass.
+        double newEnthalpy = lastMass * mContent.getSpecificEnthalpy() + mNetHeatFlux * dt;
+
+        /// - Protect for edge cases (non-positive mass or enthalpy).
+        if(newMass < DBL_EPSILON) {
+            newMass = DBL_EPSILON;
+            newEnthalpy = mContent.getSpecificEnthalpy();
+
+        } else if(newEnthalpy < DBL_EPSILON) {
+            newEnthalpy = mContent.getSpecificEnthalpy();
+
+        } else {
+            newEnthalpy /= newMass;
+        }
 
         /// - Calculate the change in temperature of the original mass due to thermal expansion.
         mExpansionDeltaT = GunnsFluidUtils::computeIsentropicTemperature(mExpansionScaleFactor,
@@ -659,14 +675,6 @@ void GunnsFluidNode::integrateFlows(const double dt)
         ///   incoming mass fluid properties, otherwise hold the temperature constant.
         double newT = mContent.getTemperature();
 
-        /// - The new enthalpy is a mix of the old and inflow enthalpy.  Because we haven't
-        ///   called setTemperature yet, getSpecificiEnthalpy still represents the last mass.
-        double newEnthalpy = lastMass * mContent.getSpecificEnthalpy() + mNetHeatFlux * dt;
-        if (newEnthalpy < DBL_EPSILON) {
-            newEnthalpy = mContent.getSpecificEnthalpy();
-        } else {
-            newEnthalpy /= newMass;
-        }
 
         /// - Thermal damping mass represents the mass of a container shell or solid contents
         ///   that remain in thermal equilibrium with the fluid, and thus act to dampen changes

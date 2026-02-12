@@ -68,7 +68,7 @@ void UtSimCompatibility::testNewPrimObjectNamed()
     // delete
     TS_DELETE_OBJECT(article);
 
-    std::cout << "                     ... Pass";
+    std::cout << "               ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ void UtSimCompatibility::testNewPrimArrayNamed()
     // delete
     TS_DELETE_ARRAY(article);
 
-    std::cout << "                      ... Pass";
+    std::cout << "                ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ void UtSimCompatibility::testNewPrimPointerArrayNamed()
     }
     TS_DELETE_ARRAY(article);
 
-    std::cout << "              ... Pass";
+    std::cout << "        ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ void UtSimCompatibility::testNewPrimMultiPointerArrayNamed()
     }
     TS_DELETE_ARRAY(article);
 
-    std::cout << "        ... Pass";
+    std::cout << "  ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +325,7 @@ void UtSimCompatibility::testNewStlObjectNamed()
     // delete
     TS_DELETE_OBJECT(article);
 
-    std::cout << "                           ... Pass";
+    std::cout << "                     ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,7 +367,7 @@ void UtSimCompatibility::testNewClassObjectNamed()
     // delete
     TS_DELETE_OBJECT(article);
 
-    std::cout << "                         ... Pass";
+    std::cout << "                   ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,7 +415,7 @@ void UtSimCompatibility::testNewClassArrayNamed()
     // delete
     TS_DELETE_ARRAY(article);
 
-    std::cout << "                          ... Pass";
+    std::cout << "                    ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -447,7 +447,7 @@ void UtSimCompatibility::testNewClassArrayArg()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtSimCompatibility::testNewClassArrayArgNamed()
 {
-    std::cout << "\n SimCompatibility 17: New Named Class Array with Argument Constructor Test ";
+    std::cout << "\n SimCompatibility 17: New Named Class Array w/ Arg Constructor Test ";
 
     // new (A[4] construction with arguments)
     A* article;
@@ -463,7 +463,7 @@ void UtSimCompatibility::testNewClassArrayArgNamed()
     // delete
     TS_DELETE_ARRAY(article);
 
-    std::cout << "... Pass";
+    std::cout << " ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -535,7 +535,7 @@ void UtSimCompatibility::testNewClassPointerArrayNamed()
     }
     TS_DELETE_ARRAY(article);
 
-    std::cout << "                  ... Pass";
+    std::cout << "            ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -617,7 +617,7 @@ void UtSimCompatibility::testNewClassMultiPointerArrayNamed()
     }
     TS_DELETE_ARRAY(article);
 
-    std::cout << "            ... Pass";
+    std::cout << "      ... Pass";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

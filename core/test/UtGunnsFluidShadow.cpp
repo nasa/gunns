@@ -547,5 +547,5 @@ void UtGunnsFluidShadow::testAccessors()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mOutputMixture[0],  mixtureOut[0],  0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mOutputMixture[1],  mixtureOut[1],  0.0);
 
-    std::cout << "... Pass";
+    std::cout << "... Pass.\n";
 }

@@ -10,6 +10,10 @@
 #include "UtGunnsFluidEvaporation.hh"
 
 #include "software/exceptions/TsInitializationException.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtGunnsFluidEvaporation::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsFluidEvaporation class.
@@ -149,6 +153,9 @@ void UtGunnsFluidEvaporation::setUp()
     GunnsFluidAccumConfigData accumConfig("tAccum", &tNodeList, 1.0e-5, 0.1, 1.0, 0.1, 1.0, 0.016, 5.0, 273.15, 373.15, 200.0);
     GunnsFluidAccumInputData  accumInput(false, 0.0, 0.1, tFluidInput2);
     tAccum.initialize(accumConfig, accumInput, tLinks, 2, tPort0);
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,8 +163,7 @@ void UtGunnsFluidEvaporation::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testConfig()
 {
-    std::cout << "\n -----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsFluidEvaporation .... 001: testConfig ....................";
+    UT_RESULT_FIRST;
 
     /// - Check nominal config construction
     CPPUNIT_ASSERT(tLinkName                 == tConfigData->mName);
@@ -185,7 +191,7 @@ void UtGunnsFluidEvaporation::testConfig()
     CPPUNIT_ASSERT(tPoolMassExponent         == copyConfig.mPoolMassExponent);
     CPPUNIT_ASSERT(tLiquidPoolAccum          == copyConfig.mLiquidPoolAccum);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +199,7 @@ void UtGunnsFluidEvaporation::testConfig()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testInput()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 002: testInput .....................";
+    UT_RESULT;
 
     /// - Check nominal config construction
     CPPUNIT_ASSERT(tMalfBlockageFlag  == tInputData->mMalfBlockageFlag);
@@ -218,7 +224,7 @@ void UtGunnsFluidEvaporation::testInput()
     CPPUNIT_ASSERT(tVaporPotential    == copyInput.mVaporPotential);
     CPPUNIT_ASSERT(tEvaporationRate   == copyInput.mEvaporationRate);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +232,7 @@ void UtGunnsFluidEvaporation::testInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testDefaultConstruction()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 003: testDefaultConstruction .......";
+    UT_RESULT;
 
     /// @test proper default construction of class member data
     CPPUNIT_ASSERT(FluidProperties::NO_FLUID == tArticle->mGasType);
@@ -245,7 +251,7 @@ void UtGunnsFluidEvaporation::testDefaultConstruction()
     GunnsFluidEvaporation* article = new GunnsFluidEvaporation();
     delete article;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,7 +259,7 @@ void UtGunnsFluidEvaporation::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testNominalInitialization()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 004: testNominalInitialization .....";
+    UT_RESULT;
 
     /// - Default construct and initialize (with nominal data) a test article
     FriendlyGunnsFluidEvaporation article;
@@ -280,7 +286,7 @@ void UtGunnsFluidEvaporation::testNominalInitialization()
     /// @test init flag
     CPPUNIT_ASSERT(article.mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +294,7 @@ void UtGunnsFluidEvaporation::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testNominalInitNoGasNode()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 005: testNominalInitNoGasNode ......";
+    UT_RESULT;
 
     /// - Default construct and initialize (with nominal data) a test article
     FriendlyGunnsFluidEvaporation article;
@@ -314,7 +320,7 @@ void UtGunnsFluidEvaporation::testNominalInitNoGasNode()
     /// @test init flag
     CPPUNIT_ASSERT(article.mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +328,7 @@ void UtGunnsFluidEvaporation::testNominalInitNoGasNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 006: testInitializationExceptions ..";
+    UT_RESULT;
 
     /// @test for exception on mass exponent not in limits.
     tConfigData->mPoolMassExponent = -10.01;
@@ -390,7 +396,7 @@ void UtGunnsFluidEvaporation::testInitializationExceptions()
 
     CPPUNIT_ASSERT(!tArticle->mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +404,7 @@ void UtGunnsFluidEvaporation::testInitializationExceptions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testRestart()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 007: testRestart ...................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -411,7 +417,7 @@ void UtGunnsFluidEvaporation::testRestart()
 
     CPPUNIT_ASSERT(0.0 == tArticle->mLiquidPoolMass);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +425,7 @@ void UtGunnsFluidEvaporation::testRestart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testStepGas()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 008: testStepGas ...................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data, with liquid port 0
     ///   connected to Ground.
@@ -447,7 +453,7 @@ void UtGunnsFluidEvaporation::testStepGas()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tArticle->mSourceVector[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mSourceVector[1], DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -455,7 +461,7 @@ void UtGunnsFluidEvaporation::testStepGas()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testStepLiquid()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 009: testStepLiquid ................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data, with gas port 1
     ///   connected to Ground.
@@ -516,7 +522,7 @@ void UtGunnsFluidEvaporation::testStepLiquid()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSourceVector[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSourceVector[1], DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -524,7 +530,7 @@ void UtGunnsFluidEvaporation::testStepLiquid()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testStepBoth()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 010: testStepBoth ..................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -561,7 +567,7 @@ void UtGunnsFluidEvaporation::testStepBoth()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux,         tArticle->mSourceVector[0], DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux,         tArticle->mSourceVector[1], DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -569,7 +575,7 @@ void UtGunnsFluidEvaporation::testStepBoth()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testComputeFlows()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 011: testComputeFlows ..............";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -674,7 +680,7 @@ void UtGunnsFluidEvaporation::testComputeFlows()
     double tempLiqFlowRate = tArticle->mFlux * tNodes[0].getOutflow()->getMWeight();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tempLiqFlowRate, tNodes[0].getOutflux(), DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -682,11 +688,11 @@ void UtGunnsFluidEvaporation::testComputeFlows()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testAccessMethods()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 012: testAccessMethods .............";
+    UT_RESULT;
 
     /// - There are currently no access methods to test.
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -694,7 +700,7 @@ void UtGunnsFluidEvaporation::testAccessMethods()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidEvaporation::testPortMapping()
 {
-    std::cout << "\n UtGunnsFluidEvaporation .... 013: testPortMapping ...............";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -749,6 +755,5 @@ void UtGunnsFluidEvaporation::testPortMapping()
     CPPUNIT_ASSERT_EQUAL(GunnsBasicLink::FAILED,          tArticle->mUserPortSetControl);
     CPPUNIT_ASSERT_EQUAL(2,                               tArticle->mNodeMap[0]);
 
-    std::cout << "... Pass";
-    std::cout << "\n -----------------------------------------------------------------------------";
+    UT_PASS_LAST;
 }

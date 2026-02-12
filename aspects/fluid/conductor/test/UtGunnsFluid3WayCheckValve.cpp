@@ -487,5 +487,5 @@ void UtGunnsFluid3WayCheckValve::testUpdateState()
     /// @test Restart model, for code coverage only
     CPPUNIT_ASSERT_NO_THROW(tArticle->restartModel());
 
-    UT_PASS;
+    UT_PASS_LAST;
 }

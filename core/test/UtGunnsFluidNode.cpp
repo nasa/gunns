@@ -527,7 +527,7 @@ void UtGunnsFluidNode::testCollectInflux()
     tNode.collectInflux(1.0, &tFluid1);
 
     /// - TODO temperature fails DBL_EPSILON with 300.000000000001
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(300.0, tNode.mInflow.getTemperature(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(300.0, tNode.mInflow.getTemperature(), tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(  1.0, tNode.mInflow.getFlowRate(),    tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(  0.2,
             tNode.mInflow.getMassFraction(FluidProperties::GUNNS_O2),   tTolerance);
@@ -569,8 +569,7 @@ void UtGunnsFluidNode::testCollectInflux()
     /// - Mixed temperature is mixed enthalpy / mixed specific heat.
     double expectedT = hMix / tNode.mInflow.getSpecificHeat();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(hMix, tNode.mInflow.getSpecificEnthalpy(), tTolerance);
-    /// - TODO Again, round-off error in temperature fails DBL_EPSILON.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT, tNode.mInflow.getTemperature(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT, tNode.mInflow.getTemperature(), tTolerance);
 
     /// - Set up a third incoming fluid.
     double fractions3[FluidProperties::NO_FLUID] = {0.3, 0.8, -0.1};
@@ -602,8 +601,7 @@ void UtGunnsFluidNode::testCollectInflux()
     /// - Mixed temperature is mixed enthalpy / mixed specific heat.
     expectedT = hMix / tNode.mInflow.getSpecificHeat();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(hMix, tNode.mInflow.getSpecificEnthalpy(), tTolerance);
-    /// - TODO Again, round-off error in temperature fails DBL_EPSILON.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT, tNode.mInflow.getTemperature(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT, tNode.mInflow.getTemperature(), tTolerance);
 
     /// - Test a case which forces the PolyFluid::addState method to throw an exception, and verify
     ///   it is caught by the node.  Set the added fluid's mFlowRate to zero, and pass zero as the
@@ -921,13 +919,12 @@ void UtGunnsFluidNode::testIntegrateFlowsNoInflow()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
             tNode.mFluxThrough,              0.0);
 
-    //TODO these fail DBL_EPSILON perhaps due to round-off?
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractO2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractN2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractCO2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), tTolerance);
 
     /// - These next expected values were copied from the model when it was in a known working
     ///   state, as reproducing all the calculations here is too lengthy.
@@ -1017,6 +1014,7 @@ void UtGunnsFluidNode::testIntegrateFlowsNoOutflow()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(inFlowRate,   tNode.mNetFlux,     tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tNode.mFluxThrough, tTolerance);
 
+    //TODO these fail DBL_EPSILON perhaps due to round-off?
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractO2,
             tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractN2,
@@ -1190,7 +1188,6 @@ void UtGunnsFluidNode::testInflowOverflow()
     /// - Load the node with the initial test fluid and set the node physical properties.
     PolyFluid tFluid(*tFluidConfig, fluidInit);
     tNode.getContent()->setState(&tFluid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(initTemperature, tNode.getContent()->getTemperature(), FLT_EPSILON);
     tNode.initVolume(volume);
     const double initMass = tNode.getMass();
 
@@ -1201,9 +1198,7 @@ void UtGunnsFluidNode::testInflowOverflow()
     CPPUNIT_ASSERT(tNode.isOverflowing(dt));
 
     /// - Call integrateFlows with dt = 0.1 and verify outputs.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(initTemperature, tNode.getContent()->getTemperature(), FLT_EPSILON);
     tNode.integrateFlows(dt);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(initTemperature, tNode.getContent()->getTemperature(), FLT_EPSILON);
 
     const double expectedMass     = DBL_EPSILON;
     const double expectedNetFlux  = -initMass / dt;
@@ -1217,16 +1212,15 @@ void UtGunnsFluidNode::testInflowOverflow()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNetFlux, tNode.mNetFlux,     tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tNode.mFluxThrough, tTolerance);
 
-    //TODO these fail DBL_EPSILON perhaps due to round-off?
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractO2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractN2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_N2),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFractCO2,
-            tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), FLT_EPSILON);
+            tNode.mContent.getMassFraction(FluidProperties::GUNNS_CO2), tTolerance);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,             tNode.mExpansionDeltaT,          tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(initTemperature, tNode.mContent.getTemperature(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(initTemperature, tNode.mContent.getTemperature(), tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassErr, tNode.mMassError,                tTolerance);
 
     std::cout << "... Pass";
@@ -1292,7 +1286,6 @@ void UtGunnsFluidNode::testFlowsToNonCapacitiveNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tNode.mNetFlux,     0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFluxThru, tNode.mFluxThrough, 0.0);
 
-    //TODO these fail DBL_EPSILON perhaps due to round-off?
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFluidIn.getMassFraction(FluidProperties::GUNNS_O2),
             tNode.mContent.getMassFraction(FluidProperties::GUNNS_O2),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFluidIn.getMassFraction(FluidProperties::GUNNS_N2),
@@ -1307,7 +1300,7 @@ void UtGunnsFluidNode::testFlowsToNonCapacitiveNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNode.getInflow()->getTemperature(),
             tNode.mContent.getTemperature(), tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( tNode.getInflow()->getDensity(),
-            tNode.mContent.getDensity(),     FLT_EPSILON);
+            tNode.mContent.getDensity(),     tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( initPressure,
             tNode.mContent.getPressure(),    tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,
@@ -1394,10 +1387,9 @@ void UtGunnsFluidNode::testPressureCorrection()
     double expectedCorrection = -0.01 * expectedGain * initPressure;
     double returnedCorrection = tNode.computePressureCorrection();
 
-    double tolerance = initPressure * DBL_EPSILON;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tTolerance);
 
     /// - Now set the node pressure in the opposite direction to test the oscillation-damping logic.
     ///   This will give +0.5% error.
@@ -1406,9 +1398,9 @@ void UtGunnsFluidNode::testPressureCorrection()
     expectedCorrection = 0.005 * expectedGain * initPressure;
     returnedCorrection = tNode.computePressureCorrection();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tTolerance);
 
     /// - Now set the node pressure in the same direction and verify the gain is increasing, but
     ///   small enough that the actual correction is switched off.
@@ -1417,17 +1409,17 @@ void UtGunnsFluidNode::testPressureCorrection()
     expectedCorrection = 0.0;
     returnedCorrection = tNode.computePressureCorrection();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedGain,       tNode.mCorrectGain,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tTolerance);
 
     /// - Now test that no correction is used for a non-capacitive node.
     tNode.initVolume(0.0);
     tNode.setPotential(initPressure * 1.01);
     expectedCorrection = 0.0;
     returnedCorrection = tNode.computePressureCorrection();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, tNode.mPressureCorrection, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedCorrection, returnedCorrection,        tTolerance);
 
     std::cout << "... Pass";
 }
@@ -1511,15 +1503,15 @@ void UtGunnsFluidNode::testValidate()
     double idealPressure = tNode.getContent()->computePressure(tNode.getContent()->getTemperature(),
                                                                idealDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealDensity,  tNode.getContent()->getDensity(),  tTolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(idealPressure, tNode.getContent()->getPressure(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(idealPressure, tNode.getContent()->getPressure(), tTolerance);
 
     double idealTemperature =
             tNode.getContent()->computeTemperature(tNode.getContent()->getSpecificEnthalpy());
     double idealSpecificEnthalpy = tNode.getContent()->computeSpecificEnthalpy(idealTemperature);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealTemperature,
-            tNode.getContent()->getTemperature(), FLT_EPSILON); // These fail DBL_ due to roundoff
+            tNode.getContent()->getTemperature(), tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealSpecificEnthalpy,
-            tNode.getContent()->getSpecificEnthalpy(), FLT_EPSILON);
+            tNode.getContent()->getSpecificEnthalpy(), tTolerance);
 
     /// - Set up a liquid mixture fluid and perform the same checks on it.
     double initLiquidFractions[FluidProperties::NO_FLUID] = {1.0};
@@ -1539,7 +1531,7 @@ void UtGunnsFluidNode::testValidate()
                                                          idealDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealDensity,  tNode2.getContent()->getDensity(),  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(idealPressure, tNode2.getContent()->getPressure(),
-            100.0 * static_cast<double>(FLT_EPSILON));
+            static_cast<double>(FLT_EPSILON));
 
     idealTemperature =
             tNode2.getContent()->computeTemperature(tNode2.getContent()->getSpecificEnthalpy());

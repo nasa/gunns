@@ -20,3 +20,8 @@ trick_sys.sched.set_freeze_command(True)
 # GUNNS config and input settings
 ################################################################################
 harvey.elect.netInput.loadSwitch6.mSwitch.mSwitchIsAutoClosed = False
+
+################################################################################
+# Disable HLA sim object in case we compiled with HLA
+################################################################################
+trick.exec_set_sim_object_onoff( 'THLA', False )

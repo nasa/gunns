@@ -1,1 +1,65 @@
-<mxlibrary>[{"xml":"dVTbbtswDP0avRq+bN32mLhNUWBNhmTrHgvFYWxtsmhI9Or8/ShHys2tYQMSDw8pHR1ZFGU7PFrZNc+4Ay2KB1GUFpGOo3YoQWuRp2oninuR5yl/Il98gGYjmnbSgqF3CLj9AxVxhpZb3+x+BD1ltsU+MDYdEoE9xkstnTvGK7TAlR57Y9wGjEM7M1Jj/ZtX353y0TiyfUWM2tpdtqjSNGmVWUtTQ1hbkkYoS1o5vA/lCe73L1L3U6hIDHJJqedKugn6KaKbSupAzs7w5wgvUTm4yLkocRdz1uBQ96TQTHK+cA4XWPSmOuM/3VhVFDN+a6DjLDC+Jr1RxFL9A+tOlF83Mc9crl7L1fLlYb15Wi0j/dvVwp97TTdrUqx0h29gF1rWR2wvdeyvWGw+ImqeTNdPqMFJ45mxZ/I7kReDFMVceCtdv0VZezPwkA4dTN1za1NHh6ixa+TIaIfamz9xqjYuMZJ6CwlISw23bKj1Js14uFdal6jRjvQiHR+Os9nwL0TEoOGic5aQFJ/nd+/yH+hUOJctLw3bi4SZ5rYMEHYclWFW8eXhHfgte0l8MgwfXrAsKDVeZMAWyB445U3t/B5GLYO2Dai6oetYtG19Yp5140GQLk7D/Y3T839iTL36jfwH","w":20,"h":20,"aspect":"fixed","title":"Sensor Analog Wrapper"},{"xml":"dVJRboMwDD1NfitKpP1TulWT2mnSThDAg2whRonZYKefE0K7bisKkmO/F9vPFrLsp4NTQ3fCBoyQ90KWDpEWq59KMEbkmW6E3Is8z/gX+cON6DZGs0E5sPQPAas3qIkRRlUh2T4GA6WocEyMlwGJwC3+0ijvF3+NDvilw2it3ymv60dvlG0Kq8z8dcaj9eTGmtAVrk1MC/TE3R21pwW11huTc2X5ncjlpITciVDw9ZFlG1KySfMAf2v8LYan2SSY71Rk9FMbJN543Vq/sYpGBxtQjjpO2VEfpNiy+aqNKdGgi3SZxY/93BK+wxqxaPnR3Qc40rUyx6DlM3pNGi2HKy4N+x+AwnBaDhAO7FXpVvOIuIPQcpAkgGG6OcZtUiquC2AP5GaGfOom9BC1XCaddaDbjq59Kg2iPTMvurGRpFuvaUvW62UbI/RqWb8B","w":20,"h":20,"aspect":"fixed","title":"Basic Island Analyzer"},{"xml":"dVTbbtswDP0avRq+bH1P3KQrkBZF0+11UGzG1iaLhkS39t+PUuQ5l9aIA0o8JMXDI4ui7MYHK/v2CWvQotiIorSIdLK6sQStRZ6qWhT3Is9TfkW+/cKbBW/aSwuGPgnAwx+oiBFaHnyx++D0IasDDjFi3yMR2NN+qaVzp33peg52nAw0G1ZVkmtvfzqwO5Q1mw+DMW7jna/glCP1Dos3ZEPjyA4VoV3Zxs0HuJNdL4q1AWLAUTXJ24/H/e/n1dNG5KXwLSyIR9MPdA7weas0TQZTg/2FmmQDO9Wpuf8knTFZYsOxpKngGW0n9Q0kP4Ps+b8+TDeYIjkODsrBepI/r/QtqQeayqnSsLWyIoXmBvN9wbyAVVhfIRT3pIwiJbWXxvk02ZfNvtjxTXC+pH9THY/zChDLhfGzNvI7kRejZI4D35e/omz8ZNmkqYdblVzL0dGkI8y1MkR0Y+NFnjjVGJcYSYOFBKSllku21PlRZGweldYlajydt0jDw/ssG/wLs8eg4aTrd7DkVbjzan5BpyLRBz4admeAleay7CD0KpJxVfH8PDHrEyUeDOOXFymLTIULC9gB2YkhH6r2PQQuI7ctqKalyz0Zxd78j1x4YyNSNy/jPZ2Xy/cgQC8+F/8A","w":20,"h":20,"aspect":"fixed","title":"Electrical Resistive User Load"},{"xml":"dVTbbqMwEP0avyIuu31PaNJWSqtI6e7ryoEJeNd4kD1s4e93DGZJQotAGvucufjMGJHlTf9kZVu/YglaZDuR5RaRJqvpc9BapLEqRfYo0jTmT6T7L9BkRONWWjD0iQOef0NBzNDy7JM9jqB32ZyxCx6nFonATvu5ls5N+9K17Ow4GGg2rCok597/cGAPKEs2nzpj3M6DORpH0tARP8AujDGih2xXENqNrdxcxINsWpFtDXjfi6qi9+eX06+3zetOpLnwx1gYL6bt6Jrg4xZxHHWmBPsTNckKDqpRswZRPHOSqPUlvaFtpF6h6YSeuPTyPKzgLLp0DvLOenk/j/8tKjsa8qHQsLeyIIVmxfm+cI5gFZZ3DMUnUUaRktoPxXUfGUtmLJxz5Zwu4d9Vw428I4R0Y+N5KtIHkWa9ZGVHlW/fLK98T9mkoYX1fNwPoqNBB5qr5ejR9JUf78ipyrjISOosRCAt1ZyypsZ3IWHzorTOUeNUbxaPD+/zsOAfmBGDhoNu/4IlP38HP8dHdCoIfebSsLkibDSnZYDQz44Mq4L754XZTpJ4MvRfXqEkKDVeVcAGyA5M+VClP8OoZdC2BlXVdLsnw4hX/z0X3dgI0s3LcEPn5fInGKk3P4p/","w":20,"h":20,"aspect":"fixed","title":"Electrical Constant Power User Load"},{"xml":"dVJRboMwDD1NfitKpP1TulaTumnSThDAg2whRonZYKefE0K7bisKkmO/F9vPFrLsp6NTQ/eIDRgh74UsHSItVj+VYIzIM90IuRd5nvEv8sON6DZGs0E5sPQPAas3qIkRRlUh2T4GA6WocEyMlwGJwC3+0ijvF3+NDvil42itP5hRNw/eKNsUVpn564xH68mNNaErXJuYFuiJuztpTwtqrTcm58ryO5HLSQm5E6Hg6yPLNqRkk+YB/tb4WwxPs0kw36nI6Kc2SLzxurV+YxWNDjagHHWcsqM+SLFl81UbU6JBF+kyix/7uSV8hzVi0fKjuw9wpGtlTkHLZ/SaNFoOV1wa9j8AheG0HCAc2KvSreYRcQeh5SBJAMN0c4zbpFRcF8AeyM0M+dRN6CFquUw660C3HV37VBpEe2ZedGMjSbde05as18s2RujVsn4D","w":20,"h":20,"aspect":"fixed","title":"Fluid Island Analyzer"},{"xml":"dVJRboMwDD1NfitKpP63dK0mbdKknSCAF7KGGCVmpbefE8i6disC4fg9x/azhaz66ejV0L1iC1bIJyErj0iz1U8VWCvKwrRC7kVZFvyJ8vAAXSe0GJQHR/8EYP0JDTHDqjom2ycwhmxrHJeI9wGJwM/+yqoQZn+DHvim4+hcONjRtAeL52dHoL0izHx0gfzYsGPrdcgpNpYv3ykmOKAz+lOswTj+bXRE5uDcRqqJCy43opSTSnhx/8pKx0rYpMsAf0u/1yjQxS600KkU0U86Kr8KRruwcopGDytQnjpO2VEfFVqz+WGsrdByjzFcFulhP3eKJ8iIQ8eX7r7Ak2mUfYkSv2EwZNAxXHNp2P8ibC2nZYBwiNosp4Ynxx1kSSIZpofTXS9KpS0C7IH8hSln08YekpbzAhQdGN3RrU8t89E/kVfd2Fiky8dlefLxuqSJerPD3w==","w":20,"h":20,"aspect":"fixed","title":"Fluid Flow Integrator"},{"xml":"dVLBboMwDP2aXBEFqfeWrr20VaVJuwfwIGuIUWJW+vdzQmjXbkUgHD+/2H62yItu3FnZtwesQYv8TeSFRaTJ6sYCtBZZqmqRb0SWpfyJbPsCXQQ07aUFQ/8QsPyCijhCy9In2wTQU1YlDpHx3iMR2MlfaOnc5K/QAt+0G4xxWz2o+gP10MEBjSKcw9E4skPFjpVtItEAHbm5vXKcuhC+pKXmZGvJNoMXtGdfkzL8WzYemW5TaZp47wntQze3fkPx3Fm2FFk+ykBMn9+8aHzJbNK1h789Povp6KpjmGtlYHRj40eUONUYlxhJg4UEpKWWU7bUeSkXbH4qrQvUrIan52l42M+a4BlmxKDhS9ffYElVUu/9LE7oFCk0DJdcGna/Alaa0zJA2HvR4qniEXMHs1Y+GMaXa7CISoV1A+yA7JVDLqr2PQQto7YtqKalR5+Mk2xuzLtubETp5mPcsvl43+YQ+rDsPw==","w":20,"h":20,"aspect":"fixed","title":"Fluid Volume Monitor"},{"xml":"dVPBcpwwDP0aXxnWtHvfkG56aGYy6aXtTctqwY2xGFs07N9XNqYhS8PAIPs9SdaTrKq6nx48DN0jndGq6ouqak/Es9VPNVqrdGnOqrpXWpfyKX38AN0ltBzAo+P/ONDpNzYsjMOJxkz4PhAz+tmzthDCvA9hEG4Q34sdJYE+ClHCGpCMx4fRuXCMwJPHEEaPXxHOOQi5wH5smPzBtzmc0nsrGe9ACA75lfyLWNY4+e3biMzOTVkWKWFNduzdj1xFUS7wbg3/3MB6Df/awFUBTYMWPbAht5ZIwE+Fxz/oAx42nAvYgAvvc+GJE3jf9Dcx9gV7cGGggM+ZtIlg4RRbPcuiV/1LS+mU3itdTZBEKW/fqm6j+GLydcBtE2+HI/DVZlroIHn0UxtHrgimdaFwwNK/AsFzJyk77uPhdmJejLWiJPnkXpXpkX1pL73ggjhyEvROlGPTgP0Wq3uiYHLtJzka9SvCwUpaAZiGOBB51chsSQXLHEQyTh+O9S4rla4PUo/sr0J5NedYQ9Iyt6RD03b8fg/yULb/PN90EyNLtyzzrVmWb7czUd9d3r8=","w":20,"h":20,"aspect":"fixed","title":"Fluid Pressure Head"},{"xml":"dVLbTsMwDP2avE5dI/G+dWw8gASCH3A70wbSuEpc6P4eJ03ZxqVKJdvHJ7ZPrHTVTwcPQ/dAR7RK3ypdeSKerX6q0FpVFuao9E6VZSG/Kvf/oOuEFgN4dPwHgeo3bFgyLNSx2C6BkbKpacyM54GY0c/xykIIcxzCIOQgl3GHvgcpvD+MzoWX2a1ggMYw+TsEfhpxxJDvIBfYj41AG9+Gy7JL48mVFssbVeoJlN6q2Pn10VUby4nJpwF/N/tTlcAnm9NCB4nRT23UehVM68LKAY8eVwieOynZcR81WYv5aqytyJJPdF2kT+IyB73jgjhycun2Az2bBux9FPWRgmFDTuBaWqP+ImFjpawATINEIXuNvJVMEEeOksRknP59z3VWKu0NUo/sT5LyaY5xhqTl/ORFh6bt+DoGWf32m3nWTYws3eLmdVnc81qm1Kut/QI=","w":20,"h":20,"aspect":"fixed","title":"Thermal Capacitor Heat Queues"}]</mxlibrary>
+<mxlibrary>[
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsSensorAnalogWrapper\" ConstructorArgs=\"\" c00.minRange=\"0.0\" c01.maxRange=\"0.0\" c02.offValue=\"0.0\" c03.nominalBias=\"0.0\" c04.nominalScale=\"1.0\" c05.nominalNoiseScale=\"0.0\" c06.nominalResolution=\"0.0\" c07.noiseFunction=\"TsNoise::getNoise\" c08.unitConversion=\"UnitConversion::NO_CONVERSION\" c09.nominalNoiseMult=\"0.0\" i00.powerFlag=\"false\" i01.truthInput=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Sensor Analog Wrapper"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsBasicIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Basic Island Analyzer"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectResistiveUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.resistanceNormal=\"0.0\" c02.resistanceStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Electrical Resistive User Load"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectConstantPowerUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.powerNormal=\"0.0\" c02.powerStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Electrical Constant Power User Load"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Fluid Island Analyzer"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidFlowIntegrator\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Fluid Flow Integrator"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidVolumeMonitor\" ConstructorArgs=\"netNodeList, &amp;lt;a network link&amp;gt;\" i00.linkPort=\"0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Fluid Volume Monitor"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object About=\"Spotter\" Class=\"aspects/fluid/potential/GunnsFluidPressureHead\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" c00.fluidColumnX=\"0.0\" c01.fluidColumnY=\"0.0\" c02.fluidColumnZ=\"0.0\" c03.acceleration=\"0\" c04.reverseAcceleration=\"false\" c05.rotationDcm=\"0\" c06.transposeRotation=\"false\" label=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Fluid Pressure Head"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/thermal/GunnsThermalCapacitorHeatQueues\" ConstructorArgs=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 20,
+    "h": 20,
+    "aspect": "fixed",
+    "title": "Thermal Capacitor Heat Queues"
+  }
+]</mxlibrary>

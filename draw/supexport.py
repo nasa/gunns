@@ -29,6 +29,7 @@ from shutil import copyfile
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import modules.compression as compression
+import modules.shapeLibs as shapeLibs
 import modules.consoleMsg as console
 import modules.xmlUtils as xmlUtils
 import string
@@ -417,6 +418,117 @@ def generateSubNetIfSuperPorts(connection, subNets, allNodes, allObjects, links)
                     superPorts.append((linkName, connection.attrib['Map'], connection.attrib['Port'], int(node.attrib['label']), sourceNetwork))
 
     return superPorts
+
+# Copies attributes from 'from_attr' to 'to_attr' and returns True if
+# there were any resulting changes to 'to_attr'
+def forceCopyStyleAttrib(to_attr, from_attr, name):
+    if name in from_attr:
+        if name in to_attr:
+            if to_attr[name] != from_attr[name]:
+                # the style field is of the form:
+                # shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;
+
+                # convert style properties into dictionary
+                # e.g. {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
+                to_style_properties   =   to_attr[name].split(';')[0:-1]
+                from_style_properties = from_attr[name].split(';')[0:-1]
+
+                to_style_properties   = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   to_style_properties)),
+                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   to_style_properties))))
+                from_style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 , from_style_properties)),
+                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '', from_style_properties))))
+
+
+                # add default colors to master dictionary in case we need to overwrite them
+                for prop in ['strokeColor','fontColor','fillColor','swimlaneFillColor']:
+                    if prop not in from_style_properties:
+                        from_style_properties[prop] = 'default'
+
+                # remove properies from master we don't want to ever overwrite
+                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction']:
+                    if prop in from_style_properties:
+                        del from_style_properties[prop]
+
+                # loop through master style properties
+                for style_property in from_style_properties:
+                    # overwrite style property if there's a mismatch between shape and master
+                    if style_property in to_style_properties:
+                        if to_style_properties[style_property] != from_style_properties[style_property]:
+                            to_style_properties[style_property] = from_style_properties[style_property]
+                    # if style propery doesn't exist in the shape, create it
+                    else:
+                        # list of style properies we want to overwrite only if it already exists in the shape
+                        if style_property not in ['swimlaneFillColor']:
+                            to_style_properties[style_property] = from_style_properties[style_property]
+
+
+                # convert dictionary back to string
+                new_to_attr = ';'.join(list(map(lambda k: k if to_style_properties[k] == '' else k + '=' + to_style_properties[k], to_style_properties.keys()))) + ';'
+
+                # check if there was an update
+                if to_attr[name] == new_to_attr:
+                    # shape style didn't change
+                    return False
+                else:
+                    to_attr[name] = new_to_attr
+                    return True
+        else:
+            to_attr[name] = from_attr[name]
+            return True
+    return False
+
+# Performs shape updates for the given shape, returns True if
+# there were any changes.
+def updateShapeData(shape, master):
+    updated = False
+    if None == master:
+        return
+    shape_attr       = shape.attrib
+    shape_cell_attr  = shape.find('./mxCell').attrib
+    master_attr      = master.attrib
+    master_cell_attr = master.find('./mxCell').attrib
+    # Do the forced-sync items: <mxCell> style
+    if forceCopyStyleAttrib(shape_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated shape data: style in ' + shape_attr['About'] + ': ' + shape_cell_attr['style'] + '.'))
+        updated = True
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateTableData(table, master):
+    updated = False
+    if None == master:
+        return
+    table_attr       = table.attrib
+    table_cell_attr  = table.find('./mxCell').attrib
+    master_attr      = master.attrib
+    master_cell_attr = master.find('./mxCell').attrib
+    # Do the forced-sync items: <mxCell> style
+    if forceCopyStyleAttrib(table_cell_attr, master_cell_attr, 'style'):
+        print('    ' + console.note('updated table data: style in ' + table_attr['About'] + ': ' + table_cell_attr['style'] + '.'))
+        updated = True
+
+    # update shape data for table rows, which aren't in the <object> objects but in separate floating <mxcell> objects
+    for cell in mxcells:
+        cell_attribs = cell.attrib
+        if isDescendant(cell,table,objects_and_cells):
+            cell_style = cell_attribs['style'].split(';')
+            for prop in range(len(cell_style)):
+                if 'fillColor' in cell_style[prop] and cell_style[prop] != 'fillColor=none':
+                    cell_style[prop] = 'fillColor=none'
+                elif 'strokeColor' in cell_style[prop] and cell_style[prop] != 'strokeColor=none':
+                    cell_style[prop] = 'strokeColor=none'
+                elif 'fontColor' in cell_style[prop] and cell_style[prop] != 'fontColor=default':
+                    cell_style[prop] = 'fontColor=default'
+            cell_style = ';'.join(cell_style)
+
+            if cell_style != cell_attribs['style']:
+                cell_attribs['style'] = cell_style
+
+                print('        ' + console.note('updated table row data: style in ' + table_attr['About'] + ': ' + cell_attribs['style'] + '.'))
+                updated = True
+
+    return updated
 
 # Replaces the given sub-network and all of its children with a new instance from the source drawing.
 # Note, rootroot is the drawing's mxGraphModel.root element, not the actual root element.
@@ -906,6 +1018,46 @@ if (len(superPorts) > 0 and len(subNetIfConnections) > 0):
 # Get super-ports derived from sub-network interface container connections.
 for subNetIfConnection in subNetIfConnections:
     superInterfacePorts += generateSubNetIfSuperPorts(subNetIfConnection, subNets, allNodes, objects_and_cells, links)
+
+# Shape data updates
+for shapeLib in shapeLibs.shapeLibs:
+    shapeLibs.loadShapeLibs(homepath + '/' + shapeLib, False)
+
+allShapeMasters = shapeLibs.shapeTree.findall('./object')
+
+master = shapeLibs.getSuperNetworkShapeMaster(allShapeMasters)
+if updateShapeData(superConfig, master):
+    contentsUpdated = True
+
+for subNet in subNets:
+    master = shapeLibs.getShapeMaster(allShapeMasters,getElemGunnsType(subNet.element),getElemGunnsSubtype(subNet.element))
+    if updateShapeData(subNet.element, master):
+        contentsUpdated = True
+
+master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
+for netContainer in netConfigs:
+    if updateShapeData(netContainer, master):
+        contentsUpdated = True
+
+master = shapeLibs.getSuperPortShapeMaster(allShapeMasters,'0')
+for superPort in superPorts:
+    if updateShapeData(superPort, master):
+        contentsUpdated = True
+
+master = shapeLibs.getSubNetworkIFConnectionShapeMaster(allShapeMasters)
+for subNetIfConnection in subNetIfConnections:
+    if updateShapeData(subNetIfConnection, master):
+        contentsUpdated = True
+
+for textBox in doxNotices+doxCopyrights+doxLicenses+doxData:
+    master = shapeLibs.getShapeMaster(allShapeMasters,getElemGunnsType(textBox),getElemGunnsSubtype(textBox))
+    if updateShapeData(textBox, master):
+        contentsUpdated = True
+
+for table in doxReferences+doxAssumptions:
+    master = shapeLibs.getShapeMaster(allShapeMasters,getElemGunnsType(table),getElemGunnsSubtype(table))
+    if updateTableData(table, master):
+        contentsUpdated = True
 
 # Re-number nodes and sub-network super node offsets to account for new or deleted sub-networks
 # that the user has manually added or removed in draw.io.  Note this won't fix gaps in node numbers

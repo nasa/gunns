@@ -431,7 +431,7 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                     return [True, type_label_text]
         else:
             to_attr[name] = from_attr[name]
-            return True
+            return [True, type_label_text]
     return [False, type_label_text]
 
 def forceCopyLabelAttrib(to_attr, new_label, name='TypeLabel'):

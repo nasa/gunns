@@ -21,6 +21,7 @@ LIBRARY DEPENDENCY:
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include "software/exceptions/TsOutOfBoundsException.hh"
+#include "GunnsMutexLock.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  net   (--)  Pointer to the joint network.
@@ -448,8 +449,10 @@ void GunnsSuperNetworkBase::update(const double timeStep)
 {
     if (mSubnets.size() < 1) return;
 
+    GunnsMutexLock lockHelper(netMutex);
+
     if (netMutexEnabled) {
-        pthread_mutex_lock(&netMutex);
+        lockHelper.lock();
     }
 
     try {
@@ -476,6 +479,4 @@ void GunnsSuperNetworkBase::update(const double timeStep)
         msg << mName << " caught unexpected exception." << '\n' << tsStackTrace();
         hsSendMsg(msg);
     }
-
-    pthread_mutex_unlock(&netMutex);
 }

@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -305,16 +305,16 @@ void UtGunnsFluidJumper::testNominalInitialization()
 
     CPPUNIT_ASSERT(tArticle->mInitFlag);
 
-    /// - Verify untested RestartModel functionality    
+    /// - Verify untested RestartModel functionality
     tArticle->mEffectiveConductivity = 1.0;
     tArticle->mSystemConductance     = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEffectiveConductivity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT(tArticle->mPlug[0]->getConnectionRequest() == tArticle->mPlug[0]->getDisconnectionRequest());
- 
+
     std::cout << "... Pass";
 }
 
@@ -420,6 +420,6 @@ void UtGunnsFluidJumper::testStep()
     tJumperPlug1->setConnectionRequest(0);
     tArticle->step(0.0);
     CPPUNIT_ASSERT(0.0 == tArticle->mEffectiveConductivity);
-    
+
     std::cout << "... Pass";
 }

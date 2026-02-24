@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_FLUID_FLOW_INTEGRATOR    Gunns Fluid Flow Integrator Spotter Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Flow Integrator Spotter class
@@ -29,7 +29,7 @@
 class FriendlyGunnsFluidFlowIntegrator : public GunnsFluidFlowIntegrator
 {
     public:
-        FriendlyGunnsFluidFlowIntegrator(const GunnsFluidLink& link) 
+        FriendlyGunnsFluidFlowIntegrator(const GunnsFluidLink& link)
             : GunnsFluidFlowIntegrator(link) {};
         virtual ~FriendlyGunnsFluidFlowIntegrator() {;}
         friend class UtGunnsFluidFlowIntegrator;
@@ -123,7 +123,7 @@ class UtGunnsFluidFlowIntegrator : public CppUnit::TestFixture
         double                             tMaxConductivity;      /**< (--) Max conductivity for test conductor link */
         double                             tExpansionScaleFactor; /**< (--) Expansion scale factor for test conductor link */
         int                                tPort0;                /**< (--) Port 0 for link initialization */
-        int                                tPort1;                /**< (--) Port 1 for link intialization */
+        int                                tPort1;                /**< (--) Port 1 for link initialization */
         double                             tTimeStep;             /**< (--) Time step size for this test */
         double                             tTolerance;            /**< (--) Comparison tolerance for floating pt tests */
 

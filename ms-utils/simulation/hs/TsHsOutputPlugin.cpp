@@ -1,5 +1,5 @@
 /****************************************** TRICK HEADER ******************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -183,6 +183,5 @@ TsHsOutputPlugin* TsHsOutputPluginMngr::getPlugin(int id)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned TsHsOutputPluginMngr::numPlugins()
 {
-    return plugins.size();
+    return static_cast<unsigned>(plugins.size());
 }
-

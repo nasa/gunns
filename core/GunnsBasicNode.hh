@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_BASIC_NODE    GUNNS Basic Node
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -149,7 +149,7 @@ class GunnsBasicNode
         virtual bool   isOverflowing(const double dt) const;
 
         /// @brief Integrate flows within the node
-        virtual void   integrateFlows(const double);
+        virtual void   integrateFlows(const double dt);
 
         /// @brief Collect the outflows from the node
         virtual void   collectOutflux(const double fluxRate);

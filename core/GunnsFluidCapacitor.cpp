@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Capacitor Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -298,7 +298,7 @@ void GunnsFluidCapacitor::step(const double dt)
 ///
 /// @details  Computes the flow rate across this link and schedules flow demand from source nodes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidCapacitor::computeFlows(const double dt)
+void GunnsFluidCapacitor::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
     mFlux = mPotentialDrop * mAdmittanceMatrix[0] - mSourceVector[0];
@@ -351,7 +351,7 @@ void GunnsFluidCapacitor::buildAdmittanceMatrix(const double dt)
     }
 
     /// - Build the system admittance matrix contribution.
-    if (fabs(mAdmittanceMatrix[0] - admittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - admittance) > 0.0) {
         mAdmittanceMatrix[0] = admittance;
         mAdmittanceMatrix[1] = 0.0;
         mAdmittanceMatrix[2] = 0.0;

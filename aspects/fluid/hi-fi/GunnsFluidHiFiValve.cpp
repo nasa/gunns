@@ -251,6 +251,8 @@ void GunnsFluidHiFiValve::updateState(const double dt __attribute__((unused)))
                 const double dp     = p0 - p1;
                 massFlux = mCdActual * computeBernoulliFlux(rhoAvg, dp);
             }
+            /// - Scale by tuning factor.
+            massFlux *= mFlowTuningFactor;
 
             /// - The leak area is the desired initial mass rate divided by the valve's mass flux:
             ///   (m2) = (kg/s) / (kg/s/m2)

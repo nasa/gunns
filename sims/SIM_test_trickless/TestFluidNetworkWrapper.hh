@@ -8,7 +8,7 @@
 @defgroup  ISS_ORCH_FLUID_TESTFLUIDNETWORK TestFluidNetworkWrapper GUNNS Network
 @ingroup   ISS_ORCH_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
               National Aeronautics and Space Administration.  All Rights Reserved.
 
 @{
@@ -17,7 +17,7 @@
 #include "../networks/fluid/test/TestFluidNetwork.hh"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    TestFluidNetworkWrapper 
+/// @brief    TestFluidNetworkWrapper
 ///
 /// @details  Extends TestFluidNetwork to output node properties values to cout for testing.
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,5 +38,5 @@ class TestFluidNetworkWrapper : public TestFluidNetwork
         TestFluidNetworkWrapper& operator =(const TestFluidNetworkWrapper& rhs);
 };
 
-/// @}  
+/// @}
 #endif

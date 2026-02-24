@@ -1,10 +1,10 @@
-/****************************** TRICK HEADER *******************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
  ((SensorAnalog.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
 
@@ -202,7 +202,7 @@ void TsFanSpeedSensors::update(const double dt)
     mSensorC.update(dt);
 
     /// - Compute the average sensed speed.
-    mAverageSpeed = (mSensorA.getSensedOutput() + mSensorB.getSensedOutput() + mSensorC.getSensedOutput()) / 3.0;
+    mAverageSpeed = (mSensorA.getSensedOutput() + mSensorB.getSensedOutput() + mSensorC.getSensedOutput()) / 3.0F;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -132,7 +132,7 @@ void UtRandom::testRandomDouble3()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests randomInt()                   
+/// @details  Tests randomInt()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtRandom::testRandomInt1()
 {
@@ -150,7 +150,7 @@ void UtRandom::testRandomInt1()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  Tests randomInt(int,int)                   
+/// @details  Tests randomInt(int,int)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtRandom::testRandomInt2()
 {
@@ -224,4 +224,3 @@ void UtRandom::testValueFound()
 
     std::cout << "Pass";
 }
-

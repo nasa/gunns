@@ -1,5 +1,5 @@
 /************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -190,13 +190,13 @@ void MonoFluid::validate()
     }
 
     /// - Throw  exception if temperature too small.
-    if (mTemperature < FLT_EPSILON) {
+    if (mTemperature < static_cast<double>(FLT_EPSILON)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Temperature < FLT_EPSILON.",
                         TsInitializationException, "Invalid Input Data", "MonoFluid");
     }
 
     /// - Throw  exception if pressure too small.
-    if (mPressure < FLT_EPSILON) {
+    if (mPressure < static_cast<double>(FLT_EPSILON)) {
         TS_HS_EXCEPTION(TS_HS_ERROR, "GUNNS", "Pressure < FLT_EPSILON.",
                         TsInitializationException, "Invalid Input Data", "MonoFluid");
     }
@@ -236,20 +236,20 @@ void MonoFluid::addState(const MonoFluid* src,  const double flowRate)
     double srcFlowRate = 0.0;
 
     /// - If the override flow rate is too small, use the rate inside the source fluid.
-    if (fabs(flowRate) < mMinFlowRate) {
+    if (std::fabs(flowRate) < mMinFlowRate) {
         srcFlowRate = src->mFlowRate;
     } else {
         srcFlowRate = flowRate;
     }
     const double newFlowRate = mFlowRate + srcFlowRate;
 
-    if (fabs(newFlowRate) > mMinFlowRate) {
+    if (std::fabs(newFlowRate) > mMinFlowRate) {
         /// - The combined temperature and pressure are the mass flow rate weighted averages.
         const double fraction           = mFlowRate   / newFlowRate;
         const double srcFraction        = srcFlowRate / newFlowRate;
-        mTemperature                    = fabs(mTemperature * fraction +
+        mTemperature                    = std::fabs(mTemperature * fraction +
                                                src->mTemperature * srcFraction);
-        mPressure                       = fabs(mPressure * fraction +
+        mPressure                       = std::fabs(mPressure * fraction +
                                                src->mPressure * srcFraction);
     } else {
         /// - Or 50/50 if the mass flow rate is sufficiently small.

@@ -2,10 +2,13 @@
 #define GunnsFluidReliefValve_EXISTS
 
 /**
+@file      GunnsFluidReliefValve.hh
+@brief     Pressure Relief Valve Model declarations
+
 @defgroup  TSM_GUNNS_FLUID_CONDUCTOR_PRELIEF_VALVE      Pressure Relief Valve Model
 @ingroup   TSM_GUNNS_FLUID_CONDUCTOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -44,22 +47,24 @@ class GunnsFluidReliefValveConfigData : public GunnsFluidPressureSensitiveValveC
         double        mReseatPressure;   /**< (kPa)  trick_chkpnt_io(**) Valve close pressure. */
         double        mCrackPressure;    /**< (kPa)  trick_chkpnt_io(**) Valve open pressure. */
         double        mFullOpenPressure; /**< (kPa)  trick_chkpnt_io(**) Valve full open pressure. */
-        double        mPopPosition;      /**< (--)   trick_chkpnt_io(**) Initial pop position. */
+        double        mPopPosition;      /**< (1)    trick_chkpnt_io(**) Initial pop position. */
         double        mPopSlopeScale;    /**< (kPa)  trick_chkpnt_io(**) Initial pop slope scale factor. */
         /// @brief    Default constructs this Pressure Relief Valve configuration data.
-        GunnsFluidReliefValveConfigData(const std::string& name                 = "",
-                                        GunnsNodeList*     nodes                = 0,
-                                        const double       maxConductivity      = 0.0,
-                                        const double       expansionScaleFactor = 0.0,
-                                        const double       rateLimit            = 0.0,
-                                        const double       thermalLength        = 0.0,
-                                        const double       thermalDiameter      = 0.0,
-                                        const double       surfaceRoughness     = 0.0,
-                                        const double       reseatPressure       = 0.0,
-                                        const double       crackPressure        = 0.0,
-                                        const double       fullOpenPressure     = 0.0,
-                                        const double       popPosition          = 0.0,
-                                        const double       popSlopeScale        = 0.0);
+        GunnsFluidReliefValveConfigData(const std::string& name                  = "",
+                                        GunnsNodeList*     nodes                 = 0,
+                                        const double       maxConductivity       = 0.0,
+                                        const double       expansionScaleFactor  = 0.0,
+                                        const double       rateLimit             = 0.0,
+                                        const double       thermalLength         = 0.0,
+                                        const double       thermalDiameter       = 0.0,
+                                        const double       surfaceRoughness      = 0.0,
+                                        const double       reseatPressure        = 0.0,
+                                        const double       crackPressure         = 0.0,
+                                        const double       fullOpenPressure      = 0.0,
+                                        const double       popPosition           = 0.0,
+                                        const double       popSlopeScale         = 0.0,
+                                        const double       inletDependencyCoeff0 = 0.0,
+                                        const double       inletDependencyCoeff1 = 0.0);
         /// @brief    Copy constructs this Pressure Relief Valve configuration data.
         GunnsFluidReliefValveConfigData(
                                              const GunnsFluidReliefValveConfigData& that);
@@ -159,24 +164,24 @@ class GunnsFluidReliefValve : public  GunnsFluidPressureSensitiveValve
         double        mReseatPressure;   /**< (kPa)   trick_chkpnt_io(**) Valve close pressure. */
         double        mCrackPressure;    /**< (kPa)   trick_chkpnt_io(**) Valve open pressure. */
         double        mFullOpenPressure; /**< (kPa)   trick_chkpnt_io(**) Valve full open pressure. */
-        double        mPopPosition;      /**< (--)    trick_chkpnt_io(**) Initial pop position. */
+        double        mPopPosition;      /**< (1)     trick_chkpnt_io(**) Initial pop position. */
         double        mPopSlopeScale;    /**< (kPa)   trick_chkpnt_io(**) Initial pop slope scale factor. */
         double        mPopIncM;          /**< (kPa)   trick_chkpnt_io(**) Slope for increasing initial pop. */
         double        mPopIncMInv;       /**< (1/kPa) trick_chkpnt_io(**) Slope for increasing initial pop inverse. */
-        double        mPopIncB;          /**< (--)    trick_chkpnt_io(**) X intercept for increasing initial pop. */
+        double        mPopIncB;          /**< (1)     trick_chkpnt_io(**) X intercept for increasing initial pop. */
         double        mPopIncP;          /**< (kPa)   trick_chkpnt_io(**) Increasing transition pressure. */
         double        mPopDecM;          /**< (kPa)   trick_chkpnt_io(**) Slope for decreasing initial pop equation. */
         double        mPopDecMInv;       /**< (1/kPa) trick_chkpnt_io(**) Slope for decreasing initial pop inverse. */
-        double        mPopDecB;          /**< (--)    trick_chkpnt_io(**) X intercept for decreasing initial pop. */
+        double        mPopDecB;          /**< (1)     trick_chkpnt_io(**) X intercept for decreasing initial pop. */
         double        mPopDecP;          /**< (kPa)   trick_chkpnt_io(**) Decreasing transition pressure. */
         double        mNomIncM;          /**< (kPa)   trick_chkpnt_io(**) Slope for increasing nominal. */
         double        mNomIncMInv;       /**< (1/kPa) trick_chkpnt_io(**) Slope for increasing nominal inverse. */
-        double        mNomIncB;          /**< (--)    trick_chkpnt_io(**) X intercept for increasing nominal. */
+        double        mNomIncB;          /**< (1)     trick_chkpnt_io(**) X intercept for increasing nominal. */
         double        mNomDecM;          /**< (kPa)   trick_chkpnt_io(**) Slope for decreasing nominal. */
         double        mNomDecMInv;       /**< (1/kPa) trick_chkpnt_io(**) Slope for decreasing nominal inverse. */
-        double        mNomDecB;          /**< (--)    trick_chkpnt_io(**) X intercept for decreasing nominal. */
+        double        mNomDecB;          /**< (1)     trick_chkpnt_io(**) X intercept for decreasing nominal. */
         double        mPreviousPressure; /**< (kPa)                       Previous inlet pressure. */
-        GunnsFluidValve::State mState;   /**< (--)                        Valve state of this Pressure Regulator. */
+        GunnsFluidValve::State mState;   /**< (1)                         Valve state of this Pressure Regulator. */
         /// @brief    Validates the initialization of this Pressure Relief Valve.
         void validate() const;
         /// @brief Virtual method for derived links to perform their restart functions.

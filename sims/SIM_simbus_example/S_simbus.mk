@@ -1,4 +1,4 @@
-# Copyright 2023 United States Government as represented by the Administrator of the
+# Copyright 2024 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 #=============================================================================
@@ -13,13 +13,13 @@ thread_safe_bus/alloc_simbus.cpp:
 	$(shell PYTHONPATH="${PYTHONPATH}" ICD_HOME="${ICD_HOME}" ${ICD_HOME}/icd_generate $(ICD_TXT_FILES) >& icd_files.out)
 	$(shell PYTHONPATH="${PYTHONPATH}" ICD_HOME="${ICD_HOME}" ${ICD_HOME}/icd_generate $(simname) >& alloc_simbus.out )
 
-ifneq "$(MAKECMDGOALS)" "spotless" 
+ifneq "$(MAKECMDGOALS)" "spotless"
 ifneq "$(MAKECMDGOALS)" "apocalypse"
 S_define: thread_safe_bus/alloc_simbus.cpp
 endif
 endif
 
-clean_icd: 
+clean_icd:
 	rm -rf thread_safe_bus ;\
 	rm -f icd_files.out alloc_simbus.out
 

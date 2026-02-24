@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Node implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -222,20 +222,20 @@ void GunnsFluidNode::validate()
     }
 
     /// - Throw exception on pressure < FLT_EPSILON.
-    if (mContent.getPressure() < FLT_EPSILON) {
+    if (mContent.getPressure() < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has insufficient initial pressure.");
     }
 
     /// - Throw exception on temperature < FLT_EPSILON.
-    if (mContent.getTemperature() < FLT_EPSILON) {
+    if (mContent.getTemperature() < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has insufficient initial temperature.");
     }
 
     /// - Throw exception on %mass error > FLT_EPSILON.
     computeMassError();
-    if (mMassError > FLT_EPSILON) {
+    if (mMassError > static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Initialization Data",
                 "Node has excessive initial mass error.");
     }
@@ -271,7 +271,7 @@ void GunnsFluidNode::restart()
     ///   in this case do we reset the mass.
     const double checkpointError = mMassError;
     computeMassError();
-    if (fabs(mMassError - checkpointError) > FLT_EPSILON) {
+    if (std::fabs(mMassError - checkpointError) > static_cast<double>(FLT_EPSILON)) {
         GUNNS_WARNING("restarting mass.");
         updateMass();
         mMassError = 0.0;
@@ -422,8 +422,8 @@ double GunnsFluidNode::computeThermalCapacitance()
     /// PolyFluid class.
     /// \endverbatim
     double t = mContent.getTemperature();
-    if (t < FLT_EPSILON) {
-        t = FLT_EPSILON;
+    if (t < static_cast<double>(FLT_EPSILON)) {
+        t = static_cast<double>(FLT_EPSILON);
     }
     const double t1 = t * 0.999;
     const double t2 = t * 1.001;
@@ -606,7 +606,23 @@ void GunnsFluidNode::integrateFlows(const double dt)
         const double oldMass = std::max(0.0, lastMass - contentOutMass);
 
         /// - Final contents mass (kg) in the node after outflows and inflows.
-        const double newMass = std::max(DBL_EPSILON, oldMass + inMass - inflowOutMass);
+        double newMass = oldMass + inMass - inflowOutMass;
+
+        /// - The new enthalpy is a mix of the old and inflow enthalpy.  Because we haven't
+        ///   called setTemperature yet, getSpecificiEnthalpy still represents the last mass.
+        double newEnthalpy = lastMass * mContent.getSpecificEnthalpy() + mNetHeatFlux * dt;
+
+        /// - Protect for edge cases (non-positive mass or enthalpy).
+        if(newMass < DBL_EPSILON) {
+            newMass = DBL_EPSILON;
+            newEnthalpy = mContent.getSpecificEnthalpy();
+
+        } else if(newEnthalpy < DBL_EPSILON) {
+            newEnthalpy = mContent.getSpecificEnthalpy();
+
+        } else {
+            newEnthalpy /= newMass;
+        }
 
         /// - Calculate the change in temperature of the original mass due to thermal expansion.
         mExpansionDeltaT = GunnsFluidUtils::computeIsentropicTemperature(mExpansionScaleFactor,
@@ -617,7 +633,7 @@ void GunnsFluidNode::integrateFlows(const double dt)
 
         /// - If there is incoming flow, calculate the new mixture in the node, removing
         ///   negative or dirty zero mass fractions and re-normalizing if necessary.
-        if (fabs(inMass) > DBL_EPSILON) {
+        if (std::fabs(inMass) > DBL_EPSILON) {
 
             /// - First do outflow of trace compounds before mixing in their inflow.
             if (traceCompounds and mContent.getMWeight() > DBL_EPSILON) {
@@ -659,14 +675,6 @@ void GunnsFluidNode::integrateFlows(const double dt)
         ///   incoming mass fluid properties, otherwise hold the temperature constant.
         double newT = mContent.getTemperature();
 
-        /// - The new enthalpy is a mix of the old and inflow enthalpy.  Because we haven't
-        ///   called setTemperature yet, getSpecificiEnthalpy still represents the last mass.
-        double newEnthalpy = lastMass * mContent.getSpecificEnthalpy() + mNetHeatFlux * dt;
-        if (newEnthalpy < DBL_EPSILON) {
-            newEnthalpy = mContent.getSpecificEnthalpy();
-        } else {
-            newEnthalpy /= newMass;
-        }
 
         /// - Thermal damping mass represents the mass of a container shell or solid contents
         ///   that remain in thermal equilibrium with the fluid, and thus act to dampen changes
@@ -797,7 +805,7 @@ double GunnsFluidNode::computePressureCorrection()
 
         /// - We only apply the pressure correction if the error is above a certain threshold, to
         ///   avoid creating extra noise in the system.
-        if( fabs(pressureError) > mErrorThreshold ) {
+        if( std::fabs(pressureError) > mErrorThreshold ) {
             mPressureCorrection = pressureError * mCorrectGain;
         }
 

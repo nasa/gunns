@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -20,7 +20,7 @@ LIBRARY DEPENDENCY:
 PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (2011-11) (Initial)
     (Jason Harvey)      (L-3 Communications) (2012-12) (Base on conductor with extra source))
-**************************************************************************************************/
+*/
 
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -244,25 +244,25 @@ void GunnsFluidSeparatorGas::validate(const GunnsFluidSeparatorGasConfigData& co
     }
 
     /// - Throw an exception on liquid mass capacity < FLT_EPSILON.
-    if (configData.mMaxLiquidMass < FLT_EPSILON) {
+    if (configData.mMaxLiquidMass < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Liquid mass capacity < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference speed < FLT_EPSILON.
-    if (configData.mReferenceSpeed < FLT_EPSILON) {
+    if (configData.mReferenceSpeed < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference speed < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference pressure < FLT_EPSILON.
-    if (configData.mReferencePressure < FLT_EPSILON) {
+    if (configData.mReferencePressure < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference pressure < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference liquid removal rate < FLT_EPSILON.
-    if (configData.mReferenceRemovalRate < FLT_EPSILON) {
+    if (configData.mReferenceRemovalRate < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference liquid removal rate < FLT_EPSILON.");
     }
@@ -311,7 +311,7 @@ void GunnsFluidSeparatorGas::derive(const GunnsFluidSeparatorGasConfigData& conf
     mMassExponent            = configData.mMassExponent;
     mMaxLiquidMass           = configData.mMaxLiquidMass;
     mPowerCurveCoefficient   = configData.mReferencePressure / configData.mReferenceSpeed
-                             / pow(mMaxLiquidMass, mMassExponent);
+                             / std::pow(mMaxLiquidMass, mMassExponent);
     mRemovalRateCoefficient  = configData.mReferenceRemovalRate / configData.mReferenceSpeed;
     mGasIndex                = mNodes[0]->getContent()->find(configData.mGasType);
 
@@ -381,13 +381,13 @@ void GunnsFluidSeparatorGas::updateFluid(const double dt, const double flowrate 
 
     } else {
         /// - Compute the available mass of operating fluid in the stream.
-        const double availableMass = mInternalFluid->getMassFraction(mGasIndex) * fabs(mFlowRate) * dt;
+        const double availableMass = mInternalFluid->getMassFraction(mGasIndex) * std::fabs(mFlowRate) * dt;
 
         /// - The condensed mass as a function of separator speed.
-        const double condensedMass = fmin(availableMass, mRemovalRateCoefficient * mSeparatorSpeed * dt);
+        const double condensedMass = std::min(availableMass, mRemovalRateCoefficient * mSeparatorSpeed * dt);
 
         /// - The separated mass limited by capacity in the separator.
-        const double separatedMass = fmin(condensedMass, mMaxLiquidMass - mLiquidMass);
+        const double separatedMass = std::min(condensedMass, mMaxLiquidMass - mLiquidMass);
 
         /// - Indicate if not all the condensate was removed from the gas stream.  This can be used
         ///   for output to a liquid detection sensor signal aspect.
@@ -401,7 +401,7 @@ void GunnsFluidSeparatorGas::updateFluid(const double dt, const double flowrate 
     }
 
     /// - Compute separator delta pressure on liquid as function of speed and mass.
-    mLiquidDeltaP = mPowerCurveCoefficient * mSeparatorSpeed * pow(mLiquidMass, mMassExponent);
+    mLiquidDeltaP = mPowerCurveCoefficient * mSeparatorSpeed * std::pow(mLiquidMass, mMassExponent);
 
     if (mSeparationRate > m100EpsilonLimit) {
 

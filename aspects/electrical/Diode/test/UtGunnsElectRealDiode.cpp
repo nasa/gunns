@@ -1,12 +1,8 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-LIBRARY DEPENDENCY:
-  ((aspects/electrical/Diode/GunnsElectRealDiode.o)
-   (core/GunnsBasicLink.o)
-   (software/exceptions/TsInitializationException.o))
 */
+
 #include "UtGunnsElectRealDiode.hh"
 #include "software/exceptions/TsInitializationException.hh"
 #include <iostream>
@@ -103,7 +99,7 @@ void UtGunnsElectRealDiode::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectRealDiode::testConfigAndInput()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("GUNNS Electrical Aspect Diode Unit Tests");
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT(tName  == tConfigData->mName);
@@ -355,7 +351,9 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
 {
     UT_RESULT;
 
-    /// - Initialize default constructed test article with nominal initialization data.
+    /// - Initialize default constructed test article with nominal initialization data, initially
+    ///   in forward bias.
+    tInputData->mReverseBias = false;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
 
     {
@@ -364,8 +362,8 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         tArticle->mPotentialVector[1] = 1.0;
         const GunnsBasicLink::SolutionResult expectedResult = GunnsBasicLink::CONFIRM;
         const bool                           expectedBias   = false;
-        const bool result = tArticle->confirmSolutionAcceptable(1, 1);
-        CPPUNIT_ASSERT(expectedResult == expectedResult);
+        const GunnsBasicLink::SolutionResult result = tArticle->confirmSolutionAcceptable(1, 1);
+        CPPUNIT_ASSERT(expectedResult == result);
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     } {
         /// @test    Switches to reverse bias.
@@ -373,8 +371,8 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         tArticle->mPotentialVector[1] = 1.0;
         const GunnsBasicLink::SolutionResult expectedResult = GunnsBasicLink::REJECT;
         const bool                           expectedBias   = true;
-        const bool result = tArticle->confirmSolutionAcceptable(1, 1);
-        CPPUNIT_ASSERT(expectedResult == expectedResult);
+        const GunnsBasicLink::SolutionResult result = tArticle->confirmSolutionAcceptable(1, 1);
+        CPPUNIT_ASSERT(expectedResult == result);
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     } {
         /// @test    Remains in reverse bias.
@@ -382,8 +380,8 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         tArticle->mPotentialVector[1] = 1.0;
         const GunnsBasicLink::SolutionResult expectedResult = GunnsBasicLink::CONFIRM;
         const bool                           expectedBias   = true;
-        const bool result = tArticle->confirmSolutionAcceptable(1, 1);
-        CPPUNIT_ASSERT(expectedResult == expectedResult);
+        const GunnsBasicLink::SolutionResult result = tArticle->confirmSolutionAcceptable(1, 1);
+        CPPUNIT_ASSERT(expectedResult == result);
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     } {
         /// @test    Switches to forward bias.
@@ -391,10 +389,10 @@ void UtGunnsElectRealDiode::testConfirmSolutionAcceptable()
         tArticle->mPotentialVector[1] = 1.0;
         const GunnsBasicLink::SolutionResult expectedResult = GunnsBasicLink::REJECT;
         const bool                           expectedBias   = false;
-        const bool result = tArticle->confirmSolutionAcceptable(1, 1);
-        CPPUNIT_ASSERT(expectedResult == expectedResult);
+        const GunnsBasicLink::SolutionResult result = tArticle->confirmSolutionAcceptable(1, 1);
+        CPPUNIT_ASSERT(expectedResult == result);
         CPPUNIT_ASSERT(expectedBias   == tArticle->mReverseBias);
     }
 
-    UT_PASS_LAST;
+    UT_PASS_FINAL;
 }

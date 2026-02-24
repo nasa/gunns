@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -153,7 +153,7 @@ void UtGunnsElectricalResistor::testDefaultConstruction()
 
     /// @test config data
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mResistance,   0.0);
-    
+
     /// @test class member default construction
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mVoltageIn,   0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mVoltageOut,   0.0);

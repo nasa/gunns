@@ -45,8 +45,8 @@ LIBRARY DEPENDENCY:
 #ifndef TIXML_STRING_INCLUDED
 #define TIXML_STRING_INCLUDED
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 
 /*	The support for explicit isn't that universal, and it isn't really
 	required - it is used to check that the TiXmlString class isn't incorrectly
@@ -74,7 +74,7 @@ class TiXmlString
 {
   public :
 	// The size type used
-  	typedef size_t size_type;
+	typedef std::size_t size_type;
 
 	// Error value for find primitive
 	static const size_type npos; // = -1;
@@ -95,7 +95,7 @@ class TiXmlString
 	// TiXmlString constructor, based on a string
 	TIXML_EXPLICIT TiXmlString ( const char * copy) : rep_(0)
 	{
-		init( static_cast<size_type>( strlen(copy) ));
+		init( static_cast<size_type>( std::strlen(copy) ));
 		memcpy(start(), copy, length());
 	}
 
@@ -115,7 +115,7 @@ class TiXmlString
 	// = operator
 	TiXmlString& operator = (const char * copy)
 	{
-		return assign( copy, (size_type)strlen(copy));
+		return assign( copy, (size_type)std::strlen(copy));
 	}
 
 	// = operator
@@ -128,7 +128,7 @@ class TiXmlString
 	// += operator. Maps to append
 	TiXmlString& operator += (const char * suffix)
 	{
-		return append(suffix, static_cast<size_type>( strlen(suffix) ));
+		return append(suffix, static_cast<size_type>( std::strlen(suffix) ));
 	}
 
 	// += operator. Maps to append
@@ -244,7 +244,7 @@ class TiXmlString
 			// to the normal allocation, although use an 'int' for systems
 			// that are overly picky about structure alignment.
 			const size_type bytesNeeded = sizeof(Rep) + cap;
-			const size_type intsNeeded = ( bytesNeeded + sizeof(int) - 1 ) / sizeof( int ); 
+			const size_type intsNeeded = ( bytesNeeded + sizeof(int) - 1 ) / sizeof( int );
 			rep_ = reinterpret_cast<Rep*>( new int[ intsNeeded ] );
 
 			rep_->str[ rep_->size = sz ] = '\0';

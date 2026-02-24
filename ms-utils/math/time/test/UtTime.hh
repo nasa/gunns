@@ -1,5 +1,5 @@
 /********************************* TRICK HEADER *******************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -33,7 +33,7 @@ class UtTime: public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE(UtTime);
 
-	    CPPUNIT_TEST(TestGetTimeOfDay);
+        CPPUNIT_TEST(TestGetTimeOfDay);
 
         CPPUNIT_TEST_SUITE_END();
 
@@ -42,4 +42,4 @@ class UtTime: public CppUnit::TestFixture
         void TestGetTimeOfDay();
 };
 
-#endif 
+#endif

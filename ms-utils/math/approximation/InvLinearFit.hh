@@ -1,6 +1,9 @@
 #ifndef InvLinearFit_EXISTS
 #define InvLinearFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_INVERSE_LINEAR Univariate Inverse Linear Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 

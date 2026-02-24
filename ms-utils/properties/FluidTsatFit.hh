@@ -8,7 +8,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_FLUID_TSAT_FIT Fluid Saturation Temperature Curve Fit
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -93,8 +93,7 @@ class FluidTsatFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double FluidTsatFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return (mB - sqrt(mB2 - mC4 * (mA - log10(x)))) * mC2;
+    return (mB - std::sqrt(mB2 - mC4 * (mA - std::log10(x)))) * mC2;
 }
 
 #endif
-

@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Balanced Pressure Reducing Valve Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -234,14 +234,15 @@ void GunnsFluidBalancedPrv::step(const double dt)
     if (mMalfPressureBiasFlag) {
         mRegulatedPressure += mMalfPressureBiasValue;
     }
-    mRegulatedPressure = fmin(mRegulatedPressure, mPotentialVector[0]);
+    mRegulatedPressure = std::min(mRegulatedPressure, mPotentialVector[0]);
 
+    double flt_epsilon = static_cast<double>(FLT_EPSILON);
     /// - Update exit-side molar conductance.
-    if (mBackPressureCutoff or mNodes[0]->getOutflow()->getMWeight() < FLT_EPSILON) {
+    if (mBackPressureCutoff or mNodes[0]->getOutflow()->getMWeight() < flt_epsilon) {
         mExitConductance = 0.0;
     } else {
         mExitConductance = 1.0 / mNodes[0]->getOutflow()->getMWeight()
-                         / MsMath::limitRange(FLT_EPSILON, mExitPressureDroop, 1.0 / FLT_EPSILON);
+                         / MsMath::limitRange(flt_epsilon, mExitPressureDroop, 1.0 / flt_epsilon);
         if (mMalfBlockageFlag) {
             mExitConductance *= (1.0 - mMalfBlockageValue);
         }
@@ -249,7 +250,7 @@ void GunnsFluidBalancedPrv::step(const double dt)
 
     /// - Inlet-side molar conductance is set to drain the mass buffer in approximately 5 frames
     ///   regardless of time-step.
-    if (dt < DBL_EPSILON or mNodes[0]->getOutflow()->getMWeight() < FLT_EPSILON or
+    if (dt < DBL_EPSILON or mNodes[0]->getOutflow()->getMWeight() < flt_epsilon or
             mPotentialVector[0] < DBL_EPSILON) {
         mInletConductance = 0.0;
     } else {
@@ -312,7 +313,7 @@ void GunnsFluidBalancedPrv::computeFlows(const double dt __attribute__((unused))
     mInletFlux = std::max(0.0,  mPotentialVector[0] * mAdmittanceMatrix[0]);
     mFlux      = std::max(0.0, -mPotentialVector[1] * mAdmittanceMatrix[4] + mSourceVector[1]);
 
-    if (mInletFlux > DBL_EPSILON) { 
+    if (mInletFlux > DBL_EPSILON) {
         mPortDirections[0] = SOURCE;
         mPortDirections[1] = SINK;
         mNodes[0]->scheduleOutflux(mInletFlux);

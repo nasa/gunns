@@ -2,6 +2,9 @@
 #define UtTsInterpolator_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+///           National Aeronautics and Space Administration.  All Rights Reserved.
+///
 /// @defgroup UT_UTILITIES_MATH_APPROXIMATION_INTERPOLATOR    Interpolator Unit Tests
 /// @ingroup  UT_UTILITIES_MATH
 ///

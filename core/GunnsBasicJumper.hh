@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_BASIC_JUMPER    GUNNS Basic Jumper Link
 @ingroup   TSM_GUNNS_CORE_LINK_BASIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -129,7 +129,7 @@ class GunnsBasicJumper : public GunnsBasicConductor
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief Updates the State of the Basic Jumper.
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
         /// @brief Updates the jumper plugs.
         void updatePlugs();
         /// @brief Checks for duplicate port node assignment.

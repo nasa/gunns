@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This builds the GUNNS compiled library for Trick simulations.  If the
@@ -33,9 +33,11 @@ GUNNS_HOME ?= $(abspath ${PWD}/../..)
 
 OPTS = -O2 -g
 
+WARNOPTS = -Wall -Wextra -Wshift-overflow -Warray-bounds -Wshadow -Wformat=2 -Wignored-attributes -Wpacked -Walloca -Wpointer-compare -Wcast-align -Wwrite-strings -Wdangling-else -Wdate-time -Wmissing-field-initializers -Woverlength-strings -Woverloaded-virtual -Wsign-promo -Wctor-dtor-privacy -Wregister -Wnon-virtual-dtor -Wswitch-default -Wdouble-promotion -Wfloat-conversion
+
 GUNNSLIB := libgunns.a
 GUNNSROSESLIB := libgunnsroses.a
-CXXFLAGS = -Wall $(OPTS)
+CXXFLAGS = $(OPTS) $(WARNOPTS)
 
 INCDIRS = -I$(GUNNS_HOME) -I$(GUNNS_HOME)/core -I$(GUNNS_HOME)/aspects \
  -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models \
@@ -61,7 +63,7 @@ CUDAOBJECTS_C := $(addprefix buildroses,$(subst .c,.o,$(CUDASOURCES)))
 CUDAOBJECTS_C := $(filter-out %.opp,$(CUDAOBJECTS_C))
 CUDAOBJDIRS_C := $(sort $(dir $(CUDAOBJECTS_C)))
 
-# Convert the space-separated list of absolute path .cpp's and .c's in SOURCES to a 
+# Convert the space-separated list of absolute path .cpp's and .c's in SOURCES to a
 # newline-separated list of relative path include .hh and .h statements in HEADERS:
 #
 # This defines the suffix for substitution including a newline:
@@ -88,7 +90,7 @@ export HEADERS
 
 all: ${GUNNSLIB}
 
-roses: CXXFLAGS += -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
+roses: CXXFLAGS += -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 roses: ${GUNNSROSESLIB}
 
 $(GUNNSLIB) : $(OBJECTS_CC) $(OBJECTS_C)

@@ -2,7 +2,7 @@
  @defgroup TSM_GUNNS_THERMAL_SurfaceHeatFlux Surface Heat Flux
  @ingroup  TSM_GUNNS_THERMAL
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -82,7 +82,7 @@ class TsSurfaceHeatFlux {
         void  setLighting( const double lightset);
 
         /// @brief Sets one of the radiance vectors.
-        const void  setRadiance( double* radiancePointer, double x, double y, double z);
+        void  setRadiance( double* radiancePointer, double x, double y, double z);
 
         /// @brief Validates that the magnitude of a vector is not zero
         void  vectorValidate(double* vector);

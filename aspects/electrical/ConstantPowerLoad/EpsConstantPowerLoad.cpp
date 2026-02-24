@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -184,7 +184,7 @@ void EpsConstantPowerLoad::restartModel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Updates the link's effective conductivity during the time step
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void EpsConstantPowerLoad::updateState(const double)
+void EpsConstantPowerLoad::updateState(const double dt __attribute__((unused)))
 {
     double deltaPotential = getDeltaPotential();
     updateEffectiveConductivity(deltaPotential);

@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Output Link implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -351,14 +351,14 @@ void GunnsElectConverterOutput::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  dt  (s)  Integration time step.
+/// @param[in]  dt  (s)  Integration time step (unused).
 ///
 /// @details  Updates the link admittance matrix and source vector contributions to the system of
 ///           equations based on converter state, load and load type.  Update sensors with the
 ///           timestep to advance their drift malfunction.  Then call minorStep for the main update
 ///           functions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConverterOutput::step(const double dt)
+void GunnsElectConverterOutput::step(const double dt __attribute__((unused)))
 {
     /// - Process user commands to dynamically re-map ports.
     processUserPortCommand();
@@ -434,7 +434,7 @@ void GunnsElectConverterOutput::minorStep(const double dt __attribute__((unused)
 
         /// - Build the admittance matrix and source vector.
         conductance = MsMath::limitRange(0.0, conductance, mConductanceLimit);
-        if (fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
+        if (std::fabs(mAdmittanceMatrix[0] - conductance) > 0.0) {
             mAdmittanceMatrix[0] = conductance;
             mAdmittanceUpdate    = true;
         }
@@ -454,32 +454,32 @@ void GunnsElectConverterOutput::computeRegulationSources(double& conductance, do
 {
     if (isVoltageRegulator()) {
         if (LIMIT_OC == mLimitState) {
-            current     = mOutputOverCurrentTrip.getLimit();
-            conductance = FLT_EPSILON;
+            current     = static_cast<double>(mOutputOverCurrentTrip.getLimit());
+            conductance = static_cast<double>(FLT_EPSILON);
         } else {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mSetpoint;
+            voltage = mSetpoint;
             if (TRANSFORMER == mRegulatorType) {
-                mSourceVoltage *= mInputVoltage;
+                voltage *= mInputVoltage;
             }
         }
     } else {
         if (LIMIT_OV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mOutputOverVoltageTrip.getLimit();
+            voltage = static_cast<double>(mOutputOverVoltageTrip.getLimit());
         } else if (LIMIT_UV == mLimitState) {
             conductance    = applyBlockage(mOutputConductance);
-            mSourceVoltage = mOutputUnderVoltageTrip.getLimit();
+            voltage = static_cast<double>(mOutputUnderVoltageTrip.getLimit());
         } else {
-            conductance = FLT_EPSILON;
+            conductance = static_cast<double>(FLT_EPSILON);
             if (CURRENT == mRegulatorType) {
                 if (LIMIT_OC == mLimitState) {
-                    current = applyBlockage(mOutputOverCurrentTrip.getLimit());
+                    current = applyBlockage(static_cast<double>(mOutputOverCurrentTrip.getLimit()));
                 } else {
                     current = applyBlockage(mSetpoint);
                 }
             } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
-                current = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+                current = applyBlockage(std::sqrt(mSetpoint / mLoadResistance));
             }
         }
     }
@@ -530,8 +530,8 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
 
             /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of
             ///   the truth parameter, otherwise the trip looks directly at the truth parameter.
-            float sensedVout = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);
-            float sensedIout = MsMath::limitRange(-FLT_MAX, mFlux,               FLT_MAX);
+            float sensedVout = MsMath::limitRange(-FLT_MAX, static_cast<float>(mPotentialVector[0]), FLT_MAX);
+            float sensedIout = MsMath::limitRange(-FLT_MAX, static_cast<float>(mFlux),               FLT_MAX);
 
             /// - Note that since we step the sensors without a time-step, its drift malfunction
             ///   isn't integrated.  This is because we don't have the time-step in this function,
@@ -539,10 +539,10 @@ GunnsBasicLink::SolutionResult GunnsElectConverterOutput::confirmSolutionAccepta
             ///   repeat the drift integration too many times.  The result of all this is that drift
             ///   lags behind by one major step for causing trips.
             if (mOutputVoltageSensor) {
-                sensedVout = mOutputVoltageSensor->sense(0.0, true, sensedVout);
+                sensedVout = mOutputVoltageSensor->sense(0.0, true, static_cast<double>(sensedVout));
             }
             if (mOutputCurrentSensor) {
-                sensedIout = mOutputCurrentSensor->sense(0.0, true, sensedIout);
+                sensedIout = mOutputCurrentSensor->sense(0.0, true, static_cast<double>(sensedIout));
             }
 
             /// - Check all trip logics for trips.  If any trip, reject the solution.  Note that
@@ -674,7 +674,7 @@ void GunnsElectConverterOutput::updateCurrentLimitState(GunnsBasicLink::Solution
                                                         const float                     current)
 {
     /// - Voltage regulators can only LIMIT_OC.
-    const bool canOcLimit = mOutputOverCurrentTrip.getLimit() > 0.0 and mLimitStateFlips < mStateFlipsLimit;
+    const bool canOcLimit = mOutputOverCurrentTrip.getLimit() > 0.0F and mLimitStateFlips < mStateFlipsLimit;
 
     if (LIMIT_OC == mLimitState and voltage > computeVoltageControlSetpoint()) {
         rejectWithLimitState(result, NO_LIMIT); /// - LIMIT_OC to NO_LIMIT transition.
@@ -703,9 +703,9 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
     ///   their normal current regulation (NO_LIMIT) to LIMIT_UV when the output voltage drops too
     ///   low, then if demand keeps pulling output voltage down and current up, we can reach the OC
     ///   limit.
-    const bool canOvLimit = mOutputOverVoltageTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit;
-    const bool canUvLimit = mOutputUnderVoltageTrip.getLimit() > 0.0 and mLimitStateFlips < mStateFlipsLimit;
-    const bool canOcLimit = mOutputOverCurrentTrip.getLimit()  > 0.0 and mLimitStateFlips < mStateFlipsLimit
+    const bool canOvLimit = mOutputOverVoltageTrip.getLimit()  > 0.0F and mLimitStateFlips < mStateFlipsLimit;
+    const bool canUvLimit = mOutputUnderVoltageTrip.getLimit() > 0.0F and mLimitStateFlips < mStateFlipsLimit;
+    const bool canOcLimit = mOutputOverCurrentTrip.getLimit()  > 0.0F and mLimitStateFlips < mStateFlipsLimit
                             and canUvLimit;
 
     if (LIMIT_OC == mLimitState) {
@@ -733,7 +733,7 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
             rejectWithLimitState(result, LIMIT_UV);
         } else {
             const float setpoint = computeCurrentControlSetpoint();
-            if ((current > setpoint) or (0.0 == setpoint)) {
+            if ((current > setpoint) or (0.0F == setpoint)) {
                 /// - LIMIT_OV to LIMIT_UV transition due to output current exceeds setpoint.
                 ///   Rather than going directly to NO_LIMIT, we transition to LIMIT_UV first, and
                 ///   afterwards may transition to NO_LIMIT.
@@ -769,9 +769,9 @@ bool GunnsElectConverterOutput::updateVoltageLimitState(GunnsBasicLink::Solution
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float GunnsElectConverterOutput::computeVoltageControlSetpoint()
 {
-    float setpoint = mSetpoint;
+    double setpoint = mSetpoint;
     if (TRANSFORMER == mRegulatorType) setpoint *= mInputVoltage;
-    return setpoint;
+    return static_cast<float>(setpoint);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -784,13 +784,13 @@ float GunnsElectConverterOutput::computeVoltageControlSetpoint()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float GunnsElectConverterOutput::computeCurrentControlSetpoint()
 {
-    float setpoint = 0.0;
+    double setpoint = 0.0;
     if (CURRENT == mRegulatorType) {
         setpoint = applyBlockage(mSetpoint);
     } else if (mSetpoint > 0.0 and mLoadResistance > 0.0) {
-        setpoint = applyBlockage(sqrt(mSetpoint / mLoadResistance));
+        setpoint = applyBlockage(std::sqrt(mSetpoint / mLoadResistance));
     }
-    return setpoint;
+    return static_cast<float>(setpoint);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -817,7 +817,7 @@ bool GunnsElectConverterOutput::computeInputPower(double& inputPower)
         mPower = mFlux * mPotentialVector[0];
 
         /// - Power dissipated due to the output current through the output channel resistance.
-        mOutputChannelLoss = mFlux * mFlux / fmax(DBL_EPSILON, mOutputConductance);
+        mOutputChannelLoss = mFlux * mFlux / std::max(DBL_EPSILON, mOutputConductance);
 
         /// - Input power due to efficiency of the voltage conversion.
         inputPower = (mPower + mOutputChannelLoss) / MsMath::limitRange(DBL_EPSILON, mConverterEfficiency, 1.0);

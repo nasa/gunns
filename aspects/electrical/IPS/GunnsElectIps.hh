@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_IPS_LINK Internal Power Supply
 @ingroup   TSM_GUNNS_ELECTRICAL_IPS
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -32,7 +32,7 @@ PROGRAMMERS:
 
 #include <string>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include "core/GunnsBasicLink.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +401,7 @@ inline void GunnsElectIps::calculateHeatTransfer()
 inline bool GunnsElectIps::isConductanceChanged(const double conductanceOne,
                                                 const double conductanceTwo) const
 {
-    return (fabs(conductanceOne - conductanceTwo) > mConductanceTolerance);
+    return (std::fabs(conductanceOne - conductanceTwo) > mConductanceTolerance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

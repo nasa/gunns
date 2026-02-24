@@ -1,6 +1,9 @@
 #ifndef PowerFit_EXISTS
 #define PowerFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_POWER Univariate Power Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 
@@ -71,7 +74,7 @@ class PowerFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double PowerFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * pow(mB, x);
+    return mA * std::pow(mB, x);
 }
 
 #endif

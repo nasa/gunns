@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -355,7 +355,7 @@ void UtGunnsFluidSimpleRocket::testNominalInitialization()
     const double expectedG  = 1000.0 * tThroatArea / tCharacteristicVelocity;
     const double expectedMW = 21.87156537;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,  tArticle->mDefaultConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(0                      == tArticle->mCombustModel);
 
     /// @test    Nominal input data.
@@ -413,7 +413,7 @@ void UtGunnsFluidSimpleRocket::testCombustionInitialization()
     const double expectedG  = 1000.0 * tThroatArea / tCharacteristicVelocity;
     const double expectedMW = 21.87156537;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG,  tArticle->mDefaultConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, tArticle->mCombustionMWeight,  static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(0                      != tArticle->mCombustModel);
 
     /// @test    Nominal input data.
@@ -593,7 +593,7 @@ void UtGunnsFluidSimpleRocket::testStep()
     CPPUNIT_ASSERT(false == tArticle->mAdmittanceUpdate);
 
     /// @test   negative pressure gradient.
-    tArticle->mPotentialVector[0] = tNodes[1].getOutflow()->getPressure() - FLT_EPSILON;
+    tArticle->mPotentialVector[0] = tNodes[1].getOutflow()->getPressure() - static_cast<double>(FLT_EPSILON);
     tArticle->mAdmittanceUpdate = false;
     tArticle->step(0.01);
 
@@ -858,7 +858,7 @@ void UtGunnsFluidSimpleRocket::testComputeFlows()
 
    /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct null port allocation with zero potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 
@@ -876,7 +876,7 @@ void UtGunnsFluidSimpleRocket::testComputeFlows()
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct Sink port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
@@ -884,7 +884,7 @@ void UtGunnsFluidSimpleRocket::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getScheduledOutflux(),tArticle->mFlux,DBL_EPSILON);
 
     tArticle->transportFlows(0.01);
-    
+
     /// - Conductance Link should have positive flow rate because the port 0 potential vector is positive
     CPPUNIT_ASSERT(tArticle->mFlowRate > 0.0);
 
@@ -895,13 +895,13 @@ void UtGunnsFluidSimpleRocket::testComputeFlows()
 
     /// - Confirm correct sink port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getScheduledOutflux(),-tArticle->mFlux,DBL_EPSILON);
-    
+
     tArticle->transportFlows(0.01);
 
    /// - Conductance Link should have zero flow rate because the potential vector is zero

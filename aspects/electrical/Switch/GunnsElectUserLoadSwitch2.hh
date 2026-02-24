@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_SWITCH_USER_LOAD_2    GUNNS Electrical User Load Switch Variant 2 Link
 @ingroup   TSM_GUNNS_ELECTRICAL_SWITCH
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -143,7 +143,7 @@ class GunnsElectUserLoadSwitch2ConfigData : public GunnsBasicConductorConfigData
         /// @brief Default constructs this Electrical User Load Switch configuration data.
         GunnsElectUserLoadSwitch2ConfigData(const std::string& name,
                                             GunnsNodeList*     nodes,
-                                            const double       switchResistance,
+                                            const float        switchResistance,
                                             const int          switchTripPriority,
                                             const float        curentSensorMinRange,
                                             const float        curentSensorMaxRange,
@@ -180,12 +180,12 @@ class GunnsElectUserLoadSwitch2InputData : public GunnsBasicConductorInputData
         GunnsElectUserLoadSwitch2InputData(const bool   malfBlockageFlag,
                                            const double malfBlockageValue,
                                            const bool   switchIsClosed,
-                                           const double inputUnderVoltageTripLimit,
-                                           const double inputUnderVoltageTripReset,
-                                           const double inputOverVoltageTripLimit,
-                                           const double inputOverVoltageTripReset,
-                                           const double switchPosTripLimit,
-                                           const double switchNegTripLimit,
+                                           const float  inputUnderVoltageTripLimit,
+                                           const float  inputUnderVoltageTripReset,
+                                           const float  inputOverVoltageTripLimit,
+                                           const float  inputOverVoltageTripReset,
+                                           const float  switchPosTripLimit,
+                                           const float  switchNegTripLimit,
                                            const bool   loadsOverrideActive  = false,
                                            const double loadsOverrideVoltage = 0.0);
         /// @brief    Default destructs this Electrical User Load Switch input data.

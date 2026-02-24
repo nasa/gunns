@@ -2,6 +2,9 @@
 #define UtSor_EXISTS
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
+///            National Aeronautics and Space Administration.  All Rights Reserved.
+///
 /// @defgroup UT_UTILITIES_MATH_LINEAR_ALGEBRA_SOR Successive Over-Relaxation Unit Tests
 /// @ingroup  UT_UTILITIES_MATH_LINEAR_ALGEBRA
 ///

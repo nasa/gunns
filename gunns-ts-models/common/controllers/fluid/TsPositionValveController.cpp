@@ -2,7 +2,7 @@
 @file
 @brief    TS21 Fluid Controller Position Valve Controller implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -188,7 +188,7 @@ void TsPositionValveController::update(const bool                supplyVoltageFl
                                        const double              dt)
 {
     double cmd = 0.0;
-    if (fabs(command.mPosition - sensed) < mTolerance) {
+    if (std::fabs(command.mPosition - sensed) < mTolerance) {
         cmd                = 0.0;
     } else if (dt > DBL_EPSILON){
         const double limit = dt * mCmdScale;

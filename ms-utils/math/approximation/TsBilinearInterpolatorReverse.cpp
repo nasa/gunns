@@ -1,4 +1,7 @@
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @file
 @brief     Bivariate Linear Reverse Interpolator implementation
 
@@ -20,7 +23,7 @@ TsBilinearInterpolatorReverse::TsBilinearInterpolatorReverse()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.
@@ -159,8 +162,8 @@ double TsBilinearInterpolatorReverse::evaluate(const double x, const double z)
             break;
         } else {
             /// - Set y to the nearest of the z points, in case a solution is never found.
-            const double zHeadD = fabs(z - zHead);
-            const double zTailD = fabs(z - zTail);
+            const double zHeadD = std::fabs(z - zHead);
+            const double zTailD = std::fabs(z - zTail);
             if (zHeadD < zDelta) {
                 y = mY[mJ+1];
                 zDelta = zHeadD;

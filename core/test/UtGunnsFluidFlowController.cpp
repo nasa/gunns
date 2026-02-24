@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -310,7 +310,7 @@ void UtGunnsFluidFlowController::testUpdateState()
     expectedG = lastG + tFilterProportionalGain * (expectedG - lastG);
 
     tArticle->step(0.1);
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mEffectiveConductivity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mLastConductivity,      DBL_EPSILON);
 

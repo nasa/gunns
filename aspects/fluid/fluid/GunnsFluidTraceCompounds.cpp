@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Trace Compounds Model implementation
 
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -453,7 +453,7 @@ int GunnsFluidTraceCompounds::find(const ChemicalCompound::Type& type,
 
     /// - Otherwise throw an exception.
     std::ostringstream msg;
-    msg << "An invalid compound type (" << type << ") was specified.";
+    msg << "An invalid compound type (" << static_cast<unsigned int>(type) << ") was specified.";
     TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_GUNNS, msg.str(),
                     TsOutOfBoundsException, "Input Argument Out of Range", mName);
 }
@@ -700,7 +700,7 @@ void GunnsFluidTraceCompounds::flowIn(const GunnsFluidTraceCompounds& source,
 void GunnsFluidTraceCompounds::flowIn(const double* rates, const double dt)
 {
     for (int i = 0; i < mConfig->mNTypes; ++i) {
-        mMass[i] = fmax(0.0, mMass[i] + rates[i] * dt);
+        mMass[i] = std::max(0.0, mMass[i] + rates[i] * dt);
     }
     updateMoleFractions();
 }

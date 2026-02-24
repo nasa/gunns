@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -67,7 +67,7 @@ void UtFluidCurveFit::testTsat()
     const double x        =  200.0;
     const double minX     =    7.5;
     const double maxX     = 1300.0;
-    const double expected = (-b - sqrt(b*b - 4.0*c*(a-log10(x))))/(2*c);
+    const double expected = (-b - std::sqrt(b*b - 4.0*c*(a-std::log10(x))))/(2*c);
 
     mArticle = new FluidTsatFit(a, b, c, minX, maxX);
 
@@ -90,7 +90,7 @@ void UtFluidCurveFit::testHvap()
     const double x        = 150.0/190.0;
     const double minX     =  90.0/190.0;
     const double maxX     =   1.0;
-    const double expected = a * exp(-alpha*x) * pow((1.0-x), beta);
+    const double expected = a * std::exp(-alpha*x) * std::pow((1.0-x), beta);
 
     mArticle = new FluidHvapFit(a, alpha, beta, minX, maxX);
 
@@ -250,7 +250,7 @@ void UtFluidCurveFit::testFunctionPointer()
         const double x        =  200.0;
         const double minX     =    7.5;
         const double maxX     = 1300.0;
-        const double expected = (-b - sqrt(b*b - 4.0*c*(a-log10(x))))/(2*c);
+        const double expected = (-b - std::sqrt(b*b - 4.0*c*(a-std::log10(x))))/(2*c);
 
         FluidTsatFit* article = new FluidTsatFit(a, b, c, minX, maxX);
         EvaluateFunction eval = &TsApproximation::get;
@@ -264,7 +264,7 @@ void UtFluidCurveFit::testFunctionPointer()
         const double x        = 150.0/190.0;
         const double minX     =  90.0/190.0;
         const double maxX     =   1.0;
-        const double expected = a * exp(-alpha*x) * pow((1.0-x), beta);
+        const double expected = a * std::exp(-alpha*x) * std::pow((1.0-x), beta);
 
         FluidHvapFit* article = new FluidHvapFit(a, alpha, beta, minX, maxX);
         EvaluateFunction eval = &TsApproximation::get;

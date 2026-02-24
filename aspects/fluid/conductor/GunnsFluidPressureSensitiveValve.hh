@@ -2,10 +2,13 @@
 #define GunnsFluidPressureSensitiveValve_EXISTS
 
 /**
+@file      GunnsFluidPressureSensitiveValve.hh
+@brief     Pressure Sensitive Valve Model declarations
+
 @defgroup  TSM_GUNNS_FLUID_CONDUCTOR_PRESSURE_SENSITIVE_VALVE    Pressure Sensitive Valve Model
 @ingroup   TSM_GUNNS_FLUID_CONDUCTOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -41,21 +44,25 @@ PROGRAMMERS:
 class GunnsFluidPressureSensitiveValveConfigData : public GunnsFluidLinkConfigData
 {
     public:
-        double      mMaxConductivity;       /**< (m2)   trick_chkpnt_io(**) Link Max Conductivity. */
-        double      mExpansionScaleFactor;  /**< (--)   trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1). */
-        double      mRateLimit;             /**< (1/s)  trick_chkpnt_io(**) Fractional position rate limit. */
-        double      mThermalLength;         /**< (m)    trick_chkpnt_io(**) Tube length for thermal convection. */
-        double      mThermalDiameter;       /**< (m)    trick_chkpnt_io(**) Tube inner diameter for thermal convection. */
-        double      mSurfaceRoughness;      /**< (m)    trick_chkpnt_io(**) Tube wall surface roughness for thermal convection. */
+        double      mMaxConductivity;       /**< (m2)    trick_chkpnt_io(**) Link Max Conductivity. */
+        double      mExpansionScaleFactor;  /**< (1)     trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1). */
+        double      mRateLimit;             /**< (1/s)   trick_chkpnt_io(**) Fractional position rate limit. */
+        double      mThermalLength;         /**< (m)     trick_chkpnt_io(**) Tube length for thermal convection. */
+        double      mThermalDiameter;       /**< (m)     trick_chkpnt_io(**) Tube inner diameter for thermal convection. */
+        double      mSurfaceRoughness;      /**< (m)     trick_chkpnt_io(**) Tube wall surface roughness for thermal convection. */
+        double      mInletDependencyCoeff0; /**< (1)     trick_chkpnt_io(**) 0th order coefficient of inlet dependency effect on control pressure. */
+        double      mInletDependencyCoeff1; /**< (1/kPa) trick_chkpnt_io(**) 1st order coefficient of inlet dependency effect on control pressure. */
         /// @brief  Default constructs this Pressure Sensitive Valve configuration data.
-        GunnsFluidPressureSensitiveValveConfigData(const std::string& name                 = "",
-                                                   GunnsNodeList*     nodes                = 0,
-                                                   const double       maxConductivity      = 0.0,
-                                                   const double       expansionScaleFactor = 0.0,
-                                                   const double       rateLimit            = 0.0,
-                                                   const double       thermalLength        = 0.0,
-                                                   const double       thermalDiameter      = 0.0,
-                                                   const double       surfaceRoughness     = 0.0);
+        GunnsFluidPressureSensitiveValveConfigData(const std::string& name                  = "",
+                                                   GunnsNodeList*     nodes                 = 0,
+                                                   const double       maxConductivity       = 0.0,
+                                                   const double       expansionScaleFactor  = 0.0,
+                                                   const double       rateLimit             = 0.0,
+                                                   const double       thermalLength         = 0.0,
+                                                   const double       thermalDiameter       = 0.0,
+                                                   const double       surfaceRoughness      = 0.0,
+                                                   const double       inletDependencyCoeff0 = 0.0,
+                                                   const double       inletDependencyCoeff1 = 0.0);
         /// @brief  Copy constructs this Pressure Sensitive Valve configuration data.
         GunnsFluidPressureSensitiveValveConfigData(const GunnsFluidPressureSensitiveValveConfigData& that);
         /// @brief  Default destructs this Pressure Sensitive Valve configuration data.
@@ -75,16 +82,16 @@ class GunnsFluidPressureSensitiveValveConfigData : public GunnsFluidLinkConfigDa
 class GunnsFluidPressureSensitiveValveInputData : public GunnsFluidLinkInputData
 {
     public:
-        double      mPosition;                   /**< (--)   Fractional position of this valve. */
-        bool        mMalfLeakThruFlag;           /**< (--)   Leak through rate malfunction flag. */
+        double      mPosition;                   /**< (1)    Fractional position of this valve. */
+        bool        mMalfLeakThruFlag;           /**< (1)    Leak through rate malfunction flag. */
         double      mMalfLeakThruValue;          /**< (kg/s) Leak through rate malfunction value. */
-        bool        mMalfPressureBiasFlag;       /**< (--)   Control pressure bias malfunction flag. */
+        bool        mMalfPressureBiasFlag;       /**< (1)    Control pressure bias malfunction flag. */
         double      mMalfPressureBiasValue;      /**< (kPa)  Control pressure bias malfunction value. */
         double      mSetPointPressureBias;       /**< (kPa)  Set point pressure bias value. */
         double      mWallTemperature;            /**< (K)    Tube wall temperature for thermal convection */
-        bool        mMalfStuckFlag;              /**< (--)   Stuck at current position malfunction flag. */
-        bool        mMalfFailToFlag;             /**< (--)   Fail to position position malfunction flag. */
-        double      mMalfFailToValue;            /**< (--)   Fail to position position malfunction value. */
+        bool        mMalfStuckFlag;              /**< (1)    Stuck at current position malfunction flag. */
+        bool        mMalfFailToFlag;             /**< (1)    Fail to position position malfunction flag. */
+        double      mMalfFailToValue;            /**< (1)    Fail to position position malfunction value. */
         /// @brief  Default constructs this Pressure Sensitive Valve input data.
         GunnsFluidPressureSensitiveValveInputData(const bool   malfBlockageFlag      = false,
                                                   const double malfBlockageValue     = 0.0,
@@ -121,13 +128,13 @@ class GunnsFluidPressureSensitiveValve : public GunnsFluidLink
         /// @name    Malfunction terms.
         /// @{
         /// @details Malfunction targets are public to allow access from the Trick events processor.
-        bool          mMalfLeakThruFlag;         /**< (--)            Malfunction initial leak thru rate flag. */
+        bool          mMalfLeakThruFlag;         /**< (1)             Malfunction initial leak thru rate flag. */
         double        mMalfLeakThruValue;        /**< (kg/s)          Malfunction initial leak thru rate value. */
-        bool          mMalfPressureBiasFlag;     /**< (--)            Control pressure bias malfunction flag. */
+        bool          mMalfPressureBiasFlag;     /**< (1)             Control pressure bias malfunction flag. */
         double        mMalfPressureBiasValue;    /**< (kPa)           Control pressure bias malfunction value. */
-        bool          mMalfStuckFlag;            /**< (--)            Stuck at current position malfunction flag. */
-        bool          mMalfFailToFlag;           /**< (--)            Fail to position position malfunction flag. */
-        double        mMalfFailToValue;          /**< (--)            Fail to position position malfunction value. */
+        bool          mMalfStuckFlag;            /**< (1)             Stuck at current position malfunction flag. */
+        bool          mMalfFailToFlag;           /**< (1)             Fail to position position malfunction flag. */
+        double        mMalfFailToValue;          /**< (1)             Fail to position position malfunction value. */
         /// @}
 
         /// @brief  Default constructs this Pressure Sensitive Valve.
@@ -166,20 +173,23 @@ class GunnsFluidPressureSensitiveValve : public GunnsFluidLink
         void   setWallTemperature(const double value);
     protected:
         double        mMaxConductivity;          /**< (m2)            trick_chkpnt_io(**) Link Maximum Conductivity. */
-        double        mExpansionScaleFactor;     /**< (--)            trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1). */
+        double        mExpansionScaleFactor;     /**< (1)             trick_chkpnt_io(**) Scaling for isentropic gas cooling (0-1). */
         double        mRateLimit;                /**< (1/s)           trick_chkpnt_io(**) Fractional position rate limit. */
         double        mThermalDiameter;          /**< (m)             trick_chkpnt_io(**) Tube inner diameter for thermal convection           */
         double        mThermalSurfaceArea;       /**< (m2)            trick_chkpnt_io(**) Tube inner surface area for thermal convection       */
-        double        mThermalROverD;            /**< (--)            trick_chkpnt_io(**) Tube surface roughness over diameter for convection  */
-        double        mPosition;                 /**< (--)                                Fractional position of this Valve. */
+        double        mThermalROverD;            /**< (1)             trick_chkpnt_io(**) Tube surface roughness over diameter for convection  */
+        double        mInletDependencyCoeff0;    /**< (1)             trick_chkpnt_io(**) 0th order coefficient of inlet dependency effect on control pressure. */
+        double        mInletDependencyCoeff1;    /**< (1/kPa)         trick_chkpnt_io(**) 1st order coefficient of inlet dependency effect on control pressure. */
+        double        mPosition;                 /**< (1)                                 Fractional position of this Valve. */
         double        mSetPointPressureBias;     /**< (kPa)                               Set point pressure bias value. */
         double        mWallTemperature;          /**< (K)                                 Tube wall temperature for thermal convection. */
         double        mPreviousLeakRate;         /**< (kg/s)                              Previous leak thru rate value. */
         double        mLeakConductivity;         /**< (m2)                                Conductivity equivalent to the leak. */
-        GunnsFluidUtils::TuningMode  mTuneMode;  /**< (--)            trick_chkpnt_io(**) Auto-tunes the link to desired flow type. */
+        GunnsFluidUtils::TuningMode  mTuneMode;  /**< (1)             trick_chkpnt_io(**) Auto-tunes the link to desired flow type. */
         double        mTuneMassFlow;             /**< (kg/s)          trick_chkpnt_io(**) The desired mass flow for link tuning. */
         double        mTuneVolFlow;              /**< (m3/s)          trick_chkpnt_io(**) The desired volumetric flow for link tuning. */
         double        mTuneDeltaT;               /**< (K)             trick_chkpnt_io(**) The desired delta-temperature for link tuning. */
+        double        mInletDependencyBias;      /**< (kPa)           trick_chkpnt_io(**) Inlet dependency pressure bias value. */
         double        mEffectiveConductivity;    /**< (m2)            trick_chkpnt_io(**) Effective conductivity of the link. */
         double        mSystemConductance;        /**< (kg*mol/kPa/s)  trick_chkpnt_io(**) Limited molar conductance. */
         double        mControlPressure;          /**< (kPa)           trick_chkpnt_io(**) Valve control pressure. */
@@ -190,7 +200,7 @@ class GunnsFluidPressureSensitiveValve : public GunnsFluidLink
         virtual void updateFluid(const double dt, const double flowRate);
        /// @brief     Validates the initialization of this Pressure Sensitive Valve.
         void validate() const;
-        /// @brief Virtual method for derived links to perform their restart functions.
+        /// @brief    Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief    Checks for unique port node assignment.
         virtual bool checkPortDuplication(const int port, const int node) const;
@@ -202,6 +212,8 @@ class GunnsFluidPressureSensitiveValve : public GunnsFluidLink
         virtual void computePower();
         /// @brief    Tunes this Pressure Sensitive Valve conductivity to create the desired flow rate.
         void tuneFlow(const double flowRate);
+        /// @brief    Computes mInletDependencyBias for this Pressure Sensitive Valve.
+        void computeInletDependencyBias();
     private:
         /// @details  Define the number of ports this link class has.  All objects of the same link
         ///           class always have the same number of ports.  We use an enum rather than a
@@ -266,6 +278,15 @@ inline void GunnsFluidPressureSensitiveValve::computePower()
     ///   will be negative. Since potential is in units of kPa, it must be convertedt to Pa to
     ///   express power in Watts.
     mPower = -UnitConversion::PA_PER_KPA * mVolFlowRate * getDeltaPotential();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Computes the unlimited inlet dependency bias from the current valve inlet (port 0)
+///           pressure.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidPressureSensitiveValve::computeInletDependencyBias()
+{
+    mInletDependencyBias = mInletDependencyCoeff0 + mInletDependencyCoeff1 * mPotentialVector[0];
 }
 
 #endif

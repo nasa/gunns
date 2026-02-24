@@ -2,7 +2,7 @@
 @file     GunnsElectBatteryCell.cpp
 @brief    GUNNS Electrical Battery Cell implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -146,8 +146,8 @@ GunnsElectBatteryCell::~GunnsElectBatteryCell()
 /// @details  Initializes this GunnsElectBatteryCell with config and input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsElectBatteryCell::initialize(const GunnsElectBatteryCellConfigData& configData,
-		                               const GunnsElectBatteryCellInputData&  inputData,
-		                               const std::string&                     name)
+                                       const GunnsElectBatteryCellInputData&  inputData,
+                                       const std::string&                     name)
 {
     /// - Initialize from configuration and input data.
     mResistance                 = configData.mResistance;

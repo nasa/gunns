@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Thermal Phase Change Battery Link implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -250,7 +250,7 @@ void GunnsThermalPhaseChangeBattery::step(const double dt)
     updateState(dt);
 
     /// - Build the system admittance matrix and source vector contributions.
-    if (fabs(mAdmittanceMatrix[0] - mAdmittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mAdmittance) > 0.0) {
         mAdmittanceMatrix[0] = mAdmittance;
         mAdmittanceUpdate    = true;
     }

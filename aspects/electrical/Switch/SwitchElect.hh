@@ -3,7 +3,7 @@
 
 /// @defgroup TSM_GUNNS_ELECTRICAL_SWITCH_LINK Link
 /// @ingroup  TSM_GUNNS_ELECTRICAL_SWITCH
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 /// @{
 /*********************** TRICK HEADER *************************************************************
@@ -133,13 +133,13 @@ class SwitchElect: public GunnsBasicConductor {
     // @brief  Returns whether the link confirms, rejects, or delays the solution.
     virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                      const int absoluteStep);
-   
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// @return   bool  Returns true if the link is non-linear
     ///
     /// @details  Tell gunns this in non-linear so confirmSolutionAcceptable is called.
-    //////////////////////////////////////////////////////////////////////////////////////////////////// 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual bool isNonLinear()
     {
         return true;
@@ -167,7 +167,7 @@ class SwitchElect: public GunnsBasicConductor {
     double mCurrent;                 /**< (amp) current */
     double mVoltage;                 /**< (V)   voltage */
     double mTimeStep;                /**< (s) time interval for calling */
-        
+
     /// @brief Virtual method for derived links to perform their restart functions.
     virtual void restartModel();
 

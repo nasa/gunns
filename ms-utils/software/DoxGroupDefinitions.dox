@@ -7,7 +7,7 @@
 @ingroup   TSM_UTILITIES_SOFTWARE
 @brief     TS21 Utilities Sim Bus Utilities
 
-@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY Sim Compatibility Macros
+@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATIBILITY Sim Compatibility Macros
 @ingroup   TSM_UTILITIES_SOFTWARE
 @brief     TS21 Utilities Simulation Compatibility Macros
 

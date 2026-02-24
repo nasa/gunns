@@ -1,5 +1,5 @@
-/***************************************** TRICK HEADER ********************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -7,8 +7,7 @@ LIBRARY DEPENDENCY:
 
 PROGRAMMERS:
     ((Jason Harvey) (L-3 Communications) (2012-04) (Initial))
-
- **************************************************************************************************/
+*/
 
 #include <cmath>
 #include "SensorBooleanAi.hh"
@@ -173,7 +172,7 @@ void SensorBooleanAi::initialize(const SensorBooleanAiConfigData& configData,
     mTolerance        = configData.mTolerance;
 
     /// - Initialize with input data.
-    mTruthInputAnalog = inputData.mTruthInputAnalog;
+    mTruthInputAnalog = static_cast<double>(inputData.mTruthInputAnalog);
 
     /// - Validate initial conditions.
     validate();
@@ -189,7 +188,7 @@ void SensorBooleanAi::initialize(const SensorBooleanAiConfigData& configData,
 void SensorBooleanAi::validate() const
 {
     /// - Throw an exception when tolerance < 0.
-    if (mTolerance < 0.0) {
+    if (mTolerance < 0.0F) {
         TS_HS_EXCEPTION(TS_HS_ERROR, TS_HS_SENSORS, "Invalid Configuration Data", TsInitializationException,
                 "tolerance cannot be negative.", mName);
     }
@@ -232,7 +231,7 @@ bool SensorBooleanAi::sense(const double timeStep,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void SensorBooleanAi::processInput()
 {
-    mTruthInput = (fabs(mTruthInputAnalog - mTarget) <= mTolerance);
+    mTruthInput = (std::abs(static_cast<float>(mTruthInputAnalog) - mTarget) <= mTolerance);
 
     /// - Call the base class processInput method to do any other transformation that the boolean
     ///   sensor normally does.

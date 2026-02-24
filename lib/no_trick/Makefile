@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This builds the Trick-less GUNNS compiled library for simulations.
@@ -30,9 +30,11 @@ GUNNS_HOME ?= $(abspath ${PWD}/../..)
 
 OPTS = -O2 -g
 
+WARNOPTS = -Wall -Wextra -Wshift-overflow -Warray-bounds -Wshadow -Wformat=2 -Wignored-attributes -Wpacked -Walloca -Wpointer-compare -Wcast-align -Wwrite-strings -Wdangling-else -Wdate-time -Wmissing-field-initializers -Woverlength-strings -Woverloaded-virtual -Wsign-promo -Wctor-dtor-privacy -Wregister -Wnon-virtual-dtor -Wswitch-default -Wdouble-promotion -Wfloat-conversion
+
 GUNNSLIB := libgunns.a
 GUNNSROSESLIB := libgunnsroses.a
-CXXFLAGS = -Dno_TRICK_ENV=1 -Wall $(OPTS)
+CXXFLAGS = -Dno_TRICK_ENV=1 $(OPTS) $(WARNOPTS)
 
 INCDIRS = -I$(GUNNS_HOME) -I$(GUNNS_HOME)/core -I$(GUNNS_HOME)/aspects \
  -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models
@@ -49,7 +51,7 @@ CUDAOBJDIRS := $(sort $(dir $(CUDAOBJECTS)))
 
 all: ${GUNNSLIB}
 
-roses: CXXFLAGS += -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64 -DGUNNS_CUDA_ENABLE=1
+roses: CXXFLAGS += -I/usr/local/cuda/include -L/usr/local/cuda/lib64 -DGUNNS_CUDA_ENABLE=1
 roses: ${GUNNSROSESLIB}
 
 $(GUNNSLIB) : $(OBJECTS)

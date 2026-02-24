@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_MULTI_SEPARATOR  Fluid Multi-Separator Model
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -127,11 +127,11 @@ class GunnsFluidMultiSeparator : public GunnsFluidLink
         /// @brief  Sets the separation mass fraction for the given fluid type.
         void setSeparationFraction(const FluidProperties::FluidType, const double fraction);
         /// @brief  Returns the separation mass fraction for the given fluid type.
-        double getSeparationFraction(const FluidProperties::FluidType) const;
+        double getSeparationFraction(const FluidProperties::FluidType type) const;
         /// @brief  Sets the separation mass fraction for the given trace compound type.
         void setTcFraction(const ChemicalCompound::Type, const double fraction);
         /// @brief  Returns the separation mass fraction for the given trace compound type.
-        double getTcFraction(const ChemicalCompound::Type) const;
+        double getTcFraction(const ChemicalCompound::Type type) const;
 
     protected:
         double     mMaxConductance;       /**<    (m2)           trick_chkpnt_io(**) Max conductance of the flow-thru path. */

@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import socket
@@ -104,7 +104,7 @@ class TestOverflow9(Test):
     # Getter for number of nodes
     def getNumNodes(self):
         return massOverflow.fluid9.getNumLocalNodes() - 1
-    # Getter for node 
+    # Getter for node
     def node(self,node):
         return massOverflow.fluid9.netNodes[node]
     # Getter for node fluid
@@ -119,4 +119,3 @@ class TestOverflow9(Test):
     # Getter for node Mass Fraction
     def nodeMassFraction(self,node,fluidType):
         return self.nodeFluid(node).getMassFraction(fluidTypes[fluidType])
-

@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -239,7 +239,7 @@ void UtGunnsFluidSocket::testNominalInitialization()
     tArticle->mSystemConductance     = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEffectiveConductivity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mSystemConductance,     DBL_EPSILON);
 

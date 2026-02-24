@@ -1,5 +1,5 @@
 /***************************************** TRICK HEADER ********************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -66,14 +66,14 @@ void GunnsGasFanCurve::improveRoot(double& realRoot, double* realCoeffs, double 
         }
         mIterLaguerre = LaguerreMethod::solve(root, coeffs, 6);
 
-        if (MsMath::isInRange(0.0, root.real(), maxQ) and fabs(root.imag()) < DBL_EPSILON) {
+        if (MsMath::isInRange(0.0, root.real(), maxQ) and std::fabs(root.imag()) < DBL_EPSILON) {
             realRoot = root.real();
 
         } else try {
             /// - If Laguerre failed to converge on a valid root, try Brent's method.  Store the
             ///   given coefficients into the curve object.
             setCoeffs(realCoeffs);
-            mIterBrent = solve(realRoot, 0.0, (maxQ + FLT_EPSILON), FLT_EPSILON);
+            mIterBrent = solve(realRoot, 0.0, (maxQ + static_cast<double>(FLT_EPSILON)), static_cast<double>(FLT_EPSILON));
 
         } catch (...) {
             /// - Throw an exception if no suitable root was found.  For a properly configured fan
@@ -106,7 +106,7 @@ double GunnsGasFanCurve::evaluate(const double q)
     double result = 0.0;
     for(int order = 0; order < 6; order ++){
         if (mCoeffs) {
-            result += mCoeffs[order]*pow(q , order) ;
+            result += mCoeffs[order]*std::pow(q , order) ;
         }
     }
     return result;

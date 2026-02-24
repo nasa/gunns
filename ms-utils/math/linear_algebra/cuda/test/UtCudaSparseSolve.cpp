@@ -1,7 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
- LIBRARY DEPENDENCY:
-    ((math/linear_algebra/cuda/CudaSparseSolve.o))
-***************************************************************************************************/
+/*
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
 #include "software/exceptions/TsNumericalException.hh"
 #include "UtCudaSparseSolve.hh"
@@ -178,6 +178,11 @@ void UtCudaSparseSolve::testDecompUnderflow()
 {
     std::cout << "\n UtCudaSparseSolve ..... 04: testDecompUnderflow ....................";
 
+    //TODO this test is a false-positive, because tArticle.decompose doesn't actually decompose [A],
+    //     rather it just transforms it to a sparse matrix in the GPU... the GPU sparse solve doesn't
+    //     give us the decomposed [A], so we can never test decomposed [A] directly.
+    //     - Since this test function never calls the sparse solve, it isn't actually trying solve
+    //       with an underflow [A].
     /// - Set up a matrix that will cause arithmetic underflow when decomposed.
     const int N = 10;
     const int rows = N*N+1;
@@ -292,7 +297,7 @@ void UtCudaSparseSolve::testPosOffDiagSolution()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtCudaSparseSolve::testResizing()
 {
-    std::cout << "\n UtCudaSparseSolve ..... 03: testResizing ...........................";
+    std::cout << "\n UtCudaSparseSolve ..... 06: testResizing ...........................";
 
     double tolerance = 1.0E-14;
 

@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -25,7 +25,7 @@ LIBRARY DEPENDENCY:
     (
      (Shailaja Janapati) (L3) (10-2011) (Initial Prototype)
     )
- **************************************************************************************************/
+*/
 
 #include <cmath>
 #include <cfloat>
@@ -147,8 +147,8 @@ ResistiveLoadInputData::~ResistiveLoadInputData()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ResistiveLoad::ResistiveLoad()
     :UserLoadBase(),
-	 mResistanceNormal(1.0E6),
-	 mResistanceStandby(1.0E8),
+     mResistanceNormal(1.0E6),
+     mResistanceStandby(1.0E8),
          mPrintMessageOnce(false)
 {
     // nothing to do
@@ -308,7 +308,7 @@ void ResistiveLoad::calculateResistiveLoad()
                }
             }
             break;
-        case LoadSTANDBY:
+        default : // LoadSTANDBY because not LoadOFF check above
             if (0.0 < mResistanceStandby ) {
                mEquivalentResistance = MsMath::limitRange(MINIMUM_RESISTANCE, mResistanceStandby, MAXIMUM_RESISTANCE);
             } else {
@@ -364,8 +364,3 @@ void ResistiveLoad::computeActualPower() {
 void ResistiveLoad::updateLoad(){
     //update resistance.
 }
-
-
-
-
-

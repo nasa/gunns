@@ -2,13 +2,13 @@
 @file
 @brief     GUNNS Gas Turbine Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
    ((aspects/fluid/potential/GunnsGasFanCurve.o)
     (software/exceptions/TsInitializationException.o))
-**************************************************************************************************/
+*/
 
 #include "GunnsGasTurbine.hh"
 
@@ -396,7 +396,7 @@ void GunnsGasTurbine::validate() const
     }
 
     /// - Throw an exception if the reference corrected speeds are equal
-    if (fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
+    if (std::fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference corrected speeds are equal.");
     }
@@ -478,7 +478,7 @@ void GunnsGasTurbine::updateFluid(const double dt __attribute__((unused)), const
     mReferenceTemp = std::max(DBL_EPSILON, mReferenceTemp);
     mReferencePress = std::max(DBL_EPSILON, mReferencePress);
     /// - Throw an exception if the reference corrected speeds are equal
-    if (fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
+    if (std::fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference corrected speeds are equal.");
     }
@@ -506,9 +506,9 @@ void GunnsGasTurbine::updateFluid(const double dt __attribute__((unused)), const
         mEfficiency = 0.0 ;
     }
 
-    mImpellerPower = -UnitConversion::PA_PER_KPA * fabs(mVolFlowRate) * mPressureDrop * mEfficiency;
+    mImpellerPower = -UnitConversion::PA_PER_KPA * std::fabs(mVolFlowRate) * mPressureDrop * mEfficiency;
 
-    if (mMotorSpeed > FLT_EPSILON and mDriveRatio > DBL_EPSILON) {
+    if (mMotorSpeed > static_cast<double>(FLT_EPSILON) and mDriveRatio > DBL_EPSILON) {
         mImpellerTorque = -mImpellerPower * UnitConversion::SEC_PER_MIN_PER_2PI / mMotorSpeed;
     } else {
         mImpellerTorque = 0.0;
@@ -536,7 +536,7 @@ void GunnsGasTurbine::computeFlowRate()
     mReferenceTemp = std::max(DBL_EPSILON, mReferenceTemp);
     mReferencePress = std::max(DBL_EPSILON, mReferencePress);
     /// - Throw an exception if the reference corrected speeds are equal
-    if (fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
+    if (std::fabs(mCorrectedSpeedLow - mCorrectedSpeedHigh) < DBL_EPSILON) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Reference corrected speeds are equal.");
     }
@@ -548,7 +548,7 @@ void GunnsGasTurbine::computeFlowRate()
     const double sourcePress   = std::max(DBL_EPSILON,mNodes[sourcePort]->getOutflow()->getPressure());
 
     /// - The impeller generates no flow if there is no inlet density
-    if (sourceDensity > FLT_EPSILON ) {
+    if (sourceDensity > static_cast<double>(FLT_EPSILON) ) {
         /// - Scale Turbine curve coefficients based on corrected impeller speed, using interpolation
         const double correctedSpeed = MsMath::limitRange(mCorrectedSpeedLow,
                 mImpellerSpeed/(sourceTemp/mReferenceTemp), mCorrectedSpeedHigh);
@@ -566,7 +566,7 @@ void GunnsGasTurbine::computeFlowRate()
         const double correctedMassFlow = maxFlow*((mPressureRatio - 1.0)*(mPressureRatio - 1.0)
                                        + riseCoeff1*(mPressureRatio - 1.0))/std::max(DBL_EPSILON,
                                                (mPressureRatio*mPressureRatio + riseCoeff2));
-        const double correctionFactor = (sourcePress/mReferencePress)/sqrt(sourceTemp/mReferenceTemp);
+        const double correctionFactor = (sourcePress/mReferencePress)/std::sqrt(sourceTemp/mReferenceTemp);
 
         mPredictedFlowRate =  correctedMassFlow * correctionFactor;
     }else {

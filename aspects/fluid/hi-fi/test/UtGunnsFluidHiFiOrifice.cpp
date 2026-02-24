@@ -1,12 +1,14 @@
 /*
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "UtGunnsFluidHiFiOrifice.hh"
 
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "software/exceptions/TsOutOfBoundsException.hh"
 #include "core/GunnsFluidConductor.hh"
+#include <cmath> // sqrt, pow
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsFluidHiFiOrifice class.
@@ -36,7 +38,8 @@ UtGunnsFluidHiFiOrifice::UtGunnsFluidHiFiOrifice()
     tFluidInput1(),
     tFluidInput2(),
     tFluidInput3(),
-    fractions()
+    fractions(),
+    tPolyFluidBlank()
 {
     //do nothing
 }
@@ -58,6 +61,7 @@ void UtGunnsFluidHiFiOrifice::tearDown()
     delete tArticle;
     delete tInputData;
     delete tConfigData;
+    delete tPolyFluidBlank;
     delete tFluidInput3;
     delete tFluidInput2;
     delete tFluidInput1;
@@ -130,7 +134,7 @@ void UtGunnsFluidHiFiOrifice::setUp()
     tThroatDiameter         = 0.005;
     tCriticalReynolds       = 2300.0;
     tExpansionScaleFactor   = 1.0;
-    tFlowTuningFactor       = 1.0;
+    tFlowTuningFactor       = 0.95; //arbitrary other than 1.0
     tConfigData             = new GunnsFluidHiFiOrificeConfigData(tLinkName,
                                                                   &tNodeList,
                                                                   tCoefficientType,
@@ -146,6 +150,10 @@ void UtGunnsFluidHiFiOrifice::setUp()
     tInputData         = new GunnsFluidHiFiOrificeInputData(tMalfBlockageFlag,
                                                             tMalfBlockageValue);
 
+    /// - Construct blank polyfluid for test
+    tPolyFluidBlank = new ArticleFriendlyPolyFluid();
+
+    /// - Instantiate test article
     tArticle = new FriendlyGunnsFluidHiFiOrifice;
 }
 
@@ -440,12 +448,12 @@ void UtGunnsFluidHiFiOrifice::testStepGasNonChoked()
 
     const double gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     const double rho0  = tNodes[0].getOutflow()->getDensity();
-    const double flux  = sqrt(2 * p0 * rho0 * gamma/(gamma-1) * (powf(p1/p0, 2/gamma)
-                                                               - powf(p1/p0, (gamma+1)/gamma)));
+    const double flux  = std::sqrt(2.0 * p0 * rho0 * gamma/(gamma-1.0) * (std::pow(p1/p0, 2.0/gamma)
+                                                               - std::pow(p1/p0, (gamma+1.0)/gamma)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeSubCriticalGasFlux(gamma, p0, rho0, p1), DBL_EPSILON);
     const double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
     const double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
-    const double expectedG = conductivity * expectedEffArea / avgMW;
+    const double expectedG = tFlowTuningFactor * conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -526,11 +534,11 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     double gamma = tNodes[1].getOutflow()->getAdiabaticIndex();
     double rho0  = tNodes[1].getOutflow()->getDensity();
-    double flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    double flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / (p0 - p1);
     double avgMW = (tNodes[0].getOutflow()->getMWeight() + tNodes[1].getOutflow()->getMWeight()) * 0.5;
-    double expectedG = conductivity * expectedEffArea / avgMW;
+    double expectedG = tFlowTuningFactor * conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -573,11 +581,11 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     rho0  = tNodes[0].getOutflow()->getDensity();
-    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
     avgMW = tNodes[0].getOutflow()->getMWeight();
-    expectedG = conductivity * expectedEffArea / avgMW;
+    expectedG = tFlowTuningFactor * conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -600,11 +608,11 @@ void UtGunnsFluidHiFiOrifice::testStepGasChoked()
 
     gamma = tNodes[0].getOutflow()->getAdiabaticIndex();
     rho0  = tNodes[0].getOutflow()->getDensity();
-    flux  = sqrt(gamma * p0 * rho0 * powf(2/(gamma+1), (gamma+1)/(gamma-1)));
+    flux  = std::sqrt(gamma * p0 * rho0 * std::pow(2.0/(gamma+1.0), (gamma+1.0)/(gamma-1.0)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(flux, tArticle->computeCriticalGasFlux(gamma, p0, rho0), DBL_EPSILON);
     conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / p0;
     avgMW = tNodes[0].getOutflow()->getMWeight();
-    expectedG = conductivity * expectedEffArea / avgMW;
+    expectedG = tFlowTuningFactor * conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -652,11 +660,11 @@ void UtGunnsFluidHiFiOrifice::testStepLiquid()
 
     const double rho  = 0.5 * (tNodes[tPort0].getOutflow()->getDensity() + tNodes[tPort1].getOutflow()->getDensity());
     const double dp   = p0 - p1;
-    const double flux = sqrt(2 * dp * rho);
+    const double flux = std::sqrt(2 * dp * rho);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( flux, tArticle->computeBernoulliFlux(rho, dp), DBL_EPSILON);
     const double conductivity = tCoefficientValue * flux * UnitConversion::PA_PER_KPA / dp;
     const double avgMW = (tNodes[tPort0].getOutflow()->getMWeight() + tNodes[tPort1].getOutflow()->getMWeight()) * 0.5;
-    const double expectedG = conductivity * expectedEffArea / avgMW;
+    const double expectedG = tFlowTuningFactor * conductivity * expectedEffArea / avgMW;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mSystemConductance,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedG, tArticle->mAdmittanceMatrix[0],   DBL_EPSILON);
@@ -684,6 +692,11 @@ void UtGunnsFluidHiFiOrifice::testStepLiquid()
     double* conductorA = conductor.getAdmittanceMatrix();
     CPPUNIT_ASSERT_DOUBLES_EQUAL( conductorA[0], expectedG,     expectedG);
 
+    /// @test proper error handling of conductance calculation edge cases
+    tPolyFluidBlank->mAdiabaticIndex = 0.0;
+    tPolyFluidBlank->mPhase = FluidProperties::GAS;
+    CPPUNIT_ASSERT_THROW(tArticle->computeConductance(tPolyFluidBlank, tPolyFluidBlank), TsOutOfBoundsException);
+
     std::cout << "... Pass";
 }
 
@@ -701,7 +714,7 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
 
         /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct null port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 
@@ -718,15 +731,15 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
 
     /// - Confirm correct source port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct sink port allocation with postive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getScheduledOutflux(),tArticle->mFlux,DBL_EPSILON);
 
-    tArticle->transportFlows(tTimeStep);  
-        
+    tArticle->transportFlows(tTimeStep);
+
     /// - Confirm correct source port selection with Postive potential Vector (TransportFlows)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0, tArticle->determineSourcePort(tArticle->mFlux, 0, 1), DBL_EPSILON);
 
@@ -739,22 +752,22 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
     tArticle->mPotentialVector[0] = -0.6;
     tArticle->computeFlows(tTimeStep);
 
-     /// - Molar flux should be less than zero because the port 0 potential vector is negative   
+     /// - Molar flux should be less than zero because the port 0 potential vector is negative
     CPPUNIT_ASSERT( tArticle->mFlux < 0.0);
 
     /// - Confirm correct sink port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct source port allocation with negative potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
 
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getScheduledOutflux(),- tArticle->mFlux,DBL_EPSILON);
-    
+
     tArticle->transportFlows(tTimeStep);
 
     /// - Confirm correct source port selection with negative potential Vector (TrasportFlows)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, tArticle->determineSourcePort(tArticle->mFlux, 0, 1), 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1, tArticle->determineSourcePort(tArticle->mFlux, 0, 1),
                                                             DBL_EPSILON);
 
     /// @test negative flow rate because the port 0 potential vector is negative
@@ -793,7 +806,7 @@ void UtGunnsFluidHiFiOrifice::testComputeFlows()
     tNodes[1].resetFlows();
     tArticle->computeFlows(tTimeStep);
     tArticle->transportFlows(tTimeStep);
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mVolFlowRate);
 
     std::cout << "... Pass";
@@ -835,5 +848,5 @@ void UtGunnsFluidHiFiOrifice::testInitializationRealValves()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCd[i], article.mCdDefault, 0.001);
     }
 
-    std::cout << "... Pass";
+    std::cout << "... Pass.\n";
 }

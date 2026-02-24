@@ -3,7 +3,7 @@
 @file   GunnsElectSwitchUtil2.cpp
 @brief  GUNNS Electrical Switch Utility Model Variant 2 implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -319,7 +319,7 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
             ///   (rejection of the network solution), this resets itself and the actual under-
             ///   voltage trip.
             if (mInputUnderVoltageTrip.isTripped() and
-                    mInputUnderVoltageReset.checkForTrip(result, voltage, convergedStep)) {
+                    mInputUnderVoltageReset.checkForTrip(result, static_cast<float>(voltage), convergedStep)) {
                 mInputUnderVoltageReset.resetTrip();
                 mInputUnderVoltageTrip.resetTrip();
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
@@ -331,7 +331,7 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
             ///   (rejection of the network solution), this resets itself and the actual over-
             ///   voltage trip.
             if (mInputOverVoltageTrip.isTripped() and
-                    mInputOverVoltageReset.checkForTrip(result, voltage, convergedStep)) {
+                    mInputOverVoltageReset.checkForTrip(result, static_cast<float>(voltage), convergedStep)) {
                 mInputOverVoltageReset.resetTrip();
                 mInputOverVoltageTrip.resetTrip();
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
@@ -355,28 +355,28 @@ void GunnsElectSwitchUtil2::updateTrips(const double current, const double volta
         } else if (mPositionCommand and not isTripped() and not mMalfFailClosed) {
 
             /// - Input under-voltage trip check and warning.
-            if (mInputUnderVoltageTrip.checkForTrip(result, voltage, convergedStep)) {
+            if (mInputUnderVoltageTrip.checkForTrip(result, static_cast<float>(voltage), convergedStep)) {
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
                 msg << mName << " input under-voltage trip at converged step " << convergedStep << ", " << voltage << " < trip limit of " << mInputUnderVoltageTrip.getLimit();
                 GUNNS_WARNING(msg.str());
             }
 
             /// - Input over-voltage trip check and warning.
-            if (mInputOverVoltageTrip.checkForTrip(result, voltage, convergedStep)) {
+            if (mInputOverVoltageTrip.checkForTrip(result, static_cast<float>(voltage), convergedStep)) {
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
                 msg << mName << " input over-voltage trip at converged step " << convergedStep << ", " << voltage << " > trip limit of " << mInputOverVoltageTrip.getLimit();
                 GUNNS_WARNING(msg.str());
             }
 
             /// - Positive over-current trip check and warning.
-            if (mPosOverCurrentTrip.checkForTrip(result, current, convergedStep)) {
+            if (mPosOverCurrentTrip.checkForTrip(result, static_cast<float>(current), convergedStep)) {
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
                 msg << mName << " positive over-current trip at converged step " << convergedStep << ", " << current << " > trip limit of " << mPosOverCurrentTrip.getLimit();
                 GUNNS_WARNING(msg.str());
             }
 
             /// - Negative over-current trip check and warning.
-            if (mNegOverCurrentTrip.checkForTrip(result, current, convergedStep)) {
+            if (mNegOverCurrentTrip.checkForTrip(result, static_cast<float>(current), convergedStep)) {
                 TsHsMsg msg(TS_HS_WARNING, TS_HS_EPS);
                 msg << mName << " negative over-current trip at converged step " << convergedStep << ", " << current << " < trip limit of " << mPosOverCurrentTrip.getLimit();
                 GUNNS_WARNING(msg.str());

@@ -262,7 +262,7 @@ inline bool GunnsElectSwitchUtil2::getPositionCommand() const
 inline double GunnsElectSwitchUtil2::getResistance() const
 {
     if (mPosition) {
-        return mResistance;
+        return static_cast<double>(mResistance);
     }
     return (1.0 / DBL_EPSILON);
 }

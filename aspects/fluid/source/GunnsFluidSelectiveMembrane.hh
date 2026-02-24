@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_SELECTIVE_MEMBRANE  GUNNS Selective Membrane Model
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -204,7 +204,7 @@ inline void GunnsFluidSelectiveMembrane::computePower()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsFluidSelectiveMembrane::buildAdmittance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[3]   = -mAdmittanceMatrix[0];

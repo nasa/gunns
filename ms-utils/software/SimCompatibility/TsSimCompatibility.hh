@@ -1,15 +1,15 @@
-#ifndef TsSimCompatability_EXISTS
-#define TsSimCompatability_EXISTS
+#ifndef TsSimCompatibility_EXISTS
+#define TsSimCompatibility_EXISTS
 /**
-@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY_MACROS  Sim Compatability Macros
-@ingroup   TSM_UTILITIES_SOFTWARE_SIM_COMPATABILITY
+@defgroup  TSM_UTILITIES_SOFTWARE_SIM_COMPATIBILITY_MACROS  Sim Compatibility Macros
+@ingroup   TSM_UTILITIES_SOFTWARE_SIM_COMPATIBILITY
 
 @copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @brief
 PURPOSE:
- -(Trick sim compatability and memory interface macros)
+ -(Trick sim compatibility and memory interface macros)
 
 PROGRAMMERS:
  -(
@@ -146,9 +146,11 @@ class TestHookSimObj;
 }
 #else  // non-Trick
 #define TS_NEW_PRIM_ARRAY(var, nelem, type, name...) \
-    var = new type[nelem]
+    var = new type[nelem]; \
+    (void)(name)
 #define TS_NEW_PRIM_ARRAY_EXT(var, nelem, type, name...) \
-    if (var==NULL) var = new type[nelem]
+    if (var==NULL) var = new type[nelem]; \
+    (void)(name)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,19 +393,19 @@ class TestHookSimObj;
     var = TsMemoryManager::tsStrdup(const_cast<char*>(str), &var, ##name)
 #define TS_STRDUP_EXT(var, str, name...) \
 { \
-    if (var==NULL) var = new char[strlen(str)+1]; \
+    if (var==NULL) var = new char[std::strlen(str)+1]; \
     TsMemoryManager::tsStrdupExt(const_cast<char*>(str), var, &var, ##name); \
 }
 #else  // non-Trick
 #define TS_STRDUP(var, str, name...) \
 { \
-    var = new char[strlen(str)+1]; \
-    strcpy(var, str);\
+    var = new char[std::strlen(str)+1]; \
+    std::strcpy(var, str);\
 }
 #define TS_STRDUP_EXT(var, str, name...) \
 { \
-    if (var==NULL) var = new char[strlen(str)+1]; \
-    strcpy(var, str);\
+    if (var==NULL) var = new char[std::strlen(str)+1]; \
+    std::strcpy(var, str);\
 }
 #endif
 

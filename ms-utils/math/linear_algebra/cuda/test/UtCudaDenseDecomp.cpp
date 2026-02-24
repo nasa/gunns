@@ -1,7 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
- LIBRARY DEPENDENCY:
-    ((math/linear_algebra/cuda/CudaDenseDecomp.o))
-***************************************************************************************************/
+/*
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
 #include "software/exceptions/TsNumericalException.hh"
 #include "UtCudaDenseDecomp.hh"
@@ -308,7 +308,7 @@ void UtCudaDenseDecomp::testPosOffDiagSolution()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtCudaDenseDecomp::testResizing()
 {
-    std::cout << "\n UtCudaDenseDecomp ..... 03: testResizing ...........................";
+    std::cout << "\n UtCudaDenseDecomp ..... 06: testResizing ...........................";
 
     double tolerance = 1.0E-14;
 

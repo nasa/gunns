@@ -129,6 +129,7 @@ DefinedChemicalCompounds::DefinedChemicalCompounds()
     mCompoundOH        (ChemicalCompound::OH,         "OH",         FluidProperties::NO_FLUID,  17.0073,  ThermoCoeffHighTempScaleOH,  ThermoCoeffLowTempScaleOH),
     mCompoundO         (ChemicalCompound::O,          "O",          FluidProperties::NO_FLUID,  15.9994,  ThermoCoeffHighTempScaleO,   ThermoCoeffLowTempScaleO),
     mCompoundHe        (ChemicalCompound::He,         "He",         FluidProperties::NO_FLUID,  4.00260,  ThermoCoeffHighTempScaleHe,  ThermoCoeffLowTempScaleHe),
+    mCompoundAr        (ChemicalCompound::Ar,         "Ar",         FluidProperties::NO_FLUID,  39.948,  ThermoCoeffDefaultScale,  ThermoCoeffDefaultScale), // molar weight data from princeton https://www.princeton.edu/~maelabs/mae324/glos324/argon.htm#:~:text=Argon%20is%20an%20inert%20gas,of%201.40%20Mg%2Fm3. Argon is inert and not expected to need thermo coeffs
     mCompounds()
     {
         /// - Load the chemical compounds array with the pointers to the compounds
@@ -161,6 +162,7 @@ DefinedChemicalCompounds::DefinedChemicalCompounds()
         mCompounds[ChemicalCompound::OH]         = &mCompoundOH;
         mCompounds[ChemicalCompound::O]          = &mCompoundO;
         mCompounds[ChemicalCompound::He]         = &mCompoundHe;
+        mCompounds[ChemicalCompound::Ar]         = &mCompoundAr;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

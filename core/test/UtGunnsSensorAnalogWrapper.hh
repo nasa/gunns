@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_SENSOR_ANALOG_WRAPPER    GUNNS Analog Sensor Wrapper Spotter Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Analog Sensor Wrapper Spotter class
@@ -108,16 +108,16 @@ class UtGunnsSensorAnalogWrapper : public CppUnit::TestFixture
         std::string                         tName;              /**< (--) Instance name. */
         GunnsSensorAnalogWrapperConfigData* tConfig;            /**< (--) Nominal config data. */
         GunnsSensorAnalogWrapperInputData*  tInput;             /**< (--) Nominal input data. */
-        double                              tMinRange;          /**< (--) Nominal config data. */
-        double                              tMaxRange;          /**< (--) Nominal config data. */
-        double                              tOffValue;          /**< (--) Nominal config data. */
-        double                              tNominalBias;       /**< (--) Nominal config data. */
-        double                              tNominalScale;      /**< (--) Nominal config data. */
-        double                              tNominalNoiseScale; /**< (--) Nominal config data. */
-        double                              tNominalResolution; /**< (--) Nominal config data. */
+        float                               tMinRange;          /**< (--) Nominal config data. */
+        float                               tMaxRange;          /**< (--) Nominal config data. */
+        float                               tOffValue;          /**< (--) Nominal config data. */
+        float                               tNominalBias;       /**< (--) Nominal config data. */
+        float                               tNominalScale;      /**< (--) Nominal config data. */
+        float                               tNominalNoiseScale; /**< (--) Nominal config data. */
+        float                               tNominalResolution; /**< (--) Nominal config data. */
         double                            (*tNoiseFunction)();  /**< (--) Nominal config data */
         UnitConversion::Type                tUnitConversion;    /**< (--) Nominal config data */
-        double                              tNominalNoiseMult;  /**< (--) Nominal config data. */
+        float                               tNominalNoiseMult;  /**< (--) Nominal config data. */
         bool                                tPowerFlag;         /**< (--) Nominal input data. */
         double                              tTruthInput;        /**< (--) Nominal input data. */
         double                              tTimeStep;          /**< (--) Time step size for this test */

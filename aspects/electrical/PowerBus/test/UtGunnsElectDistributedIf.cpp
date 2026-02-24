@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -83,7 +83,7 @@ void UtGunnsElectDistributedIf::setUp()
 
     /// - Default construct the nominal test article.
     tArticle       = new FriendlyGunnsElectDistributedIf;
-    tInterface     = static_cast<FriendlyGunnsElectDistributed2WayBus*>(&tArticle->mInterface);
+    tInterface     = static_cast<FriendlyDistributed2WayBusElect*>(&tArticle->mInterface);
     tVoltageSource = static_cast<FriendlyGunnsElectConverterOutput*>(&tArticle->mVoltageSource);
     tPowerLoad     = static_cast<FriendlyGunnsElectConverterInput*>(&tArticle->mPowerLoad);
 
@@ -114,7 +114,7 @@ void UtGunnsElectDistributedIf::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectDistributedIf::testConfig()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("Power Bus Unit Tests");
 
     /// @test    Configuration nominal construction and addSupply method
     CPPUNIT_ASSERT(tName           == tConfigData->mName);
@@ -221,7 +221,7 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT(tConductance   == tVoltageSource->mOutputConductance);
 
     /// @test    Nominal input data.
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::NONE == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::NONE == tInterface->mForcedRole);
 
     /// @test    Initialization of child objects.
     CPPUNIT_ASSERT(0                         == tInterface->mNotifications.size());
@@ -237,12 +237,12 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     CPPUNIT_ASSERT(1               == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(1               == tArticle->mSupplies.size());
     CPPUNIT_ASSERT(false           == tArticle->mSupplies.at(0).mSupplyData->mAvailable);
-    CPPUNIT_ASSERT(0.0             == tArticle->mSupplies.at(0).mSupplyData->mMaximumVoltage);
+    CPPUNIT_ASSERT(0.0F            == tArticle->mSupplies.at(0).mSupplyData->mMaximumVoltage);
     CPPUNIT_ASSERT(&tSupply        == tArticle->mSupplies.at(0).mLink);
     CPPUNIT_ASSERT(0.0             == tArticle->mSupplies.at(0).mNetCapDV);
     CPPUNIT_ASSERT(0               == tArticle->mSupplyMonitorIndex);
     CPPUNIT_ASSERT(0               == tArticle->mSupplyMonitor->mSupplyData->mAvailable);
-    CPPUNIT_ASSERT(0.0             == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
+    CPPUNIT_ASSERT(0.0F            == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
     CPPUNIT_ASSERT(&tSupply        == tArticle->mSupplyMonitor->mLink);
     CPPUNIT_ASSERT(0.0             == tArticle->mSupplyMonitor->mNetCapDV);
 
@@ -256,14 +256,14 @@ void UtGunnsElectDistributedIf::testNominalInitialization()
     /// @test    Re-init with forcing interface to Demand mode.
     tInputData->mForceDemandMode = true;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::DEMAND == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::DEMAND == tInterface->mForcedRole);
     CPPUNIT_ASSERT(1        == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(1        == tArticle->mSupplies.size());
 
     /// @test    Re-init with forcing interface to Supply mode.
     tInputData->mForceSupplyMode = true;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    CPPUNIT_ASSERT(GunnsElectDistributed2WayBus::SUPPLY == tInterface->mForcedRole);
+    CPPUNIT_ASSERT(Distributed2WayBusElect::SUPPLY == tInterface->mForcedRole);
     CPPUNIT_ASSERT(1        == tArticle->mNumSupplies);
     CPPUNIT_ASSERT(1        == tArticle->mSupplies.size());
 
@@ -328,10 +328,10 @@ void UtGunnsElectDistributedIf::testStep()
     /// - Drive the inerface's in & out data, in Supply mode.
     tInterface->mOutData.mFrameCount   = 43;
     tInterface->mInData.mDemandMode    = true;
-    tInterface->mInData.mDemandPower   = 100.0;
+    tInterface->mInData.mDemandPower   = 100.0F;
     tInterface->mInData.mFrameCount    = 44;
     tInterface->mInData.mFrameLoopback = 42;
-    tInterface->mInData.mSupplyVoltage = 115.0;
+    tInterface->mInData.mSupplyVoltage = 115.0F;
     tInterface->mFramesSinceFlip       = 99;
 
     /// - Drive the local voltage supply link's output as if it's enabled and controlling.
@@ -351,21 +351,21 @@ void UtGunnsElectDistributedIf::testStep()
     ///          calls minorStep.
     tArticle->mAdmittanceUpdate = true;
     tArticle->step(0.0);
-    CPPUNIT_ASSERT(true  == tInterface->mSupplyDatas.at(0)->mAvailable);
-    CPPUNIT_ASSERT(125.0 == tInterface->mSupplyDatas.at(0)->mMaximumVoltage);
-    CPPUNIT_ASSERT(true  == tArticle->mSupplyMonitor->mSupplyData->mAvailable);
-    CPPUNIT_ASSERT(125.0 == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
-    CPPUNIT_ASSERT(false == tArticle->mAdmittanceUpdate);
-    CPPUNIT_ASSERT(44    == tInterface->mOutData.mFrameCount);
-    CPPUNIT_ASSERT(false == tInterface->mOutData.mDemandMode);
-    CPPUNIT_ASSERT(115.0 == tVoltageSource->mInputVoltage);
-    CPPUNIT_ASSERT(1.0   == tNodes[0].getNetworkCapacitanceRequest());
-    CPPUNIT_ASSERT(tNodes[0].getPotential() == tInterface->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT(true   == tInterface->mSupplyDatas.at(0)->mAvailable);
+    CPPUNIT_ASSERT(125.0F == tInterface->mSupplyDatas.at(0)->mMaximumVoltage);
+    CPPUNIT_ASSERT(true   == tArticle->mSupplyMonitor->mSupplyData->mAvailable);
+    CPPUNIT_ASSERT(125.0F == tArticle->mSupplyMonitor->mSupplyData->mMaximumVoltage);
+    CPPUNIT_ASSERT(false  == tArticle->mAdmittanceUpdate);
+    CPPUNIT_ASSERT(44     == tInterface->mOutData.mFrameCount);
+    CPPUNIT_ASSERT(false  == tInterface->mOutData.mDemandMode);
+    CPPUNIT_ASSERT(115.0  == tVoltageSource->mInputVoltage);
+    CPPUNIT_ASSERT(1.0    == tNodes[0].getNetworkCapacitanceRequest());
+    CPPUNIT_ASSERT(tNodes[0].getPotential() == static_cast<double>(tInterface->mOutData.mSupplyVoltage));
 
     /// @test    interface update when the voltage source child link has input power not valid.
     tVoltageSource->mInputPowerValid = false;
     tArticle->step(0.0);
-    CPPUNIT_ASSERT(0.0 == tInterface->mOutData.mDemandPower);
+    CPPUNIT_ASSERT(0.0F == tInterface->mOutData.mDemandPower);
 
     UT_PASS;
 }
@@ -417,7 +417,7 @@ void UtGunnsElectDistributedIf::testMinorStep()
     CPPUNIT_ASSERT(true  == tVoltageSource->mEnabled);
     CPPUNIT_ASSERT(false == tPowerLoad->mEnabled);
     CPPUNIT_ASSERT(0.0   == tPowerLoad->mInputPower);
-    CPPUNIT_ASSERT(0.0   == tPowerLoad->getInputUnderVoltageTrip()->getLimit());
+    CPPUNIT_ASSERT(0.0F  == tPowerLoad->getInputUnderVoltageTrip()->getLimit());
 
     /// @test    Minor step in Demand role, with the internal voltage source link failed.
     tArticle->mMalfVoltageSource = true;
@@ -501,10 +501,10 @@ void UtGunnsElectDistributedIf::testComputeFlows()
     tInterface->mOutData.mDemandMode    = false;
     tInterface->mOutData.mFrameCount    = 43;
     tInterface->mInData.mDemandMode     = true;
-    tInterface->mInData.mDemandPower    = 100.0;
+    tInterface->mInData.mDemandPower    = 100.0F;
     tInterface->mInData.mFrameCount     = 44;
     tInterface->mInData.mFrameLoopback  = 42;
-    tInterface->mInData.mSupplyVoltage  = 115.0;
+    tInterface->mInData.mSupplyVoltage  = 115.0F;
     tInterface->mFramesSinceFlip        = 99;
     tNodeNetCapDp[0]                    = 0.0;
     tNodeNetCapDp[1]                    = 1.0;
@@ -515,10 +515,10 @@ void UtGunnsElectDistributedIf::testComputeFlows()
 
     /// @test    computeFlows updates the interface and calls the child links.
     tArticle->computeFlows(0.0);
-    CPPUNIT_ASSERT( 99.0 == tInterface->mOutData.mSupplyVoltage);
-    CPPUNIT_ASSERT( 43   == tInterface->mOutData.mFrameCount);
-    CPPUNIT_ASSERT(-99.0 == tVoltageSource->mPotentialDrop);
-    CPPUNIT_ASSERT( 99.0 == tPowerLoad->mPotentialDrop);
+    CPPUNIT_ASSERT( 99.0F == tInterface->mOutData.mSupplyVoltage);
+    CPPUNIT_ASSERT( 43    == tInterface->mOutData.mFrameCount);
+    CPPUNIT_ASSERT(-99.0  == tVoltageSource->mPotentialDrop);
+    CPPUNIT_ASSERT( 99.0  == tPowerLoad->mPotentialDrop);
 
     UT_PASS_FINAL;
 }

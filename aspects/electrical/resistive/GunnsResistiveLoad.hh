@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_RESISTIVE_LOAD    GUNNS Resistive Load Link
 @ingroup   TSM_GUNNS_ELECTRICAL_RESISTIVE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -45,7 +45,7 @@ class GunnsResistiveLoadConfigData : public GunnsElectricalResistorConfigData
         double mPosTripLimit;             /**< (amp) trick_chkpnt_io(**) Load's positive current limit */
         double mNegTripLimit;             /**< (amp) trick_chkpnt_io(**) Load's negative current limit */
         int    mTripPriority;             /**< (--) trick_chkpnt_io(**) minor frame that the load switch is allowed to trip open at to ensure
-                                                    that a series of switches trip in the correct order */ 
+                                                    that a series of switches trip in the correct order */
         /// @brief Default constructs this resistive load configuration data.
         GunnsResistiveLoadConfigData(const std::string& name                  = "",
                                       GunnsNodeList*     nodes                = 0,
@@ -203,7 +203,7 @@ inline bool GunnsResistiveLoad::getPowerValid() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details Sets the load switch's state. Pass true to close, and false to open. 
+/// @details Sets the load switch's state. Pass true to close, and false to open.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsResistiveLoad::setLoadSwitchClosed(const bool switchCmd)
 {

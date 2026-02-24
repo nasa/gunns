@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -188,7 +188,7 @@ UserLoadBase::~UserLoadBase()
 void UserLoadBase::tokenize(std::vector<std::string>& theStringVector,
                             const std::string&        theString,
                             const std::string&        theDelimiter) {
-    size_t start = 0, end = 0;
+    std::size_t start = 0, end = 0;
 
     while (end != std::string::npos) {
         end=theString.find(theDelimiter, start);

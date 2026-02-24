@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONVERTER_OUTPUT_LINK    GUNNS Electrical Converter Output Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONVERTER
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -115,7 +115,7 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         /// @brief  Minor step method for non-linear iterations.
         virtual void minorStep(const double dt, const int minorStep);
         /// @brief  Calculates flows across the link.
-        virtual void computeFlows(const double);
+        virtual void computeFlows(const double dt);
         /// @brief  Returns the link's assessment of the network solution.
         virtual SolutionResult confirmSolutionAcceptable(const int convergedStep,
                                                          const int absoluteStep);
@@ -155,6 +155,8 @@ class GunnsElectConverterOutput : public GunnsBasicLink
         GunnsTripLogic* getOutputUnderVoltageTrip();
         /// @brief  Returns the output over-current trip logic.
         GunnsTripLogic* getOutputOverCurrentTrip();
+        /// @brief  Returns the converter efficiency.
+        double getConverterEfficiency() const;
 
     protected:
         GunnsElectConverterOutput::RegulatorType mRegulatorType;          /**<    (1)     trick_chkpnt_io(**) The type of output regulation. */
@@ -190,7 +192,7 @@ class GunnsElectConverterOutput : public GunnsBasicLink
                       const GunnsElectConverterOutputInputData&  inputData) const;
         /// @brief  Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
-        /// @brief  Computes contributions to the sysstem of equations.
+        /// @brief  Computes contributions to the system of equations.
         void computeRegulationSources(double& conductance, double& voltage, double& current);
         /// @brief  Updates the output current of this link.
         void computeFlux();
@@ -343,7 +345,7 @@ inline void GunnsElectConverterOutput::resetTrips()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void GunnsElectConverterOutput::computeFlux()
 {
-    mFlux = fmax(0.0, mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0]);
+    mFlux = std::max(0.0, mSourceVector[0] - mPotentialVector[0] * mAdmittanceMatrix[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,7 +429,7 @@ inline bool GunnsElectConverterOutput::getInputPowerValid() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  bool  (--)  True if the converter is in a current/voltage limiting state.
+/// @returns  bool  (--)  True if the converter is in the current/voltage limiting state.
 ///
 /// @details  Returns true if the value of mLimitState is other than NO_LIMIT.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -537,11 +539,21 @@ inline bool GunnsElectConverterOutput::isVoltageRegulator() const
 ///           to the system of equations, so any calculation of flux and power based on those values
 ///           may be incorrect.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep, __attribute__((unused))
+inline bool GunnsElectConverterOutput::resetLastMinorStep(const int convergedStep __attribute__((unused)),
                                                           const int absoluteStep __attribute__((unused)))
 {
     mInputPowerValid = false;
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (--) The link's mConverterEfficiency term.
+///
+/// @details  Returns the converter efficiency.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectConverterOutput::getConverterEfficiency() const
+{
+    return mConverterEfficiency;
 }
 
 #endif

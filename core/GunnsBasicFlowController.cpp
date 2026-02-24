@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Basic Flow Controller Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -213,8 +213,8 @@ inline void GunnsBasicFlowController::updateState(const double dt __attribute__(
 
     /// - The upper limit of maximum conductivity is applied to model the fully opened size of a
     ///   flow control valve.
-    const double dP = std::max(DBL_EPSILON, fabs(mPotentialVector[0] - mPotentialVector[1]));
-    mEffectiveConductivity = std::min(mDefaultConductivity, fabs(fluxCommand) / dP);
+    const double dP = std::max(DBL_EPSILON, std::fabs(mPotentialVector[0] - mPotentialVector[1]));
+    mEffectiveConductivity = std::min(mDefaultConductivity, std::fabs(fluxCommand) / dP);
 
     /// - Back-flow under reverse potential gradient is either controlled or blocked.
     if (mPotentialVector[1] > mPotentialVector[0] and not mEnableReverseControl) {

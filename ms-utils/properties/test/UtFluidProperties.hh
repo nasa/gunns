@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_PROPERTIES_FLUID     Fluid Properties Unit Tests
 /// @ingroup  UT_TSM_PROPERTIES
 ///
-/// @copyright Copyright 2022 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2025 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Fluid Properties model classes.
@@ -64,6 +64,7 @@ class UtFluidProperties: public CppUnit::TestFixture
         void testXeTable();
         void testN2Table();
         void testO2Table();
+        void testCH4Table();
         void testH2Table();
         void testWaterPvtTable();
         void testSaturationCurveConsistency();
@@ -80,6 +81,7 @@ class UtFluidProperties: public CppUnit::TestFixture
         CPPUNIT_TEST(testXeTable);
         CPPUNIT_TEST(testN2Table);
         CPPUNIT_TEST(testO2Table);
+        CPPUNIT_TEST(testCH4Table);
         CPPUNIT_TEST(testH2Table);
         CPPUNIT_TEST(testWaterPvtTable);
         CPPUNIT_TEST(testSaturationCurveConsistency);

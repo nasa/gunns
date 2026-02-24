@@ -1,6 +1,9 @@
 #ifndef QuadraticRootFit_EXISTS
 #define QuadraticRootFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_QUADRATIC_ROOT Univariate Quadratic Root Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 
@@ -90,8 +93,7 @@ class QuadraticRootFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double QuadraticRootFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return (mA + sqrt(mB + mC * x)) * mD;
+    return (mA + std::sqrt(mB + mC * x)) * mD;
 }
 
 #endif
-

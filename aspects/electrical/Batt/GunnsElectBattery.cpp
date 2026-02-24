@@ -2,7 +2,7 @@
 @file     GunnsElectBattery.cpp
 @brief    GUNNS Electrical Battery implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -281,7 +281,7 @@ void GunnsElectBattery::updateState(const double timeStep __attribute__((unused)
     // Divide-by-zero is protected in calculation of resistance.
     mEffectiveConductivity = 1.0 / resistance;
 
-    /// - Link source potential comes from teh cells open-circuit voltage based on their States of
+    /// - Link source potential comes from the cells open-circuit voltage based on their States of
     ///   Charge.  All cells share the same Voc/Soc table.
     if (mCellsInParallel) {
         mSourcePotential = computeParallelVoc();

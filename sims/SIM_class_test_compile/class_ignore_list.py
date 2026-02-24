@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2025 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -21,7 +21,7 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'GunnsTripLogic',
                      'GunnsBasicLink',
                      'GunnsBasicJumperPlug',
-                     'GunnsDistributed2WayBusBase',
+                     'Distributed2WayBusBase',
                      'GunnsFluidLink',
                      'GunnsFluidJumperPlug',
                      'GunnsFluidUtils',
@@ -29,6 +29,7 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'GunnsSuperNetworkBase',
                      'GunnsNetworkSpotter',
                      'GunnsMacros',
+                     'GunnsInfraFunctions',
                      'GunnsOptimBase',
                      'GunnsOptimMonteCarloTypes',
                      'HtrControl',
@@ -42,6 +43,7 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'TS_random',
                      'TsApproximation',
                      'Sor',
+                     'LambertW',
                      'LaguerreMethod',
                      'BrentMethod',
                      'ParseTool',
@@ -50,4 +52,5 @@ class_ignore_list = ['GunnsDynEulerBase',
                      'TsHsMngr',
                      'TsHsMsgFilter',
                      'TsHsMsgWrapper',
+                     'TS_conversions',
                     ]

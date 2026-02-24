@@ -8,7 +8,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_FLUID_TSAT_FIT Fluid Heat of Vaporization Curve Fit
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -77,7 +77,7 @@ class FluidHvapFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double FluidHvapFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * exp(-mAlpha * x) * pow((1.0 - x), mBeta);
+    return mA * std::exp(-mAlpha * x) * std::pow((1.0 - x), mBeta);
 }
 
 #endif

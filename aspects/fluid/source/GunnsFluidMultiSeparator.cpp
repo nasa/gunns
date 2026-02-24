@@ -2,7 +2,7 @@
 @file     GunnsFluidMultiSeparator.hh
 @brief    GUNNS Fluid Multi-Separator implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -19,6 +19,7 @@ LIBRARY DEPENDENCY:
 #include "software/exceptions/TsOutOfBoundsException.hh"
 #include "core/GunnsFluidUtils.hh"
 #include <sstream>
+#include <cstddef> // size_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]     name           (--) Name of object.
@@ -232,7 +233,7 @@ void GunnsFluidMultiSeparator::initialize(const GunnsFluidMultiSeparatorConfigDa
     mInitFlag = false;
 
     /// - Initialize the base class with initial node map from ports vector.
-    mNumPorts = portsVector->size();
+    mNumPorts = static_cast<int>(portsVector->size());
     int ports[mNumPorts];
     for(int i=0; i<mNumPorts; ++i)
     {
@@ -248,8 +249,8 @@ void GunnsFluidMultiSeparator::initialize(const GunnsFluidMultiSeparatorConfigDa
 
     /// - Assign attributes from config & input data.
     mMaxConductance       = configData.mMaxConductance;
-    mNumSepTypes          = configData.mFluidTypes.size();
-    mNumTcTypes           = configData.mTcTypes.size();
+    mNumSepTypes          = static_cast<int>(configData.mFluidTypes.size());
+    mNumTcTypes           = static_cast<int>(configData.mTcTypes.size());
     mEffectiveConductance = 0.0;
     mSystemConductance    = 0.0;
 
@@ -271,7 +272,7 @@ void GunnsFluidMultiSeparator::initialize(const GunnsFluidMultiSeparatorConfigDa
 ///           paramters not associated with the separated fluids.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData& configData,
-                                        const GunnsFluidMultiSeparatorInputData&  inputData) const
+                                        const GunnsFluidMultiSeparatorInputData&  inputData __attribute__((unused))) const
 {
     /// - Throw an exception on insufficient number of ports.
     if (mNumPorts < 3) {
@@ -280,7 +281,7 @@ void GunnsFluidMultiSeparator::validate(const GunnsFluidMultiSeparatorConfigData
     }
 
     /// - Throw an exception on max conductance < 0.
-    if (configData.mMaxConductance < FLT_EPSILON) {
+    if (configData.mMaxConductance < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "max conductance < 0.");
     }
@@ -299,28 +300,28 @@ void GunnsFluidMultiSeparator::validateSep(const GunnsFluidMultiSeparatorConfigD
                                            const GunnsFluidMultiSeparatorInputData&  inputData) const
 {
     /// - Throw an exception on empty separation and trace compound types vectors.
-    const int numTypes   = configData.mFluidTypes.size();
-    const int numTcTypes = configData.mTcTypes.size();
+    const std::size_t numTypes   = configData.mFluidTypes.size();
+    const std::size_t numTcTypes = configData.mTcTypes.size();
     if (numTypes + numTcTypes < 1) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "number of separation + trace compounds types < 1.");
     }
 
     /// - Throw an exception on size mismatch between separation types and port assignments.
-    if (numTypes != static_cast<int>(configData.mFluidPorts.size())) {
+    if (numTypes != configData.mFluidPorts.size()) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "mismatch in separation types and port assignments vector sizes.");
     }
 
     /// - Throw an exception on size mismatch between separation types and fractions.
-    if (numTypes != static_cast<int>(inputData.mFluidFractions.size())) {
+    if (numTypes != inputData.mFluidFractions.size()) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "mismatch in separation types and fractions vector sizes.");
     }
 
-    for (int i=0; i<numTypes; ++i) {
+    for (std::size_t i=0; i<numTypes; ++i) {
         /// - Throw an exception for duplicated separation types.
-        for (int j=i+1; j<numTypes; ++j) {
+        for (std::size_t j=i+1; j<numTypes; ++j) {
             if (configData.mFluidTypes.at(i) == configData.mFluidTypes.at(j)) {
                 GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                             "duplicated separation types.");
@@ -371,23 +372,23 @@ void GunnsFluidMultiSeparator::validateTc(const GunnsFluidMultiSeparatorConfigDa
                                           const GunnsFluidMultiSeparatorInputData&  inputData) const
 {
     /// - Throw an exception on size mismatch between trace compound types and port assignments.
-    const int numTcTypes = configData.mTcTypes.size();
-    if (numTcTypes != static_cast<int>(configData.mTcPorts.size())) {
+    const std::size_t numTcTypes = configData.mTcTypes.size();
+    if (numTcTypes != configData.mTcPorts.size()) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "mismatch in trace compound types and port assignments vector sizes.");
     }
 
     /// - Throw an exception on size mismatch between trace compound types and fractions.
-    if (numTcTypes != static_cast<int>(inputData.mTcFractions.size())) {
+    if (numTcTypes != inputData.mTcFractions.size()) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "mismatch in trace compound types and fractions vector sizes.");
     }
 
     GunnsFluidTraceCompounds* tc = mNodes[0]->getContent()->getTraceCompounds();
     if (tc) {
-        for (int i=0; i<numTcTypes; ++i) {
+        for (std::size_t i=0; i<numTcTypes; ++i) {
             /// - Throw an exception for duplicated separation types.
-            for (int j=i+1; j<numTcTypes; ++j) {
+            for (std::size_t j=i+1; j<numTcTypes; ++j) {
                 if (configData.mTcTypes.at(i) == configData.mTcTypes.at(j)) {
                     GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                             "duplicated trace compound types.");
@@ -557,7 +558,7 @@ void GunnsFluidMultiSeparator::step(const double dt __attribute__((unused)))
     /// - Build the link admittance matrix.  This is the same as a regular fluid conductor with
     ///   the through-flow conductance between ports 0 and 1, except the matrix is larger because
     ///   of the separated fluid exit ports.
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]           =  mSystemConductance;
         mAdmittanceMatrix[1]           = -mSystemConductance;
         mAdmittanceMatrix[mNumPorts]   = -mSystemConductance;
@@ -619,7 +620,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
     /// - Set bulk flow port flow directions.
     mPortDirections[0] = NONE;
     mPortDirections[1] = NONE;
-    if (fabs(mFlux) > DBL_EPSILON) {
+    if (std::fabs(mFlux) > DBL_EPSILON) {
         mPortDirections[upstreamPort]   = SOURCE;
         mPortDirections[downstreamPort] = SINK;
     }
@@ -636,7 +637,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
     /// - mSepBufferExit is the flow that was removed from the bulk flow last pass, reflected
     ///   in the source vector this pass, and added to the exit ports this pass.
     for (int i=0; i<mNumSepTypes; ++i) {
-        mSepBufferThru[i] = mSepFraction[i] * fabs(mFlux)
+        mSepBufferThru[i] = mSepFraction[i] * std::fabs(mFlux)
                 * mNodes[upstreamPort]->getOutflow()->getMoleFraction(mSepIndex[i]);
         if (mSepBufferExit[i] > DBL_EPSILON) {
             mPortDirections[mSepPort[i]] = SOURCE;
@@ -660,7 +661,7 @@ void GunnsFluidMultiSeparator::computeFlows(const double dt __attribute__((unuse
 void GunnsFluidMultiSeparator::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;
@@ -690,10 +691,10 @@ void GunnsFluidMultiSeparator::transportFlows(const double dt __attribute__((unu
         }
     }
 
-    const double flux = fabs(mFlux);
+    const double flux = std::fabs(mFlux);
     if (flux > DBL_EPSILON) {
         mInternalFluid->setState(mNodes[upstreamPort]->getOutflow());
-        mNodes[upstreamPort]->collectOutflux(fabs(mFlowRate));
+        mNodes[upstreamPort]->collectOutflux(std::fabs(mFlowRate));
 
         /// - Move trace compounds from the bulk fluid to their exit nodes.
         GunnsFluidTraceCompounds* tc = mInternalFluid->getTraceCompounds();

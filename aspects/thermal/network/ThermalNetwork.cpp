@@ -1,5 +1,5 @@
 /************************************** TRICK HEADER ***********************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -85,7 +85,7 @@ ThermalNetworkConfigData::~ThermalNetworkConfigData()
 /// @details    Constructs this ThermalNetwork input data.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ThermalNetworkInputData::ThermalNetworkInputData(std::string thermInputFile,
-		                                         std::string radInputFile)
+                                                 std::string radInputFile)
     :
     iThermInputFile(thermInputFile),
     iInputRadFile(radInputFile)
@@ -1056,7 +1056,7 @@ void ThermalNetwork::editCapacitanceGroups()
         mCapEditScaleFactor[group] = std::max(mCapEditScaleFactor[group], DBL_EPSILON);
         mCapEditScalePrev[group]   = std::max(mCapEditScalePrev[group],   DBL_EPSILON);
 
-        if ( DBL_EPSILON < fabs(mCapEditScalePrev[group] - mCapEditScaleFactor[group]) )
+        if ( DBL_EPSILON < std::fabs(mCapEditScalePrev[group] - mCapEditScaleFactor[group]) )
         {
             const double ratio = mCapEditScaleFactor[group] / mCapEditScalePrev[group];
             mCapEditScalePrev[group] = mCapEditScaleFactor[group];

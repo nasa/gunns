@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -88,7 +88,7 @@ void UtGunnsDynEuler::testSingularity()
     tEulerAngles[1] = UnitConversion::PI_OVER_2;
     tEulerAngles[2] = 0.0;
 
-    double quatOne = sqrt( (1.0 - DBL_EPSILON) / 2.0 );
+    double quatOne = std::sqrt( (1.0 - DBL_EPSILON) / 2.0 );
     double quat[4] = {quatOne, 0.0, -quatOne, 0.0};     // this is the quat for {0, 90, 0} rotations
 
     double* euler = article->update(quat);
@@ -98,7 +98,7 @@ void UtGunnsDynEuler::testSingularity()
     CPPUNIT_ASSERT_EQUAL(1, article->getSingularityCondition());
 
     /// @test the +pi/2 singularity outside the asin function range but within acceptable tolerance.
-    quatOne = sqrt( (1.0 + 5.0E-16) / 2.0 );
+    quatOne = std::sqrt( (1.0 + 5.0E-16) / 2.0 );
     quat[0] =  quatOne;
     quat[2] = -quatOne;
 
@@ -113,7 +113,7 @@ void UtGunnsDynEuler::testSingularity()
     tEulerAngles[1] = -UnitConversion::PI_OVER_2;
     tEulerAngles[2] = 0.0;
 
-    quatOne = sqrt( (1.0 - DBL_EPSILON) / 2.0 );
+    quatOne = std::sqrt( (1.0 - DBL_EPSILON) / 2.0 );
     quat[0] = quatOne;
     quat[2] = quatOne;
 
@@ -124,7 +124,7 @@ void UtGunnsDynEuler::testSingularity()
     CPPUNIT_ASSERT_EQUAL(2, article->getSingularityCondition());
 
     /// @test the -pi/2 singularity outside the asin function range but within acceptable tolerance.
-    quatOne = sqrt( (1.0 + 5.0E-16) / 2.0 );
+    quatOne = std::sqrt( (1.0 + 5.0E-16) / 2.0 );
     quat[0] = quatOne;
     quat[2] = quatOne;
 
@@ -135,7 +135,7 @@ void UtGunnsDynEuler::testSingularity()
     CPPUNIT_ASSERT_EQUAL(4, article->getSingularityCondition());
 
     /// @test the error & exception thrown when outside the acceptable tolerance of asin range.
-    quatOne = sqrt( (1.0 + 2.0E-15) / 2.0);
+    quatOne = std::sqrt( (1.0 + 2.0E-15) / 2.0);
     quat[0] = quatOne;
     quat[2] = quatOne;
 
@@ -166,7 +166,7 @@ void UtGunnsDynEuler::testUpdate()
 
     for (unsigned int seq=0; seq<6; ++seq) {
         std::stringstream ss;
-        ss << "Sequence: " << sequences[seq];
+        ss << "Sequence: " << static_cast<int>(sequences[seq]);
 
         GunnsDynEulerBase* article = tFactory.create(sequences[seq]);
 

@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -7,7 +7,7 @@ LIBRARY DEPENDENCY:
     (core/GunnsFluidSource.o)
     (properties/ChemicalReaction.o)
    )
-**************************************************************************************************/
+*/
 
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -61,14 +61,14 @@ GunnsFluidReactorConfigData::GunnsFluidReactorConfigData(const std::string&     
 {
     /// - Allocate and initialize the array of reaction types.
     if (nReactions > 0 && reactionTypes != 0) {
-        TS_NEW_PRIM_ARRAY(mReactionTypes, nReactions, ChemicalReaction::Type, name + ".mReactionTypes");
+        TS_NEW_PRIM_ARRAY_EXT(mReactionTypes, nReactions, ChemicalReaction::Type, name + ".mReactionTypes");
         for (int i = 0; i < nReactions; ++i) {
             mReactionTypes[i] = reactionTypes[i];
         }
     }
     /// - Allocate and initialize the array of compound types.
     if (nCompounds > 0 && compoundTypes != 0) {
-        TS_NEW_PRIM_ARRAY(mCompoundTypes, nCompounds, ChemicalCompound::Type, name + ".mCompoundTypes");
+        TS_NEW_PRIM_ARRAY_EXT(mCompoundTypes, nCompounds, ChemicalCompound::Type, name + ".mCompoundTypes");
         for (int i = 0; i < nCompounds; ++i) {
             mCompoundTypes[i] = compoundTypes[i];
         }
@@ -496,7 +496,7 @@ void GunnsFluidReactor::updateFluid(const double dt, const double flowrate __att
     mProductsFluid->resetState();
 
     /// - Skip reactions if flow rate or time step are negligible.
-    if (fabs(mFlowRate) > FLT_EPSILON && dt > DBL_EPSILON) {
+    if (std::fabs(mFlowRate) > static_cast<double>(FLT_EPSILON) && dt > DBL_EPSILON) {
         /// - Set the compound state from the input atmosphere.
         inputFromAtmosphere(dt);
         /// - Perform the reactions.
@@ -520,7 +520,7 @@ void GunnsFluidReactor::inputFromAtmosphere(const double dt)
         if (index != -1) {
             /// - Update total mass for compounds from atmosphere.
             mCompounds[i].mTotalMass = mInternalFluid->getMassFraction(mInternalFluid->getType(index))
-                                     * fabs(mFlowRate) * dt;
+                                     * std::fabs(mFlowRate) * dt;
         }
         /// - Zero out the compound produced/consumed masses.
         mCompounds[i].mMass = 0.0;
@@ -561,11 +561,11 @@ void GunnsFluidReactor::react(const double dt __attribute__((unused)))
         ///   consume 100% of the incoming flow, which would break the fluid mixing and transport
         ///   interface with the downstream node.
         const double maxReactantMass     = mCompounds[reactant].mTotalMass
-                                         * fmin(0.9999, computeEfficiency(i));
+                                         * std::min(0.9999, computeEfficiency(i));
 
         /// - Compute the reagent consumed by the reaction based on its availability and the maximum
         ///   reactant that the reaction could consume.
-        const double reagentMass         = fmin(mCompounds[reagent].mTotalMass * 0.9999,
+        const double reagentMass         = std::min(mCompounds[reagent].mTotalMass * 0.9999,
                                                 maxReactantMass * reagentMassRatio / reactantMassRatio);
 
         /// - Compute reactant consumed by the reaction based on reagent consumed by the reaction.
@@ -623,7 +623,7 @@ void GunnsFluidReactor::outputToAtmosphere(const double dt)
     for (int i = 0; i < mNCompounds; ++i) {
         const int index = mCompounds[i].mIndex;
         if (index != -1) {
-            if (fabs(mCompounds[i].mMass) > DBL_EPSILON) {
+            if (std::fabs(mCompounds[i].mMass) > DBL_EPSILON) {
                 negligible = false;
             }
         }
@@ -687,13 +687,13 @@ void GunnsFluidReactor::updateTemperature(const double dt __attribute__((unused)
 ///
 /// @details  Adds or removes the heat from the reactions to the reaction fluid.
 ///
-///           For a reaction: aA + bB -> cC + dD  with dH = h; 
-///           
+///           For a reaction: aA + bB -> cC + dD  with dH = h;
+///
 ///           The dH is tied with the chemical equation so if the balance changed, dH will
 ///           change.
 ///
 ///           For example:
-///               H2O(l) -> H2O(g) dH = 44 kJ/mole; 
+///               H2O(l) -> H2O(g) dH = 44 kJ/mole;
 ///           while
 ///               2H2O(l) -> 2H2O(g) dH = 88 kJ/mole
 ///
@@ -703,9 +703,9 @@ void GunnsFluidReactor::updateTemperature(const double dt __attribute__((unused)
 ///           2. Compute conversion factor using h [kJ/mole] and c [--] cFactor = h/c [unit: kJ/mole]
 ///           3. Compute heat generation [J] using product C's mass [kg], C's molar weight [g/mole], and cFactor [kJ/mole]
 ///              Heat[J] = mass_c [kg] * 1000[g/kg] * (1/ molarW_c[g/mole]) * cFactor[kJ/mole] * 1000[J/kJ]
-///           
+///
 ///           NOTE: we can also use A, B, or D to do the computation; the steps will be the same,
-///           and the result should be the same. Use of product 1 mole ratio was determined to be 
+///           and the result should be the same. Use of product 1 mole ratio was determined to be
 ///           the best option because not all chem rxns have products 2, 3, etc...
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidReactor::addRxnHeat(const double dt)

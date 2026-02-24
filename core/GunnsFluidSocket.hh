@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_FLUID_SOCKET    GUNNS Fluid Socket Link
 @ingroup   TSM_GUNNS_CORE_LINK_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -152,7 +152,7 @@ class GunnsFluidSocket : public GunnsFluidConductor
         /// @brief  Checks the link initialization was complete.
         void checkInitialization() const;
         /// @brief Updates the state of the Fluid Socket.
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

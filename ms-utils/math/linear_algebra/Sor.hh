@@ -2,6 +2,9 @@
 #define _SOR_
 
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_LINEAR_ALGEBRA_SOR Successive Over-Relaxation
 @ingroup   TSM_UTILITIES_MATH_LINEAR_ALGEBRA
 
@@ -34,11 +37,11 @@ class Sor
     public:
         /// @brief Although the class is never instantiated, Trick 10 requires a public destructor.
         virtual ~Sor();
-    
+
         /// @brief  Determines if the matrix is positive definite.
         static bool isPositiveDefinite(      double* A,
                                        const int     n);
-    
+
         /// @brief  Solves [A]{x} = {B} for {x} iteratively.
         static int solve(      double* x,
                                double* A,
@@ -47,7 +50,7 @@ class Sor
                          const float   Wt,
                          const int     maxitr,
                          const double  convg);
-    
+
     private:
         static const double condition; /**< (--) Minimum matrix diagonal for positive definite check */
         /// @brief  Default constructor unavailable since declared private and not implemented.

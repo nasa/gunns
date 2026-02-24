@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Fire Source Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -225,7 +225,7 @@ void GunnsFluidFireSource::initialize(const GunnsFluidFireSourceConfigData& conf
 void GunnsFluidFireSource::validate(const GunnsFluidFireSourceConfigData& configData) const
 {
     /// - Throw an exception for sum of mass flow rates is equal to zero
-    if (DBL_EPSILON > fabs(configData.mFireCO2ProductRate + configData.mFireH2OProductRate
+    if (DBL_EPSILON > std::fabs(configData.mFireCO2ProductRate + configData.mFireH2OProductRate
                          + configData.mFireO2ConsumpRate)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Sum of bulk fluid mass flow rates is equal to zero.");
@@ -288,11 +288,11 @@ void GunnsFluidFireSource::step(const double dt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] dt (s) Integration time step
+/// @param[in] dt (s) Integration time step (unused)
 ///
 /// @details  Computes the flows across the link.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidFireSource::computeFlows(const double dt)
+void GunnsFluidFireSource::computeFlows(const double dt __attribute((unused)))
 {
     /// - Set port flow directions and schedule flow from source nodes.
     if (mFlux > DBL_EPSILON) {

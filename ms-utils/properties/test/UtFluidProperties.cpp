@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -72,57 +72,57 @@ void UtFluidProperties::testAccessors()
 
     /// @test for each fluid type (just for existence)
     for (int j = 0; j  < FluidProperties::NO_FLUID; j++) {
-        const FluidProperties::FluidType i = static_cast<const FluidProperties::FluidType>(j);
+        const FluidProperties::FluidType i = static_cast<FluidProperties::FluidType>(j);
         const double t = 300.0;
         const double p = 100000.0;
         const double h = 10000.0;
         const double d = 30.0;
-        const FluidProperties::FluidType type   =
+        const FluidProperties::FluidType type   __attribute__((unused)) =
             mArticle->getProperties(i)->getType();
         /// @test getType
-        const FluidProperties::FluidPhase phase =
+        const FluidProperties::FluidPhase phase __attribute__((unused)) =
             mArticle->getProperties(i)->getPhase();
         /// @test getMWeight
-        const double mWeight                    =
+        const double mWeight                    __attribute__((unused)) =
             mArticle->getProperties(i)->getMWeight();
         /// @test getCriticalTemperature
-        const double criticalTemperature        =
+        const double criticalTemperature        __attribute__((unused)) =
             mArticle->getProperties(i)->getCriticalTemperature();
         /// @test getDensity
-        const double density                    =
+        const double density                    __attribute__((unused)) =
             mArticle->getProperties(i)->getDensity(t, p);
         /// @test getViscosity
-        const double viscosity                  =
+        const double viscosity                  __attribute__((unused)) =
             mArticle->getProperties(i)->getViscosity(t, p);
         /// @test getSpecificHeat
-        const double specificHeat               =
+        const double specificHeat               __attribute__((unused)) =
             mArticle->getProperties(i)->getSpecificHeat(t, p);
         /// @test getSpecificEnthalpy
-        const double specificEnthalpy           =
+        const double specificEnthalpy           __attribute__((unused)) =
             mArticle->getProperties(i)->getSpecificEnthalpy(t, p);
         /// @test getAdiabaticIndex
-        const double adiabaticIndex             =
+        const double adiabaticIndex             __attribute__((unused)) =
             mArticle->getProperties(i)->getAdiabaticIndex(t, p);
         /// @test getAdiabaticIndex
-        const double thermalConductivity        =
+        const double thermalConductivity        __attribute__((unused)) =
             mArticle->getProperties(i)->getThermalConductivity(t, p);
         /// @test getAdiabaticIndex
-        const double prandtlNumber              =
+        const double prandtlNumber              __attribute__((unused)) =
             mArticle->getProperties(i)->getPrandtlNumber(t, p);
         /// @test getPressure
-        const double pressure                   =
+        const double pressure                   __attribute__((unused)) =
             mArticle->getProperties(i)->getPressure(t, d);
         /// @test getTemperature
-        const double temperature                =
+        const double temperature                __attribute__((unused)) =
             mArticle->getProperties(i)->getTemperature(h, p);
         /// @test getSaturationPressure
-        const double saturationPressure         =
+        const double saturationPressure         __attribute__((unused)) =
             mArticle->getProperties(i)->getSaturationPressure(t);
         /// @test getSaturationTemperature
-        const double saturationTemperature      =
+        const double saturationTemperature      __attribute__((unused)) =
             mArticle->getProperties(i)->getSaturationTemperature(p);
         /// @test getSaturationTemperature
-        const double heatOfVaporization         =
+        const double heatOfVaporization         __attribute__((unused)) =
             mArticle->getProperties(i)->getHeatOfVaporization(t);
     }
 
@@ -369,7 +369,7 @@ void UtFluidProperties::testLowP()
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         for (int j = 0; j < 10; ++j) {
             const double temperature = 270.0;
-            const double expectedP   = FLT_EPSILON + FLT_EPSILON * 0.1 * j;
+            const double expectedP   = static_cast<double>(FLT_EPSILON) + static_cast<double>(FLT_EPSILON) * 0.1 * j;
             const double expectedD   = mArticle->getProperties(type)->
                 getDensity(temperature, expectedP);
             const double returnedP   = mArticle->getProperties(type)->
@@ -387,7 +387,7 @@ void UtFluidProperties::testLowP()
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         for (int j = 0; j < 10; ++j) {
             const double temperature = 270.0;
-            const double expectedP   = FLT_EPSILON + FLT_EPSILON * 0.1 * j;
+            const double expectedP   = static_cast<double>(FLT_EPSILON) + static_cast<double>(FLT_EPSILON) * 0.1 * j;
             const double expectedD   = mArticle->getProperties(type)->
                 getDensity(temperature, expectedP);
             const double returnedP   = mArticle->getProperties(type)->
@@ -733,16 +733,16 @@ void UtFluidProperties::testHeTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(2.1768, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(303.4472,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(2.1768, 60000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(1000.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(27.06089,
                                  mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(1000.0, 60000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Critical point:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(66.78098,
@@ -756,21 +756,21 @@ void UtFluidProperties::testHeTable()
     const double maxT = 1000.0;
     const double minT = 2.1768;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_HE_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -792,16 +792,16 @@ void UtFluidProperties::testXeTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(170.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(3052.36,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(170.0, 34473.8),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(692.003,
                                  mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(750.0, 34473.8),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Critical point:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1118.36,
@@ -815,21 +815,21 @@ void UtFluidProperties::testXeTable()
     const double maxT = 750.0;
     const double minT = 170.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_XE_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -851,16 +851,16 @@ void UtFluidProperties::testN2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(160.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(693.263,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(160.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(209.91,
                                  mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(750.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -869,21 +869,21 @@ void UtFluidProperties::testN2Table()
     const double maxT = 750.0;
     const double minT = 160.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_N2_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -905,16 +905,16 @@ void UtFluidProperties::testO2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(160.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1003.26,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(160.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(750.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(254.064,
                                  mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(750.0, 59090.9),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -922,6 +922,61 @@ void UtFluidProperties::testO2Table()
     const double minP = 0.0;
     const double maxT = 750.0;
     const double minT = 160.0;
+    double maxE  = 0.0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
+    for (int i=0; i<1000; ++i) {
+        for (int j=0; j<1000; ++j) {
+            const double pressure    = minP + (maxP - minP) * i / 1000.0;
+            const double temperature = minT + (maxT - minT) * j / 1000.0;
+            const double density = mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(temperature, pressure);
+            const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getPressure(temperature, density);
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
+                maxE  = error;
+            }
+        }
+    }
+//    std::cout << "\n     max inverting error =" << maxE << " @ (" << maxI << "," << maxJ << ") P=" << maxEP << ", T=" << maxET;
+//    std::cout << "\n                                                                        ";
+    CPPUNIT_ASSERT(maxE < 1.0E-9);
+
+    std::cout << "... Pass";
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  Test table look-ups for GUNNS_CH4_REAL_GAS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtFluidProperties::testCH4Table()
+{
+    std::cout << "\n Fluid Properties 32: CH4 Density Table                                  ";
+
+    /// @test A few specific points for good table data.  Table corners:
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(91.853, 0.0),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(480.434,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(91.853, 59090.9),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(625.0, 0.0),
+                                 FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(146.589,
+                                 mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(625.0, 59090.9),
+                                 FLT_EPSILON);
+
+    /// @test Loop across the entire table and check for good inverse between pressure and density
+    ///       at all points.
+    const double maxP = 59090.9;
+    const double minP = 0.0;
+    const double maxT = 625.0;
+    const double minT = 91.853;
     double maxE  = 0.0;
     double maxEP = 0.0;
     double maxET = 0.0;
@@ -931,8 +986,8 @@ void UtFluidProperties::testO2Table()
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
-            const double density = mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getDensity(temperature, pressure);
-            const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_O2_REAL_GAS)->getPressure(temperature, density);
+            const double density = mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getDensity(temperature, pressure);
+            const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_CH4_REAL_GAS)->getPressure(temperature, density);
             if (fabs(error) > maxE) {
                 maxEP = pressure;
                 maxET = temperature;
@@ -959,16 +1014,16 @@ void UtFluidProperties::testH2Table()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(88.3871,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(64.0, 80000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 0.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(16.8613,
                                  mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(1000.0, 80000.0),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -977,21 +1032,21 @@ void UtFluidProperties::testH2Table()
     const double maxT = 1000.0;
     const double minT = 64.0;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_H2_REAL_GAS)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -1013,16 +1068,16 @@ void UtFluidProperties::testWaterPvtTable()
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(999.792208924,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(273.16, 1.0e-10),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1000.3387535,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(273.16, 1075.4274162),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(999.792208924,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(373.506467, 1.0e-10),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(958.549732485,
                                  mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(373.506467, 1075.4274162),
-                                 FLT_EPSILON);
+                                 static_cast<double>(FLT_EPSILON));
 
     /// @test Loop across the entire table and check for good inverse between pressure and density
     ///       at all points.
@@ -1031,21 +1086,21 @@ void UtFluidProperties::testWaterPvtTable()
     const double maxT = 373.506467;
     const double minT = 273.16;
     double maxE  = 0.0;
-    double maxEP = 0.0;
-    double maxET = 0.0;
-    int    maxI  = 0;
-    int    maxJ  = 0;
+//    double maxEP = 0.0;
+//    double maxET = 0.0;
+//    int    maxI  = 0;
+//    int    maxJ  = 0;
     for (int i=0; i<1000; ++i) {
         for (int j=0; j<1000; ++j) {
             const double pressure    = minP + (maxP - minP) * i / 1000.0;
             const double temperature = minT + (maxT - minT) * j / 1000.0;
             const double density = mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getDensity(temperature, pressure);
             const double error = pressure - mArticle->getProperties(FluidProperties::GUNNS_WATER_PVT)->getPressure(temperature, density);
-            if (fabs(error) > maxE) {
-                maxEP = pressure;
-                maxET = temperature;
-                maxI  = i;
-                maxJ  = j;
+            if (std::fabs(error) > maxE) {
+//                maxEP = pressure;
+//                maxET = temperature;
+//                maxI  = i;
+//                maxJ  = j;
                 maxE  = error;
             }
         }
@@ -1066,19 +1121,21 @@ void UtFluidProperties::testSaturationCurveConsistency()
 
     // Pick test Ts points for each fluid type in between triple & critical points.  Use all
     // unique values so we can find which fluid type fails.
-    const double temperature[] = {100.0, 200.0, 300.0, 101.0, 102.0,
-                                  202.0,  20.0, 103.0, 203.0, 204.0,
-                                    4.0,   4.0, 205.0, 106.0, 107.0,
-                                   21.0, 207.0, 308.0, 309.0, 400.0,
-                                  401.0, 402.0, 310.0,  60.0,  20.0,
-                                  150.0, 311.0, 312.0, 313.0, 314.0,
-                                  315.0, 316.0};
+    const double temperature[] = {
+        100.0, 200.0, 300.0, 101.0, 102.0,
+        202.0, 20.0,  103.0, 203.0, 204.0,
+        4.0,   109.0, 4.1,   205.0, 106.0,
+        107.0, 108.0, 21.0,  207.0, 308.0,
+        309.0, 400.0, 401.0, 402.0, 310.0,
+        60.0,  20.0,  150.0, 311.0, 312.0,
+        313.0, 314.0, 315.0, 316.0
+    };
 
     for (int i = 0; i  < FluidProperties::NO_FLUID; i++) {
         FluidProperties::FluidType type = static_cast<FluidProperties::FluidType>(i);
         const double Ps   = mArticle->getProperties(type)->getSaturationPressure(temperature[i]);
         const double Ts   = mArticle->getProperties(type)->getSaturationTemperature(Ps);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature[i], Ts, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature[i], Ts, static_cast<double>(FLT_EPSILON));
     }
 
     std::cout << "... Pass" << std::endl;

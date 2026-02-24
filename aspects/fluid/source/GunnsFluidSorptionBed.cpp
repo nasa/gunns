@@ -2,7 +2,7 @@
 @file     GunnsFluidSorptionBed.cpp
 @brief    GUNNS Sorption Bed Link implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -21,7 +21,7 @@ LIBRARY DEPENDENCY:
 
 /// @details  This value is chosen to avoid adsorbing all of the sorbate mass out of the flow
 ///           stream, for stability.
-const float GunnsFluidSorptionBedSorbate::mLimitAdsorbFraction = 0.99;
+const double GunnsFluidSorptionBedSorbate::mLimitAdsorbFraction = 0.99;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this Sorption Bed Sorbate.
@@ -143,7 +143,7 @@ void GunnsFluidSorptionBedSorbate::updateLoadingEquil(const double pp, const dou
         mLoadingEquil *= (1.0 - MsMath::limitRange(0.0, interaction, 1.0));
     }
     if (mMalfLoadingEquilFlag) {
-        mLoadingEquil *= fmax(0.0, mMalfLoadingEquilValue);
+        mLoadingEquil *= std::max(0.0, mMalfLoadingEquilValue);
     }
 }
 
@@ -162,14 +162,14 @@ void GunnsFluidSorptionBedSorbate::updateLoading(const double timestep, const do
 {
     mLoadingRate = mProperties->computeLoadingRate(mLoadingEquil, mLoading);
     if (mLoadingRate >= 0.0) {
-        mLoadingRate = fmin(mLoadingRate, mLimitAdsorbFraction * inFlux);
+        mLoadingRate = std::min(mLoadingRate, mLimitAdsorbFraction * inFlux);
     } else {
         /// - Note that the desorbLimit is given as a posiive value, but mLoadingRate is negative
         ///   for desorption, so we flip the sign on desorbLimit inside here.
-        mLoadingRate = fmax(fmax(-mLoading / timestep, -desorbLimit), mLoadingRate);
+        mLoadingRate = std::max(std::max(-mLoading / timestep, -desorbLimit), mLoadingRate);
     }
-    mLoading = fmax(0.0, mLoading + mLoadingRate * timestep);
-    mLoadingFraction = mLoading / fmax(mLoadingEquil, DBL_EPSILON);
+    mLoading = std::max(0.0, mLoading + mLoadingRate * timestep);
+    mLoadingFraction = mLoading / std::max(mLoadingEquil, DBL_EPSILON);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,11 +267,11 @@ GunnsFluidSorptionBedSegmentConfigData::GunnsFluidSorptionBedSegmentConfigData(c
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Reference to the object to be copied.
+/// @param[in] that (--) Reference to the object to be copied (unused).
 ///
 /// @details  This doesn't assign anything since all class member are const.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidSorptionBedSegmentConfigData& GunnsFluidSorptionBedSegmentConfigData::operator =(const GunnsFluidSorptionBedSegmentConfigData& that)
+GunnsFluidSorptionBedSegmentConfigData& GunnsFluidSorptionBedSegmentConfigData::operator =(const GunnsFluidSorptionBedSegmentConfigData& that __attribute__((unused)))
 {
     return *this;
 }
@@ -318,11 +318,11 @@ GunnsFluidSorptionBedSegmentInputData::GunnsFluidSorptionBedSegmentInputData(con
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] that (--) Reference to the object to be copied.
+/// @param[in] that (--) Reference to the object to be copied (unused).
 ///
 /// @details  This doesn't assign anything since all class member are const.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-GunnsFluidSorptionBedSegmentInputData& GunnsFluidSorptionBedSegmentInputData::operator =(const GunnsFluidSorptionBedSegmentInputData& that)
+GunnsFluidSorptionBedSegmentInputData& GunnsFluidSorptionBedSegmentInputData::operator =(const GunnsFluidSorptionBedSegmentInputData& that __attribute__((unused)))
 {
     return *this;
 }
@@ -358,7 +358,7 @@ GunnsFluidSorptionBedSegment::~GunnsFluidSorptionBedSegment()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] configData  (--) Reference to the configuration data for this bed segment.
-/// @param[in] fluidConfig (--) Pointer to the network fluid configuration.
+/// @param[in] fluidConfig (--) Pointer to the network fluid configuration (unused).
 /// @param[in] loading     (--) Reference to vector of initial sorbate loadings.
 ///
 /// @throws   TsInitializationException
@@ -368,7 +368,7 @@ GunnsFluidSorptionBedSegment::~GunnsFluidSorptionBedSegment()
 ///           or they can be missing entirely if they're not desired to be modeled.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSorptionBedSegment::init(const GunnsFluidSorptionBedSegmentConfigData&             configData,
-                                        const PolyFluidConfigData*                                fluidConfig,
+                                        const PolyFluidConfigData*                                fluidConfig __attribute__((unused)),
                                         const std::vector<GunnsFluidSorptionBedSegmentInputData>& loading)
 {
     /// - Initialize from configuration data.
@@ -477,12 +477,12 @@ void GunnsFluidSorptionBedSegment::update(double& flow, const double pIn, const 
         ///   fluid and this doesn't account for other sorbates desorbing at the same time.
         ///   We only do this for sorbates that are bulk fluids, since for trace compounds we do
         ///   not model fluid states such as phase or saturation.
-        double desorbLimit = FLT_MAX; // use this number as an arbitrarily large limit
+        double desorbLimit = static_cast<double>(FLT_MAX); // use this number as an arbitrarily large limit
         const FluidProperties::FluidType fluidType = mSorbates[i].getProperties()->getCompound()->mFluidType;
         if (fluidIndex >= 0) {
             const double pSat    = mFluid->getProperties(fluidType)->getSaturationPressure(Tout);
-            const double ndotSat = ndot * pSat / fmax(pOut, DBL_EPSILON);
-            desorbLimit = fmax(0.0, ndotSat - ndotIn);
+            const double ndotSat = ndot * pSat / std::max(pOut, DBL_EPSILON);
+            desorbLimit = std::max(0.0, ndotSat - ndotIn);
         }
         const double adsorbLimit = ndotIn / mVolSorbant;
 
@@ -570,12 +570,12 @@ double GunnsFluidSorptionBedSegment::exchangeFluid(const int fluidIndex, const i
     if (dndot < -DBL_EPSILON) {
         /// - Adsorption from fluid.  If there is incoming trace compound, adsorb from it first,
         ///   then any remainder from the bulk fluid.
-        const double tcSorb = fmax(dndot, -ndotInTc); // tcSorb is <= 0.
+        const double tcSorb = std::max(dndot, -ndotInTc); // tcSorb is <= 0.
         ndotOutTc += tcSorb;
         if (fluidIndex >= 0) {
             const double dnRemain = -dndot + tcSorb;      // tcSorb is <= 0, dnRemain is >= 0.
             mdotBulkDesorb = -dnRemain * molWeight;
-            mFluid->setMass(fluidIndex, fmax(mdotInBulk + mdotBulkDesorb, 0.0));
+            mFluid->setMass(fluidIndex, std::max(mdotInBulk + mdotBulkDesorb, 0.0));
         }
     } else if (dndot > DBL_EPSILON) {
         /// - Desorption to fluid.  Only desorb to the trace compound if there is no bulk fluid.
@@ -817,7 +817,7 @@ void GunnsFluidSorptionBed::initialize(const GunnsFluidSorptionBedConfigData& co
         mVolume += mSegments[i].mVolume;
     }
 
-    /// - Allocate and intialize the adsorption totals arrays.
+    /// - Allocate and initialize the adsorption totals arrays.
     const int nFluids = mNodes[0]->getFluidConfig()->mNTypes;
     TS_NEW_PRIM_ARRAY_EXT(mAdsorptionFluidRates, nFluids, double, mName + ".mAdsorptionFluidRates");
     TS_NEW_PRIM_ARRAY_EXT(mAdsorbedFluidMasses,  nFluids, double, mName + ".mAdsorbedFluidMasses");
@@ -1021,10 +1021,10 @@ void GunnsFluidSorptionBed::transportFlows(const double dt)
 
     /// - Compute total bulk desorbed moles as difference between bulk moles in and out.
     const double bulkDesorbMoleRate = exitFlow / mInternalFluid->getMWeight()
-                                    - fabs(mFlowRate) / mNodes[sourcePort]->getOutflow()->getMWeight();
+                                    - std::fabs(mFlowRate) / mNodes[sourcePort]->getOutflow()->getMWeight();
 
     /// - Transport flow between nodes and correct the source vector for sorption.
-    mNodes[sourcePort]->collectOutflux(fabs(mFlowRate));
+    mNodes[sourcePort]->collectOutflux(std::fabs(mFlowRate));
     mNodes[sinkPort]->collectInflux(exitFlow, mInternalFluid);
     mSourceVector[sourcePort] = 0.0;
     mSourceVector[sinkPort]   = bulkDesorbMoleRate;
@@ -1046,7 +1046,7 @@ void GunnsFluidSorptionBed::transportFlows(const double dt)
 double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourceDensity, const unsigned int sourcePort)
 {
     /// - Initialize the exit flow as the inlet flow, before sorption.
-    double exitFlow = fabs(mFlowRate);
+    double exitFlow = std::fabs(mFlowRate);
 
     /// - Skip sorption when the time step is negligible or neither port node has fluid density
     ///   (both ports are on Ground).
@@ -1058,7 +1058,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
         mInternalFluid->setState(mNodes[sourcePort]->getOutflow());
         mInternalFluid->setMass(std::max(exitFlow, DBL_EPSILON));
 
-        const double dPoverV = fabs(mPotentialDrop) / mVolume;
+        const double dPoverV = std::fabs(mPotentialDrop) / mVolume;
         double segP          = mPotentialVector[sourcePort];
 
         if (mFlowRate >= 0.0) {
@@ -1085,7 +1085,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] port (--) The port to be assigned
+/// @param[in] port (--) The port to be assigned (unused)
 /// @param[in] node (--) The desired node to assign the port to
 ///
 /// @returns  bool  (--) Returns true if all rules checks pass
@@ -1094,7 +1094,7 @@ double GunnsFluidSorptionBed::updateSegments(const double dt, const double sourc
 ///           this specific class.  These are:
 ///           - A GunnsFluidSorptionBed must not map either port to a liquid node.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool GunnsFluidSorptionBed::checkSpecificPortRules(const int port, const int node) const
+bool GunnsFluidSorptionBed::checkSpecificPortRules(const int port __attribute__((unused)), const int node) const
 {
     bool result = true;
     GunnsFluidNode* nodePtr = dynamic_cast<GunnsFluidNode*> (mNodeList->mNodes);

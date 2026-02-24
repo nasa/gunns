@@ -1,6 +1,9 @@
 #ifndef ExponentialFit_EXISTS
 #define ExponentialFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_EXPONENTIAL Univariate Exponential Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 
@@ -76,7 +79,7 @@ class ExponentialFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double ExponentialFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return exp(mA + (mB + mC / x) / x);
+    return std::exp(mA + (mB + mC / x) / x);
 }
 
 #endif

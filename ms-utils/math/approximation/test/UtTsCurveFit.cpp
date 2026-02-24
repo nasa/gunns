@@ -1,25 +1,7 @@
-/************************** TRICK HEADER ***********************************************************
- LIBRARY DEPENDENCY:
- (
-     (math/approximation/CubicFit.o)
-     (math/approximation/ExponentialFit.o)
-     (math/approximation/InvLinearFit.o)
-     (math/approximation/InvQuadraticFit.o)
-     (math/approximation/LinearFit.o)
-     (math/approximation/PowerFit.o)
-     (math/approximation/ProductFit.o)
-     (math/approximation/QuadLinFit.o)
-     (math/approximation/QuadLinInvFit.o)
-     (math/approximation/QuadraticFit.o)
-     (math/approximation/QuadraticRootFit.o)
-     (math/approximation/QuarticFit.o)
-     (math/approximation/QuinticFit.o)
-     (math/approximation/QuotientFit.o)
-     (math/approximation/RationalFit.o)
-     (math/approximation/ShowmateFit.o)
-     (math/approximation/SutherlandFit.o)
- )
- ***************************************************************************************************/
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+*/
 
 #include "math/approximation/CubicFit.hh"
 #include "math/approximation/ExponentialFit.hh"
@@ -213,7 +195,7 @@ void UtTsCurveFit::testExponential()
     const double x = +13.0;
     const double minX = +10.0;
     const double maxX = +1000.0;
-    const double expected = exp(a + b / x + c / (x * x));
+    const double expected = std::exp(a + b / x + c / (x * x));
 
     mArticle = new ExponentialFit(a, b, c, minX, maxX);
 
@@ -259,7 +241,7 @@ void UtTsCurveFit::testPower()
     const double x = 316.0;
     const double minX = 315.0;
     const double maxX = 317.0;
-    const double expected = a * pow(b, x);
+    const double expected = a * std::pow(b, x);
 
     mArticle = new PowerFit(a, b, minX, maxX);
 
@@ -353,7 +335,7 @@ void UtTsCurveFit::testSutherlandFit()
     const double minX = +99.0;
     const double x = +100.0;
     const double maxX = +101.0;
-    const double expected = a * pow(x, 1.5) / (b + x);
+    const double expected = a * std::pow(x, 1.5) / (b + x);
 
     mArticle = new SutherlandFit(a, b, minX, maxX);
 
@@ -487,8 +469,8 @@ void UtTsCurveFit::testQuadraticRootFit()
 
     mArticle = new QuadraticRootFit(a, b, minX, maxX);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->get(x), FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->getExceptional(x), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->get(x), static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, mArticle->getExceptional(x), static_cast<double>(FLT_EPSILON));
 
     delete article;
 
@@ -506,8 +488,8 @@ void UtTsCurveFit::testCoefficientAccessors()
     const double b = 1.785E-001;
     LinearFit article(a, b, 1.0, 500.0);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(a, article.getA(), FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(b, article.getB(), FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(a, article.getA(), static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(b, article.getB(), static_cast<double>(FLT_EPSILON));
 
     std::cout << "... Pass";
 }
@@ -805,7 +787,7 @@ void UtTsCurveFit::testExponentialException()
     const double b = +2.0;
     const double c = +3.0;
     const double minX = -1000.0;
-    const double maxX = -0.5 * FLT_EPSILON;
+    const double maxX = -0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new ExponentialFit(a, b, c, minX, maxX), TsInitializationException);
     CPPUNIT_ASSERT_THROW(new ExponentialFit(a, b, c, -maxX, -minX), TsInitializationException);
@@ -828,11 +810,11 @@ void UtTsCurveFit::testRationalException()
     const double minX = -1000.0;
     const double maxX = +1000.0;
 
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, c - FLT_EPSILON / 2, d, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, c - DBL_EPSILON / 2, d, minX, maxX),
         TsInitializationException);
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, -c + FLT_EPSILON / 2, d, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, -c + DBL_EPSILON / 2, d, minX, maxX),
         TsInitializationException);
-    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, 0.0, FLT_EPSILON / 256.0, minX, maxX),
+    CPPUNIT_ASSERT_THROW(new RationalFit(a, b, 0.0, DBL_EPSILON / 256.0, minX, maxX),
         TsInitializationException);
 
     std::cout << "... Pass";
@@ -850,16 +832,16 @@ void UtTsCurveFit::testInvLinearException()
     const double b = 0.0;
     const double c = -1000.0;
 
-    double minX = FLT_EPSILON * 0.5;
+    double minX = DBL_EPSILON * 0.5;
     double maxX = 1000.0;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, minX, maxX), TsInitializationException);
 
     minX = -1000.0;
-    maxX = -FLT_EPSILON * 0.5;
+    maxX = -DBL_EPSILON * 0.5;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, -maxX, -minX), TsInitializationException);
 
-    minX = -0.5 * FLT_EPSILON;
-    maxX = +0.5 * FLT_EPSILON;
+    minX = -0.5 * DBL_EPSILON;
+    maxX = +0.5 * DBL_EPSILON;
     CPPUNIT_ASSERT_THROW(new InvLinearFit(a, b, c, -maxX, -minX), TsInitializationException);
 
     std::cout << "... Pass";
@@ -877,16 +859,16 @@ void UtTsCurveFit::testInvQuadraticException()
     const double b = +2.0;
     const double c = +3.0;
 
-    double minX = FLT_EPSILON * 0.5;
+    double minX = DBL_EPSILON * 0.5;
     double maxX = 1000.0;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, minX, maxX), TsInitializationException);
 
     minX = -1000.0;
-    maxX = -FLT_EPSILON * 0.5;
+    maxX = -DBL_EPSILON * 0.5;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, -maxX, -minX), TsInitializationException);
 
-    minX = -0.5 * FLT_EPSILON;
-    maxX = +0.5 * FLT_EPSILON;
+    minX = -0.5 * DBL_EPSILON;
+    maxX = +0.5 * DBL_EPSILON;
     CPPUNIT_ASSERT_THROW(new InvQuadraticFit(a, b, c, -maxX, -minX), TsInitializationException);
 
     std::cout << "... Pass";
@@ -905,8 +887,8 @@ void UtTsCurveFit::testShowmateException()
     const double c = +3.0;
     const double d = +4.0;
     const double e = +5.0;
-    const double minX = -2.0 * FLT_EPSILON;
-    const double maxX = +0.5 * FLT_EPSILON;
+    const double minX = -2.0 * DBL_EPSILON;
+    const double maxX = +0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new ShowmateFit(a, b, c, d, e, minX, maxX), TsInitializationException);
     CPPUNIT_ASSERT_THROW(new ShowmateFit(a, b, c, d, e, -maxX, -minX), TsInitializationException);
@@ -924,8 +906,8 @@ void UtTsCurveFit::testSutherlandException()
 
     const double a = +1.0;
     const double b = +0.0;
-    double minX = -0.5 * FLT_EPSILON;
-    double maxX = +0.5 * FLT_EPSILON;
+    double minX = -0.5 * DBL_EPSILON;
+    double maxX = +0.5 * DBL_EPSILON;
 
     CPPUNIT_ASSERT_THROW(new SutherlandFit(a, b, minX, maxX), TsInitializationException);
 
@@ -941,18 +923,18 @@ void UtTsCurveFit::testQuotientException()
     std::cout << "\n Curve Fit 28: Bivariate Quotient Initialization Exception Test         ";
 
     const double a = 1.0;
-    double minX = FLT_EPSILON * 0.1;
+    double minX = static_cast<double>(FLT_EPSILON) * 0.1;
     double maxX = +1000.0;
     double minY = -1000.0;
     double maxY = +1000.0;
     CPPUNIT_ASSERT_THROW(new QuotientFit(a, minX, maxX, minY, maxY), TsInitializationException);
 
     minX = -1000.0;
-    maxX = -FLT_EPSILON * 0.1;
+    maxX = -static_cast<double>(FLT_EPSILON) * 0.1;
     CPPUNIT_ASSERT_THROW(new QuotientFit(a, minX, maxX, minY, maxY), TsInitializationException);
 
-    minX = -FLT_EPSILON * 0.1;
-    maxX = +FLT_EPSILON * 0.1;
+    minX = -static_cast<double>(FLT_EPSILON) * 0.1;
+    maxX = +static_cast<double>(FLT_EPSILON) * 0.1;
     CPPUNIT_ASSERT_THROW(new QuotientFit(a, minX, maxX, minY, maxY), TsInitializationException);
 
     std::cout << "... Pass";
@@ -968,10 +950,10 @@ void UtTsCurveFit::testQuadLinInvException()
 
     const double a = 0.0;
     const double b = 0.0;
-    const double c = FLT_EPSILON;
+    const double c = static_cast<double>(FLT_EPSILON);
     const double d = 0.0;
     const double e = 0.0;
-    const double f = FLT_EPSILON;
+    const double f = static_cast<double>(FLT_EPSILON);
     const double minX = -1000.0;
     const double maxX = +1000.0;
     const double minY = -1000.0;

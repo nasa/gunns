@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -593,7 +593,7 @@ void UtGunnsFluidAccumGas::testComputeFlowsNomFlowIn()
 
     CPPUNIT_ASSERT(0.0 < tModel->mGasFlowRate);
     CPPUNIT_ASSERT(prevGasPressure < tModel->mGasInternalFluid->getPressure());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mGasFlowRate), tNodes[0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mGasFlowRate), tNodes[0].getOutflux(), tTolerance);
 
     const double inMass =  tModel->mGasFlowRate * tTimeStep;
     const double newMass = initialMass + inMass;
@@ -649,7 +649,7 @@ void UtGunnsFluidAccumGas::testComputeFlowsNomFlowOut()
 
     CPPUNIT_ASSERT(0.0 > tModel->mGasFlowRate);
     CPPUNIT_ASSERT(prevGasPressure > tModel->mGasInternalFluid->getPressure());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mGasFlowRate), tNodes[0].getInflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mGasFlowRate), tNodes[0].getInflux(), tTolerance);
 
     UT_PASS;
 }
@@ -787,10 +787,11 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     double originalBellowsPos = tModel->mBellowsPosition;
     double originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterations = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    int numIterations = static_cast<int>(
+                        ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                           / tModel->mEditPressureRate                                                // number of seconds to achieve edit
                           + tModel->mEditHoldTime)                                                   // add edit hold time
-                          / tTimeStep                                                                // convert to iterations
+                          / tTimeStep)                                                               // convert to iterations
                           + 5;                                                                       // small pad at the end
 
     for (int i=0;i<numIterations;i++)
@@ -824,10 +825,11 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     originalBellowsPos = tModel->mBellowsPosition;
     originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    numIterations = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    numIterations = static_cast<int>(
+                    ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                       / tModel->mEditPressureRate                                                // number of seconds to achieve edit
                       + tModel->mEditHoldTime)                                                   // add edit hold time
-                      / tTimeStep                                                                // convert to iterations
+                      / tTimeStep)                                                               // convert to iterations
                       + 5;                                                                       // small pad at the end
 
     for (int i=0;i<numIterations;i++)
@@ -847,7 +849,7 @@ void UtGunnsFluidAccumGas::testPressureEdit()
     CPPUNIT_ASSERT(0.0 == tModel->mEditPressureTimer);
     CPPUNIT_ASSERT(false == tModel->mEditPressureFlag);
 
-    bool bellowsNotEqual = (fabs(tModel->mBellowsPosition - originalBellowsPos) > tTolerance);
+    bool bellowsNotEqual = (std::fabs(tModel->mBellowsPosition - originalBellowsPos) > tTolerance);
     CPPUNIT_ASSERT(bellowsNotEqual);
 
     UT_PASS;
@@ -885,8 +887,6 @@ void UtGunnsFluidAccumGas::testMalfBellowsRupture()
     tInputData->mInitialBellowsPosition = 0.5;
     tInputData->mGasFluidInputData->mPressure = 200.0;
     tModel->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
-
-    double prevGasPressure = tModel->mGasInternalFluid->getPressure();
 
     tNodes[0].setPotential(195.0);
     tNodes[0].getContent()->setPressure(195.0);
@@ -1007,10 +1007,11 @@ void UtGunnsFluidAccumGas::testBellowsEdit()
     double originalPressure = tModel->mInternalFluid->getPressure();
     double originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterations = ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
+    int numIterations = static_cast<int>(
+                        ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
                           / tModel->mEditBellowsRate                                          // number of seconds to achieve edit
                           + tModel->mEditHoldTime)                                            // add edit hold time
-                          / tTimeStep                                                         // convert to iterations
+                          / tTimeStep)                                                        // convert to iterations
                           + 5;                                                                // A little pad at the end.
 
     for (int i=0;i<numIterations;i++)
@@ -1047,15 +1048,17 @@ void UtGunnsFluidAccumGas::testBellowsEdit()
     originalPressure = tModel->mGasInternalFluid->getPressure();
     originalTemperature = tModel->mGasInternalFluid->getTemperature();
 
-    int numIterationsPressure = ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
+    int numIterationsPressure = static_cast<int>(
+                                 ((tModel->mEditPressureValue - tInputData->mGasFluidInputData->mPressure)    // Delta pressure to edit
                                   / tModel->mEditPressureRate                                                 // number of seconds to achieve edit
                                   + tModel->mEditHoldTime)                                                    // add edit hold time
-                                  / tTimeStep;                                                                // convert to iterations
+                                  / tTimeStep);                                                               // convert to iterations
 
-    int numIterationsBellows = ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
+    int numIterationsBellows = static_cast<int>(
+                               ((tModel->mEditBellowsPosition - tInputData->mInitialBellowsPosition) // Delta bellows pos to edit
                                  / tModel->mEditBellowsRate                                          // number of seconds to achieve edit
                                  + tModel->mEditHoldTime)                                            // add edit hold time
-                                 / tTimeStep;                                                        // convert to iterations
+                                 / tTimeStep);                                                       // convert to iterations
 
     numIterations = numIterationsPressure + numIterationsBellows + 5;                                // Allow more than enough iterations.
 

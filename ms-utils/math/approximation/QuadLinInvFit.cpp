@@ -1,4 +1,7 @@
 /************************** TRICK HEADER **********************************************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
 ***************************************************************************************************/
@@ -101,16 +104,17 @@ void QuadLinInvFit::init(const double a,    const double b,    const double c,
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
     const double discrim = d * d - 4 * f;
-    if (discrim > FLT_EPSILON) {
+    const double flt_epsilon = static_cast<double>(FLT_EPSILON);
+    if (discrim > flt_epsilon) {
         // Either check that both real roots are sufficiently outside valid range
-        const double arg = 0.5 * sqrt(discrim);
-        TS_GENERIC_IF_ERREX((minX <= -d + arg + FLT_EPSILON && -d + arg - FLT_EPSILON <= maxX), TsInitializationException,
+        const double arg = 0.5 * std::sqrt(discrim);
+        TS_GENERIC_IF_ERREX((minX <= -d + arg + flt_epsilon && -d + arg - flt_epsilon <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
-        TS_GENERIC_IF_ERREX((minX <= -d - arg + FLT_EPSILON && -d - arg - FLT_EPSILON <= maxX), TsInitializationException,
+        TS_GENERIC_IF_ERREX((minX <= -d - arg + flt_epsilon && -d - arg - flt_epsilon <= maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
-    } else if (discrim > -FLT_EPSILON) {
+    } else if (discrim > -flt_epsilon) {
         // Or check that an (almost) single real root is sufficiently outside valid range
-        TS_GENERIC_IF_ERREX((minX <= -0.5 * d + FLT_EPSILON && -0.5 * d - FLT_EPSILON < maxX), TsInitializationException,
+        TS_GENERIC_IF_ERREX((minX <= -0.5 * d + flt_epsilon && -0.5 * d - flt_epsilon < maxX), TsInitializationException,
                             "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
     }
 

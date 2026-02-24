@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid External Demand Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -380,7 +380,7 @@ void GunnsFluidExternalDemand::processOutputs()
     ///   node's contents is stuffed with the supply node's contents every pass, so we have to look
     ///   at the inflows into the demand node to get the real properties of the fluid leaving the
     ///   demand network.
-    if (mFlowRate < -m100EpsilonLimit && sum > FLT_EPSILON) {
+    if (mFlowRate < -m100EpsilonLimit && sum > static_cast<double>(FLT_EPSILON)) {
         mDemandTemperature = mNodes[1]->getInflow()->getTemperature();
         mFlowRate          = mNodes[1]->getInflow()->getMWeight() * mFlux;
     }
@@ -407,22 +407,22 @@ void GunnsFluidExternalDemand::updateState(const double dt)
     ///   our demand and the supply pressure.  Cut off average demand below a certain amount to
     ///   avoid dirty zeroes whem mFlux is zero.
     mAvgDemand       = 0.5 * (mAvgDemand + mFlux);
-    if (fabs(mAvgDemand) < DBL_EPSILON) {
+    if (std::fabs(mAvgDemand) < DBL_EPSILON) {
         mAvgDemand = 0.0;
     }
 
     mAvgSupplyDeltaP = -mAvgSupplyP;
     mAvgSupplyP      = 0.5 * (mAvgSupplyP + mSourcePressure);
     mAvgSupplyDeltaP += mAvgSupplyP;
-    if (fabs(mAvgSupplyP) < DBL_EPSILON) {
+    if (std::fabs(mAvgSupplyP) < DBL_EPSILON) {
         mAvgSupplyP = 0.0;
     }
 
     /// - Update our estimate of the supply network's effective capacitance:  C = I dt / dP
-    if (fabs(mAvgSupplyDeltaP) > mFilterMinDeltaP) {
+    if (std::fabs(mAvgSupplyDeltaP) > mFilterMinDeltaP) {
         mEstimatedCapacitance = (1.0 - mFilterCapacitanceGain) * mEstimatedCapacitance
                               + mFilterCapacitanceGain * (-mAvgDemand * dt / mAvgSupplyDeltaP);
-        if (fabs(mEstimatedCapacitance) < DBL_EPSILON) {
+        if (std::fabs(mEstimatedCapacitance) < DBL_EPSILON) {
             mEstimatedCapacitance = 0.0;
         }
     }

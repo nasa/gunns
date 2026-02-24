@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -25,8 +25,8 @@ UtGunnsResistiveLoad::UtGunnsResistiveLoad()
     mPosTripLimit(),
     mNegTripLimit(),
     mTripPriority(),
-    mInitialSwitchPosition(),
     mBlockage(),
+    mInitialSwitchPosition(),
     mNodes(),
     mNodeList(),
     mLinks(),
@@ -71,7 +71,7 @@ void UtGunnsResistiveLoad::setUp()
     mLoadSwitchResistance  = 0.06;
     mPosTripLimit          = 3.0;
     mNegTripLimit          = -0.2;
-    mTripPriority          = 1; 
+    mTripPriority          = 1;
     mPowerValid            = true;
     mBlockage              = 0.2;
     mInitialSwitchPosition = true;
@@ -206,7 +206,7 @@ void UtGunnsResistiveLoad::testNominalInitialization()
     CPPUNIT_ASSERT(mUnderVoltageLimit == article.mUnderVoltageLimit);
 
     /// @test load switch was initialized properly
-    // Want to test that the conductance was set properly. Need to update the switch state b/c there's 
+    // Want to test that the conductance was set properly. Need to update the switch state b/c there's
     // no way to close the switch at initialization. Have to update the switch state.
     article.mLoadSwitch.updateSwitchState(true);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0/mLoadSwitchResistance, article.mLoadSwitch.getConductance(), mTolerance);

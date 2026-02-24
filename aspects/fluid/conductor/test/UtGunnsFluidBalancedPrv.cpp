@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -505,13 +505,13 @@ void UtGunnsFluidBalancedPrv::testStepEdgeCases()
     /// @test  Limited lower value of exit pressure droop.
     tArticle->mExitPressureDroop = 0.0;
     tArticle->step(0.01);
-    double expectedOutG = 1.0 / FLT_EPSILON / tNodes[tPort0].getOutflow()->getMWeight();
+    double expectedOutG = 1.0 / static_cast<double>(FLT_EPSILON) / tNodes[tPort0].getOutflow()->getMWeight();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutG, tArticle->mExitConductance, DBL_EPSILON);
 
     /// @test  Limited upper value of exit pressure droop.
     tArticle->mExitPressureDroop = 1.0e15;
     tArticle->step(0.01);
-    expectedOutG = 1.0 * FLT_EPSILON / tNodes[tPort0].getOutflow()->getMWeight();
+    expectedOutG = 1.0 * static_cast<double>(FLT_EPSILON) / tNodes[tPort0].getOutflow()->getMWeight();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutG, tArticle->mExitConductance, DBL_EPSILON);
 
     /// @test  Link port mapping and protect against zero inlet molecular weight.
@@ -571,20 +571,20 @@ void UtGunnsFluidBalancedPrv::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedInMdot,  tNodes[0].getOutflux(),     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutMdot, tNodes[1].getInflux(),      DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[1].getInflow()->getMWeight(),
-                                 tNodes[0].getOutflow()->getMWeight(),        FLT_EPSILON);
+                                 tNodes[0].getOutflow()->getMWeight(),        static_cast<double>(FLT_EPSILON));
 
-    /// @test  Verify correct port directions 
+    /// @test  Verify correct port directions
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1, tPort2);
     tArticle->mPotentialVector[0] = 0.8;
     tArticle->mAdmittanceMatrix[0] = 0.001;
     tArticle->computeFlows(0.01);
 
-    /// - Molar flux should be less than zero because the port 0 potential vector is positive   
+    /// - Molar flux should be less than zero because the port 0 potential vector is positive
     CPPUNIT_ASSERT( tArticle->mInletFlux > 0.0);
 
     /// - Confirm correct source port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct sink port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[1]);
 
@@ -594,16 +594,16 @@ void UtGunnsFluidBalancedPrv::testComputeFlows()
     /// - Nodal outflux scheduling should be equal to step molar flux for source node
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getScheduledOutflux(),
                                            tArticle->mInletFlux + expectedInFlux,DBL_EPSILON);
-   
+
     tArticle->mPotentialVector[0] = 0.0;
     tArticle->computeFlows(0.01);
 
-    /// - Molar flux should be equal to zero because the port 0 potential vector is zero 
+    /// - Molar flux should be equal to zero because the port 0 potential vector is zero
     CPPUNIT_ASSERT( tArticle->mInletFlux == 0.0);
 
     /// - Confirm correct port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
-    
+
     /// - Confirm correct port allocation with positive potential vector (computeFlows)
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
 

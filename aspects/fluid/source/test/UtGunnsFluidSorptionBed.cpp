@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -154,7 +154,7 @@ void UtGunnsFluidSorptionBed::setUp()
 
     /// - Define custom sorbant with blocking and offgas compounds.
     tCustomSorbant = tConfigData->addCustomSorbant(500.0, 0.4, 400.0);
-    SorbateProperties* sorbateH2o = tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0, 0, 1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
+    SorbateProperties* sorbateH2o __attribute__((unused)) = tCustomSorbant->addSorbate(ChemicalCompound::H2O, 0, 0, 1.767e+2, 2.787e-5,  1.093e+3, -1.190e-3,  2.213e+1, -50.2, 0.002);
     SorbateProperties* sorbateCo2 = tCustomSorbant->addSorbate(ChemicalCompound::CO2, 0, 0, 7.678e-6, 5.164e-7,  2.330e+3, -3.053e-1,  2.386e+2, -40.0, 0.011375);
     sorbateCo2->addBlockingCompound(ChemicalCompound::H2O, 1.0);
     sorbateCo2->addOffgasCompound  (ChemicalCompound::NH3, 1.0e-4);
@@ -524,7 +524,7 @@ void UtGunnsFluidSorptionBed::testInitializationExceptions()
     UT_RESULT;
 
     /// @test exception thrown on bed wall temperature out of range.
-    tInputData->mWallTemperature = -FLT_EPSILON;
+    tInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mWallTemperature = tWallTemperature;
@@ -537,8 +537,8 @@ void UtGunnsFluidSorptionBed::testInitializationExceptions()
     tInputData->mLoading.at(0).mSegment = savedSegment;
 
     /// @test exception thrown on segment loading's loading value out of range.
-    const unsigned int savedLoading = tInputData->mLoading.at(0).mLoading;
-    tInputData->mLoading.at(0).mLoading = -FLT_EPSILON;
+    const unsigned int savedLoading = static_cast<unsigned int>(tInputData->mLoading.at(0).mLoading);
+    tInputData->mLoading.at(0).mLoading = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mLoading.at(0).mLoading = savedLoading;
@@ -712,7 +712,7 @@ void UtGunnsFluidSorptionBed::testBedSorbateUpdateLoading()
         tArticle->mSegments[0].mSorbates[1].updateLoading(tTimeStep, influx, 999.9);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,     tArticle->mSegments[0].mSorbates[1].mLoadingRate,     100.0 * DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedLoading,  tArticle->mSegments[0].mSorbates[1].mLoading,         100.0 * DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFraction, tArticle->mSegments[0].mSorbates[1].mLoadingFraction, FLT_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFraction, tArticle->mSegments[0].mSorbates[1].mLoadingFraction, static_cast<double>(FLT_EPSILON));
     } {
         /// @test nominal equilibrium loading < loading, desorb rate not limited.
         const double loading          = 1.25 * loadingEquil;
@@ -932,9 +932,9 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     /// @test chaining of outputs from previous segment to inputs of next segment, by checking that
     ///       downstream segments have less adsorption and heat flux than upstream, assuming similar
     ///       sorption properties and initial loading.
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mHeatFlux)                    > fabs(tArticle->mSegments[1].mHeatFlux));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate) > fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mHeatFlux)                    > std::fabs(tArticle->mSegments[1].mHeatFlux));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate) > std::fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate) > std::fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate));
 
     /// @test sorption outputs to node for forward flow.  This assumes we've already verified the
     ///       bed sorbate and bed segments updates, above.  This assumes all of the incoming CO2
@@ -943,8 +943,6 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     double expectedBulkCo2AdsorbNdot = tArticle->mSegments[0].mSorbates[1].mAdsorptionRate
                                      + tArticle->mSegments[1].mSorbates[1].mAdsorptionRate
                                      - expectedTcCo2AdsorbNdot;
-    double expectedTcH2oAdsorbNdot   = tArticle->mSegments[0].mSorbates[0].mAdsorptionRate
-                                     + tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
     double expectedBulkO2DesorbNdot  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate * 5.0e-5; // from setUp, co2OffgasO2
     double approxSegFlow = expectedMdot
                          - expectedBulkCo2AdsorbNdot * 44.0095
@@ -1068,17 +1066,15 @@ void UtGunnsFluidSorptionBed::testTransportFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPwr,  tArticle->mPower,         DBL_EPSILON);
 
     /// @test chaining of outputs from previous segment to inputs of next segment, reverse flow.
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mHeatFlux)                    > fabs(tArticle->mSegments[0].mHeatFlux));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate) > fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate));
-    CPPUNIT_ASSERT(fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate) > fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mHeatFlux)                    > std::fabs(tArticle->mSegments[0].mHeatFlux));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mSorbates[0].mAdsorptionRate) > std::fabs(tArticle->mSegments[0].mSorbates[0].mAdsorptionRate));
+    CPPUNIT_ASSERT(std::fabs(tArticle->mSegments[1].mSorbates[1].mAdsorptionRate) > std::fabs(tArticle->mSegments[0].mSorbates[1].mAdsorptionRate));
 
     /// @test sorption outputs to node for reverse flow.
     expectedTcCo2AdsorbNdot   = -expectedFlux * tNodes[1].getContent()->getTraceCompounds()->getMoleFraction(ChemicalCompound::CO2);
     expectedBulkCo2AdsorbNdot = tArticle->mSegments[0].mSorbates[1].mAdsorptionRate
                               + tArticle->mSegments[1].mSorbates[1].mAdsorptionRate
                               - expectedTcCo2AdsorbNdot;
-    expectedTcH2oAdsorbNdot   = tArticle->mSegments[0].mSorbates[0].mAdsorptionRate
-                              + tArticle->mSegments[1].mSorbates[0].mAdsorptionRate;
     expectedBulkO2DesorbNdot  = tArticle->mSegments[1].mSorbates[1].mAdsorptionRate * 5.0e-5; // from setUp, co2OffgasO2
     approxSegFlow = -expectedMdot
                   - expectedBulkCo2AdsorbNdot * 44.0095

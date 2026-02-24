@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_FLUID_CONDUCTOR_PHASE_CHANGE    GUNNS Fluid Phase Change Conductor Model
 @ingroup   TSM_GUNNS_FLUID_CONDUCTOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -132,7 +132,7 @@ class GunnsFluidPhaseChangeConductor : public  GunnsFluidConductor
         double                     mEfficiency;      /**<    (--) trick_chkpnt_io(**) Optional phase change heat efficiency. */
         double                     mWallHeatFlux;    /**<    (W)                      Phase change heat flux from fluid to wall. */
         double                     mWallTemperature; /**<    (W)                      Wall temperature. */
-        
+
         /// @brief  Validates the initialization inputs of this Phase Change Conductor.
         void validate(const GunnsFluidPhaseChangeConductorConfigData& configData,
                       const GunnsFluidPhaseChangeConductorInputData&  inputData) const;

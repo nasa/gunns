@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Trip Logic Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -76,7 +76,7 @@ bool GunnsTripLogic::checkForTrip(GunnsBasicLink::SolutionResult& result,
     ///   Checks for trips is also skipped if already tripped or the trip limit or converged step
     ///   priority values haven't been initialized.
     if (mMalfInhibitTrip) resetTrip();
-    if (not (mIsTripped or mMalfInhibitTrip or 0.0 == mLimit or 1 > mPriority)) {
+    if (not (mIsTripped or mMalfInhibitTrip or 0.0F == mLimit or 1 > mPriority)) {
         /// - The force trip malfunction causes an immediate trip on the first call to this
         ///   function, regardless of the network converged step or trip priority.  To force a trip
         ///   at the normal converged step priority, use the sensor's fail-to malf.

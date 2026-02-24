@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -570,7 +570,7 @@ void UtGunnsThermalMultiPanel::testAccessors()
     /// - @test getViewScalar method with out of bounds index.
     CPPUNIT_ASSERT_EQUAL(tViewScalar[0], tArticle1->getViewScalar(5));
     CPPUNIT_ASSERT_EQUAL(tViewScalar[0], tArticle1->getViewScalar(-1));
-    
+
     /// - @test getIncidentFlux method.
     for (int i = 0; i < 5; i++) {
         CPPUNIT_ASSERT_EQUAL(tIncidentFlux[i], tArticle1->getIncidentFlux(i));

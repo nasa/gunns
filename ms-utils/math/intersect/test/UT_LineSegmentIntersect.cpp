@@ -1,4 +1,7 @@
 /********************************* TRICK HEADER *******************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 PURPOSE:
     (Unit Test Line Segment Intersect)
 
@@ -255,7 +258,7 @@ void UT_LineSegmentIntersect::
                     spheroidR[1],
                     spheroidR[2]));
     }
-    
+
 }
 
 void UT_LineSegmentIntersect::
@@ -282,4 +285,3 @@ void UT_LineSegmentIntersect::
                     spheroidR[2]));
     }
 }
-

@@ -8,7 +8,7 @@
 @defgroup    TSM_GUNNS_ELECTRICAL_POWERBUSELECT PowerBusElect Model
 @ingroup    TSM_GUNNS_ELECTRICAL
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -123,8 +123,9 @@ class PowerBusElect:public GunnsBasicLink {
         UserLoadBase          **mLoad;          /**< (--) trick_chkpnt_io(**) Pointer to userLoads connected to PowerBus */
         /// @}
 
-        ///@brief Default PowerBusElect Constructor
-        PowerBusElect();
+        ///@brief Default PowerBusElect Constructor, deprecated due to obsolescence by GunnsElectSwitch
+        ///       and GunnsElectUserLoadSwitch
+        PowerBusElect() __attribute__ ((deprecated));
 
         ///@brief Default PowerBusElect Destructor
         virtual ~PowerBusElect();

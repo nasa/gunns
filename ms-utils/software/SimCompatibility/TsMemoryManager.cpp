@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -20,12 +20,12 @@
  PROGRAMMERS:
   ( ((Danny Strauss) (L-3) (Jun 2011))
     ((Danny Strauss) (L-3) (Jul 2014) (Added Trick naming of allocations, and _EXT versions)) )
-***************************************************************************************************/
+*/
 
 #include <stdexcept>
 #include <algorithm> // for std::replace
 #include <execinfo.h>  // for backtrace
-#include <pthread.h> 
+#include <pthread.h>
 #include <cstring>
 
 #include "sim_services/Executive/include/exec_proto.h" // for exec_get_current_version
@@ -78,7 +78,7 @@ std::string tsNameFix(const std::string sName, const std::string sFrom, const st
 ///
 /// @details  Return a string containing type/name specification (e.g., "MyClass foo")
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::string name, void* var)
+const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::string name, void* var __attribute__((unused)))
 {
     /*********************** DEBUG ***************************/
 //    void *backtrace_buffer[100];
@@ -126,7 +126,7 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
                 tsName.clear();
             } else {
                 // see if we have a linked list next pointer
-                int findit = tsName.rfind("[0].");
+                int findit = static_cast<int>(tsName.rfind("[0]."));
                 if (findit != -1) {
                     std::string baseName = tsName.substr(0,findit);
                     baseName = tsNameFix(baseName, "&", "");
@@ -137,7 +137,7 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
                         if (ai!=0) {
                             //fprintf(stderr, "       alloc type= %s", ai->user_type_name); //DEBUG
                             if (type.compare(ai->user_type_name)==0) { // pointing to same type: it's a linked list
-                                findit = baseName.rfind("_LIST");
+                                findit = static_cast<int>(baseName.rfind("_LIST"));
                                 if (findit == -1) {
                                 // 1st item in linked list, use the full name + "_LIST1"
                                     tsName = tsName + "_LIST1";
@@ -183,7 +183,8 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
 //#endif
 /******************* END DEBUG ***************************/
         }
-
+//#else
+//        (void*)var;
 #endif
     }
     if (!tsName.empty()) {
@@ -194,6 +195,7 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
         tsName = tsNameFix(tsName, "+", "__");
         tsName = tsNameFix(tsName, "[", "_");
         tsName = tsNameFix(tsName, "]", "_");
+        tsName = tsNameFix(tsName, "#", "_");
         tsAllocName = tsAllocName + " " + tsName;
 //fprintf(stderr, "tsAllocSpec fixed name           = <%s>\n", tsAllocName.c_str()); //DEBUG
     }
@@ -214,7 +216,7 @@ const char* TsMemoryManager::tsAllocSpec(const std::string type, const std::stri
 /// @details  Allocates memory.
 ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-char* TsMemoryManager::tsAlloc(const int nelem, const int size, void* addr_var, const std::string type, const std::string name)
+char* TsMemoryManager::tsAlloc(const int nelem, const int size __attribute__((unused)), void* addr_var, const std::string type, const std::string name)
 {
     return (char*)alloc_type(nelem, tsAllocSpec(type, name, addr_var));
 }
@@ -251,9 +253,9 @@ char* TsMemoryManager::tsStrdup(char* str, void* addr_var, const std::string nam
    char * allocation;
    int extent;
 
-   extent = (int)strlen(str)+1;
+   extent = (int)std::strlen(str)+1;
    allocation = (char*)alloc_type(extent, tsAllocSpec("char", name, addr_var));
-   return (strcpy(allocation, str));
+   return (std::strcpy(allocation, str));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,9 +273,9 @@ char* TsMemoryManager::tsStrdupExt(char* str, void* var, void* addr_var, const s
    char * allocation;
    int extent;
 
-   extent = (int)strlen(str)+1;
+   extent = (int)std::strlen(str)+1;
    allocation = (char*)TMM_declare_ext_var_1d(var, tsAllocSpec("char", name, addr_var), extent);
-   return (strcpy(allocation, str));
+   return (std::strcpy(allocation, str));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,7 +298,7 @@ bool TsMemoryManager::tsIsAlloced(char* ptr)
 ///
 /// @details  If the specified pointer is to allocated memory, it is deallocated.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void TsMemoryManager::tsDelete(void* ptr, const char* name)
+void TsMemoryManager::tsDelete(void* ptr, const char* name __attribute__((unused)))
 {
     if (TMM_is_alloced(reinterpret_cast<char*>(ptr))) {
         TMM_delete_var_a(ptr);

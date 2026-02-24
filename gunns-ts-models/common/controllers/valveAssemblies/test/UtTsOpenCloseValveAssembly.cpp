@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -62,10 +62,10 @@ void UtTsOpenCloseValveAssembly::setUp()
     cController.mLatch               = TsPoweredValveController::LATCHING;
     cSensorOpen.mOffValue            = false;
     cSensorOpen.mTarget              = 1.0;
-    cSensorOpen.mTolerance           = 0.1;
+    cSensorOpen.mTolerance           = 0.1F;
     cSensorClosed.mOffValue          = false;
     cSensorClosed.mTarget            = 0.0;
-    cSensorClosed.mTolerance         = 0.1;
+    cSensorClosed.mTolerance         = 0.1F;
     tConfig                          = new TsOpenCloseValveAssemblyConfigData(cController,
                                                                               cSensorOpen,
                                                                               cSensorClosed);
@@ -367,7 +367,7 @@ void UtTsOpenCloseValveAssembly::testInitializationFailure()
     CPPUNIT_ASSERT(                                          !tArticle->mInitialized);
 
     /// @test    Assembly fails to init if closed sensor fails to init.
-    tConfig->mSensorClosed.mTolerance    =  0.1;
+    tConfig->mSensorClosed.mTolerance    =  0.1F;
     tConfig->mSensorClosed.mTolerance    = -1.0;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfig, *tInput, tName), TsInitializationException);
     CPPUNIT_ASSERT(                                          !tArticle->mInitialized);

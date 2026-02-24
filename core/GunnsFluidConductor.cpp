@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Conductor Link implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -300,7 +300,7 @@ double GunnsFluidConductor::linearizeConductance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidConductor::buildConductance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2]   = -mAdmittanceMatrix[0];
@@ -314,7 +314,7 @@ void GunnsFluidConductor::buildConductance()
 ///
 /// @details  Computes the flow rate across this link and schedules flow demand from source nodes.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidConductor::computeFlows(const double dt)
+void GunnsFluidConductor::computeFlows(const double dt __attribute__((unused)))
 {
     mPotentialDrop = getDeltaPotential();
 
@@ -407,7 +407,7 @@ void GunnsFluidConductor::transportFlows(const double dt)
 void GunnsFluidConductor::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;

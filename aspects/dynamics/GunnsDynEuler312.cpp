@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Dynamics Euler Angles 312-Sequence implementation
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -83,9 +83,9 @@ void GunnsDynEuler312::computeAnglesNoSing(const double* quat, const double rot2
     const double mat10 = GunnsDynUtils::QtoMElement[3](quat);
     const double mat11 = GunnsDynUtils::QtoMElement[4](quat);
     const double mat22 = GunnsDynUtils::QtoMElement[8](quat);
-    mAngles[0] = atan2(-mat10, mat11);
-    mAngles[1] = asin(rot2sin);
-    mAngles[2] = atan2(-mat02, mat22);
+    mAngles[0] = std::atan2(-mat10, mat11);
+    mAngles[1] = std::asin(rot2sin);
+    mAngles[2] = std::atan2(-mat02, mat22);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ void GunnsDynEuler312::computeAnglesPosSing(const double* quat)
 {
     const double mat00 = GunnsDynUtils::QtoMElement[0](quat);
     const double mat01 = GunnsDynUtils::QtoMElement[1](quat);
-    mAngles[0] = atan2(mat01, mat00);
+    mAngles[0] = std::atan2(mat01, mat00);
     mAngles[1] = UnitConversion::PI_OVER_2;
     mAngles[2] = 0.0;
 }
@@ -113,7 +113,7 @@ void GunnsDynEuler312::computeAnglesNegSing(const double* quat)
 {
     const double mat00 = GunnsDynUtils::QtoMElement[0](quat);
     const double mat01 = GunnsDynUtils::QtoMElement[1](quat);
-    mAngles[0] = atan2(mat01, mat00);
+    mAngles[0] = std::atan2(mat01, mat00);
     mAngles[1] = -UnitConversion::PI_OVER_2;
     mAngles[2] = 0.0;
 }

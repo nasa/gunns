@@ -1,5 +1,5 @@
 /****************************** TRICK HEADER *******************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -383,16 +383,16 @@ void GunnsFluidAdsorber::updateFluid(const double dt, const double flowRate __at
         /// - Skip sorbtion with the atmosphere when the mass flow rate is negligible.
         updateTemperature(dt);
         const double efficiency = computeEfficiency();
-        const double rate       = fabs(mFlowRate);
+        const double rate       = std::fabs(mFlowRate);
         if (mDesorbtionCycle) {
             desorb(dt, rate, efficiency);
         } else {
             adsorb(dt, rate, efficiency);
         }
 
-        if (fabs(mSorbtionFlowRate) > m100EpsilonLimit) {
+        if (std::fabs(mSorbtionFlowRate) > m100EpsilonLimit) {
             /// - Update sorbtion fluid mass and temperature.
-            mSorbtionFluid->setMass(mGasIndex, fabs(mMass));
+            mSorbtionFluid->setMass(mGasIndex, std::fabs(mMass));
             mSorbtionFluid->updateMass();
             mSorbtionFluid->setTemperature(mFluidTemperature);
 
@@ -424,12 +424,12 @@ void GunnsFluidAdsorber::updateFluid(const double dt, const double flowRate __at
 ///
 /// @details     Update for adsorbtion.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double efficiency)
+void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double availability_efficiency)
 {
     /// - Compute the mass available for adsorbtion this cycle.
     const double availableMass  =  mInternalFluid->getMassFraction(mInternalFluid->getType(mGasIndex)) * rate * dt;
     /// - Compute the mass adsorbed this cycle subject to availability, capacity, availability efficiency and rate limit.
-    mMass                       =  fmax(fmin(availableMass * efficiency, fmin(mMaxAdsorbtionRate * dt, mMaxAdsorbedMass - mAdsorbedMass)), 0.0);
+    mMass                       =  std::fmax(std::fmin(availableMass * availability_efficiency, std::fmin(mMaxAdsorbtionRate * dt, mMaxAdsorbedMass - mAdsorbedMass)), 0.0);
     /// - Update the mass in the adsorber.
     mAdsorbedMass              +=  mMass;
     /// - Compute the adsorbtion mass flow rate.
@@ -441,17 +441,17 @@ void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double
         mInternalFluid->setMole(mFlux);
         tc->updateMasses();
         for (int i = 0; i < tc->getConfig()->mNTypes; ++i) {
-            double efficiency = mTcEfficiency[i];
+            double adsorption_efficiency = mTcEfficiency[i];
             if (mTcMaxAdsorbedMass[i] > DBL_EPSILON) {
-                efficiency *= fmax(0.0, (mTcMaxAdsorbedMass[i] - mTcAdsorbedMass[i]) / mTcMaxAdsorbedMass[i]);
+                adsorption_efficiency *= std::max(0.0, (mTcMaxAdsorbedMass[i] - mTcAdsorbedMass[i]) / mTcMaxAdsorbedMass[i]);
             }
-            if (efficiency > DBL_EPSILON) {
+            if (adsorption_efficiency > DBL_EPSILON) {
                 /// - We don't bother limiting the adsorption rate to what would exceed the max
                 ///   adsorbed mass because a reasonably tuned adsorber should never actually reach
                 ///   the max since efficiency drops as adsorbed mass approaches the max and thus
                 ///   the approach should be asymptotic.  The risk of not conserving mass is low.
                 const double inletRate      = tc->getMasses()[i];
-                const double adsorptionRate = inletRate * efficiency;
+                const double adsorptionRate = inletRate * adsorption_efficiency;
                 mTcAdsorbedMass[i]         += adsorptionRate * dt;
                 tc->setMass(i, inletRate - adsorptionRate);
             }
@@ -472,7 +472,7 @@ void GunnsFluidAdsorber::adsorb(const double dt, const double rate, const double
 void GunnsFluidAdsorber::desorb(const double dt, const double rate __attribute__((unused)), const double efficiency)
 {
     /// - Compute the mass desorbed this cycle subject to rate, rate efficiency and availability.
-    mMass              = -fmax(fmin(mAdsorbedMass, -efficiency * mDesorbtionRate * dt), 0.0);
+    mMass              = -std::max(std::min(mAdsorbedMass, -efficiency * mDesorbtionRate * dt), 0.0);
     /// - Update the mass in the adsorber.
     mAdsorbedMass     +=  mMass;
     /// - Compute the desorbtion mass flow rate.

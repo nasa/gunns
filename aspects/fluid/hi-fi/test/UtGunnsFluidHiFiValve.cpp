@@ -136,7 +136,7 @@ void UtGunnsFluidHiFiValve::setUp()
     tThroatDiameter         = 0.005;
     tCriticalReynolds       = 2300.0;
     tExpansionScaleFactor   = 1.0;
-    tFlowTuningFactor       = 1.0;
+    tFlowTuningFactor       = 0.8; //arbitrary other than 1.0
     tConfigData             = new GunnsFluidHiFiValveConfigData(tLinkName,
                                                                   &tNodeList,
                                                                   tCoefficientType,
@@ -307,7 +307,7 @@ void UtGunnsFluidHiFiValve::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidHiFiValve::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsFluidHiFiValve ........ 06: testInitializationExceptions ....";
+    std::cout << "\n UtGunnsFluidHiFiValve ........ 05: testInitializationExceptions ....";
 
     /// @test for base class exception on throat diameter = 0
     tConfigData->mThroatDiameter = 0.0;
@@ -338,7 +338,7 @@ void UtGunnsFluidHiFiValve::testInitializationExceptions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidHiFiValve::testRestart()
 {
-    std::cout << "\n UtGunnsFluidHiFiValve ........ 07: testRestart .....................";
+    std::cout << "\n UtGunnsFluidHiFiValve ........ 06: testRestart .....................";
 
     /// - Initialize default test article with nominal initialization data
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -359,7 +359,7 @@ void UtGunnsFluidHiFiValve::testRestart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsFluidHiFiValve::testStepGas()
 {
-    std::cout << "\n UtGunnsFluidHiFiValve ........ 08: testStepGas .....................";
+    std::cout << "\n UtGunnsFluidHiFiValve ........ 07: testStepGas .....................";
 
     /// - Initialize default test article with nominal initialization data
     tArticle->setMinLinearizationPotential(0.0);

@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Adsorbed Compound Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -274,16 +274,16 @@ void GunnsFluidAdsorptionCompound::sorb(const double dt, const double tAvg, cons
 
         /// - Desorption rate is inversely proportional to compound partial pressure.
         adsorbRate = std::min(0.0, partialPressure - mDesorbPartialPressure) * mDesorbRateFactor
-                   * fabs(efficiency);
+                   * std::fabs(efficiency);
 
     } else {
 
         /// - Adsorption rate is the efficiency times the mass flow thru.
         double mdotThru = 0.0;
-        if (mTraceCompound and fabs(mdot) > m100EpsilonLimit) {
+        if (mTraceCompound and std::fabs(mdot) > m100EpsilonLimit) {
             mdotThru = mFluid->getTraceCompounds()->getMasses()[mIndex];
         } else {
-            mdotThru = mFluid->getMassFraction(mIndex) * fabs(mdot);
+            mdotThru = mFluid->getMassFraction(mIndex) * std::fabs(mdot);
         }
         adsorbRate = efficiency * mdotThru;
     }
@@ -293,7 +293,7 @@ void GunnsFluidAdsorptionCompound::sorb(const double dt, const double tAvg, cons
     /// - Desorption diminishes as we approach zero absorbed mass.
     if (mTaperOffFlag) {
         if (adsorbRate > 0.0) {
-            adsorbRate *= (1 - pow(std::max(0.1, mFillFraction),
+            adsorbRate *= (1 - std::pow(std::max(0.1, mFillFraction),
                                    MsMath::limitRange(1.0, mBreakthroughExp, 100.0)));
         } else {
             adsorbRate *= mFillFraction;

@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Multiple Constituent Adsorber Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -199,7 +199,7 @@ void GunnsFluidMultiAdsorber::initialize(const GunnsFluidMultiAdsorberConfigData
     TS_DELETE_ARRAY(mCompounds);
 
     /// - Allocate and initialize the compounds array.
-    mNCompounds = configData.mCompounds.size();
+    mNCompounds = static_cast<unsigned int>(configData.mCompounds.size());
     TS_NEW_CLASS_ARRAY_EXT(mCompounds, static_cast<int>(mNCompounds), GunnsFluidAdsorptionCompound,
                            (), mName + ".mCompounds");
     for (unsigned int i=0; i<mNCompounds; ++i) {
@@ -332,7 +332,7 @@ void GunnsFluidMultiAdsorber::updateFluid(const double dt, const double flowRate
         ///   sorbant material, and desorptions are endothermic, pulling heat from the material.
         mWallHeatFlux += mSorptionHeat;
 
-        if (fabs(fluidAdsorptionRate) > m100EpsilonLimit) {
+        if (std::fabs(fluidAdsorptionRate) > m100EpsilonLimit) {
 
             /// - Reset the internal fluid state.
             mSorptionFluid->resetState();

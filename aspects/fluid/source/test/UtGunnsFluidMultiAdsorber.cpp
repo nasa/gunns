@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -723,7 +723,7 @@ void UtGunnsFluidMultiAdsorber::testInitializationExceptions()
     config.addCompound(tCompound1Type, tCompound1MaxAdsorbedMass, tCompound1EfficiencyCoeff0);
     CPPUNIT_ASSERT_THROW(article.initialize(config, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
-    
+
     /// @test    Initialization exception on invalid config data: exception from compound init.
     config.mCompounds.clear();
     config.addCompound(tCompound1Type, -DBL_EPSILON, tCompound1EfficiencyCoeff0);

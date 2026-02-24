@@ -8,7 +8,7 @@
 @defgroup TSM_GUNNS_ELECTRICAL_USERLOADBASE__RESISTIVE_SPOTTER GUNNS Electrical Resistive User Load Spotter
 @ingroup  TSM_GUNNS_ELECTRICAL_USERLOADBASE
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -106,21 +106,21 @@ class GunnsElectResistiveUserLoad : public GunnsElectUserLoad
         /// @brief Default destructor.
         virtual     ~GunnsElectResistiveUserLoad();
         /// @brief Loads the config & input data.
-        virtual void          initialize(GunnsNetworkSpotterConfigData* configData,
-                                         GunnsNetworkSpotterInputData*  inputData);
+        virtual void          initialize(const GunnsNetworkSpotterConfigData* configData,
+                                         const GunnsNetworkSpotterInputData*  inputData);
         /// @brief Initializes this spotter and the contained resistive User Load.
         virtual void          initLoad();
         /// @brief Provides interface to the contained resistive User Load.
         virtual UserLoadBase* getLoad();
 
     protected:
-        GunnsElectResistiveUserLoadConfigData* mConfig; /**< ** (--) trick_chkpnt_io(**) The resistive User Load's config data. */
-        GunnsElectResistiveUserLoadInputData*  mInput;  /**< ** (--) trick_chkpnt_io(**) The resistive User Load's input data. */
+        const GunnsElectResistiveUserLoadConfigData* mConfig; /**< ** (--) trick_chkpnt_io(**) The resistive User Load's config data. */
+        const GunnsElectResistiveUserLoadInputData*  mInput;  /**< ** (--) trick_chkpnt_io(**) The resistive User Load's input data. */
         ResistiveLoad                          mLoad;   /**<    (--)                     The resistive User Load. */
         /// @brief Validates the supplied configuration data.
-        GunnsElectResistiveUserLoadConfigData* validateConfig(GunnsNetworkSpotterConfigData* config);
+        const GunnsElectResistiveUserLoadConfigData* validateConfig(const GunnsNetworkSpotterConfigData* config);
         /// @brief Validates the supplied input data.
-        GunnsElectResistiveUserLoadInputData*  validateInput (GunnsNetworkSpotterInputData* input);
+        const GunnsElectResistiveUserLoadInputData*  validateInput (const GunnsNetworkSpotterInputData* input);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

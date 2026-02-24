@@ -8,7 +8,7 @@
 @defgroup TSM_GUNNS_ELECTRICAL_USERLOADBASE_SPOTTER GUNNS Electrical User Load Base Spotter
 @ingroup  TSM_GUNNS_ELECTRICAL_USERLOADBASE
 
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -107,8 +107,8 @@ class GunnsElectUserLoad : public GunnsNetworkSpotter
         /// @brief Default destructor.
         virtual     ~GunnsElectUserLoad();
         /// @brief Loads the derived class config & input data.
-        virtual void          initialize(GunnsNetworkSpotterConfigData* configData,
-                                         GunnsNetworkSpotterInputData*  inputData);
+        virtual void          initialize(const GunnsNetworkSpotterConfigData* configData,
+                                         const GunnsNetworkSpotterInputData*  inputData);
         /// @brief Initializes the derived class and its contained User Load.
         virtual void          initLoad() = 0;
         /// @brief Provides interface to the User Load contained in a derived class.
@@ -130,9 +130,9 @@ class GunnsElectUserLoad : public GunnsNetworkSpotter
         double mDutyCycleTimer;     /**< (s)                     Duty cycle elapsed time. */
         double mSupplyVoltage;      /**< (V)                     Voltage input from the power supply. */
         /// @brief Validates the supplied configuration data.
-        GunnsElectUserLoadConfigData* validateConfig(GunnsNetworkSpotterConfigData* config);
+        const GunnsElectUserLoadConfigData* validateConfig(const GunnsNetworkSpotterConfigData* config);
         /// @brief Validates the supplied input data.
-        GunnsElectUserLoadInputData*  validateInput (GunnsNetworkSpotterInputData* input);
+        const GunnsElectUserLoadInputData*  validateInput (const GunnsNetworkSpotterInputData* input);
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.

@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -421,7 +421,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check dB -> Power Ratio -> dB
     for (int i = 0; i < 1000; i++) {
         const double expectedDB = static_cast<double>(i) * 0.25;
-        const double expectedPR = pow(10, 0.1 * expectedDB);
+        const double expectedPR = std::pow(10, 0.1 * expectedDB);
         const double returnedPR = UnitConversion::convertDbToPr(expectedDB);
         const double convertPR  = UnitConversion::convert(UnitConversion::DB_TO_PR, expectedDB);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPR, returnedPR, tolerance);
@@ -435,7 +435,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check Watts -> dB Watts
     for (int i = 1; i < 1000; i++) {
         const double expectedW   = static_cast<double>(i) * 0.25;
-        const double expectedDBW = 10.0 * log10(expectedW);
+        const double expectedDBW = 10.0 * std::log10(expectedW);
         const double returnedDBW = UnitConversion::convertWToDbw(expectedW);
         const double convertDBW  = UnitConversion::convert(UnitConversion::W_TO_DBW, expectedW);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDBW, returnedDBW, tolerance);
@@ -451,7 +451,7 @@ void UtUnitConversion::testPowerConversion()
     /// - Check Power Ratio -> dB -> Power Ratio
     for (int i = 1; i < 1000; i++) {
         const double expectedPR = static_cast<double>(i) * 0.25;
-        const double expectedDB = 10.0 * log10(expectedPR);
+        const double expectedDB = 10.0 * std::log10(expectedPR);
         const double returnedDB = UnitConversion::convertPrToDb(expectedPR);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDB, returnedDB, tolerance);
         const double returnedPR = UnitConversion::convertDbToPr(returnedDB);
@@ -533,10 +533,6 @@ void UtUnitConversion::testCompareOld()
     const double TS_IN_PER_M          = 39.37007874;
     const double TS_FT_PER_M          = 3.280839895013;
     const double TS_M_PER_FT          = 0.3048;
-    const double TS_FT_PER_MI         = 5280.0;      // Mile
-    const double TS_MI_PER_FT         = 0.000189394;
-    const double TS_FT_PER_NMI        = 6076.115;    // International nautical mile
-    const double TS_NMI_PER_FT        = 0.000164579;
     const double TS_M_PER_KM          = 1000.0;
     const double TS_KM_PER_M          = 0.001;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_IN_PER_FT, UnitConversion::IN_PER_FT_UTIL, 1.0e-16);
@@ -676,9 +672,7 @@ void UtUnitConversion::testCompareOld()
     const double TS_RAD_PER_REV       = 6.28318531;
     const double TS_REV_PER_RAD       = 0.159154943;
     const double TS_RAD_PER_ARCSEC    = 4.84813681e-6;
-    const double TS_ARCSEC_PER_RAD    = 206264.806293699;
     const double TS_RAD_PER_ARCMIN    = 2.90888209e-4;
-    const double TS_ARCMIN_PER_RAD    = 3437.746766834;
     const double TS_PI                = 3.14159265358979323846;
     const double TS_TWO_PI            = 6.28318530717958647692;
     const double TS_SQRT_PI           = 1.77245385090551602729;
@@ -696,6 +690,7 @@ void UtUnitConversion::testCompareOld()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_MIL_PER_DEG, UnitConversion::MIL_PER_DEG, 1.0e-16);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_DEG_PER_MIL, UnitConversion::DEG_PER_MIL, 1.0e-16);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_REV, UnitConversion::RAD_PER_REV, 1.0e-08);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_REV_PER_RAD, UnitConversion::REV_PER_RAD, 1.0e-08);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_ARCSEC, UnitConversion::RAD_PER_ARCSEC, 1.0e-09);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_RAD_PER_ARCMIN, UnitConversion::RAD_PER_ARCMIN, 1.0e-12);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(TS_PI, UnitConversion::PI_UTIL, 1.0e-16);

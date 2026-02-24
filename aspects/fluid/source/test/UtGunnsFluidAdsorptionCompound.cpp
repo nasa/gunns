@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -339,7 +339,7 @@ void UtGunnsFluidAdsorptionCompound::testSorb()
         const double mdot = 1.0;
 
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
-                                  * tFractions[0] * mdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
+                                  * tFractions[0] * mdot * (1 - std::pow(std::max(0.1,tArticle->mFillFraction),
                                                                      MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;
@@ -361,7 +361,7 @@ void UtGunnsFluidAdsorptionCompound::testSorb()
         tArticle->mBreakthroughExp = 100.0;
 
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
-                                  * tFractions[0] * mdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
+                                  * tFractions[0] * mdot * (1 - std::pow(std::max(0.1,tArticle->mFillFraction),
                                                                      MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;
@@ -486,7 +486,7 @@ void UtGunnsFluidAdsorptionCompound::testSorbTc()
 
         const double expectedMdot = tArticle->mFluid->getTraceCompounds()->getMasses()[tArticle->mIndex];
         const double expectedRate = (tConfig.mEfficiencyCoeff0 + tConfig.mEfficiencyCoeff1 * tAvg)
-                                  * expectedMdot * (1 - pow(std::max(0.1,tArticle->mFillFraction),
+                                  * expectedMdot * (1 - std::pow(std::max(0.1,tArticle->mFillFraction),
                                                              MsMath::limitRange(1.0,tArticle->mBreakthroughExp,100.0)))
                                   * dependentH2O.mFillFraction * tArticle->mMalfEfficiencyValue;
         const double expectedMass = tArticle->mAdsorbedMass + expectedRate * dt;

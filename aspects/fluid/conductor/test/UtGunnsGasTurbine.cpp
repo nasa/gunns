@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -730,10 +730,8 @@ void UtGunnsGasTurbine::testUpdateState()
     tArticle->mPotentialVector[1] = tNodes[1].getContent()->getPressure();
 
     double expectedImpellerSpeed = tMotorSpeed / tDriveRatio; // 6000
-    double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
-    double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
-    double expectedCorrectedSpeed= expectedImpellerSpeed/sqrt(sourceTemp/tReferenceTemp); // 5893.04
+    double expectedCorrectedSpeed= expectedImpellerSpeed/std::sqrt(sourceTemp/tReferenceTemp); // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed;
 
     tArticle->updateState(tTimeStep);
@@ -770,7 +768,7 @@ void UtGunnsGasTurbine::testUpdateState()
     tArticle->mFlux = 1.0;
 
     CPPUNIT_ASSERT(tNodes[0].getOutflow()->getPressure()!= tNodes[0].getContent()->getPressure());
-    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!= 
+    CPPUNIT_ASSERT(tNodes[0].getOutflow()->getTemperature()!=
                                            tNodes[0].getContent()->getTemperature());
 
     tArticle->computeFlowRate();
@@ -778,7 +776,7 @@ void UtGunnsGasTurbine::testUpdateState()
             tNodes[0].getOutflow()->getPressure(), DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(std::max(DBL_EPSILON,tNodes[0].getOutflow()->getTemperature()),
             tNodes[0].getOutflow()->getTemperature(), DBL_EPSILON);
-           
+
     tNodes[1].getContent()->setTemperature(75);
     tNodes[1].getContent()->setPressure(20);
     tNodes[1].resetFlows();
@@ -786,8 +784,8 @@ void UtGunnsGasTurbine::testUpdateState()
     tNodes[1].getContent()->setPressure(100);
 
     CPPUNIT_ASSERT(tNodes[1].getOutflow()->getPressure()!= tNodes[1].getContent()->getPressure());
-    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!= 
-                                           tNodes[1].getContent()->getTemperature()); 
+    CPPUNIT_ASSERT(tNodes[1].getOutflow()->getTemperature()!=
+                                           tNodes[1].getContent()->getTemperature());
 
     tArticle->computeFlowRate();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(std::max(DBL_EPSILON,tNodes[1].getOutflow()->getPressure()),
@@ -828,10 +826,8 @@ void UtGunnsGasTurbine::testUpdateFluid()
 
     /// - Source pressure converted from kPa to Pa to relate power in Watts.
     double expectedImpellerSpeed = tMotorSpeed / tDriveRatio; // 6000
-    double sourceDensity         = tNodes[0].getOutflow()->getDensity();
     double sourceTemp            = tNodes[0].getOutflow()->getTemperature(); // 283
-    double sourcePress           = tNodes[0].getOutflow()->getPressure(); // 150
-    double expectedCorrectedSpeed= expectedImpellerSpeed / sqrt(sourceTemp / tReferenceTemp) ; // 5893.04
+    double expectedCorrectedSpeed= expectedImpellerSpeed / std::sqrt(sourceTemp / tReferenceTemp) ; // 5893.04
     tArticle->mCorrectedSpeedHigh   = expectedCorrectedSpeed ;
 
     double expectedPressDrop  = -43.31437 ;

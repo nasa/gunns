@@ -1,4 +1,7 @@
 /************************** TRICK HEADER **********************************************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
 ***************************************************************************************************/
@@ -80,7 +83,7 @@ void QuotientFit::init(const double a,
     mInitFlag = false;
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
-    TS_GENERIC_IF_ERREX((mMinX < FLT_EPSILON && -FLT_EPSILON < mMaxX), TsInitializationException,
+    TS_GENERIC_IF_ERREX((mMinX < static_cast<double>(FLT_EPSILON) && -static_cast<double>(FLT_EPSILON) < mMaxX), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
 
     /// - Initialize the coefficient with validated value.

@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_FLUID_UTILS    Utilities Unit Tests
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Utilities.
@@ -82,7 +82,6 @@ class UtGunnsFluidUtils : public CppUnit::TestFixture
         GunnsFluidTraceCompoundsConfigData* mFluidTcConfig1;  /**< (--) Pointer to Fluid 1 trace compounds config data. */
         PolyFluidConfigData*                mFluidConfig1;    /**< (--) Pointer to Fluid 1 config data. */
         PolyFluidConfigData*                mFluidConfig2;    /**< (--) Pointer to Fluid 2 config data. */
-        double*                             fractions;        /**< (--) Pointer to Fluid Fractions. */
         PolyFluidInputData*                 mFluidInput1;     /**< (--) Pointer to Fluid 1 input data. */
         PolyFluidInputData*                 mFluidInput2;     /**< (--) Pointer to Fluid 2 input data. */
         PolyFluidInputData*                 mFluidInput3;     /**< (--) Pointer to Fluid 3 input data. */

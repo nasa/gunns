@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_ORCHESTRATOR  GUNNS Orchestrator
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -117,11 +117,15 @@ class Gunns
 
         /// @brief Enumeration of the island modes.
         //TODO maybe also have a mode where islands are pre-determined & fixed or supplied external
+// pragma added to suppress warining about OFF shadowing Trick's Flag of the same name.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
         enum IslandMode {
             OFF     = 0, ///< Islands are not found or used in the solver.
             FIND    = 1, ///< Islands are determined & output to nodes but not used in solver.
             SOLVE   = 2  ///< Islands are decomposed separately by building new island admittance matrices.
         };
+#pragma GCC diagnostic pop
 
         /// @brief Enumeration of the valid run modes.
         enum RunMode {
@@ -712,7 +716,7 @@ inline int Gunns::getLinkResetStepFailCount() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @return int -- Returns the decomposition count.
 ///
-/// @details  This method gets the number of admittance matrix decompopsitions.
+/// @details  This method gets the number of admittance matrix decompositions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline int Gunns::getDecompositionCount() const
 {

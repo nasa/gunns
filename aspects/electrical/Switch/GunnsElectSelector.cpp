@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Selector Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -302,7 +302,7 @@ void GunnsElectSelector::buildAdmittance()
     }
 
     /// - Assemble the admittance matrix.
-    if (fabs(mAdmittanceMatrix[0] - mSystemAdmittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemAdmittance) > 0.0) {
         mAdmittanceMatrix[0]                   =  mSystemAdmittance;
         mAdmittanceMatrix[port]                = -mSystemAdmittance;
         mAdmittanceMatrix[port*mNumPorts]      = -mSystemAdmittance;
@@ -333,7 +333,7 @@ void GunnsElectSelector::computeFlux()
 {
     const int    port = getConnectedPort();
     const double hiP  = std::max(mPotentialVector[0], mPotentialVector[port]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most false quantity leak due to rounding
         ///   error in the solver.
         mFlux = 0.0;

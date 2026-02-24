@@ -1,4 +1,7 @@
 /************************** TRICK HEADER **********************************************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
  **************************************************************************************************/
@@ -29,7 +32,7 @@ TsBilinearInterpolator::TsBilinearInterpolator()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.
@@ -99,7 +102,7 @@ void TsBilinearInterpolator::cleanup()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]    x     (--) Independent variable array x.
-/// @param[in]    y     (--) Independent varibale array y.
+/// @param[in]    y     (--) Independent variable array y.
 /// @param[in]    z     (--) Dependent multidimensional variable array.
 /// @param[in]    m     (--) Size of x variable array.
 /// @param[in]    n     (--) Size of y variable array.
@@ -157,7 +160,7 @@ void TsBilinearInterpolator::init(const double* x,    const double* y, const dou
         TS_GENERIC_IF_ERREX((x[i] <= x[i + 1]) && (x[i + 2] <= x[i + 1]), TsInitializationException,
                             "Invalid Input Argument", "first independent variable (x) array not strictly ordered.");
         /// - Throw an exception if the difference between first independent variable (x) array values aren't large enough.
-        TS_GENERIC_IF_ERREX(((fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
+        TS_GENERIC_IF_ERREX(((std::fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
                             "Invalid Input Argument", "difference between first independent variable (x) array values not large enough.");
     }
 
@@ -169,7 +172,7 @@ void TsBilinearInterpolator::init(const double* x,    const double* y, const dou
         TS_GENERIC_IF_ERREX((y[i] <= y[i + 1]) && (y[i + 2] <= y[i + 1]), TsInitializationException,
                             "Invalid Input Argument", "second independent variable (x) array not strictly ordered.");
         /// - Throw an exception if the difference between second independent variable (y) array values aren't large enough.
-        TS_GENERIC_IF_ERREX(((fabs(y[i]-y[i+1]) < DBL_EPSILON)), TsInitializationException,
+        TS_GENERIC_IF_ERREX(((std::fabs(y[i]-y[i+1]) < DBL_EPSILON)), TsInitializationException,
                             "Invalid Input Argument", "difference between second independent variable (y) array values not large enough.");
     }
 
@@ -319,4 +322,3 @@ inline double TsBilinearInterpolator::evaluate(const double x, const double y)
     const double Z2      = ((mX[mI+1] - x) * mZ[mI][mJ+1] + (x - mX[mI]) * mZ[mI+1][mJ+1]);
     return (Z1 * (mY[mJ+1] - y) + Z2 * (y - mY[mJ])) * XDifInv / (mY[mJ+1] - mY[mJ]);
 }
-

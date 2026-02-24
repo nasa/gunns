@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_FLUID_SOURCE_ADSORBER  Adsorber Model
 @ingroup   TSM_GUNNS_FLUID_SOURCE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -182,7 +182,7 @@ class GunnsFluidAdsorber : public GunnsFluidConductor
         /// @brief Virtual method for derived links to perform their restart functions.
         virtual void restartModel();
         /// @brief    Update for adsorbtion.
-        virtual void adsorb(const double dt, const double rate, const double efficiency);
+        virtual void adsorb(const double dt, const double rate, const double availability_efficiency);
         /// @brief    Update for desorbtion.
         virtual void desorb(const double dt, const double rate, const double efficiency);
         /// @brief    Updates the fluid temperature.

@@ -56,7 +56,7 @@ class DrawElectConfigData
 {
     public:
         // Solver configuration data
-        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */ 
+        GunnsConfigData netSolver;    /**< (--) trick_chkpnt_io(**) Network solver config data. */
         // Spotters configuration data
         GunnsSensorAnalogWrapperConfigData converterSenseVout;    /**< (--) trick_chkpnt_io(**) converterSenseVout config data. */
         GunnsSensorAnalogWrapperConfigData converterSenseIout;    /**< (--) trick_chkpnt_io(**) converterSenseIout config data. */
@@ -190,6 +190,6 @@ class DrawElect : public GunnsNetworkBase
         DrawElect& operator =(const DrawElect&);
 };
 
-/// @}  
+/// @}
 
 #endif

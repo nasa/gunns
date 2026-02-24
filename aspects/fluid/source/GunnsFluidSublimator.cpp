@@ -1,5 +1,5 @@
 /************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -441,7 +441,7 @@ void GunnsFluidSublimator::step(const double dt)
         ///   flow to port 1 node.  Use only the port 0 density, not average, as breakthrough water
         ///   is not boiling and would keep its liquid density across the plate.
         mSystemConductance += plateConductivity
-                * sqrt(UnitConversion::PA_PER_KPA * mNodes[0]->getContent()->getDensity() / dP)
+                * std::sqrt(UnitConversion::PA_PER_KPA * mNodes[0]->getContent()->getDensity() / dP)
                 / feedMWeight;
         /// - Sublimation and feed bias rates are created by adding their converted rates to the
         ///   link admittance.
@@ -495,7 +495,7 @@ void GunnsFluidSublimator::step(const double dt)
     }
 
     /// - Build the link admittance matrix to create feed water flow from port 0 to ground.
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   = mSystemConductance;
         mAdmittanceMatrix[1]   = 0.0;
         mAdmittanceMatrix[2]   = 0.0;

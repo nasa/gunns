@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Basic Capacitor Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -265,7 +265,7 @@ void GunnsBasicCapacitor::buildCapacitance(const double dt)
     }
 
     /// - Build the system admittance matrix contribution.
-    if (fabs(mAdmittanceMatrix[0] -  admittance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] -  admittance) > 0.0) {
         mAdmittanceMatrix[0] =  admittance;
         mAdmittanceMatrix[1] = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2] = -mAdmittanceMatrix[0];

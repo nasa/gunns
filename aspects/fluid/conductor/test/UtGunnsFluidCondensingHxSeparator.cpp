@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -421,7 +421,7 @@ void UtGunnsFluidCondensingHxSeparator::testInitialization ()
     /// @test    Nominal attributes derived from configuration data.
     const double expectedFlowCoeff  = tSlurperFlowRateRef  / tWsReferenceSpeed;
     const double expectedPowerCoeff = tWsReferencePressure / tWsReferenceSpeed
-                                    / pow(tWsMaxCondensate, tWsMassExponent);
+                                    / std::pow(tWsMaxCondensate, tWsMassExponent);
     const double expectedTorqueFact = tWsReferenceTorque   / tWsReferenceSpeed;
     CPPUNIT_ASSERT(expectedFlowCoeff   == tArticle->mSlurperFlowFactor);
     CPPUNIT_ASSERT(expectedPowerCoeff  == tArticle->mWsPowerCurveCoeff);
@@ -671,7 +671,7 @@ void UtGunnsFluidCondensingHxSeparator::testHxFlow()
 
     /// - Define test case expected outputs
     const double caseQtotal[numTests]    = {3053.0,    3340.0,    4403.0,    3545.0,     843.0,   -1435.8,    4704.0,    2205.0,    4000.0,   -2156.3,    4050.0,    15575.0,   15150.0};
-    const double caseQlatent[numTests]   = { 999.0,     998.0,     155.0,     999.0,     155.0,    0.0,       0.0,       1141.0,    1275.0,   -720.6,     2000.0,    13500.0,   13225.0};
+    //const double caseQlatent[numTests]   = { 999.0,     998.0,     155.0,     999.0,     155.0,    0.0,       0.0,       1141.0,    1275.0,   -720.6,     2000.0,    13500.0,   13225.0};
     const double caseQsensible[numTests] = {2054.0,    2342.0,    4248.0,    2546.0,     688.0,   -1435.8,    4704.0,    1064.0,    2725.0,   -1435.7,    2050.0,    2075.0,    1925.0};
     const double caseCondense[numTests]  = {4.019e-4,  4.019e-4,  6.3e-5,    4.019e-4,  6.3e-5,    0.0,       0.0,       4.6e-4,    5.5e-4,   -2.94e-4,   7.6729e-4, 5.737E-3,  5.62E-3};
     const double caseExitT[numTests]     = {280.20556, 280.42778, 280.92778, 279.87222, 279.15,    306.6,     250.0,     280.0,     279.04772, 306.6,     273.4,     285.5,     295.5};
@@ -724,13 +724,13 @@ void UtGunnsFluidCondensingHxSeparator::testHxFlow()
         /// - Verify test case results.
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseQtotal[test],
                                      article->mTotalHeat,
-                                     fabs(caseQtotal[test]) * 0.1);
+                                     std::fabs(caseQtotal[test]) * 0.1);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseQsensible[test],
                                      article->mSensibleHeat,
-                                     fabs(caseQsensible[test]) * 0.1);
+                                     std::fabs(caseQsensible[test]) * 0.1);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseCondense[test],
                                      article->mCondensationRate,
-                                     fabs(caseCondense[test]) * 0.5);
+                                     std::fabs(caseCondense[test]) * 0.5);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(caseExitT[test],
                                      article->mInternalFluid->getTemperature(),
                                      1.5);
@@ -942,8 +942,8 @@ void UtGunnsFluidCondensingHxSeparator::testWaterSeparator()
                             - tNodes[0].getOutflow()->getPartialPressure(FluidProperties::GUNNS_H2O));
     double expectedCondMass = 0.01 + tTimeStep * (0.0001 - expectedEvapRate - 0.0004);
     const double expectedPowerCoeff = tWsReferencePressure / tWsReferenceSpeed
-                                    / pow(tWsMaxCondensate, tWsMassExponent);
-    double expectedDeltaP   = expectedPowerCoeff * 6000.0 * pow(expectedCondMass, tWsMassExponent);
+                                    / std::pow(tWsMaxCondensate, tWsMassExponent);
+    double expectedDeltaP   = expectedPowerCoeff * 6000.0 * std::pow(expectedCondMass, tWsMassExponent);
     bool   expectedOverflow = false;
 
     tArticle->updateWaterSeparator(tTimeStep);

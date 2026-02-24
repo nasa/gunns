@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -607,7 +607,7 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowIn()
 
     CPPUNIT_ASSERT(0.0 < tModel->mFlowRate);
     CPPUNIT_ASSERT(prevBellowsPosition < newBellowsPosition);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mFlowRate), tNodes[0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mFlowRate), tNodes[0].getOutflux(), tTolerance);
 
     const double expectedSpringP = newBellowsPosition * newBellowsPosition * tSpringCoeff2
                                  + newBellowsPosition * tSpringCoeff1 + tSpringCoeff0;
@@ -646,7 +646,7 @@ void UtGunnsFluidAccum::testComputeFlowsNomFlowOut()
 
     CPPUNIT_ASSERT(0.0 > tModel->mFlowRate);
     CPPUNIT_ASSERT(prevBellowsPosition > tModel->mBellowsPosition);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(fabs(tModel->mFlowRate), tNodes[0].getInflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(std::fabs(tModel->mFlowRate), tNodes[0].getInflux(), tTolerance);
 
     UT_PASS;
 }
@@ -1520,8 +1520,6 @@ void UtGunnsFluidAccum::testMalfStickBellowsToPos()
     tInputData->mLiquidFluidInputData->mPressure = 200.0;
     tModel->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
-    double prevBellowsPosition = tModel->mBellowsPosition;
-
     tNodes[0].setPotential(200.1);
     tNodes[0].getContent()->setPressure(200.1);
 
@@ -1598,8 +1596,6 @@ void UtGunnsFluidAccum::testHoldFlags()
     tModel->mHoldAccumFlag = false;
     tModel->mHoldTemperatureFlag = true;
     tModel->mLiquidHousingQ = 1.0;
-
-    double prevTemperature = tModel->mInternalFluid->getTemperature();
 
     tModel->step(tTimeStep);
     tModel->computeFlows(tTimeStep);

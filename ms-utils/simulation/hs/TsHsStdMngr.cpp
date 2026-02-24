@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -336,7 +336,7 @@ void TsHsStdMngr::inputOutputThread()
 
     // The loop variable is kept true until shutdown. Then it's used to terminate the thread. Trick will
     // not restart an asynchronous thread that terminates during shutdown.
-    
+
     // We let the loop terminate if there is no work to do. Trick will restart it. We do this in hopes that
     // the free up some cpu cycles for other jobs, otherwise we'd spin and burn-up everything.
     while (mUseHelperThread && !mMsgQueue.isEmpty())

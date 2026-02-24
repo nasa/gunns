@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -25,7 +25,7 @@ PROGRAMMERS:
 */
 
 #include <cfloat>
-#include <math.h>
+#include <cmath>
 #include "core/GunnsFluidUtils.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
@@ -223,7 +223,7 @@ void GunnsFluidHatch::initialize(const GunnsFluidHatchConfigData& configData,
 void GunnsFluidHatch::validate() const
 {
     /// - Throw an exception if distance between port node centers < FLT_EPSILON.
-    if (mLength0 + mLength1 < FLT_EPSILON) {
+    if (mLength0 + mLength1 < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Distance between node volume centers < FLT_EPSILON.");
     }
@@ -264,8 +264,8 @@ void GunnsFluidHatch::updateFluid(const double dt, const double flowrate __attri
                             and (mNodes[1]->getVolume() > 0.0) ) {
 
         /// - Diffusion calculation is only valid when delta pressure and delta temperature are close to 0.0.
-        const double deltaTemperature = fabs(mNodes[0]->getOutflow()->getTemperature() - mNodes[1]->getOutflow()->getTemperature());
-        if (fabs(mPotentialDrop) < GunnsFluidHatch::DIFFUSION_DELTA_PRESS_LIMIT
+        const double deltaTemperature = std::fabs(mNodes[0]->getOutflow()->getTemperature() - mNodes[1]->getOutflow()->getTemperature());
+        if (std::fabs(mPotentialDrop) < GunnsFluidHatch::DIFFUSION_DELTA_PRESS_LIMIT
             and deltaTemperature < GunnsFluidHatch::DIFFUSION_DELTA_TEMP_LIMIT) {
 
             /// - Compute diffusive mass flux across hatch and update diffusive fluid and flow rate.

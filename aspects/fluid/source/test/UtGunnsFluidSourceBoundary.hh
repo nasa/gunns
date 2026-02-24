@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_GUNNS_FLUID_SOURCE_BOUNDARY    Gunns Fluid Source Boundary Unit Test
 /// @ingroup  UT_TSM_GUNNS_FLUID_SOURCE
 ///
-/// @copyright Copyright 2021 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Gunns Fluid Source Boundary
@@ -70,6 +70,7 @@ class UtGunnsFluidSourceBoundary: public CppUnit::TestFixture
         CPPUNIT_TEST(testComputeFlowsZeroFlow);
         CPPUNIT_TEST(testComputeFlowsZeroDensity);
         CPPUNIT_TEST(testComputeFlowsTcOnly);
+        CPPUNIT_TEST(testComputeFlowsOverride);
         CPPUNIT_TEST_SUITE_END();
 
         GunnsFluidSourceBoundaryConfigData* tConfigData;         /**< (--)   Nominal config data. */
@@ -117,6 +118,7 @@ class UtGunnsFluidSourceBoundary: public CppUnit::TestFixture
         void testComputeFlowsZeroFlow();
         void testComputeFlowsZeroDensity();
         void testComputeFlowsTcOnly();
+        void testComputeFlowsOverride();
 };
 
 ///@}

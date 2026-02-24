@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -87,7 +87,7 @@ void UtGunnsFluidSeparatorGas::setUp()
                                                                    tReferencePressure,
                                                                    tReferenceRemovalRate);
     tPowerCurveCoefficient  = tReferencePressure / tReferenceSpeed
-                            / pow(tMaxLiquidMass, tMassExponent);
+                            / std::pow(tMaxLiquidMass, tMassExponent);
 
     /// - Define the nominal input data.
     tMalfBlockageFlag       = false;
@@ -129,7 +129,7 @@ void UtGunnsFluidSeparatorGas::setUp()
     tNodes[1].initialize("UtNode2", tFluidConfig);
     tNodes[0].getContent()->initialize(*tFluidConfig, *tFluidInput0);
     tNodes[1].getContent()->initialize(*tFluidConfig, *tFluidInput1);
-    
+
     tNodes[0].resetFlows();
     tNodes[1].resetFlows();
 
@@ -320,13 +320,13 @@ void UtGunnsFluidSeparatorGas::testNominalInitialization()
     tArticle->mSeparationRate   = 1.0;
 
     tArticle->restartModel();
-    
+
     CPPUNIT_ASSERT(0.0 == tArticle->mLiquidMassError);
     CPPUNIT_ASSERT(0.0 == tArticle->mLiquidDeltaP);
     CPPUNIT_ASSERT(0.0 == tArticle->mRelativeHumidity);
     CPPUNIT_ASSERT(0.0 == tArticle->mSeparationRate);
-    
-    UT_PASS;    
+
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,9 +389,8 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidEmpty()
     const double expectedMass     = 0.0;
     const double expectedMassErr  = tTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = 0.0;
-    const double expectedSource   = 0.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMassErr,  tArticle->mLiquidMassError,  DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,   tArticle->mLiquidDeltaP,     DBL_EPSILON);
@@ -421,7 +420,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidNoGas()
     const double expectedSepRate = 0.0;
     const double expectedMass    = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP  = tPowerCurveCoefficient * tSeparatorSpeed
-                                 * pow(expectedMass, tMassExponent);
+                                 * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate, tArticle->mSeparationRate, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,    tArticle->mLiquidMass,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,  tArticle->mLiquidDeltaP,   DBL_EPSILON);
@@ -452,7 +451,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidZeroTimeStep()
     const double expectedSepRate = 0.0;
     const double expectedMass    = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP  = tPowerCurveCoefficient * tSeparatorSpeed
-                                 * pow(expectedMass, tMassExponent);
+                                 * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate, tArticle->mSeparationRate, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,    tArticle->mLiquidMass,     DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,  tArticle->mLiquidDeltaP,   DBL_EPSILON);
@@ -484,15 +483,15 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidFull()
     const double expectedSepRate  = tTransferFlowRate;
     const double expectedMass     = tMaxLiquidMass;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,   tArticle->mLiquidDeltaP,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(true == tArticle->mLiquidOverflow);
 
     UT_PASS;
@@ -517,7 +516,7 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidDryAir()
     const double expectedSepRate  = 0.0;
     const double expectedMass     = tLiquidMass - tTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
@@ -552,15 +551,15 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidNominal()
     const double expectedSepRate  = expectedCondense / tTimeStep;
     const double expectedMass     = 1.0 + expectedCondense - tArticle->mTransferFlowRate * tTimeStep;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,   tArticle->mLiquidDeltaP,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(false == tArticle->mLiquidOverflow);
 
     UT_PASS;
@@ -584,8 +583,8 @@ void UtGunnsFluidSeparatorGas::testProcessOutputs()
     const double expectedXferP = tNodes[0].getPotential() + 0.01;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getContent()->getTemperature(),
-                                 tArticle->mTransferTemperature, FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXferP, tArticle->mTransferPressure, FLT_EPSILON);
+                                 tArticle->mTransferTemperature, static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedXferP, tArticle->mTransferPressure, static_cast<double>(FLT_EPSILON));
 
     UT_PASS;
 }
@@ -625,15 +624,15 @@ void UtGunnsFluidSeparatorGas::testUpdateFluidReverseFlow()
     const double expectedSepRate  = expectedCondense / tTimeStep;
     const double expectedMass     = 1.0 + expectedCondense;
     const double expectedDeltaP   = tPowerCurveCoefficient * tSeparatorSpeed
-                                  * pow(expectedMass, tMassExponent);
+                                  * std::pow(expectedMass, tMassExponent);
     const double expectedSource   = expectedSepRate / 18.0153;     // MW of H2O
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHumidity, tArticle->mRelativeHumidity, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSepRate,  tArticle->mSeparationRate,   static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tArticle->mLiquidMass,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDeltaP,   tArticle->mLiquidDeltaP,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       FLT_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,              tArticle->mSourceVector[0],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSource,  tArticle->mSourceVector[1],  static_cast<double>(FLT_EPSILON));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedSepRate, tNodes[1].getInflux(),       static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT(false == tArticle->mLiquidOverflow);
 
     UT_PASS;
@@ -659,12 +658,12 @@ void UtGunnsFluidSeparatorGas::testInitializationExceptions()
     tConfigData->mGasType = tGasType;
 
     /// @test    Initialization exception on invalid config data: mass exponent < 0.1.
-    tConfigData->mMassExponent = 0.1 - FLT_EPSILON;
+    tConfigData->mMassExponent = 0.1 - static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
 
     /// @test    Initialization exception on invalid config data: mass exponent > 10.0.
-    tConfigData->mMassExponent = 10.0 + FLT_EPSILON;
+    tConfigData->mMassExponent = 10.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tConfigData->mMassExponent = tMassExponent;
@@ -695,25 +694,25 @@ void UtGunnsFluidSeparatorGas::testInitializationExceptions()
     tConfigData->mReferenceRemovalRate = tReferenceRemovalRate;
 
     /// @test    Initialization exception on invalid input data: mBlockage < 0.
-    tInputData->mMalfBlockageValue = -FLT_EPSILON;
+    tInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mMalfBlockageValue = tMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mBlockage > 1.
-    tInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    tInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mMalfBlockageValue = tMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: separator speed < 0.
-    tInputData->mSeparatorSpeed = -FLT_EPSILON;
+    tInputData->mSeparatorSpeed = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mSeparatorSpeed = tSeparatorSpeed;
 
     /// @test    Initialization exception on invalid input data: mass of liquid in separator < 0.
-    tInputData->mLiquidMass = -FLT_EPSILON;
+    tInputData->mLiquidMass = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
     tInputData->mLiquidMass = tLiquidMass;

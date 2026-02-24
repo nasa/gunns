@@ -2,13 +2,13 @@
 #define GunnsElectPvString_EXISTS
 
 /**
-@file
+@file     GunnsElectPvString.hh
 @brief    GUNNS Electrical Photovoltaic String Model declarations
 
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_STRING    Photovoltaic String Model
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -42,60 +42,107 @@ PROGRAMMERS:
 class GunnsElectPvCellConfigData
 {
     public:
-        double mSurfaceArea;             /**< (m2)  trick_chkpnt_io(**) Surface area of one side. */
-        double mEfficiency;              /**< (--)  trick_chkpnt_io(**) Photovoltaic efficiency (0-1). */
-        double mSeriesResistance;        /**< (ohm) trick_chkpnt_io(**) Series resistance. */
-        double mShuntResistance;         /**< (ohm) trick_chkpnt_io(**) Shunt resistance. */
-        double mOpenCircuitVoltage;      /**< (V)   trick_chkpnt_io(**) Open-circuit voltage. */
-        double mRefTemperature;          /**< (K)   trick_chkpnt_io(**) Reference temperature for temperature effects. */
-        double mTemperatureVoltageCoeff; /**< (1/K) trick_chkpnt_io(**) Coefficient for temperature effect on open-circuit voltage. */
-        double mTemperatureCurrentCoeff; /**< (1/K) trick_chkpnt_io(**) Coefficient for temperature effect on source current. */
+        double mSurfaceArea;             /**< (m2)   trick_chkpnt_io(**) Surface area of one side. */
+        double mEfficiency;              /**< (1)    trick_chkpnt_io(**) Photovoltaic efficiency (0-1). */
+        double mSeriesResistance;        /**< (ohm)  trick_chkpnt_io(**) Series resistance. */
+        double mShuntResistance;         /**< (ohm)  trick_chkpnt_io(**) Shunt resistance. */
+        double mOpenCircuitVoltage;      /**< (V)    trick_chkpnt_io(**) Open-circuit voltage. */
+        double mRefTemperature;          /**< (K)    trick_chkpnt_io(**) Reference temperature for temperature effects. */
+        double mTemperatureVoltageCoeff; /**< (1/K)  trick_chkpnt_io(**) Coefficient for temperature effect on open-circuit voltage. */
+        double mTemperatureCurrentCoeff; /**< (1/K)  trick_chkpnt_io(**) Coefficient for temperature effect on source current. */
+        double mShortCircuitCurrent;     /**< (amp)  trick_chkpnt_io(**) Short-circuit current. */
+        double mMppVoltage;              /**< (V)    trick_chkpnt_io(**) Voltage at the maximum power point. */
+        double mMppCurrent;              /**< (amp)  trick_chkpnt_io(**) Current at the maximum power point. */
+        double mPhotoFlux;               /**< (W/m2) trick_chkpnt_io(**) Absorbed photo power flux incident on the string. */
+        double mIdeality;                /**< (1)    trick_chkpnt_io(**) Diode ideality constant. */
         /// @brief Default constructs this Photovoltaic Cell config data.
-        GunnsElectPvCellConfigData(const double cellSurfaceArea             = 0.0,
-                                   const double cellEfficiency              = 0.0,
-                                   const double cellSeriesResistance        = 0.0,
-                                   const double cellShuntResistance         = 0.0,
-                                   const double cellOpenCircuitVoltage      = 0.0,
-                                   const double cellRefTemperature          = 0.0,
-                                   const double cellTemperatureVoltageCoeff = 0.0,
-                                   const double cellTemperatureCurrentCoeff = 0.0);
+        GunnsElectPvCellConfigData();
+        /// @brief Constructs this Photovoltaic Cell config data for an original version cell model.
+        GunnsElectPvCellConfigData(const double cellSurfaceArea,
+                                   const double cellEfficiency,
+                                   const double cellSeriesResistance,
+                                   const double cellShuntResistance,
+                                   const double cellOpenCircuitVoltage,
+                                   const double cellRefTemperature,
+                                   const double cellTemperatureVoltageCoeff,
+                                   const double cellTemperatureCurrentCoeff);
+        /// @brief Constructs this Photovoltaic Cell config data for a version 2 cell model.
+        GunnsElectPvCellConfigData(const double voc,
+                                   const double isc,
+                                   const double vmp,
+                                   const double imp,
+                                   const double photoFlux,
+                                   const double temperature,
+                                   const double coeffDVocDT,
+                                   const double coeffDIscDT,
+                                   const double ideality,
+                                   const double cellArea);
         /// @brief Default destructs this Photovoltaic Cell config data.
         virtual ~GunnsElectPvCellConfigData();
         /// @brief Assignment operator for this Photovoltaic Cell config data.
         GunnsElectPvCellConfigData& operator =(const GunnsElectPvCellConfigData& that);
+        /// @brief Returns whether this is for a version 2 Photovoltaic Cell model.
+        bool isVersion2() const;
 
     private:
+        bool mIsVersion2; /**< (1) True if this is for a version 2 cell model. */
         /// @brief Copy constructor unavailable since declared private and not implemented.
         GunnsElectPvCellConfigData(const GunnsElectPvCellConfigData& that);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief    GUNNS Photovoltaic Cell Equivalent Circuit Properties.
+/// @brief    GUNNS Photovoltaic Cell Equivalent Circuit Model.
 ///
-/// @details  This provides a data structure for the properties of an equivalent circuit of a PV
-///           cell consisting of a current source, shunt diode and resistor, and series diode and
-///           resistor.
+/// @details  This is a single-diode equivalent circuit model of a PV cell for use by the
+///           Photovoltaic Cell model.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class GunnsElectPvCellEquivProps
+class GunnsElectPvCellEquivCircuit
 {
     public:
-        double mSourceCurrent;     /**< (amp) Photovoltaic source current before shunt & series losses. */
-        double mShuntVoltageDrop;  /**< (V)   Shunt voltage drop in reverse bias. */
-        double mShuntResistance;   /**< (ohm) Shunt resistance in reverse bias. */
-        double mSeriesVoltageDrop; /**< (V)   Series voltage drop in forward bias. */
-        double mSeriesResistance;  /**< (ohm) Series resistance in forward bias. */
+        double mIL;          /**< (amp)  trick_chkpnt_io(**) Photovoltaic source current before shunt & series losses. */
+        double mRsh;         /**< (ohm)  trick_chkpnt_io(**) Shunt resistance in reverse bias. */
+        double mRs;          /**< (ohm)  trick_chkpnt_io(**) Series resistance in forward bias. */
+        double mNVt;         /**< (V)    trick_chkpnt_io(**) Product of diode ideality and thermal voltage. */
+        double mI0;          /**< (amp)  trick_chkpnt_io(**) Characteristic diode reverse saturation current. */
+        double mFillFactor;  /**< (1)    trick_chkpnt_io(**) Fill factor. */
+        double mEfficiency;  /**< (1)    trick_chkpnt_io(**) Maximum efficiency. */
+        double mVoc;         /**< (V)    trick_chkpnt_io(**) Open-circuit voltage. */
+        double mIsc;         /**< (amp)  trick_chkpnt_io(**) Short-circuit current. */
+        double mVmp;         /**< (V)    trick_chkpnt_io(**) Voltage at the maximum power point. */
+        double mImp;         /**< (amp)  trick_chkpnt_io(**) Current at the maximum power point. */
+        double mPhotoFlux;   /**< (W/m2) trick_chkpnt_io(**) Absorbed photo power flux incident on the string. */
+        double mIdeality;    /**< (1)    trick_chkpnt_io(**) Diode ideality constant. */
+        double mTemperature; /**< (K)    trick_chkpnt_io(**) Temperature. */
+        double mCoeffDVocDT; /**< (1/K)  trick_chkpnt_io(**) Coefficient for temperature effect on open-circuit voltage. */
+        double mCoeffDIscDT; /**< (1/K)  trick_chkpnt_io(**) Coefficient for temperature effect on source current. */
+        double mSurfaceArea; /**< (m2)   trick_chkpnt_io(**) Surface area of one side. */
+        static const double mBoltzmannOverCharge; /**< (V/K) trick_chkpnt_io(**) Ratio of Boltzmann constant over electron charge constant. */
         /// @brief Default constructs this Photovoltaic Cell Equivalent Circuit Properties.
-        GunnsElectPvCellEquivProps();
+        GunnsElectPvCellEquivCircuit();
         /// @brief Default destructs this Photovoltaic Cell Equivalent Circuit Properties.
-        virtual ~GunnsElectPvCellEquivProps();
+        virtual ~GunnsElectPvCellEquivCircuit();
+        /// @brief Assignment operator for this Photovoltaic Cell Equivalent Circuit Properties.
+        GunnsElectPvCellEquivCircuit& operator =(const GunnsElectPvCellEquivCircuit& that);
         /// @brief Zeroes the attributes of this Photovoltaic Cell Equivalent Circuit Properties.
         void clear();
+        /// @brief Initializes this Photovoltaic Cell Equivalent Circuit Properties.
+        virtual void initialize(const GunnsElectPvCellConfigData* configData, const std::string& name);
+        /// @brief Updates this Photovoltaic Cell Equivalent Circuit Properties.
+        virtual void update(const GunnsElectPvCellEquivCircuit* refCell, const double temperature,
+                            const double photoFlux, const double degradation = 0.0);
+        /// @brief Computes remaining equivalent circuit properties after initialization or update.
+        virtual void derive();
+        /// @brief Returns the cell current at the given voltage.
+        virtual double computeCurrent(const double voltage) const;
+        /// @brief Returns the cell voltage at the given current.
+        virtual double computeVoltage(const double current) const;
+
+    protected:
+        std::string  mName; /**< (1) trick_chkpnt_io(**) Instance name for H&S messages. */
 
     private:
         /// @brief Copy constructor unavailable since declared private and not implemented.
-        GunnsElectPvCellEquivProps(const GunnsElectPvCellEquivProps& that);
-        /// @brief  Assignment operator unavailable since declared private and not implemented.
-        GunnsElectPvCellEquivProps& operator =(const GunnsElectPvCellEquivProps&);
+        GunnsElectPvCellEquivCircuit(const GunnsElectPvCellEquivCircuit& that);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,24 +179,41 @@ class GunnsElectPvLoadState
 class GunnsElectPvStringConfigData
 {
     public:
-        double                     mBlockingDiodeVoltageDrop; /**< (V)  trick_chkpnt_io(**) Voltage drop across the diode at end of string. */
-        double                     mBypassDiodeVoltageDrop;   /**< (V)  trick_chkpnt_io(**) Voltage drop across each bypass diode. */
-        unsigned int               mBypassDiodeInterval;      /**< (--) trick_chkpnt_io(**) Number of cells per bypass diode. */
-        unsigned int               mNumCells;                 /**< (--) trick_chkpnt_io(**) Number of cells in this string. */
-        GunnsElectPvCellConfigData mCellConfig;               /**< (--) trick_chkpnt_io(**) Config data for the cells. */
+        double                     mBlockingDiodeVoltageDrop; /**< (V) trick_chkpnt_io(**) Voltage drop across the diode at end of string. */
+        double                     mBypassDiodeVoltageDrop;   /**< (V) trick_chkpnt_io(**) Voltage drop across each bypass diode. */
+        unsigned int               mBypassDiodeInterval;      /**< (1) trick_chkpnt_io(**) Number of cells per bypass diode. */
+        unsigned int               mNumCells;                 /**< (1) trick_chkpnt_io(**) Number of cells in this string. */
+        GunnsElectPvCellConfigData mCellConfig;               /**< (1) trick_chkpnt_io(**) Config data for the cells. */
         /// @brief Default constructs this Photovoltaic String Model config data.
-        GunnsElectPvStringConfigData(const double       stringBlockingDiodeVoltageDrop = 0.0,
-                                     const double       stringBypassDiodeVoltageDrop   = 0.0,
-                                     const unsigned int stringBypassDiodeInterval      = 0,
-                                     const unsigned int stringNumCells                 = 0,
-                                     const double       cellSurfaceArea                = 0.0,
-                                     const double       cellEfficiency                 = 0.0,
-                                     const double       cellSeriesResistance           = 0.0,
-                                     const double       cellShuntResistance            = 0.0,
-                                     const double       cellOpenCircuitVoltage         = 0.0,
-                                     const double       cellRefTemperature             = 0.0,
-                                     const double       cellTemperatureVoltageCoeff    = 0.0,
-                                     const double       cellTemperatureCurrentCoeff    = 0.0);
+        GunnsElectPvStringConfigData();
+        /// @brief Constructs this Photovoltaic String Model config data for an original string model version.
+        GunnsElectPvStringConfigData(const double       stringBlockingDiodeVoltageDrop,
+                                     const double       stringBypassDiodeVoltageDrop,
+                                     const unsigned int stringBypassDiodeInterval,
+                                     const unsigned int stringNumCells,
+                                     const double       cellSurfaceArea,
+                                     const double       cellEfficiency,
+                                     const double       cellSeriesResistance,
+                                     const double       cellShuntResistance,
+                                     const double       cellOpenCircuitVoltage,
+                                     const double       cellRefTemperature,
+                                     const double       cellTemperatureVoltageCoeff,
+                                     const double       cellTemperatureCurrentCoeff);
+        /// @brief Constructs this Photovoltaic String Model config data for the version 2 string model.
+        GunnsElectPvStringConfigData(const double       stringBlockingDiodeVoltageDrop,
+                                     const double       stringBypassDiodeVoltageDrop,
+                                     const unsigned int stringBypassDiodeInterval,
+                                     const unsigned int stringNumCells,
+                                     const double       cellRefVoc,
+                                     const double       cellRefIsc,
+                                     const double       cellRefVmp,
+                                     const double       cellRefImp,
+                                     const double       cellRefPhotoFlux,
+                                     const double       cellRefTemperature,
+                                     const double       cellCoeffDVocDT,
+                                     const double       cellCoeffDIscDT,
+                                     const double       cellIdeality,
+                                     const double       cellArea);
         /// @brief Default destructs this Photovoltaic String Model config data.
         virtual ~GunnsElectPvStringConfigData();
         /// @brief Assignment operator for this Photovoltaic String Model config data.
@@ -169,15 +233,15 @@ class GunnsElectPvStringInputData
 {
     public:
         double mPhotoFlux;                /**< (W/m2) Photo power flux incident on the string. */
-        double mSourceExposedFraction;    /**< (--)   Surface area fraction exposed to light source (0-1). */
+        double mSourceExposedFraction;    /**< (1)    Surface area fraction exposed to light source (0-1). */
         double mTemperature;              /**< (K)    Temperature of the string. */
-        bool   mMalfPhotoFluxFlag;        /**< (--)   Photo power flux malfunction activation flag. */
+        bool   mMalfPhotoFluxFlag;        /**< (1)    Photo power flux malfunction activation flag. */
         double mMalfPhotoFluxMagnitude;   /**< (W/m2) Photo power flux malfunction magnitude. */
         double mMalfPhotoFluxDuration;    /**< (s)    Photo power flux malfunction total duration. */
         double mMalfPhotoFluxRampTime;    /**< (s)    Photo power flux malfunction ramp up/down duration. */
-        bool   mMalfExposedFractionFlag;  /**< (--)   Source exposed fraction malfunction activation flag. */
-        double mMalfExposedFractionValue; /**< (--)   Source exposed fraction malfunction value. */
-        bool   mMalfTemperatureFlag;      /**< (--)   Temperature malfunction activation flag. */
+        bool   mMalfExposedFractionFlag;  /**< (1)    Source exposed fraction malfunction activation flag. */
+        double mMalfExposedFractionValue; /**< (1)    Source exposed fraction malfunction value. */
+        bool   mMalfTemperatureFlag;      /**< (1)    Temperature malfunction activation flag. */
         double mMalfTemperatureValue;     /**< (K)    Temperature malfunction value. */
         /// @brief Default constructs this Photovoltaic String Model input data.
         GunnsElectPvStringInputData(const double stringPhotoFlux             = 0.0,
@@ -234,12 +298,12 @@ class GunnsElectPvString
         /// @name    Malfunction terms.
         /// @{
         /// @details Malfunction targets are public to allow access from the Trick events processor.
-        bool                       mMalfCellGroupFlag;   /**<    (--)                       Cell group failure malfunction activation flag. */
-        int                        mMalfCellGroupValue;  /**<    (--)                       Cell group failure malfunction number of failed groups. */
-        bool                       mMalfDegradeFlag;     /**<    (--)                       Cell group power degrade malfunction activation flag. */
-        double                     mMalfDegradeValue;    /**<    (--)                       Cell group power degrade malfunction value (0-1). */
+        bool                       mMalfCellGroupFlag;   /**<    (1)                     Cell group failure malfunction activation flag. */
+        int                        mMalfCellGroupValue;  /**<    (1)                     Cell group failure malfunction number of failed groups. */
+        bool                       mMalfDegradeFlag;     /**<    (1)                     Cell group power degrade malfunction activation flag. */
+        double                     mMalfDegradeValue;    /**<    (1)                     Cell group power degrade malfunction value (0-1). */
         /// @}
-        static const double        mIdealDiodeFactor;    /**< ** (--)   trick_chkpnt_io(**) Ideal diode conductance multiplier. */
+        static const double        mIdealDiodeFactor;    /**< ** (1) trick_chkpnt_io(**) Ideal diode conductance multiplier. */
         /// @brief Default constructor for this Photovoltaic String Utility.
         GunnsElectPvString();
         /// @brief Normal constructor for this Photovoltaic String Utility.
@@ -247,18 +311,18 @@ class GunnsElectPvString
                            const GunnsElectPvStringInputData*  inputData);
         /// @brief Destructs this Photovoltaic String Utility.
         virtual ~GunnsElectPvString();
-        /// @brief Iniitalizes this Photovoltaic String Utility.
-        void   initialize(const std::string& name);
+        /// @brief Initializes this Photovoltaic String Utility.
+        virtual void initialize(const std::string& name);
         /// @brief Updates this Photovoltaic String Utility state.
-        void   update();
+        virtual void update();
         /// @brief Loads the string at the given power output.
-        void   loadAtPower(const double power, const bool shortSide);
+        virtual void loadAtPower(const double power, const bool shortSide);
         /// @brief Loads the string at the given terminal voltage.
-        void   loadAtVoltage(const double v1);
+        virtual void loadAtVoltage(const double v1);
         /// @brief Loads the string at its Maximum Power Point.
         void   loadAtMpp();
         /// @brief Loads the string with the given conductive load.
-        void   loadAtConductance(const double g);
+        virtual void loadAtConductance(const double g);
         /// @brief Sets the string shunted flag;
         void   setShunted(const bool flag);
         /// @brief Gets the string shunted flag;
@@ -268,28 +332,31 @@ class GunnsElectPvString
         /// @brief Gets the short-circuit terminal current of this string.
         double getShortCircuitCurrent() const;
         /// @brief Returns a reference to this string's equivalent circuit properties.
-        const GunnsElectPvCellEquivProps& getEqProps() const;
+        const GunnsElectPvCellEquivCircuit& getEqProps() const;
         /// @brief Gets the Maximum Power Point state of this string.
         const GunnsElectPvLoadState& getMpp() const;
         /// @brief Gets the Terminal load state of this string.
         const GunnsElectPvLoadState& getTerminal() const;
         /// @brief Returns current output of the string at the given terminal voltage.
-        double predictCurrentAtVoltage(const double voltage) const;
+        virtual double predictCurrentAtVoltage(const double voltage) const;
 
     protected:
-        std::string                mName;                /**<    (--)   trick_chkpnt_io(**) Instance name for H&S messages. */
-        const GunnsElectPvStringConfigData* mConfig;     /**< ** (--)   trick_chkpnt_io(**) Pointer to common string config data. */
-        const GunnsElectPvStringInputData*  mInput;      /**< ** (W/m2) trick_chkpnt_io(**) Pointer to photo power flux incident on the section. */
-        double                     mShortCircuitCurrent; /**<    (amp)  trick_chkpnt_io(**) Short-circuit current at terminal node (max load). */
-        double                     mOpenCircuitVoltage;  /**<    (V)    trick_chkpnt_io(**) Open-circuit voltage at terminal node (no load). */
-        GunnsElectPvCellEquivProps mEqProps;             /**<    (--)   trick_chkpnt_io(**) Properties of the string equivalent circuit. */
-        GunnsElectPvLoadState      mMpp;                 /**<    (--)   trick_chkpnt_io(**) Maximum Power Point load state. */
-        GunnsElectPvLoadState      mTerminal;            /**<    (--)   trick_chkpnt_io(**) Terminal output load state. */
-        unsigned int               mNumBypassedGroups;   /**<    (--)   trick_chkpnt_io(**) Number of bypassed cell groups. */
-        unsigned int               mNumActiveCells;      /**<    (--)   trick_chkpnt_io(**) Number of cells that are not bypassed. */
-        bool                       mShunted;             /**<    (--)   trick_chkpnt_io(**) String is currently shunted. */
-        /// @brief Validates the initialization of this Gunns Photovoltaic String Utility.
-        void validate() const;
+        std::string                         mName;                /**<    (1)    trick_chkpnt_io(**) Instance name for H&S messages. */
+        const GunnsElectPvStringConfigData* mConfig;              /**< ** (1)    trick_chkpnt_io(**) Pointer to common string config data. */
+        const GunnsElectPvStringInputData*  mInput;               /**< ** (W/m2) trick_chkpnt_io(**) Pointer to photo power flux incident on the section. */
+        double                              mShuntVoltageDrop;    /**<    (V)    trick_chkpnt_io(**) Shunt voltage drop in reverse bias. */
+        double                              mSeriesVoltageDrop;   /**<    (V)    trick_chkpnt_io(**) Series voltage drop in forward bias. */
+        double                              mShortCircuitCurrent; /**<    (amp)  trick_chkpnt_io(**) Short-circuit current at terminal node (max load). */
+        double                              mOpenCircuitVoltage;  /**<    (V)    trick_chkpnt_io(**) Open-circuit voltage at terminal node (no load). */
+        GunnsElectPvCellEquivCircuit*       mEqProps;             /**<    (1)    trick_chkpnt_io(**) Properties of the string equivalent circuit. */
+        GunnsElectPvLoadState               mMpp;                 /**<    (1)    trick_chkpnt_io(**) Maximum Power Point load state. */
+        GunnsElectPvLoadState               mTerminal;            /**<    (1)    trick_chkpnt_io(**) Terminal output load state. */
+        unsigned int                        mNumBypassedGroups;   /**<    (1)    trick_chkpnt_io(**) Number of bypassed cell groups. */
+        unsigned int                        mNumActiveCells;      /**<    (1)    trick_chkpnt_io(**) Number of cells that are not bypassed. */
+        bool                                mShunted;             /**<    (1)    trick_chkpnt_io(**) String is currently shunted. */
+        GunnsElectPvCellEquivCircuit*       mRefCell;             /**<    (1)    trick_chkpnt_io(**) Reference cell properties. */
+        /// @brief Validates the initialization of this Photovoltaic String Utility.
+        virtual void validate() const;
         /// @brief Bypasses cell groups based on shading and malfunction.
         void updateBypassedGroups();
         /// @brief Computes the Maximum Power Point parameters.
@@ -303,6 +370,76 @@ class GunnsElectPvString
 };
 
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  bool  (--)  True if this is for a version 2 cell model.
+///
+/// @details  Returns the mIsVersion2 attribute.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool GunnsElectPvCellConfigData::isVersion2() const
+{
+    return mIsVersion2;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] configData (--) Pointer to the config data for this cell instance (not used).
+/// @param[in] name       (--) Instance name for memory allocation and H&S messages.
+///
+/// @details  This initializes the instance name.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvCellEquivCircuit::initialize(const GunnsElectPvCellConfigData* configData __attribute__((unused)),
+                                                     const std::string&                name)
+{
+    mName = name;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] refCell     (--) Not used.
+/// @param[in] temperature (--) Not used.
+/// @param[in] photoFlux   (--) Not used.
+/// @param[in] degradation (--) Not used.
+///
+/// @details  This is an empty virtual method intended for override by derived classes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvCellEquivCircuit::update(const GunnsElectPvCellEquivCircuit* refCell     __attribute__((unused)),
+                                                 const double                        temperature __attribute__((unused)),
+                                                 const double                        photoFlux   __attribute__((unused)),
+                                                 const double                        degradation __attribute__((unused)))
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This is an empty virtual method intended for override by derived classes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsElectPvCellEquivCircuit::derive()
+{
+    // nothing to do
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] voltage (V) Not used.
+///
+/// @returns  double (amp) Zero value.
+///
+/// @details  This is an empty virtual method intended for override by derived classes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectPvCellEquivCircuit::computeCurrent(const double voltage __attribute__((unused))) const
+{
+    return 0.0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] current (amp) Not used.
+///
+/// @returns  double (V) Zero value.
+///
+/// @details  This is an empty virtual method intended for override by derived classes.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsElectPvCellEquivCircuit::computeVoltage(const double current __attribute__((unused))) const
+{
+    return 0.0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in] flag      (--)   Malfunction activation flag.
@@ -398,13 +535,13 @@ inline double GunnsElectPvString::getShortCircuitCurrent() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @returns  GunnsElectPvCellEquivProps&  (--)  A reference to the equivalent circuit properties.
+/// @returns  GunnsElectPvCellEquivCircuit&  (--)  A reference to the equivalent circuit properties.
 ///
 /// @details  Returns a const reference to the mEqProps attribute.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline const GunnsElectPvCellEquivProps& GunnsElectPvString::getEqProps() const
+inline const GunnsElectPvCellEquivCircuit& GunnsElectPvString::getEqProps() const
 {
-    return mEqProps;
+    return *mEqProps;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

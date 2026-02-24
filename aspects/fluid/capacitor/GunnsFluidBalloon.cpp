@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Balloon Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -228,13 +228,13 @@ void GunnsFluidBalloon::initialize(const GunnsFluidBalloonConfigData& configData
 void GunnsFluidBalloon::validate(const GunnsFluidBalloonConfigData& configData) const
 {
     /// - Issue an error on inflatability < FLT_EPISLON.
-    if (configData.mInflatability < FLT_EPSILON) {
+    if (configData.mInflatability < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has inflatability < FLT_EPSILON.");
     }
 
     /// - Issue an error on volume < minimum.
-    if (configData.mMaxVolume < (mMinVolume + FLT_EPSILON)) {
+    if (configData.mMaxVolume < (mMinVolume + static_cast<double>(FLT_EPSILON))) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Link has maximum volume < minimum allowed.");
     }
@@ -347,9 +347,9 @@ double GunnsFluidBalloon::updateInflation()
         mInflationState = DEFLATED;
     } else if (mMaxVolume == volume) {
         mInflationState = INFLATED;
-    } else if (volume > mNodes[0]->getVolume() + FLT_EPSILON) {
+    } else if (volume > mNodes[0]->getVolume() + static_cast<double>(FLT_EPSILON)) {
         mInflationState = INFLATING;
-    } else if (volume < mNodes[0]->getVolume() - FLT_EPSILON) {
+    } else if (volume < mNodes[0]->getVolume() - static_cast<double>(FLT_EPSILON)) {
         mInflationState = DEFLATING;
     } else {
         mInflationState = PARTIALLY_INFLATED;
@@ -400,7 +400,7 @@ void GunnsFluidBalloon::processVolumeEdit()
 void GunnsFluidBalloon::correctPpRateEdits(const double dt)
 {
     /// - If a partial pressure rate edit is in progress...
-    if (fabs(mFlowRate) > DBL_EPSILON) {
+    if (std::fabs(mFlowRate) > DBL_EPSILON) {
 
         /// - Predict the change in total pressure due to PP rate edits this pass.  Then
         ///   inflatability combined with change in pressure gives expected change in volume.
@@ -472,10 +472,10 @@ double GunnsFluidBalloon::computePressureCorrection()
                        * mNodes[0]->getContent()->getMass() * UnitConversion::UNIV_GAS_CONST_SI
                        / mNodes[0]->getContent()->getMWeight();
         const double bb4ac = b*b - 4.0*a*c;
-        if (fabs(a) > 0.0 and bb4ac > 0.0) {
-            const double solnp = (-b + sqrt(bb4ac)) * 0.5 / a;
-            const double solnm = (-b - sqrt(bb4ac)) * 0.5 / a;
-            if (fabs(solnp) < fabs(solnm)) {
+        if (std::fabs(a) > 0.0 and bb4ac > 0.0) {
+            const double solnp = (-b + std::sqrt(bb4ac)) * 0.5 / a;
+            const double solnm = (-b - std::sqrt(bb4ac)) * 0.5 / a;
+            if (std::fabs(solnp) < std::fabs(solnm)) {
                 mPressureCorrectionGain = solnp;
             } else {
                 mPressureCorrectionGain = solnm;

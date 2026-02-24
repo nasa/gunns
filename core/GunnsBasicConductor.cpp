@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Basic Conductor Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -219,7 +219,7 @@ void GunnsBasicConductor::step(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsBasicConductor::buildConductance()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2]   = -mAdmittanceMatrix[0];
@@ -249,7 +249,7 @@ void GunnsBasicConductor::computeFlows(const double dt)
 void GunnsBasicConductor::computeFlux()
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most false quantity leak due to rounding
         ///   error in the solver.
         mFlux = 0.0;

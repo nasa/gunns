@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Condensing Heat Exchanger & Phase Separator implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -272,7 +272,7 @@ void GunnsFluidCondensingHxSeparator::initialize(
     /// - Initialize attributes derived from configuration data.
     mSlurperFlowFactor     = configData.mSlurperFlowRateRef  / configData.mWsReferenceSpeed;
     mWsPowerCurveCoeff     = configData.mWsReferencePressure / configData.mWsReferenceSpeed
-                           / pow(mWsMaxCondensate, mWsMassExponent);
+                           / std::pow(mWsMaxCondensate, mWsMassExponent);
     mWsTorqueFactor        = configData.mWsReferenceTorque   / configData.mWsReferenceSpeed;
 
     /// - Initialize input data.
@@ -351,19 +351,19 @@ void GunnsFluidCondensingHxSeparator::validate(
     }
 
     /// - Throw an exception on liquid mass capacity < FLT_EPSILON.
-    if (configData.mWsMaxCondensate < FLT_EPSILON) {
+    if (configData.mWsMaxCondensate < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS maximum condensate capacity < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference speed < FLT_EPSILON.
-    if (configData.mWsReferenceSpeed < FLT_EPSILON) {
+    if (configData.mWsReferenceSpeed < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS reference speed < FLT_EPSILON.");
     }
 
     /// - Throw an exception on reference pressure < FLT_EPSILON.
-    if (configData.mWsReferencePressure < FLT_EPSILON) {
+    if (configData.mWsReferencePressure < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "WS reference pressure < FLT_EPSILON.");
     }
@@ -535,9 +535,9 @@ void GunnsFluidCondensingHxSeparator::updateHeatExchanger(const double dt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidCondensingHxSeparator::updateSlurper()
 {
-    const bool pooled     = mHxCondensateMass > FLT_EPSILON;
-    const bool condensing = mCondensationRate > FLT_EPSILON;
-    const bool separating = mWsDrumSpeed      > FLT_EPSILON;
+    const bool pooled     = mHxCondensateMass > static_cast<double>(FLT_EPSILON);
+    const bool condensing = mCondensationRate > static_cast<double>(FLT_EPSILON);
+    const bool separating = mWsDrumSpeed      > static_cast<double>(FLT_EPSILON);
 
     /// - Slurper state transition conditions, implemented in order below:
     ///     FLOWING    to PAUSED_WET if (condensate = 0 or WS speed = 0) & condensing
@@ -617,7 +617,7 @@ void GunnsFluidCondensingHxSeparator::updateWaterSeparator(const double dt)
     mLiquidOverflow   = mWsCondensateMass > mWsMaxCondensate;
 
     /// - Compute separator delta pressure on liquid as function of speed and mass.
-    mWsDeltaPressure  = mWsPowerCurveCoeff * mWsDrumSpeed * pow(mWsCondensateMass, mWsMassExponent);
+    mWsDeltaPressure  = mWsPowerCurveCoeff * mWsDrumSpeed * std::pow(mWsCondensateMass, mWsMassExponent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -729,49 +729,49 @@ void UtGunnsFluidHotAdsorber::testInitializationExceptions()
     mConfigData->mGasType = FluidProperties::GUNNS_CO2;
 
     /// @test    Initialization exception on invalid config data: adsorption efficiency < 0.0.
-    mConfigData->mEfficiency = -FLT_EPSILON;
+    mConfigData->mEfficiency = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mEfficiency = mEfficiency;
 
     /// @test    Initialization exception on invalid config data: adsorption efficiency > 1.0.
-    mConfigData->mEfficiency = 1.0 + FLT_EPSILON;
+    mConfigData->mEfficiency = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mEfficiency = mEfficiency;
 
     /// @test    Initialization exception on invalid config data: maximum adsorbed mass < 0.0.
-    mConfigData->mMaxAdsorbtionRate = -FLT_EPSILON;
+    mConfigData->mMaxAdsorbtionRate = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mMaxAdsorbtionRate = mMaxAdsorbtionRate;
 
     /// @test    Initialization exception on invalid config data: maximum adsorption rate < 0.0.
-    mConfigData->mMaxAdsorbedMass = -FLT_EPSILON;
+    mConfigData->mMaxAdsorbedMass = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mMaxAdsorbedMass = mMaxAdsorbedMass;
 
-    /// @test    Initialization exception on invalid config data: desorbtion rate < 0.0.
-    mConfigData->mDesorbtionRate = -FLT_EPSILON;
+    /// @test    Initialization exception on invalid config data: desorption rate < 0.0.
+    mConfigData->mDesorbtionRate = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mConfigData->mDesorbtionRate = mDesorbtionRate;
 
     /// @test    Initialization exception on invalid input data: blockage malfunction value < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: blockage malfunction value > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mass in adsorber < 0.
-    mInputData->mAdsorbedMass = -FLT_EPSILON;
+    mInputData->mAdsorbedMass = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mAdsorbedMass = mAdsorbedMass;

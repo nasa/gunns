@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Simple Rocket Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -234,7 +234,7 @@ void GunnsFluidSimpleRocket::initialize(const GunnsFluidSimpleRocketConfigData& 
     const double gm1 = g - 1.0;
     // Divide by zero is protected against by validate method above.
     mCombustionMWeight      = UnitConversion::UNIT_PER_KILO * UnitConversion::UNIV_GAS_CONST_SI
-                            * mCombustionTemperature * (1.0 / g) * pow((gp1)/2.0, (gp1)/(gm1))
+                            * mCombustionTemperature * (1.0 / g) * std::pow((gp1)/2.0, (gp1)/(gm1))
                             / configData.mCharacteristicVelocity / configData.mCharacteristicVelocity;
 
     /// - Initialize with input data:
@@ -382,13 +382,13 @@ void GunnsFluidSimpleRocket::updateCombustion()
     /// - Determine our combustion state based on ignition and forward flow.  This can be reset by
     ///   the combustion model below.
     if (mNeedsIgnition) {
-        if (mFlowRate > FLT_EPSILON) {
+        if (mFlowRate > static_cast<double>(FLT_EPSILON)) {
             mCombustion = mCombustion or mIgnition;
         } else {
             mCombustion = false;
         }
     } else {
-        mCombustion = (mFlowRate > FLT_EPSILON);
+        mCombustion = (mFlowRate > static_cast<double>(FLT_EPSILON));
     }
 
     if (mCombustModel and mCombustion) {
@@ -454,7 +454,7 @@ void GunnsFluidSimpleRocket::updateChamber()
     /// - Apply sane minimums to chamber properties to avoid divide-by-zero in later functions.
     mChamberTemperature = std::max(mChamberTemperature, 1.0);
     mChamberMWeight     = std::max(mChamberMWeight,     2.0);
-    mChamberGamma       = std::max(mChamberGamma,       1.0 + FLT_EPSILON);
+    mChamberGamma       = std::max(mChamberGamma,       1.0 + static_cast<double>(FLT_EPSILON));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -484,12 +484,12 @@ double GunnsFluidSimpleRocket::updateNozzle()
     updateExitMach(g);
     const double gm1 = g - 1.0;
     const double gMM = 1.0 + 0.5 * gm1 * mExitMach * mExitMach;
-    mExitPressure = mChamberPressure * powf(gMM, -g/gm1);
+    mExitPressure = mChamberPressure * std::pow(gMM, -g/gm1);
 
     /// - Exit velocity assuming 'frozen' flow for now, Hill & Peterson, Eqn. 11.3.
     const double Tc  = mChamberTemperature;
     const double MWc = mChamberMWeight;
-    double Ue = sqrt( (1.0 - 1.0/gMM) * 2.0 * g * Tc * UnitConversion::UNIT_PER_KILO
+    double Ue = std::sqrt( (1.0 - 1.0/gMM) * 2.0 * g * Tc * UnitConversion::UNIT_PER_KILO
                     * UnitConversion::UNIV_GAS_CONST_SI / gm1 / MWc );
 
     /// - Initial calculation of exit temperature by isentropic relations asssuming 'frozen' flow.
@@ -504,7 +504,7 @@ double GunnsFluidSimpleRocket::updateNozzle()
     ///   no-recombination result.  This would cause a jump in thrust.
     const double RTF = MsMath::limitRange(0.0, mRecombinationTuning, 1.0);
     if (mCombustion) {
-        if (mCombustModel and RTF > FLT_EPSILON) {
+        if (mCombustModel and RTF > static_cast<double>(FLT_EPSILON)) {
             try {
                 /// - Enthalpy from the combustion model is in (kJ/g), so we convert to (J/kg).
                 double dH = mCombustModel->getEnth() * UnitConversion::UNIT_PER_MEGA;
@@ -516,7 +516,7 @@ double GunnsFluidSimpleRocket::updateNozzle()
                 ///   Hill & Peterson, Eqn. 3.5.  Interpolate between the equilibrium and frozen
                 ///   results by tuning factor.
                 if (dH > 0.0) {
-                    Ue  = (1.0 - RTF) * Ue  + RTF * sqrt(2.0 * dH);
+                    Ue  = (1.0 - RTF) * Ue  + RTF * std::sqrt(2.0 * dH);
                     Te  = (1.0 - RTF) * Te  + RTF * mCombustModel->getTemp();
                     ge  = (1.0 - RTF) * ge  + RTF * mCombustModel->getGamma();
                     MWe = (1.0 - RTF) * MWe + RTF * mCombustModel->getMolecWeight();
@@ -559,8 +559,8 @@ void GunnsFluidSimpleRocket::updateExitMach(const double gamma)
     double       ratio       = 0.0;
 
     for (int i=0; i<30; ++i) {
-        ratio = (1.0 / mach) * pow( 2.0 / gp1 + mach * mach / gp1OverGm1, gp1OverGm1 / 2.0);
-        const double delta = 0.5 * fabs(mach - machPrev);
+        ratio = (1.0 / mach) * std::pow( 2.0 / gp1 + mach * mach / gp1OverGm1, gp1OverGm1 / 2.0);
+        const double delta = 0.5 * std::fabs(mach - machPrev);
         if (delta < mMachTolerance) {
             break;
         }
@@ -594,7 +594,7 @@ void GunnsFluidSimpleRocket::updateConductance(const double mdot)
 
     /// - Protect against divide by zero molecular weight, and shut off the link when no forward
     ///   pressure gradient.
-    if (MW > DBL_EPSILON and (mPotentialVector[0] > mPotentialVector[1] - FLT_EPSILON)) {
+    if (MW > DBL_EPSILON and (mPotentialVector[0] > mPotentialVector[1] - static_cast<double>(FLT_EPSILON))) {
 
         double conductance = 0.0;
         if (1 == mCombustionCount) {
@@ -618,7 +618,7 @@ void GunnsFluidSimpleRocket::updateConductance(const double mdot)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidSimpleRocket::buildAdmittanceMatrix()
 {
-    if (fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - mSystemConductance) > 0.0) {
         mAdmittanceMatrix[0]   =  mSystemConductance;
         mAdmittanceMatrix[1]   = -mAdmittanceMatrix[0];
         mAdmittanceMatrix[2]   = -mAdmittanceMatrix[0];
@@ -640,7 +640,7 @@ void GunnsFluidSimpleRocket::computeFlows(const double dt __attribute__((unused)
     updateFlux(0.0, 0.0);
 
     /// - Set Port Directions
-    if (mFlux > DBL_EPSILON) { 
+    if (mFlux > DBL_EPSILON) {
         mPortDirections[0] = SOURCE;
         mPortDirections[1] = SINK;
         mNodes[0]->scheduleOutflux(mFlux);
@@ -666,7 +666,7 @@ void GunnsFluidSimpleRocket::transportFlows(const double dt __attribute__((unuse
 
     /// - This characteristic velocity can be used to tune the config data term for faster
     ///   convergence to steady-state during startup.  Hill & Peterson, Eqn. 11.8:
-    if (mFlowRate > FLT_EPSILON) {
+    if (mFlowRate > static_cast<double>(FLT_EPSILON)) {
         mCharacteristicVelocity = mPotentialVector[0] * UnitConversion::PA_PER_KPA * mThroatArea
                                 / mFlowRate;
     } else {
@@ -695,7 +695,7 @@ void GunnsFluidSimpleRocket::updateFlux(const double dt   __attribute__((unused)
                                         const double flux __attribute__((unused)))
 {
     const double hiP = std::max(mPotentialVector[0], mPotentialVector[1]);
-    if (fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
+    if (std::fabs(mPotentialDrop) < (hiP * m100EpsilonLimit)) {
         /// - Zero flux if dP is too low.  This eliminates most mass loss/creation due to rounding
         ///   error in the solver.
         mFlux = 0.0;

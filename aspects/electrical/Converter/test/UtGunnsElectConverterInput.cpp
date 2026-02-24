@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "software/exceptions/TsInitializationException.hh"
@@ -83,8 +83,8 @@ void UtGunnsElectConverterInput::setUp()
                                                                  &tSensorVin,
                                                                  &tSensorIin,
                                                                  tTripPriority,
-                                                                 tInUnderVoltageTrip,
-                                                                 tInOverVoltageTrip,
+                                                                 static_cast<float>(tInUnderVoltageTrip),
+                                                                 static_cast<float>(tInOverVoltageTrip),
                                                                  tEfficiencyTable);
 
     /// - Define the nominal input data.
@@ -143,32 +143,32 @@ void UtGunnsElectConverterInput::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectConverterInput::testConfig()
 {
-    UT_RESULT_FIRST;
+    UT_RESULT_INITIAL("GUNNS Electrical Aspect Converters Unit Tests");
 
     /// @test    Configuration nominal construction.
     CPPUNIT_ASSERT(&tSensorVin         == tConfigData->mInputVoltageSensor);
     CPPUNIT_ASSERT(&tSensorIin         == tConfigData->mInputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority       == tConfigData->mTripPriority);
-    CPPUNIT_ASSERT(tInUnderVoltageTrip == tConfigData->mInputUnderVoltageTripLimit);
-    CPPUNIT_ASSERT(tInOverVoltageTrip  == tConfigData->mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(tInUnderVoltageTrip == static_cast<double>(tConfigData->mInputUnderVoltageTripLimit));
+    CPPUNIT_ASSERT(tInOverVoltageTrip  == static_cast<double>(tConfigData->mInputOverVoltageTripLimit));
     CPPUNIT_ASSERT(tEfficiencyTable    == tConfigData->mEfficiencyTable);
 
     /// @test    Configuration data default construction.
     GunnsElectConverterInputConfigData defaultConfig;
-    CPPUNIT_ASSERT(0   == defaultConfig.mInputVoltageSensor);
-    CPPUNIT_ASSERT(0   == defaultConfig.mInputCurrentSensor);
-    CPPUNIT_ASSERT(0   == defaultConfig.mTripPriority);
-    CPPUNIT_ASSERT(0.0 == defaultConfig.mInputUnderVoltageTripLimit);
-    CPPUNIT_ASSERT(0.0 == defaultConfig.mInputOverVoltageTripLimit);
-    CPPUNIT_ASSERT(0   == defaultConfig.mEfficiencyTable);
+    CPPUNIT_ASSERT(0    == defaultConfig.mInputVoltageSensor);
+    CPPUNIT_ASSERT(0    == defaultConfig.mInputCurrentSensor);
+    CPPUNIT_ASSERT(0    == defaultConfig.mTripPriority);
+    CPPUNIT_ASSERT(0.0F == defaultConfig.mInputUnderVoltageTripLimit);
+    CPPUNIT_ASSERT(0.0F == defaultConfig.mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(0    == defaultConfig.mEfficiencyTable);
 
     /// @test    Configuration data copy construction.
     GunnsElectConverterInputConfigData copyConfig(*tConfigData);
     CPPUNIT_ASSERT(&tSensorVin         == copyConfig.mInputVoltageSensor);
     CPPUNIT_ASSERT(&tSensorIin         == copyConfig.mInputCurrentSensor);
     CPPUNIT_ASSERT(tTripPriority       == copyConfig.mTripPriority);
-    CPPUNIT_ASSERT(tInUnderVoltageTrip == copyConfig.mInputUnderVoltageTripLimit);
-    CPPUNIT_ASSERT(tInOverVoltageTrip  == copyConfig.mInputOverVoltageTripLimit);
+    CPPUNIT_ASSERT(tInUnderVoltageTrip == static_cast<double>(copyConfig.mInputUnderVoltageTripLimit));
+    CPPUNIT_ASSERT(tInOverVoltageTrip  == static_cast<double>(copyConfig.mInputOverVoltageTripLimit));
     CPPUNIT_ASSERT(tEfficiencyTable    == copyConfig.mEfficiencyTable);
 
     UT_PASS;
@@ -273,8 +273,8 @@ void UtGunnsElectConverterInput::testNominalInitialization()
     GunnsBasicLink::SolutionResult result;
     CPPUNIT_ASSERT(false == tArticle->mInputUnderVoltageTrip.isTripped());
     CPPUNIT_ASSERT(false == tArticle->mInputOverVoltageTrip.isTripped());
-    CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
-    CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tInUnderVoltageTrip - 0.01), tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
 
     /// @test    Nominal state data.
     CPPUNIT_ASSERT(false == tArticle->mResetTrips);
@@ -309,9 +309,9 @@ void UtGunnsElectConverterInput::testInitializationErrors()
     UT_RESULT;
 
     /// @test    Exception thrown for under-volt trip limit > over-volt limit.
-    tConfigData->mInputUnderVoltageTripLimit = tInOverVoltageTrip + 0.001;
+    tConfigData->mInputUnderVoltageTripLimit = static_cast<float>(tInOverVoltageTrip + 0.001);
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0), TsInitializationException);
-    tConfigData->mInputUnderVoltageTripLimit = tInUnderVoltageTrip;
+    tConfigData->mInputUnderVoltageTripLimit = static_cast<float>(tInUnderVoltageTrip);
 
     /// @test    Exception not thrown for no efficiency table and zero reference power.
     tConfigData->mEfficiencyTable = 0;
@@ -337,7 +337,7 @@ void UtGunnsElectConverterInput::testInitializationErrors()
     tConfigData->mInputOverVoltageTripLimit = 0.0;
     GunnsElectConverterInput article;
     CPPUNIT_ASSERT_NO_THROW(article.initialize(*tConfigData, *tInputData, tLinks, tPort0));
-    tConfigData->mInputOverVoltageTripLimit = tInOverVoltageTrip;
+    tConfigData->mInputOverVoltageTripLimit = static_cast<float>(tInOverVoltageTrip);
 
     /// @test    Exception thrown for node list mismatch with output link.
     GunnsBasicNode otherNodes[N_NODES];
@@ -407,8 +407,8 @@ void UtGunnsElectConverterInput::testStep()
 
         /// @test    Reset trips when commanded.
         GunnsBasicLink::SolutionResult result;
-        CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tInUnderVoltageTrip - 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
         CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.isTripped());
         tArticle->mResetTrips = true;
@@ -440,8 +440,8 @@ void UtGunnsElectConverterInput::testStep()
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
 
         /// @test    Trips not reset when not commanded.
-        CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
-        CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tInUnderVoltageTrip - 0.01), tTripPriority));
+        CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
         CPPUNIT_ASSERT(true == tArticle->mInputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mInputOverVoltageTrip.isTripped());
         expectedW = 0.0;
@@ -643,13 +643,13 @@ void UtGunnsElectConverterInput::testComputeInputVoltage()
 
     /// @test    Over-volt tripped.
     GunnsBasicLink::SolutionResult result;
-    CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, tInOverVoltageTrip + 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mInputOverVoltageTrip.checkForTrip(result, static_cast<float>(tInOverVoltageTrip + 0.01), tTripPriority));
     CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
     CPPUNIT_ASSERT(0.0   == actualV);
     tArticle->mInputOverVoltageTrip.resetTrip();
 
     /// @test    Under-volt tripped.
-    CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, tInUnderVoltageTrip - 0.01, tTripPriority));
+    CPPUNIT_ASSERT(true  == tArticle->mInputUnderVoltageTrip.checkForTrip(result, static_cast<float>(tInUnderVoltageTrip - 0.01), tTripPriority));
     CPPUNIT_ASSERT(true  == tArticle->computeInputVoltage(actualV));
     CPPUNIT_ASSERT(0.0   == actualV);
     tArticle->mInputUnderVoltageTrip.resetTrip();
@@ -671,6 +671,10 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->setEnabled(true);
     CPPUNIT_ASSERT(true == tArticle->mEnabled);
 
+    /// @test    Get the enabled flag.
+    tArticle->setEnabled(true);
+    CPPUNIT_ASSERT(true == tArticle->getEnabled());
+
     /// @test    Can set the input power.
     tArticle->setInputPower(15.0);
     CPPUNIT_ASSERT(15.0 == tArticle->mInputPower);
@@ -691,6 +695,22 @@ void UtGunnsElectConverterInput::testAccessors()
     tArticle->mInputVoltageValid = true;
     CPPUNIT_ASSERT(true == tArticle->getInputVoltageValid());
 
+    /// @test    Get the converter efficiency.
+    tArticle->mConverterEfficiency = 0.6;
+    CPPUNIT_ASSERT(0.6 == tArticle->getConverterEfficiency());
+
+    /// @test    Get the converter efficiency at load before initialization.
+    CPPUNIT_ASSERT(nullptr == tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(0.0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, tArticle->getConverterEfficiencyAtLoad(1e6), DBL_EPSILON);
+
+    /// @test    Get the converter efficiency at load after initialization.
+    tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0);
+    tArticle->setReferencePower(30.0);
+    const double load = 20.0;
+    CPPUNIT_ASSERT(nullptr != tArticle->mEfficiencyTable);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0/6.0 , tArticle->getConverterEfficiencyAtLoad(load), FLT_EPSILON);
     UT_PASS;
 }
 

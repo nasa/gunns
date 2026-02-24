@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -321,6 +321,16 @@ void UtGunnsFluidHeatExchanger::testAccessors()
     /// - @test getNumSegs method
     CPPUNIT_ASSERT( mNumSegs == mArticle->getNumSegs());
 
+    /// - @test setSegTemperature method
+    mArticle->setSegTemperature(0, 123.456);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(123.456, mArticle->mSegTemperature[0], mTolerance);
+    mArticle->setSegTemperature(mNumSegs-1, 321.654);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(321.654, mArticle->mSegTemperature[mNumSegs-1], mTolerance);
+    mArticle->setSegTemperature(1, -123.456);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mSegTemperature[1], mTolerance);
+    CPPUNIT_ASSERT_NO_THROW(mArticle->setSegTemperature(-1, 0.0));
+    CPPUNIT_ASSERT_NO_THROW(mArticle->setSegTemperature(mNumSegs+1, 0.0));
+
     UT_PASS;
 }
 
@@ -451,12 +461,12 @@ void UtGunnsFluidHeatExchanger::testTemperatures()
     article.updateFluid(mTimeStep, mFlowRate);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(280.0,   article.getFluid()->getTemperature(), DBL_EPSILON);
 
-    ///@test      Outflow fluid temperature 
+    ///@test      Outflow fluid temperature
     mInputData->mInitialSegmentTemperature = 300.0;
     mNodes[0].getOutflow()->setTemperature(10.0);
     article.updateFluid(mTimeStep, mFlowRate);
     CPPUNIT_ASSERT(mNodes[0].getOutflow()->getTemperature()!= mNodes[0].getContent()->getTemperature());
-    double tempOutflow = article.mInternalFluid->getTemperature()-article.mDeltaTemperature; 
+    double tempOutflow = article.mInternalFluid->getTemperature()-article.mDeltaTemperature;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tempOutflow,mNodes[0].getOutflow()->getTemperature(),
                                                              DBL_EPSILON);
 
@@ -571,13 +581,13 @@ void UtGunnsFluidHeatExchanger::testInitializationExceptions()
     mConfigData->mNumSegs = mNumSegs;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: mMalfBlockageValue > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;

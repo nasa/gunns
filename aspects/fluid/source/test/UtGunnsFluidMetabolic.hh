@@ -6,7 +6,7 @@
 /// @defgroup UT_TSM_GUNNS_FLUID_SOURCE_METABOLIC    Metabolic Unit Tests
 /// @ingroup  UT_TSM_GUNNS_FLUID_SOURCE
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Metabolic link model.
@@ -57,7 +57,7 @@ class UtGunnsFluidMetabolic: public CppUnit::TestFixture
         void testDefaultConstruction();
         /// @brief    Tests initialize method.
         void testNominalInitialization();
-        /// @brief    Tests multiple intialization.
+        /// @brief    Tests multiple initialization.
         void testMultipleInitialization();
         /// @brief    Tests accessor methods.
         void testAccess();

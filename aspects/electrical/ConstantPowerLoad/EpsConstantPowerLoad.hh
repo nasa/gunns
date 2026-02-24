@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_CONSTANT_POWER_LOAD_LINK    Constant Power Load Link
 @ingroup   TSM_GUNNS_ELECTRICAL_CONSTANT_POWER_LOAD
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -110,11 +110,14 @@ class EpsConstantPowerLoad : public GunnsBasicConductor
         /// @brief Minor step method for non-linear iterations.
         virtual void minorStep(const double dt, const int);
         /// @brief Updates the State of the link.
-        virtual void updateState(const double);
+        virtual void updateState(const double dt);
         /// @brief Returns if the link is non-linear.
         virtual bool isNonLinear();
         /// @brief Method for setting the Power and Nominal Potential.
         void setPowerAndNominalPotential(double power, double potential);
+
+        /// @brief Gets power draw for CPL
+        double getPowerDraw() const;
 
     protected:
         double mDesiredPower;         /**< (W)                     Desired link power load. */
@@ -145,6 +148,17 @@ class EpsConstantPowerLoad : public GunnsBasicConductor
 inline bool EpsConstantPowerLoad::isNonLinear()
 {
     return true;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   -- Power draw.
+///
+/// @details  Gets the power draw of a CPL [W]
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double EpsConstantPowerLoad::getPowerDraw() const
+{
+    return mPowerDraw;
 }
 
 #endif

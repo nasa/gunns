@@ -1,4 +1,7 @@
 /***************************************************************************************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 PURPOSE:
     (These algorithms comprise the Choleski LDU Decomposition direct method for solving systems of
      linear algebraic equations.  This is a freeware package available from
@@ -104,9 +107,9 @@ int Choleski_LDU_Decomposition(double *A, int n)
       for (j = 0, p_j = A; j < i; j++, p_j += n) {
          for (k = 0; k < j; k++)
             *(p_i + j) -= *(p_i + k) * *(p_j + k);
-         
+
          /// - Modified to protect for underflow.
-         if (*(p_i + j) > -1.0E-100) *(p_i + j) = 0.0; 
+         if (*(p_i + j) > -1.0E-100) *(p_i + j) = 0.0;
       }
 
 //            Calculate the diagonal element D[i] and L[i][j].

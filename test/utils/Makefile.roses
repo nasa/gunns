@@ -1,4 +1,4 @@
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # This is the makefile for the GUNNS&ROSES unit tests.
@@ -14,9 +14,9 @@ ifndef GUNNS_HOME
 $(error GUNNS_HOME variable must be set)
 endif
 
-CXXFLAGS = -g -Dno_TRICK_ENV=1 -I$(GUNNS_HOME) -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models -I/usr/local/cuda-8.0/include -L/usr/local/cuda-8.0/lib64
+CXXFLAGS = -g -Dno_TRICK_ENV=1 -I$(GUNNS_HOME) -I$(GUNNS_HOME)/ms-utils -I$(GUNNS_HOME)/gunns-ts-models -I/usr/local/cuda/include -L/usr/local/cuda/lib64
 extra_CXXFLAGS = -ftest-coverage -fprofile-arcs
-ROSESFLAGS += -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos -ldl -lpthread -lrt
+ROSESFLAGS += -L/usr/local/cuda/lib64 -lcublas_static -lcudart_static -lcusolver -lcusparse_static -lculibos -ldl -lpthread -lrt
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(addprefix build/,$(subst .cpp,.o,$(SOURCES)))

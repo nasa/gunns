@@ -5,7 +5,7 @@
 /// @defgroup UT_GUNNS_FLUID_VOLUME_MONITOR    GUNNS Fluid Volume Monitor Spotter Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Volume Monitor Spotter class
@@ -119,14 +119,14 @@ class UtGunnsFluidVolumeMonitor : public CppUnit::TestFixture
         PolyFluidConfigData*                tFluidConfig0;          /**< (--) Fluid config data */
         PolyFluidInputData*                 tFluidInput;           /**< (--) Fluid input data */
         double                              tMassFractions[2];     /**< (--) Fluid mass fractions. */
-        std::vector<GunnsBasicLink*>        tLinks;                /**< (--) Test basic link vector. Needed to initalize the test link.*/
+        std::vector<GunnsBasicLink*>        tLinks;                /**< (--) Test basic link vector. Needed to initialize the test link.*/
         GunnsFluidConductor                 tConductorLink;        /**< (--) Test conductor link */
         GunnsFluidConductorConfigData*      tConductorLinkConfig;  /**< (--) Test conductor link */
         GunnsFluidConductorInputData*       tConductorLinkInput;   /**< (--) Test conductor link */
         double                              tMaxConductivity;      /**< (--) Max conductivity for test conductor link */
         double                              tExpansionScaleFactor; /**< (--) Expansion scale factor for test conductor link */
         int                                 tPort0;                /**< (--) Port 0 for link initialization */
-        int                                 tPort1;                /**< (--) Port 1 for link intialization */
+        int                                 tPort1;                /**< (--) Port 1 for link initialization */
         double                              tTimeStep;             /**< (--) Time step size for this test */
         GunnsFluidTraceCompoundsConfigData* tTcConfig;             /**< (--) Trace Compounds */
         GunnsFluidTraceCompoundsInputData*  tTcInput;              /**< (--) Trace Compounds */

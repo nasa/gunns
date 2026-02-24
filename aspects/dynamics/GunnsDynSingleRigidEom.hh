@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_DYNAMICS_SINGLE_RIGID_EOM  GUNNS Dynamics Single Rigid-Body Equations of Motion
 @ingroup   TSM_GUNNS_DYNAMICS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -50,7 +50,7 @@ PROGRAMMERS:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Dynamics Single Rigid-Body Equations of Motion Input Data
 ///
-/// @details  This class defines the input data neeed to initialize a GUNNS Dynamics Single
+/// @details  This class defines the input data needed to initialize a GUNNS Dynamics Single
 ///           Rigid-Body Equations of Motion.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsDynSingleRigidEomInputData

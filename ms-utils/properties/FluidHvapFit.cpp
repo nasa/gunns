@@ -2,7 +2,7 @@
 @file
 @brief    Fluid Heat of Vaporization Curve Fit implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -44,7 +44,7 @@ FluidHvapFit::FluidHvapFit(const double a,
                            const double minX,  const double maxX,
                            const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(a),
     mAlpha(alpha),
     mBeta(beta)
@@ -77,7 +77,7 @@ void FluidHvapFit::init(const double a,
                         const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
@@ -88,11 +88,11 @@ void FluidHvapFit::init(const double a,
     mBeta  = beta;
 
     /// - Throw a TsInitializationException exception on magnitude of alpha too large.
-    TS_GENERIC_IF_ERREX(fabs(alpha) > 50.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(std::fabs(alpha) > 50.0, TsInitializationException,
                         "Invalid Input Argument", "magnitude of alpha > 50.");
 
     /// - Throw a TsInitializationException exception on magnitude of beta too large.
-    TS_GENERIC_IF_ERREX(fabs(beta) > 50.0, TsInitializationException,
+    TS_GENERIC_IF_ERREX(std::fabs(beta) > 50.0, TsInitializationException,
                         "Invalid Input Argument", "magnitude of beta > 50.");
 
     /// - Set the initialization complete flag.

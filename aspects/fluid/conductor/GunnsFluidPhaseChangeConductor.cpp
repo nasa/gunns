@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Phase Change Conductor Model implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -346,7 +346,7 @@ void GunnsFluidPhaseChangeConductor::transportFluid(const bool forcedOutflow __a
 
     /// - Wall heat flux is scaled by efficiency.  Shut off wall heat flux if it is trending to
     ///   make the wall temperature overshoot the exit saturation temperature.
-    double wallHeatFlux = mEfficiency * dH * fabs(mFlowRate);
+    double wallHeatFlux = mEfficiency * dH * std::fabs(mFlowRate);
     if ( ((wallHeatFlux < 0.0) and (mWallTemperature < exitT)) or
          ((wallHeatFlux > 0.0) and (mWallTemperature > exitT)) ) {
         wallHeatFlux = 0.0;

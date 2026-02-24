@@ -5,7 +5,7 @@
 @defgroup  <classname>  some text goes here
 @ingroup   <ingroup>
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -43,13 +43,13 @@ class FriendlySensorBase : public SensorBase
         FriendlySensorBase();
         virtual ~FriendlySensorBase();
         friend class UtSensorBase;
-        virtual void update(const double);
+        virtual void update(const double dt);
     protected:
         virtual void processInput();
 };
 inline FriendlySensorBase::FriendlySensorBase() : SensorBase() {}
 inline FriendlySensorBase::~FriendlySensorBase() {}
-inline void FriendlySensorBase::update(const double) {}
+inline void FriendlySensorBase::update(const double dt __attribute__((unused))) {}
 inline void FriendlySensorBase::processInput() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_ELECTRICAL_2WAY_LINK    Distributed Bi-Directional Interface Link
 @ingroup   TSM_GUNNS_ELECTRICAL
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -33,7 +33,7 @@ PROGRAMMERS:
 */
 
 #include "core/GunnsBasicLink.hh"
-#include "GunnsElectDistributed2WayBus.hh"
+#include "interop/Distributed2WayBusElect.hh"
 #include "aspects/electrical/Converter/GunnsElectConverterOutput.hh"
 #include "software/SimCompatibility/TsSimCompatibility.hh"
 #include <vector>
@@ -102,18 +102,18 @@ class GunnsElectDistributedIfInputData : public GunnsBasicLinkInputData
 struct GunnsElectDistributedIfSupplyData
 {
     public:
-        GunnsElectDistributed2WayBusSupplyData* mSupplyData; /**< (--) trick_chkpnt_io(**) The interface's supply data. */
-        const GunnsElectConverterOutput*        mLink;       /**< (--) trick_chkpnt_io(**) Pointer to the supply link. */
-        double                                  mNetCapDV;   /**< (V)  trick_chkpnt_io(**) The network capacitance delta-potential. */
+        Distributed2WayBusElectSupplyData* mSupplyData; /**< (--) trick_chkpnt_io(**) The interface's supply data. */
+        const GunnsElectConverterOutput*   mLink;       /**< (--) trick_chkpnt_io(**) Pointer to the supply link. */
+        double                             mNetCapDV;   /**< (V)  trick_chkpnt_io(**) The network capacitance delta-potential. */
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    GUNNS Distributed Bi-Directional Interface Link
 ///
-/// @details  This wraps a GunnsElectDistributed2WayBus object in a network and provides all
-///           interfaces between it and the network.  This contains a ConverterOutput and Input, for
-///           applying the voltage source and power load effects on the network node, respectively,
-///           and these are driven depending on the state of the interface.
+/// @details  This wraps a Distributed2WayBusElect object in a network and provides all interfaces
+///           between it and the network.  This contains a ConverterOutput and Input, for applying
+///           the voltage source and power load effects on the network node, respectively, and these
+///           are driven depending on the state of the interface.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class GunnsElectDistributedIf : public GunnsBasicLink
 {
@@ -123,11 +123,11 @@ class GunnsElectDistributedIf : public GunnsBasicLink
         /// @{
         /// @details The interface logic object and malfunction targets are public to allow access
         ///          from the Trick events processor.
-        GunnsElectDistributed2WayBus mInterface;         /**< (1) The interface logic. */
-        GunnsElectConverterInput     mPowerLoad;         /**< (1) Constant power load on the local network. */
-        GunnsElectConverterOutput    mVoltageSource;     /**< (1) Voltage source to the local network. */
-        bool                         mMalfPowerLoad;     /**< (1) Disables the power load draw from the local network. */
-        bool                         mMalfVoltageSource; /**< (1) Disables the voltage source supply to the local network. */
+        Distributed2WayBusElect   mInterface;         /**< (1) The interface logic. */
+        GunnsElectConverterInput  mPowerLoad;         /**< (1) Constant power load on the local network. */
+        GunnsElectConverterOutput mVoltageSource;     /**< (1) Voltage source to the local network. */
+        bool                      mMalfPowerLoad;     /**< (1) Disables the power load draw from the local network. */
+        bool                      mMalfVoltageSource; /**< (1) Disables the voltage source supply to the local network. */
         /// @}
         /// @brief Default constructor.
         GunnsElectDistributedIf();

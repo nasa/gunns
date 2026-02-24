@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2020 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 #include "UtGunnsFluidPhaseChangeSource.hh"
@@ -498,7 +498,6 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     DefinedFluidProperties definedFluidProps;
     const FluidProperties* gasProps = definedFluidProps.getProperties(tGasType);
     const FluidProperties* liqProps = definedFluidProps.getProperties(tLiquidType);
-    const FluidProperties* heProps  = definedFluidProps.getProperties(FluidProperties::GUNNS_HE);
 
     /// @test positive flow direction.
     tArticle->mFlowRate = 0.001;

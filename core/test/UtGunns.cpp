@@ -25,11 +25,11 @@
 /// @details  This is a constructor for this dummy link class that configures it for allowing us to
 ///           manipulate the inputs to the Gunns system of equations.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UtGunnsFakeLink::UtGunnsFakeLink(int numPorts, bool isNonLinear, bool failOnStep)
+UtGunnsFakeLink::UtGunnsFakeLink(int numPorts, bool isNonLinear, bool failOnStep_)
     :
     GunnsBasicLink(numPorts),
     nonLinearFlag(isNonLinear),
-    failOnStep(failOnStep),
+    failOnStep(failOnStep_),
     delayToAbsoluteStep(0),
     delayToConvergedStep(0),
     callsToRead(0),
@@ -83,7 +83,7 @@ GunnsBasicLink::SolutionResult UtGunnsFakeLink::confirmSolutionAcceptable(const 
 ///           link fails to reset to the last minor step.  It will only fail on minor step 2, for
 ///           the purposes of these tests.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep, const int absoluteStep)
+bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep __attribute__((unused)), const int absoluteStep)
 {
     switch (absoluteStep) {
         case 1 :
@@ -99,7 +99,7 @@ bool UtGunnsFakeLink::resetLastMinorStep(const int convergedStep, const int abso
     }
 }
 
-void UtGunnsFakeLink::minorStep(const double timeStep, const int minorStep)
+void UtGunnsFakeLink::minorStep(const double timeStep __attribute__((unused)), const int minorStep __attribute__((unused)))
 {
     ++callsToMinorStep;
     mAdmittanceUpdate = true;
@@ -424,7 +424,7 @@ void UtGunns::testDefaultConstruction()
     CPPUNIT_ASSERT(-1            == tNetwork.mDebugDesiredNode);
     CPPUNIT_ASSERT(false         == tNetwork.mVerbose);
     CPPUNIT_ASSERT(false         == tNetwork.mSorActive);
-    CPPUNIT_ASSERT(1.0           == tNetwork.mSorWeight);
+    CPPUNIT_ASSERT(1.0F          == tNetwork.mSorWeight);
     CPPUNIT_ASSERT(100           == tNetwork.mSorMaxIter);
     CPPUNIT_ASSERT(1.0e-12       == tNetwork.mSorTolerance);
     CPPUNIT_ASSERT(-1            == tNetwork.mSorLastIteration);
@@ -1318,8 +1318,8 @@ void UtGunns::testLinearStepExceptions()
     //    zero on a diagonal.
     /// - Expect a TsNumericalException for forward/backwards substitution error.
 //    tLink.mAdmittanceMatrix[0] = 1.0;
-//    tLink.mAdmittanceMatrix[1] =-sqrt(0.01+DBL_EPSILON);
-//    tLink.mAdmittanceMatrix[2] =-sqrt(0.01+DBL_EPSILON);
+//    tLink.mAdmittanceMatrix[1] =-std::sqrt(0.01+DBL_EPSILON);
+//    tLink.mAdmittanceMatrix[2] =-std::sqrt(0.01+DBL_EPSILON);
 //    tLink.mAdmittanceMatrix[3] = 0.01;
 //    tLink.mAdmittanceUpdate = true;
 //    CPPUNIT_ASSERT_THROW(tNetwork.step(), TsNumericalException);
@@ -2185,11 +2185,11 @@ void UtGunns::testSolveIslands2()
 
     tNetwork.setIslandMode(Gunns::OFF);
     for (int exp1=-15; exp1<16; ++exp1) {
-        tConductor1.setDefaultConductivity(powf(10.0, exp1));
+        tConductor1.setDefaultConductivity(std::pow(10.0, exp1));
         for (int exp2=-15; exp2<16; ++exp2) {
-            tConductor2.setDefaultConductivity(powf(10.0, exp2));
+            tConductor2.setDefaultConductivity(std::pow(10.0, exp2));
             for (int exp3=-15; exp3<17; ++exp3) {
-                tConductor3.setDefaultConductivity(powf(10.0, exp3));
+                tConductor3.setDefaultConductivity(std::pow(10.0, exp3));
                 if (16 == exp3) tConductor3.setDefaultConductivity(0.0);
                 CPPUNIT_ASSERT_NO_THROW(tNetwork.step(tDeltaTime));
 // for debugging test failure:
@@ -2204,11 +2204,11 @@ void UtGunns::testSolveIslands2()
 
     tNetwork.setIslandMode(Gunns::SOLVE);
     for (int exp1=-15; exp1<16; ++exp1) {
-        tConductor1.setDefaultConductivity(powf(10.0, exp1));
+        tConductor1.setDefaultConductivity(std::pow(10.0, exp1));
         for (int exp2=-15; exp2<16; ++exp2) {
-            tConductor2.setDefaultConductivity(powf(10.0, exp2));
+            tConductor2.setDefaultConductivity(std::pow(10.0, exp2));
             for (int exp3=-15; exp3<17; ++exp3) {
-                tConductor3.setDefaultConductivity(powf(10.0, exp3));
+                tConductor3.setDefaultConductivity(std::pow(10.0, exp3));
                 if (16 == exp3) tConductor3.setDefaultConductivity(0.0);
                 CPPUNIT_ASSERT_NO_THROW(tNetwork.step(tDeltaTime));
 // for debugging test failure:

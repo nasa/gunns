@@ -1,5 +1,5 @@
-/********************************* TRICK HEADER *******************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -18,7 +18,8 @@ LIBRARY DEPENDENCY:
 
 PROGRAMMERS:
       ( (Robert G. Phillips) (Tietronix) (March 2013) (TS21) (Initial) )
-*******************************************************************************/
+*/
+
 #include "math/TS_random.hh"
 #include <cmath>
 #include <cfloat>
@@ -27,7 +28,6 @@ PROGRAMMERS:
 #include <iostream>
 #include <vector> // This include is already in the .hh file, but I get compile errors
                   // if I don't include here as well. I don't understand why.
-
 
 const double TS_random::RAND_VALUES[] =
 {
@@ -251,7 +251,7 @@ const int TS_random::RAND_CNT = 1000;
 int TS_random::boundSeed(
    int seed )
 {
-    return ( abs( seed ) % RAND_CNT );
+    return ( std::abs( seed ) % RAND_CNT );
 }
 
 
@@ -267,7 +267,7 @@ int TS_random::incrementSeed(
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
-double TS_random::randomDouble( 
+double TS_random::randomDouble(
     int & seed )
 {
     seed = incrementSeed( seed );
@@ -345,7 +345,7 @@ int TS_random::randomInt(
 
     int range = maxValue - minValue + 1;
 
-    return floor( RAND_VALUES[seed] * range ) + minValue;
+    return static_cast<int>(std::floor( RAND_VALUES[seed] * range )) + minValue;
 }
 
 
@@ -382,5 +382,3 @@ bool TS_random::valueFound(
 
     return false;
 }
-
-

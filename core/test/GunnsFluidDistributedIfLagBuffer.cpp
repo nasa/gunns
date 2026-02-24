@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -37,13 +37,12 @@ GunnsFluidDistributedIfLagBuffer::~GunnsFluidDistributedIfLagBuffer()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Initializes this GunnsFluidDistributedIfLagBuffer.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidDistributedIfLagBuffer::initialize()
+void GunnsFluidDistributedIfLagBuffer::initialize(const unsigned int nBulk, const unsigned int nTc)
 {
     for (unsigned int i=0; i<10; ++i) {
         //TODO this creates a lot of duplicate named dynamic array warnings from Trick
-        //TODO numfluids and num tc's are hard-coded
-        mBuffer1[i].initialize(6, 0);
-        mBuffer2[i].initialize(6, 0);
+        mBuffer1[i].initialize(nBulk, nTc);
+        mBuffer2[i].initialize(nBulk, nTc);
     }
     if (mDelayFrames > 9) mDelayFrames = 9;
     mHeadIndex = mDelayFrames;

@@ -8,7 +8,7 @@
 @defgroup  TSM_CONTROLLER_FLUID_PUMP_MOTOR    Pump Motor Controller Model
 @ingroup   TSM_CONTROLLER_FLUID
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:  (This is a generic pump/fan motor controller model.  It is designed to work with, and
@@ -108,7 +108,7 @@ class TsPumpMotorControllerInputData
                                        const double voltage                 = 0.0,
                                        const double sensedSpeed             = 0.0,
                                        const double sensedTemperature       = 0.0,
-                                       const double startupState            = false,
+                                       const bool   startupState            = false,
                                        const bool   commandEnable           = false,
                                        const double commandSpeed            = 0.0,
                                        const double noisePhase              = 0.0);

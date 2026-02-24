@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 log_variables = [
@@ -849,7 +849,7 @@ log_variables = [
                  'massOverflow.fluid29.netNodes[1].mContent.mConstituents[0].mMassFraction',
                  'massOverflow.fluid29.netNodes[1].mContent.mConstituents[1].mMassFraction',
                  'massOverflow.fluid29.netNodes[1].mContent.mConstituents[2].mMassFraction',
-                 'massOverflow.fluid29.netNodes[1].mContent.mConstituents[3].mMassFraction', 
+                 'massOverflow.fluid29.netNodes[1].mContent.mConstituents[3].mMassFraction',
                  'massOverflow.fluid29.netNodes[2].mContent.mConstituents[0].mMassFraction',
                  'massOverflow.fluid29.netNodes[2].mContent.mConstituents[1].mMassFraction',
                  'massOverflow.fluid29.netNodes[2].mContent.mConstituents[2].mMassFraction',

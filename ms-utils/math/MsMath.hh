@@ -8,7 +8,7 @@
  @defgroup  TSM_UTILITIES_MATH_MATH Utility Functions
  @ingroup   TSM_UTILITIES_MATH
 
- @copyright Copyright 2019 United States Government as represented by the Administrator of the
+ @copyright Copyright 2024 United States Government as represented by the Administrator of the
             National Aeronautics and Space Administration.  All Rights Reserved.
 
   PURPOSE: (Provides the class for mathematical utility functions.)
@@ -72,10 +72,14 @@ class MsMath
         static double protectedDiv(const double num, const double den, const double threshold = DBL_EPSILON, const double retval = 0.0);
         /// @brief Limits the value of a double argument to a specified range (lower <= x <= upper).
         static double limitRange(const double lower, const double x, const double upper);
+        /// @brief Limits the value of a float argument to a specified range (lower <= x <= upper).
+        static float limitRange(const float lower, const float x, const float upper);
         /// @brief Limits the value of an integer argument to a specified range (lower <= x <= upper).
         static int limitRange(const int lower, const int x, const int upper);
         /// @brief Is the double input within specified range (lower <= x <= upper)?
         static bool isInRange(const double lower, const double x, const double upper);
+        /// @brief Is the float input within specified range (lower <= x <= upper)?
+        static bool isInRange(const float lower, const float x, const float upper);
         /// @brief Is the integer input within specified range (lower <= i <= upper)?
         static bool isInRange(const int lower, const int i, const int upper);
         /// @brief  Limits the value of a double argument outside a specified range (x <= lower || upper <= x).
@@ -248,7 +252,7 @@ inline double MsMath::protectedAsin(const double x)
     } else if (x < -1.0 + DBL_EPSILON) {
         result = -UnitConversion::PI_OVER_2;
     } else {
-        result = asin(x);
+        result = std::asin(x);
     }
 
     return result;
@@ -276,7 +280,7 @@ inline double MsMath::protectedAcos(const double x)
     } else if (x < -1.0 + DBL_EPSILON) {
         result = UnitConversion::PI_UTIL;
     } else {
-        result = acos(x);
+        result = std::acos(x);
     }
 
     return result;
@@ -301,7 +305,7 @@ inline double MsMath::protectedSqrt(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = sqrt(x);
+        result = std::sqrt(x);
     }
 
     return result;
@@ -326,7 +330,7 @@ inline double MsMath::protectedLog10(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = log10(x);
+        result = std::log10(x);
     }
 
     return result;
@@ -351,7 +355,7 @@ inline double MsMath::protectedLog(const double x)
     if (x < DBL_EPSILON) {
         result = 0.0;
     } else {
-        result = log(x);
+        result = std::log(x);
     }
 
     return result;
@@ -414,6 +418,28 @@ inline double MsMath::limitRange(const double lower, const double x, const doubl
 /// @param[in]  x      (--)  Input argument to be limited.
 /// @param[in]  upper  (--)  Upper limit of range.
 ///
+/// @return     float (--)  The value limited to the specified range.
+///
+/// @warning    If lower > upper, then lower is returned without complaint, so don't do that.
+///
+/// @details    Limits the value of a float argument to the specified range (lower <= x <= upper).
+///             \verbatim
+///                       _
+///                      |  lower,     x < lower
+///             result = |  x,         lower <= x <= upper
+///                      |_ upper,     x > upper
+///             \endverbatim
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline float MsMath::limitRange(const float lower, const float x, const float upper)
+{
+    return std::max(std::min(x, upper), lower);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  lower  (--)  Lower limit of range.
+/// @param[in]  x      (--)  Input argument to be limited.
+/// @param[in]  upper  (--)  Upper limit of range.
+///
 /// @return     int    (--)  The value limited to the specified range.
 ///
 /// @warning    If lower > upper, then lower is returned without complaint, so don't do that.
@@ -449,6 +475,28 @@ inline int MsMath::limitRange(const int lower, const int x, const int upper)
 ///             \endverbatim
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline bool MsMath::isInRange(const double lower, const double x, const double upper)
+{
+    return lower <= x && x <= upper;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in]  lower  (--)  Lower limit of range.
+/// @param[in]  x      (--)  Input argument to be limited.
+/// @param[in]  upper  (--)  Upper limit of range.
+///
+/// @return     bool   (--)  True if the input argument is within the specified range, otherwise false.
+///
+/// @warning    If lower > upper, then false is returned without complaint, so don't do that.
+///
+/// @details    Determines if the float argument value is within the specified range (lower <= x <= upper).
+///             \verbatim
+///                       _
+///                      |  false,     x < lower
+///             result = |  true,         lower <= x <= upper
+///                      |_ false,     x > upper
+///             \endverbatim
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline bool MsMath::isInRange(const float lower, const float x, const float upper)
 {
     return lower <= x && x <= upper;
 }
@@ -605,7 +653,7 @@ inline double MsMath::quantize(const double input, const double resolution)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double MsMath::asinh(const double value)
 {
-    return  MsMath::protectedLog(value + sqrt(value * value + 1.0));
+    return  MsMath::protectedLog(value + std::sqrt(value * value + 1.0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -631,7 +679,7 @@ inline double MsMath::fastPow(const double base, const double exp)
     double a;
     double b;
     double pwr;
- 
+
 //  Reduce the size of the exponent by truncation
 //  i.e. b^7.342 = b^7 * b^0.342 = b^num * b^frac_exp
 
@@ -645,7 +693,7 @@ inline double MsMath::fastPow(const double base, const double exp)
 //  don't calc series if exponent is whole number
     if(b > 0.000000001){
 //      set the log of the base
-        a= std::log(std::fabs(base));    
+        a= std::log(std::fabs(base));
 
         b= std::fabs(b*a);
         pwr=1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(1+b*(
@@ -665,7 +713,7 @@ inline double MsMath::fastPow(const double base, const double exp)
 
 //  get the integer powers of base if needed
     if(num > 0) {
-//      put together the parts of b^x: b*b*b*b*...*b^(frac_exp) 
+//      put together the parts of b^x: b*b*b*b*...*b^(frac_exp)
         for(int k=1;k<num+1;k++) {
             pwr= pwr*std::fabs(base);
         }

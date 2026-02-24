@@ -2,7 +2,7 @@
 @file
 @brief    TS21 Fluid Controller Powered (Motor or Solenoid) Valve Controller implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -380,7 +380,7 @@ void TsPoweredValveController::update(const double dt)
 void TsPoweredValveController::updatePower()
 {
     if ((mSupplyVoltageFlag || mMalfPowerGoodFlag) && !mMalfPowerFailFlag && mEnabledFlag) {
-        if (fabs(mCmd) > DBL_EPSILON && (!mManualPositionFlag || mMalfManualFlag)) {
+        if (std::fabs(mCmd) > DBL_EPSILON && (!mManualPositionFlag || mMalfManualFlag)) {
 
             // mCmdScale is positive if a positive command opens the valve.
             // mCmdScale is negative if a negative command opens the valve.
@@ -406,4 +406,3 @@ void TsPoweredValveController::updatePower()
         mResistance         = MAX_RESISTANCE;
     }
 }
-

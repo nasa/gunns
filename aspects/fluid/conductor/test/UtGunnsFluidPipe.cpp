@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -353,7 +353,7 @@ void UtGunnsFluidPipe::testUpdateState()
                                  mTolerance);
     /// - Check restartModel capabilities
     mArticle->restartModel();
-    
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,mArticle->mEffectiveConductivity,mTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,mArticle->mSystemConductance,mTolerance);
 
@@ -372,7 +372,7 @@ void UtGunnsFluidPipe::testUpdateFluid()
 
     /// @test     Update fluid with positive flowrate.
     mArticle->updateFluid(mTimeStep, mFlowRate);
-    
+
     CPPUNIT_ASSERT(mArticle->mWallTemperature <
                               mArticle->mInternalFluid->getTemperature());
     CPPUNIT_ASSERT(0.0 < mArticle->mWallHeatFlux);
@@ -401,7 +401,7 @@ void UtGunnsFluidPipe::testUpdateFluidNoFLow()
 //    /// @test     Update fluid with zero time step.
 //    mArticle->updateFluid(0.0, mFlowRate);
 //    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mPipeHeatFlux, mTolerance);
-  
+
     /// @test     Update fluid with zero flow rate.
     mArticle->updateFluid(mTimeStep, 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mWallHeatFlux, mTolerance);
@@ -435,17 +435,17 @@ void UtGunnsFluidPipe::testInitializationExceptions()
     mConfigData->mExpansionScaleFactor = mExpansionScaleFactor;
 
     /// @test    Initialization exception on invalid input data: blockage < 0.
-    mInputData->mMalfBlockageValue = -FLT_EPSILON;
+    mInputData->mMalfBlockageValue = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: blockage > 1.
-    mInputData->mMalfBlockageValue = 1.0 + FLT_EPSILON;
+    mInputData->mMalfBlockageValue = 1.0 + static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mMalfBlockageValue = mMalfBlockageValue;
 
     /// @test    Initialization exception on invalid input data: pipe temperature < 0.
-    mInputData->mWallTemperature = -FLT_EPSILON;
+    mInputData->mWallTemperature = -static_cast<double>(FLT_EPSILON);
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1), TsInitializationException);
     mInputData->mWallTemperature = mWallTemperature;
 

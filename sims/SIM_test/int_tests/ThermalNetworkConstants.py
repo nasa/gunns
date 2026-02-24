@@ -1,4 +1,4 @@
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 #===============================================================================================
@@ -6,7 +6,7 @@
 #===============================================================================================
 # Nominal Values & tolerances for initial & final Node potentials
 thermalFinalP     = [ 295.0, 295.0, 0.7, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
-thermalTolP       = 0.0001 
+thermalTolP       = 0.0001
 
 # Nominal values # tolerances for link flux (Watts)
 fluxConductor     = -0.3
@@ -29,4 +29,3 @@ thermalNodeNames  = { "Node 0":0,    \
                       "Node 12":12,    \
                       "Node 13":13    \
                     }
-

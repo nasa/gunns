@@ -5,7 +5,7 @@
 @defgroup  TSM_UTILITIES_STRINGS_STRINGS Strings Utility Functions
 @ingroup   TSM_UTILITIES_STRINGS
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -54,7 +54,7 @@ namespace Strings
     /// @brief Converts a float to a standard library string.
     static std::string floatToString(
         const double numberToConvert,
-        const double decimalPrecision,
+        const int    decimalPrecision,
         const double minValue,
         const double maxValue);
 
@@ -88,11 +88,11 @@ namespace Strings
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline std::string Strings::floatToString(
     const double numberToConvert,
-    const double decimalPrecision,
+    const int    decimalPrecision,
     const double minValue,
     const double maxValue)
 {
-    double newNumToCon = MsMath::limitRange(minValue, MsMath::quantize(numberToConvert, 1/(pow(10,decimalPrecision))), maxValue);
+    double newNumToCon = MsMath::limitRange(minValue, MsMath::quantize(numberToConvert, 1.0/(std::pow(10.0,decimalPrecision))), maxValue);
     std::stringstream convert;
     convert << std::fixed << std::setprecision(decimalPrecision) << newNumToCon;
     std::string cValue(convert.str());
@@ -135,7 +135,7 @@ inline std::vector<std::string> Strings::split(const std::string& str, const std
 {
     std::vector<std::string> result;
     std::string s = str;
-    size_t pos = 0;
+    std::size_t pos = 0;
     while ((pos = s.find(delimiter)) != std::string::npos) {
         result.push_back(s.substr(0, pos));
         s.erase(0, pos + delimiter.length());
@@ -157,9 +157,9 @@ inline std::vector<std::string> Strings::split(const std::string& str, const std
 inline std::string Strings::trim(const std::string& str)
 {
     const std::string WHITESPACE = " \n\r\t\f\v";
-    size_t start = str.find_first_not_of(WHITESPACE);
+    std::size_t start = str.find_first_not_of(WHITESPACE);
     const std::string ltrim = (start == std::string::npos) ? "" : str.substr(start);
-    size_t end = ltrim.find_last_not_of(WHITESPACE);
+    std::size_t end = ltrim.find_last_not_of(WHITESPACE);
     return (end == std::string::npos) ? "" : ltrim.substr(0, end + 1);
 }
 

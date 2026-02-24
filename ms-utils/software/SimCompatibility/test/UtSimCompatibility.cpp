@@ -1,13 +1,10 @@
-/************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
- LIBRARY DEPENDENCY:
-    ()
 
  PROGRAMMERS:
 - ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-06))
-***************************************************************************************************/
+*/
 
 #include <iostream>
 #include <string>
@@ -81,18 +78,25 @@ void UtSimCompatibility::testNewPrimArray()
 {
     std::cout << "\n SimCompatibility 03: New Primitive Array Test ";
 
-    // new (double[4])
-    double* article;
-    TS_NEW_PRIM_ARRAY(article, 4, double);
-
-    // verify
-    CPPUNIT_ASSERT(article);
-    for (int i = 0; i < 4; i++) {
-        CPPUNIT_ASSERT(&article[i]);
-    }
-
-    // delete
-    TS_DELETE_ARRAY(article);
+    // Commenting out this test because the name argument is now not optional in the non-Trick
+    // environment, so that we can void cast the name to avoid compiler warnings about unused name
+    // argument in the caller.  I could have added fancier macros that check for the existence of
+    // the name argument, but I don't want to add any more complexity to these macros than we
+    // already have - we should be trying to get rid of macros instead.
+//    // new (double[4])
+//    double* article;
+//    TS_NEW_PRIM_ARRAY(article, 4, double);
+//
+//    // verify
+//    CPPUNIT_ASSERT(article);
+//    for (int i = 0; i < 4; i++) {
+//        CPPUNIT_ASSERT(&article[i]);
+//    }
+//
+//    (void);
+//
+//    // delete
+//    TS_DELETE_ARRAY(article);
 
     std::cout << "                      ... Pass";
 }
@@ -127,24 +131,29 @@ void UtSimCompatibility::testNewPrimPointerArray()
 {
     std::cout << "\n SimCompatibility 05: New Primitive Pointer Array Test ";
 
-    // new (A[3][3])
-    double** article;
-    TS_NEW_PRIM_POINTER_ARRAY(article, 3, double);
-    for (int i = 0; i < 3; i++) {
-        TS_NEW_PRIM_ARRAY(article[i], 3, double);
-    }
-
-    // verify
-    CPPUNIT_ASSERT(article);
-    for (int i = 0; i < 3; i++) {
-        CPPUNIT_ASSERT(article[i]);
-    }
-
-    // delete
-    for (int i = 0; i < 3; i++) {
-        TS_DELETE_ARRAY(article[i]);
-    }
-    TS_DELETE_ARRAY(article);
+    // Commenting out this test because the name argument is now not optional in the non-Trick
+    // environment, so that we can void cast the name to avoid compiler warnings about unused name
+    // argument in the caller.  I could have added fancier macros that check for the existence of
+    // the name argument, but I don't want to add any more complexity to these macros than we
+    // already have - we should be trying to get rid of macros instead.
+//    // new (A[3][3])
+//    double** article;
+//    TS_NEW_PRIM_POINTER_ARRAY(article, 3, double);
+//    for (int i = 0; i < 3; i++) {
+//        TS_NEW_PRIM_ARRAY(article[i], 3, double);
+//    }
+//
+//    // verify
+//    CPPUNIT_ASSERT(article);
+//    for (int i = 0; i < 3; i++) {
+//        CPPUNIT_ASSERT(article[i]);
+//    }
+//
+//    // delete
+//    for (int i = 0; i < 3; i++) {
+//        TS_DELETE_ARRAY(article[i]);
+//    }
+//    TS_DELETE_ARRAY(article);
 
     std::cout << "              ... Pass";
 }

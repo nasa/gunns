@@ -2,7 +2,7 @@
 @file
 @brief    PID Controller Model implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -273,10 +273,10 @@ double TsPidController::update(const double dt)
         mTimer      = 0.0;
 
         /// - Zero very small results to avoid underflows.
-        if (fabs(mIntegral) < DBL_EPSILON) {
+        if (std::fabs(mIntegral) < DBL_EPSILON) {
             mIntegral = 0.0;
         }
-        if (fabs(mOutput) < DBL_EPSILON) {
+        if (std::fabs(mOutput) < DBL_EPSILON) {
             mOutput = 0.0;
         }
 

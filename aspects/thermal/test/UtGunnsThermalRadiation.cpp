@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -57,7 +57,7 @@ void UtGunnsThermalRadiation::tearDown()
 void UtGunnsThermalRadiation::setUp()
 {
     /// - Declare the standard Gunns Link test data
-	tLinkName             = "Test Thermal Radiation";
+    tLinkName             = "Test Thermal Radiation";
     tNodeList.mNumNodes   = 2;
     tNodeList.mNodes      = tNodes;
     tDefaultConductivity  = 0.5;

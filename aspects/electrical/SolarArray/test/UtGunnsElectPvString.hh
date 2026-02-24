@@ -5,7 +5,7 @@
 /// @defgroup UT_PHOTOVOLTAIC_STRING    Photovoltaic String Model Unit Test
 /// @ingroup  UT_GUNNS
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the Photovoltaic String Model
@@ -49,6 +49,21 @@ class FriendlyGunnsElectPvString : public GunnsElectPvString
         virtual ~FriendlyGunnsElectPvString() {;}
         friend class UtGunnsElectPvString;
         friend class UtGunnsElectPvSection;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from GunnsElectPvCellEquivCircuit and befriend UtGunnsElectPvString.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyGunnsElectPvCellEquivCircuit : public GunnsElectPvCellEquivCircuit
+{
+    public:
+        FriendlyGunnsElectPvCellEquivCircuit() {;}
+        virtual ~FriendlyGunnsElectPvCellEquivCircuit() {;}
+        friend class UtGunnsElectPvString;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

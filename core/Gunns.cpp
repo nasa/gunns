@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Orchestrator implementation
 
-@copyright Copyright 2024 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -385,7 +385,7 @@ void Gunns::initialize(const GunnsConfigData& configData, std::vector<GunnsBasic
     }
     clearDebugNode();
 
-    mNumLinks              = linksVector.size();
+    mNumLinks              = static_cast<int>(linksVector.size());
     mDebugDesiredSlice     = 0;
     mDebugDesiredStep      = 0;
     mDebugDesiredNode      = -1;
@@ -707,7 +707,7 @@ inline void Gunns::initializeRestartCommonFunctions()
     mLastDecomposition      = 0;
 
     /// - Reset the worst-case timing mode flag.
-    mWorstCaseTiming        = false;   
+    mWorstCaseTiming        = false;
 
     /// - Reset last-pass mode stats.
     mLastSolverMode         = mSolverMode;
@@ -970,7 +970,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
     }
     mStepLog.recordLinkContributions();
 
-    //if sorResult = -1, then sor didnt' converge, so throw a warning, reset mPotentialVector back
+    //if sorResult = -1, then sor didn't converge, so throw a warning, reset mPotentialVector back
     //to the previous minor step, and go to Cholesky.
     //if sor is not active, go to Cholesky like normal.
     mSorLastIteration = -1;
@@ -1008,7 +1008,7 @@ int Gunns::buildAndSolveSystem(const int minorStep, const double timeStep)
                         /// - Loop over all islands, form a sub-matrix for each island and condition
                         ///   it.  Only decompose islands that contain >1 nodes.
                         for (int island = 0; island < mNetworkSize; ++island) {
-                            const int n = mIslandVectors[island].size();
+                            const int n = static_cast<int>(mIslandVectors[island].size());
                             if ( (0 < n) and (GPU_SPARSE != mGpuMode) ) {
                                 /// - Form sub-matrix for island from the main matrix.
                                 for (int i=0, ij=0; i<n; ++i) {
@@ -1152,7 +1152,7 @@ bool Gunns::checkSystemConvergence(const int minorStep)
     int lastNonConvergingNode = -1;
     for (int node = 0; node < mNetworkSize; ++node) {
 
-        mNodesConvergence[node] = fabs(mMinorPotentialVector[node] - mPotentialVector[node]);
+        mNodesConvergence[node] = std::fabs(mMinorPotentialVector[node] - mPotentialVector[node]);
         if (mNodesConvergence[node] > mConvergenceTolerance) {
             lastNonConvergingNode = node;
 
@@ -1313,7 +1313,7 @@ void Gunns::buildIslands()
     mIslandMaxSize = 0;
     mIslandCount   = 0;
     for (int island = 0; island < mNetworkSize; ++island) {
-        int size = mIslandVectors[island].size();
+        int size = static_cast<int>(mIslandVectors[island].size());
         if (size > 0)              mIslandCount++;
         if (size > mIslandMaxSize) mIslandMaxSize = size;
     }
@@ -1385,7 +1385,7 @@ void Gunns::solveCholesky()
             ///   Both options must solve to a temporary {p} that we then unpack into
             ///   mPotentialVector at the end of all islands.
             for (int island = 0; island < mNetworkSize; ++island) {
-                const int n = mIslandVectors[island].size();
+                const int n = static_cast<int>(mIslandVectors[island].size());
                 /// - Form sub-matrix for island from the main matrix.
                 for (int i=0, ij=0; i<n; ++i) {
                     mSourceVectorIsland[i] = mSourceVector[mIslandVectors[island][i]];
@@ -1456,7 +1456,7 @@ void Gunns::handleDecompose(CholeskyLdu* solver, double* A, const int size, cons
 /// @param[in] solver (--) Pointer to the linear algebra solver to call.
 /// @param[in] A      (--) The admittance matrix for the solution.
 /// @param[in] w      (--) The source vector for the solution.
-/// @param[in] p      (--) The solution vector for the soution.
+/// @param[in] p      (--) The solution vector for the solution.
 /// @param[in] size   (--) The size N of the N x N admittance matrix.
 /// @param[in] island (--) The optional network island number associated with this matrix.
 ///
@@ -1487,7 +1487,7 @@ void Gunns::handleSolve(CholeskyLdu* solver, double* A, double* w, double* p, co
 inline void Gunns::cleanPotentialVector()
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        if (fabs(mPotentialVector[node]) < DBL_EPSILON) {
+        if (std::fabs(mPotentialVector[node]) < DBL_EPSILON) {
             mPotentialVector[node] = 0.0;
         }
     }
@@ -1505,12 +1505,12 @@ inline void Gunns::cleanPotentialVector()
 void Gunns::perturbNetworkCapacitances()
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        const double fluxPerturbartion = mNodes[node]->getNetworkCapacitanceRequest();
-        if (fluxPerturbartion > DBL_EPSILON) {
+        const double fluxPerturbation = mNodes[node]->getNetworkCapacitanceRequest();
+        if (fluxPerturbation > DBL_EPSILON) {
             /// - When requested, perturb the node's source vector, solve, store the perturbed
             ///   potential in the node's capacitance term, and reset the source vector.
             const double savedSourceVector = mSourceVector[node];
-            mSourceVector[node] += fluxPerturbartion;
+            mSourceVector[node] += fluxPerturbation;
             solveCholesky();
             mNodes[node]->setNetworkCapacitance(mPotentialVector[node]);
             mSourceVector[node] = savedSourceVector;
@@ -1538,16 +1538,16 @@ void Gunns::perturbNetworkCapacitances()
 void Gunns::computeNetworkCapacitances(const double timeStep)
 {
     for (int node = 0; node < mNetworkSize; ++node) {
-        const double fluxPerturbartion = mNodes[node]->getNetworkCapacitanceRequest();
-        if (fluxPerturbartion > DBL_EPSILON) {
+        const double fluxPerturbation = mNodes[node]->getNetworkCapacitanceRequest();
+        if (fluxPerturbation > DBL_EPSILON) {
             /// - Generic GUNNS capacitance is the flux needed to cause a unit increase in node
             ///   potential.  The perturbed node potential was temporarily stored in the node in
             ///   perturbNetworkCapacitances(), and we overwrite that with the new capacitance
             ///   value.
-            const double deltaPotential = fabs(mNodes[node]->getNetworkCapacitance()
+            const double deltaPotential = std::fabs(mNodes[node]->getNetworkCapacitance()
                                              - mPotentialVector[node]);
             if (deltaPotential > DBL_EPSILON) {
-                mNodes[node]->setNetworkCapacitance(timeStep * fluxPerturbartion / deltaPotential);
+                mNodes[node]->setNetworkCapacitance(timeStep * fluxPerturbation / deltaPotential);
             } else {
                 mNodes[node]->setNetworkCapacitance(0.0);
             }
@@ -1618,7 +1618,7 @@ void Gunns::conditionAdmittanceMatrix()
             rowSum += mAdmittanceMatrix[index];
         }
 
-        if (fabs(rowSum) < DBL_EPSILON) {
+        if (std::fabs(rowSum) < DBL_EPSILON) {
             const int diagonal = row*mNetworkSize+row;
             mAdmittanceMatrix[diagonal] += std::max(mAdmittanceMatrix[diagonal], DBL_EPSILON) * 1.0E-15;
         }

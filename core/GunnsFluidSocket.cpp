@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Socket Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -291,7 +291,7 @@ int GunnsFluidSocket::requestDisconnection(const GunnsFluidJumperPlug* plug)
 /// @details  Updates the socket's conductivity based on connection state, leak-thru malfunction and
 ///           whether it is self-sealing.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSocket::updateState(const double)
+void GunnsFluidSocket::updateState(const double dt __attribute__((unused)))
 {
     /// - If a connection to a jumper is made, or if there is no connection but the socket is self-
     ///   sealing, then the socket is considered sealed and blocks flow.  When not sealed, the

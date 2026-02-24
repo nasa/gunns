@@ -2,7 +2,7 @@
 @file     GunnsOptimGradientDescent.cpp
 @brief    GUNNS Gradient Descent Optimization implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -317,7 +317,7 @@ void GunnsOptimGradientDescent::update()
 ///           has reached its final value and won't be improved further.  Then the global state is
 ///           updated as the integral, from its previous state, of the chosen gradients.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsOptimGradientDescent::propagateState(const double gain)
+void GunnsOptimGradientDescent::propagateState(const double gain __attribute((unused)))
 {
     for (unsigned int i=0; i<mInStatesMaster->size(); ++i) {
 
@@ -392,7 +392,7 @@ void GunnsOptimGradientDescent::setGradientStates()
         if (0.0 == previousState) {
             mGradients.at(gInc).mState.at(i) += stateDeltaFactor * stateRange;
         } else {
-            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * fabs(previousState);
+            mGradients.at(gInc).mState.at(i) += stateDeltaFactor * std::fabs(previousState);
         }
         mGradients.at(gInc).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gInc).mState.at(i),
@@ -403,7 +403,7 @@ void GunnsOptimGradientDescent::setGradientStates()
         if (0.0 == previousState) {
             mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * stateRange;
         } else {
-            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * fabs(previousState);
+            mGradients.at(gDec).mState.at(i) -= stateDeltaFactor * std::fabs(previousState);
         }
         mGradients.at(gDec).mState.at(i) = MsMath::limitRange(mInStatesMaster->at(i).mMinimum,
                                                               mGradients.at(gDec).mState.at(i),
@@ -452,7 +452,7 @@ void GunnsOptimGradientDescent::assignCost(const double cost, const double runId
         if (runIdReturned == mGradients.at(i).mRunId) {
             mGradients.at(i).mDeltaCost = cost - mState->mCost;
             double costGradient = 0.0;
-            if (fabs(mGradients.at(i).mDeltaState) > DBL_EPSILON) {
+            if (std::fabs(mGradients.at(i).mDeltaState) > DBL_EPSILON) {
                 costGradient = mGradients.at(i).mDeltaCost / mGradients.at(i).mDeltaState;
             }
             mGradients.at(i).mCostGradient = costGradient;

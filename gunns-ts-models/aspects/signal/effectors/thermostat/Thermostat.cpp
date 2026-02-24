@@ -1,8 +1,8 @@
-/************************************** TRICK HEADER ***********************************************
+/*
 @file     Thermostat.cpp
 @brief    Thermostat model implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -10,7 +10,7 @@ LIBRARY DEPENDENCY:
     (aspects/signal/effectors/thermostat/HtrControl.o)
     (common/sensors/SensorAnalog.o)
     )
-***************************************************************************************************/
+*/
 #include "Thermostat.hh"
 #include "aspects/thermal/PtcsMacros.hh"
 #include <string>
@@ -333,7 +333,7 @@ UserLoadMode Thermostat::readSensors(const UserLoadMode commandStatus)
     for (int i = 0; i < mNumSensors; ++i)
     {
         /// - Declare a temporary variable that represents the sensed value of this specific sensor.
-        double sensedTemp = mTempSensor[i].getSensedOutput();
+        double sensedTemp = static_cast<double>(mTempSensor[i].getSensedOutput());
 
         /// - Determine the command status for this particular temperature.
         UserLoadMode commandFromThisSensor = evaluateAgainstSetpoints( commandStatus, sensedTemp);

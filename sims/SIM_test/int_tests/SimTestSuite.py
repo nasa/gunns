@@ -1,4 +1,4 @@
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved. */
 #
 import os
@@ -64,7 +64,7 @@ trick.add_read(0.0, """printTestSuiteHeader()""" )
 # you to register tests and then run either a single test within the suite or run all the tests
 # in the order they were registered.
 #===============================================================================================
- 
+
 # tearDownTime : The amount of time added to the last scheduled test event time before shutting
 # down the entire sim.
 tearDownTime = 3.0   # 3 seconds seems to be a reasonable value for most cases.

@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_FLUID_CONDUCTOR_THREE_WAY_VALVE    Three Way Valve Model
 @ingroup   TSM_GUNNS_FLUID_CONDUCTOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -154,6 +154,8 @@ class GunnsFluid3WayValve : public GunnsFluidLink
         virtual void transportFlows(const double dt);
         /// @brief Updates the State of the 3-way valve.
         virtual void updateState(const double dt);
+        /// @brief Gets the 3-way valve position.
+        virtual double getPosition();
         /// @brief Sets the 3-way valve position.
         virtual void setPosition(const double position);
         /// @brief Gets a pointer to the path A valve object.
@@ -194,6 +196,18 @@ class GunnsFluid3WayValve : public GunnsFluidLink
 inline void GunnsFluid3WayValve::setPosition(const double position)
 {
     mPosition = position;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  position  (--)  (0-1) 3-way valve fluid position.
+///
+/// @details  Gets the 3-way valve position.  The position should be 0-1, 0 representing fully
+///           closed and 1 representing fully open of the path given by the config parameter
+///           mPositionPathB (false = path A).  The path's 2-way valve positions always sum to 1.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluid3WayValve::getPosition()
+{
+    return mPosition;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

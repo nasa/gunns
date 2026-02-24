@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -49,7 +49,7 @@ def parseClean(file):
                 break
     with open(file, 'r') as fin:
         fin_str = fin.read()
-        
+
     # Replace the root element with just the tag.
     search = re.search(r'<' + root_tag + '.+?>', fin_str)
     if (search):
@@ -59,7 +59,7 @@ def parseClean(file):
         else:
             sub_in = '<' + root_tag + '>'
         fin_str = re.sub(sub_out, sub_in, fin_str)
-    
+
     for namespace in namespaces:
         # Find all occurrences of the namespace, ns, in <*ns:> without a quote between
         # < and ns, and remove duplicates.

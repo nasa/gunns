@@ -5,7 +5,7 @@
 /// @defgroup UT_TSM_GUNNS_FLUID_CONDUCTOR_REGULATOR_VALVE   Regulator Valve Unit Tests
 /// @ingroup  UT_TSM_GUNNS_FLUID_CONDUCTOR
 ///
-/// @copyright Copyright 2019 United States Government as represented by the Administrator of the
+/// @copyright Copyright 2024 United States Government as represented by the Administrator of the
 ///            National Aeronautics and Space Administration.  All Rights Reserved.
 ///
 /// @details  Unit Tests for the GUNNS Fluid Pressure Regulator Valve link model.
@@ -132,6 +132,8 @@ class UtGunnsFluidRegulatorValve: public CppUnit::TestFixture
         double                              mThermalLength;          /**< (m)             Tube length for thermal convection. */
         double                              mThermalDiameter;        /**< (m)             Tube inner diameter for thermal convection. */
         double                              mSurfaceRoughness;       /**< (m)             Tube wall surface roughness for thermal convection. */
+        double                              mInletDependencyCoeff0;  /**< (1)             0th order coefficient of inlet dependency effect on control pressure. */
+        double                              mInletDependencyCoeff1;  /**< (1/kPa)         1st order coefficient of inlet dependency effect on control pressure. */
         double                              mThermalSurfaceArea;     /**< (m2)            Tube inner surface area for thermal convection       */
         double                              mThermalROverD;          /**< (--)            Tube surface roughness over diameter for convection  */
         double                              mReseatPressure;         /**< (kPa)           Pressure at which valve closes. */

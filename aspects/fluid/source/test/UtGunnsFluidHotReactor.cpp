@@ -722,10 +722,7 @@ void UtGunnsFluidHotReactor::testUpdateFluid()
         mArticle->mCompounds[NH42HPO4].mMass      =  0.0;
         mArticle->mCompounds[H3PO4].mMass         =  0.0;
         mArticle->mCompounds[NH3].mMass           =  0.0;
-        const double expectedNH3Mass              =  mArticle->mInternalFluid->
-                                                     getMassFraction(FluidProperties::GUNNS_NH3) *
-                                                     mArticle->mInternalFluid->getMass();
-        mArticle->mFlowRate                       = 0.0;
+        mArticle->mFlowRate                       =  0.0;
         mArticle->mInternalFluid->setTemperature(mWallTemperature);
         mArticle->updateFluid(mTimeStep, mFlowRate);
         const double returnedNH42HPO4TotalMass    =  mArticle->mCompounds[NH42HPO4].mTotalMass;
@@ -752,10 +749,7 @@ void UtGunnsFluidHotReactor::testUpdateFluid()
         mArticle->mCompounds[NH42HPO4].mMass      =  0.0;
         mArticle->mCompounds[H3PO4].mMass         =  0.0;
         mArticle->mCompounds[NH3].mMass           =  0.0;
-        const double expectedNH3Mass              =  mArticle->mInternalFluid->
-                                                     getMassFraction(FluidProperties::GUNNS_NH3) *
-                                                     mArticle->mInternalFluid->getMass();
-        mArticle->mFlowRate                       = 1.0;
+        mArticle->mFlowRate                       =  1.0;
         mArticle->mInternalFluid->setTemperature(mWallTemperature);
         mArticle->updateFluid(0.0, mFlowRate);
         const double returnedNH42HPO4TotalMass    =  mArticle->mCompounds[NH42HPO4].mTotalMass;

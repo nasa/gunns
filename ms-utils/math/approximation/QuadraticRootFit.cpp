@@ -1,7 +1,10 @@
-/************************** TRICK HEADER **********************************************************
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  LIBRARY DEPENDENCY:
     ((TsApproximation.o))
-***************************************************************************************************/
+*/
 
 #include <cfloat>
 
@@ -43,7 +46,7 @@ QuadraticRootFit::QuadraticRootFit(const double a,    const double b,
                                    const double minX, const double maxX,
                                    const std::string &name)
     :
-    TsApproximation(minX, maxX, -FLT_EPSILON, +FLT_EPSILON),
+    TsApproximation(minX, maxX, -DBL_EPSILON, +DBL_EPSILON),
     mA(-a),
     mB(a * a),
     mC(4.0 * b),
@@ -74,16 +77,17 @@ void QuadraticRootFit::init(const double a,    const double b,
                             const double minX, const double maxX,
                             const std::string &name)
 {
+    double flt_epsilon = static_cast<double>(FLT_EPSILON);
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -flt_epsilon, +flt_epsilon, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
 
     /// - Throw a TsInitializationException exception on a singularity (divide by 0) in the allegedly valid range.
-    TS_GENERIC_IF_ERREX((fabs(b) < DBL_EPSILON), TsInitializationException,
+    TS_GENERIC_IF_ERREX((std::fabs(b) < DBL_EPSILON), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
-    TS_GENERIC_IF_ERREX((minX + FLT_EPSILON < -mB / mC && -mB / mC < maxX - FLT_EPSILON), TsInitializationException,
+    TS_GENERIC_IF_ERREX((minX + flt_epsilon < -mB / mC && -mB / mC < maxX - flt_epsilon), TsInitializationException,
                         "Invalid Input Argument", "Singularity (divide by 0) in the allegedly valid range.");
 
     /// - Initialize the coefficients with validated values.
@@ -95,4 +99,3 @@ void QuadraticRootFit::init(const double a,    const double b,
     /// - Set the initialization complete flag.
     mInitFlag = true;
 }
-

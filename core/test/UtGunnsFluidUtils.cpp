@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 */
 
@@ -17,7 +17,6 @@ UtGunnsFluidUtils::UtGunnsFluidUtils()
     mFluidTcConfig1(),
     mFluidConfig1(),
     mFluidConfig2(),
-    fractions(),
     mFluidInput1(),
     mFluidInput2(),
     mFluidInput3(),
@@ -47,7 +46,6 @@ void UtGunnsFluidUtils::tearDown()
     delete tFluid1;
     delete mFluidInput2;
     delete mFluidInput1;
-    delete[] fractions;
     delete mFluidConfig2;
     delete mFluidConfig1;
     delete mFluidProperties;
@@ -78,10 +76,7 @@ void UtGunnsFluidUtils::setUp()
     types[2]    = FluidProperties::GUNNS_CO2;
     mFluidConfig2 = new PolyFluidConfigData(mFluidProperties, types, 3);
 
-    fractions = new double[3];
-    fractions[0] = 0.5;
-    fractions[1] = 0.5;
-    fractions[2] = 0.0;
+    double fractions[3] = {0.5, 0.5, 0.0};
     mFluidInput1 = new PolyFluidInputData(283.15,                   //temperature
                                           700.728,                  //pressure
                                           0.0,                      //flowRate
@@ -127,8 +122,8 @@ void UtGunnsFluidUtils::testAdmittance()
 
     /// - Calculate expected link admittance, with default pressure exponent (0.5).
     double effectiveConductivity = 1.0;
-    double expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
+    double expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
 
     /// - Get link admittance and verify.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -150,8 +145,8 @@ void UtGunnsFluidUtils::testAdmittance()
     fluid3.setPressure(pressure2);
     density2  = fluid3.getDensity();
     molWeight = 0.5 * (tFluid1->getMWeight() + fluid3.getMWeight());
-    expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
+    expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (pressure1 - pressure2)) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
                                  GunnsFluidUtils::computeAdmittance(effectiveConductivity,
                                                                     1.0,
@@ -174,7 +169,7 @@ void UtGunnsFluidUtils::testAdmittance()
 
     /// - Test for pressure exponent configured to 0.75.
     expectedAdmittance = effectiveConductivity;
-    expectedAdmittance *= powf( 0.5 * (density1 + density2) * 1000.0 * (pressure1 - pressure2), 0.75);
+    expectedAdmittance *= std::pow( 0.5 * (density1 + density2) * 1000.0 * (pressure1 - pressure2), 0.75);
     expectedAdmittance = expectedAdmittance / (pressure1 - pressure2) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
                                  GunnsFluidUtils::computeAdmittance(effectiveConductivity,
@@ -189,8 +184,8 @@ void UtGunnsFluidUtils::testAdmittance()
     fluid3.resetState();
     density2  = fluid3.getDensity();
     molWeight = tFluid1->getMWeight();
-    expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / pressure1) / molWeight;
+    expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / pressure1) / molWeight;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fluid3.getDensity(), 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fluid3.getMWeight(), 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -231,8 +226,8 @@ void UtGunnsFluidUtils::testLowDpAdmittance()
 
     /// - Calculate expected link admittance.
     double effectiveConductivity = 1.0;
-    double expectedAdmittance = effectiveConductivity * sqrt( 1000.0 ) *
-            sqrt( 0.5 * (density1 + density2) / (1.0)) / molWeight;
+    double expectedAdmittance = effectiveConductivity * std::sqrt( 1000.0 ) *
+            std::sqrt( 0.5 * (density1 + density2) / (1.0)) / molWeight;
 
     /// - Get link admittance and verify.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedAdmittance,
@@ -335,12 +330,12 @@ void UtGunnsFluidUtils::testLowPressureCapacitance()
     double molWeight = tFluid.getMWeight();    // Should be 2.8836520501689176e+01
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.8836520501689176e+01, molWeight,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(FLT_EPSILON,            tFluid.getPressure(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(static_cast<double>(FLT_EPSILON), tFluid.getPressure(), DBL_EPSILON);
 
     /// - Call PolyFluid directly for the same density perturbation that computeCapacitance does,
     ///   and verify it matches this hardcoded result.  This is a redundant check on PolyFluid.
-    double P1 = 0.999 * 0.5 * FLT_EPSILON;
-    double P2 = 1.001 * 0.5 * FLT_EPSILON;
+    double P1 = 0.999 * 0.5 * static_cast<double>(FLT_EPSILON);
+    double P2 = 1.001 * 0.5 * static_cast<double>(FLT_EPSILON);
     double rho1 = tFluid.computeDensity(300.0, P1);         // Should be 6.8838677529188106e-10
     double rho2 = tFluid.computeDensity(300.0, P2);         // Should be 6.8976492699416704e-10
 
@@ -351,7 +346,7 @@ void UtGunnsFluidUtils::testLowPressureCapacitance()
     double capacitance = (rho2 - rho1) * volume / (molWeight * (P2 - P1));
 
     /// - Call computeCapacitance and verify correct mCapacitance and return value result.
-    tFluid.setPressure(0.5 * FLT_EPSILON);
+    tFluid.setPressure(0.5 * static_cast<double>(FLT_EPSILON));
     double tResult = GunnsFluidUtils::computeCapacitance(&tFluid, volume);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(capacitance, tResult,            DBL_EPSILON);
 
@@ -404,7 +399,7 @@ void UtGunnsFluidUtils::testComputeIsentropicTemperature()
     double gamma                = tFluid1->getAdiabaticIndex();
     double initialT             = tFluid1->getTemperature();
 
-    double finalT = initialT * pow(Pratio, ((gamma - 1.0) / gamma));
+    double finalT = initialT * std::pow(Pratio, ((gamma - 1.0) / gamma));
     finalT = initialT + expansionScaleFactor * (finalT - initialT);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(finalT,
@@ -422,7 +417,7 @@ void UtGunnsFluidUtils::testComputeIsentropicTemperature()
     gamma                = tFluid1->getAdiabaticIndex();
     initialT             = tFluid1->getTemperature();
 
-    finalT = initialT * pow(Pratio, ((gamma - 1.0) / gamma));
+    finalT = initialT * std::pow(Pratio, ((gamma - 1.0) / gamma));
     finalT = initialT + expansionScaleFactor * (finalT - initialT);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(finalT,
@@ -463,7 +458,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     double desiredMdot = 1.0;
     double dP = tFluid1->getPressure() - tFluid2->getPressure();
     double avgDensity = 0.5 * (tFluid1->getDensity() + tFluid2->getDensity());
-    double expectedConductivity = desiredMdot / sqrt(dP * 1000.0 * avgDensity);
+    double expectedConductivity = desiredMdot / std::sqrt(dP * 1000.0 * avgDensity);
     double minLinearizationP = 1.0;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
@@ -492,7 +487,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
                                  FLT_EPSILON);
 
     /// - Test with pressure exponent 0.75.
-    expectedConductivity = desiredMdot / powf(dP * 1000.0 * avgDensity, 0.75);
+    expectedConductivity = desiredMdot / std::pow(dP * 1000.0 * avgDensity, 0.75);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -503,7 +498,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
 
     /// - Test using a negative desired flow rate
     desiredMdot = -1.0;
-    expectedConductivity = fabs(desiredMdot) / sqrt(dP * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(dP * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -514,7 +509,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     /// - Test using a reverse pressure gradient
     desiredMdot = 1.0;
     dP = tFluid1->getPressure() - tFluid2->getPressure();
-    expectedConductivity = fabs(desiredMdot) / sqrt(fabs(dP) * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(std::fabs(dP) * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -536,7 +531,7 @@ void UtGunnsFluidUtils::testPredictConductivity()
     tFluid2->setPressure(tFluid1->getPressure() - 0.5);
     dP = tFluid1->getPressure() - tFluid2->getPressure();
     avgDensity = 0.5 * (tFluid1->getDensity() + tFluid2->getDensity());
-    expectedConductivity = fabs(desiredMdot) / sqrt(minLinearizationP * 1000.0 * avgDensity);
+    expectedConductivity = std::fabs(desiredMdot) / std::sqrt(minLinearizationP * 1000.0 * avgDensity);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductivity,
                                  GunnsFluidUtils::predictConductivity(desiredMdot,
                                                                       minLinearizationP,
@@ -559,7 +554,7 @@ void UtGunnsFluidUtils::testPredictExpansionScaleFactor()
     double pressureRatio = tFluid2->getPressure() / tFluid1->getPressure();
     double supplyT = tFluid1->getTemperature();
     double gamma   = tFluid1->getAdiabaticIndex();
-    double expectedFactor = -desiredDT / (supplyT * (pow(pressureRatio, (gamma-1.0)/gamma) - 1.0));
+    double expectedFactor = -desiredDT / (supplyT * (std::pow(pressureRatio, (gamma-1.0)/gamma) - 1.0));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFactor,
                                  GunnsFluidUtils::predictExpansionScaleFactor(desiredDT,
                                                                               tFluid1,
@@ -1130,10 +1125,7 @@ void UtGunnsFluidUtils::testMoleToMassFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 16: testMoleToMassFraction ................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.5;
-    fractions[1] = 0.5;
-    fractions[2] = 0.0;
-
+    double fractions[3] = {0.5, 0.5, 0.0};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMoleFractionToMassFraction(outFractions, fractions, mFluidConfig1);
@@ -1174,10 +1166,7 @@ void UtGunnsFluidUtils::testMassToMoleFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 17: testMassToMoleFraction ................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.3;
-    fractions[1] = 0.5;
-    fractions[2] = 0.2;
-
+    double fractions[3] = {0.3, 0.5, 0.2};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMassFractionToMoleFraction(outFractions, fractions, mFluidConfig1);
@@ -1218,9 +1207,7 @@ void UtGunnsFluidUtils::testPpToMoleFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 18: testPpToMoleFraction ..................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 78.0;
-    fractions[1] = 20.0;
-    fractions[2] =  2.0;
+    double fractions[3] = {78.0, 20.0,  2.0};
     const double sum = fractions[0] + fractions[1] + fractions[2];
 
     double outFractions[3] = {0.0, 0.0, 0.0};
@@ -1257,10 +1244,7 @@ void UtGunnsFluidUtils::testMoleToPpFraction()
     std::cout << "\n UtGunnsFluidUtils ...... 19: testMoleToPpFraction ..................";
 
     /// - Test nominal mixture case.
-    fractions[0] = 0.78;
-    fractions[1] = 0.20;
-    fractions[2] = 0.02;
-
+    double fractions[3] = {0.78, 0.20, 0.02};
     double outFractions[3] = {0.0, 0.0, 0.0};
 
     GunnsFluidUtils::convertMoleFractionToPartialPressure(outFractions, fractions, mFluidConfig1,

@@ -1,4 +1,7 @@
 /********************************* TRICK HEADER *******************************
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 PURPOSE:
     (Unit Test Line Segment Intersect)
 
@@ -31,21 +34,21 @@ class UT_LineSegmentIntersect: public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE(UT_LineSegmentIntersect);
 
-	    CPPUNIT_TEST(triangleIntersectRayAndSegment);
-	    CPPUNIT_TEST(triangleIntersectRayOnly);
-	    CPPUNIT_TEST(triangleNoIntersect);
+        CPPUNIT_TEST(triangleIntersectRayAndSegment);
+        CPPUNIT_TEST(triangleIntersectRayOnly);
+        CPPUNIT_TEST(triangleNoIntersect);
 
-	    CPPUNIT_TEST(cylinderIntersectRayAndSegment);
-	    CPPUNIT_TEST(cylinderIntersectRayOnly);
-	    CPPUNIT_TEST(cylinderNoIntersect);
+        CPPUNIT_TEST(cylinderIntersectRayAndSegment);
+        CPPUNIT_TEST(cylinderIntersectRayOnly);
+        CPPUNIT_TEST(cylinderNoIntersect);
 
-	    CPPUNIT_TEST(sphereIntersectRayAndSegment);
-	    CPPUNIT_TEST(sphereIntersectRayOnly);
-	    CPPUNIT_TEST(sphereNoIntersect);
+        CPPUNIT_TEST(sphereIntersectRayAndSegment);
+        CPPUNIT_TEST(sphereIntersectRayOnly);
+        CPPUNIT_TEST(sphereNoIntersect);
 
-	    CPPUNIT_TEST(spheroidIntersectRayAndSegment);
-	    CPPUNIT_TEST(spheroidIntersectRayOnly);
-	    CPPUNIT_TEST(spheroidNoIntersect);
+        CPPUNIT_TEST(spheroidIntersectRayAndSegment);
+        CPPUNIT_TEST(spheroidIntersectRayOnly);
+        CPPUNIT_TEST(spheroidNoIntersect);
 
         CPPUNIT_TEST_SUITE_END();
 
@@ -68,4 +71,4 @@ class UT_LineSegmentIntersect: public CppUnit::TestFixture
         void spheroidNoIntersect();
 };
 
-#endif 
+#endif

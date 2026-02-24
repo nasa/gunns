@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2021 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -262,7 +262,7 @@ void GunnsFluidAccum::buildConductance()
     /// - Compute system conductance using effective conductivity.
     double liquidSystemConductance = MsMath::limitRange(0.0, mEffectiveConductivity, mConductanceLimit);
     /// - Set admittance matrix.
-    if (fabs(mAdmittanceMatrix[3] - liquidSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[3] - liquidSystemConductance) > 0.0) {
         /// - Zero out mAdmittanceMatrix[1] and [2]. No flow ever allowed between nodes.  Note we
         ///   don't zero [0] because that is reserved for the pressurizer to control.  It will be
         ///   updated by GunnsFluidAccumGas::buildGasConductance when applicable.  Because we don't
@@ -465,7 +465,7 @@ double GunnsFluidAccum::computeMass(const double volume, const double density) c
 double GunnsFluidAccum::computeMass(const double dt, const double flowRate, const double currentMass) const
 {
     double newMass = currentMass;
-    if (fabs(flowRate) > m100EpsilonLimit) {
+    if (std::fabs(flowRate) > m100EpsilonLimit) {
         newMass = currentMass + flowRate * dt;
     }
     return (std::max(newMass, DBL_EPSILON));
@@ -815,7 +815,7 @@ bool GunnsFluidAccum::rampValue(const double dt,
                                 const double rateLowerLimit,
                                 const double rateUpperLimit)
 {
-    double rampComplete = false;
+    bool rampComplete = false;
     /// - Limit target value.
     targetValue = MsMath::limitRange(targetLowerLimit, targetValue, targetUpperLimit);
     /// - Limit ramp rate.
@@ -1370,10 +1370,10 @@ void GunnsFluidAccum::validate(const GunnsFluidAccumConfigData& configData,
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "Min Conductivity Scale must be between DBL_EPSILON and 1.0.");
     }
-    /// - Throw an exception on accumulator volume <= DBL_EPSILON.
-    if (configData.mAccumVolume <= FLT_EPSILON) {
+    /// - Throw an exception on accumulator volume <= FLT_EPSILON.
+    if (configData.mAccumVolume <= static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
-                    "Accumlator Volume cannot be <= FLT_EPSILON.");
+                    "Accumulator Volume cannot be <= FLT_EPSILON.");
     }
     /// - Throw an exception on Minimum chamber volume percentage <= 0.0.
     if (configData.mMinChamberVolPercent <= 0.0) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# @copyright Copyright 2023 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -66,12 +66,12 @@ with open('../../lib/trick_if/S_source.hh', 'r') as fsources:
     # get the file path from that string by stripping off the leading whitespace and #include
     for line in fsources:
         classpath = line.strip().lstrip('#include ').strip('"')
-        
+
         #skip if the extension is not hh. We're only testing C++ classes
         if classpath != '':
             if 'hh' == os.path.basename(classpath).split('.')[1]:
                 classtype = os.path.basename(classpath).split('.')[0]
-            
+
                 #skip if the class type is in the class ignore list or
                 #is not in the test list
                 if (classtype not in class_ignore_list) and (classtype in testlist):
@@ -99,7 +99,7 @@ if anytests:
 else:
     print("-=#=-=#=-=#=-=#=-=#=-")
     print("There were no classes to test.")
-    
+
 print("-=#=-=#=-=#=-=#=-=#=-")
 print('TEST PASSED')
 sys.exit(0)

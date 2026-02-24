@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Fluid Evaporation Link implementation
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -350,12 +350,12 @@ void GunnsFluidEvaporation::updateVaporRate(const double dt)
         const double liqMWeight = mNodes[0]->getContent()->getMWeight();
 
         if ( (DBL_EPSILON < mGasMWeight) and (DBL_EPSILON < liqMWeight) and (DBL_EPSILON < dt) ) {
-            if (mLiquidPoolMass > FLT_EPSILON) {
+            if (mLiquidPoolMass > static_cast<double>(FLT_EPSILON)) {
                 /// - Evaporation gas rate as a function of pool mass, evaporation coefficient and
                 ///   vapor potential, then reduced by the link's blockage malfunction.  Limited to
                 ///   positive values so this link can't condense.
                 double mdot_gas = std::max(mPotentialDrop, 0.0) * mEvaporationCoeff
-                                * powf(mLiquidPoolMass, mPoolMassExponent);
+                                * std::pow(mLiquidPoolMass, mPoolMassExponent);
                 if (mMalfBlockageFlag) {
                     mdot_gas *= (1.0 - MsMath::limitRange(0.0, mMalfBlockageValue, 1.0));
                 }

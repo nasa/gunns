@@ -2,7 +2,7 @@
 @file
 @brief     Pump Motor Controller Model implementation.
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -138,7 +138,7 @@ TsPumpMotorControllerInputData::TsPumpMotorControllerInputData(const DcDynPumpMo
                                                                const double voltage,
                                                                const double sensedSpeed,
                                                                const double sensedTemperature,
-                                                               const double startupState,
+                                                               const bool   startupState,
                                                                const bool   commandEnable,
                                                                const double commandSpeed,
                                                                const double noisePhase)
@@ -524,7 +524,7 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         speedCommand = mCommandSpeed;
     }
 
-    if (mMotorPowerBus and FLT_EPSILON < speedCommand) {
+    if (mMotorPowerBus and static_cast<double>(FLT_EPSILON) < speedCommand) {
 
         /// - Apply noise as a sine wave to speed command.
         mNoisePhase += UnitConversion::TWO_PI * mNoiseFrequency * dt;
@@ -537,7 +537,7 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         /// - Compute speed error and speed error rate of change.
         double dSpeedError = -mSpeedError;
         mSpeedError = -1.0;
-        if (speedCommand > FLT_EPSILON) {
+        if (speedCommand > static_cast<double>(FLT_EPSILON)) {
             mSpeedError = (speedCommand - mSensedSpeed) / speedCommand;
         }
         dSpeedError += mSpeedError;
@@ -548,8 +548,8 @@ void TsPumpMotorController::updateControlFilter(const double dt)
         /// - Control filter damping function.  Damping cuts out at small speed errors to avoid
         ///   instability.  The minimum of 0.0001 represent 0.01% of speed scale and avoids divide-
         ///   by-zero.  We also use this condition to end the start-up state for current limiting.
-        if (fabs(mSpeedError) > mDampingCutoff) {
-            mPulseWidth   += mDampingGain * dSpeedError / std::max(fabs(mSpeedError), 0.0001);
+        if (std::fabs(mSpeedError) > mDampingCutoff) {
+            mPulseWidth   += mDampingGain * dSpeedError / std::max(std::fabs(mSpeedError), 0.0001);
         } else {
             mStartupState  = false;
         }
@@ -631,4 +631,3 @@ double TsPumpMotorController::getTotalPower() const
 {
     return mVoltage * mTotalCurrent;
 }
-

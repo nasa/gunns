@@ -1,5 +1,5 @@
 /****************************** TRICK HEADER ******************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -257,13 +257,13 @@ void GunnsFluidHeatExchanger::validate(const GunnsFluidHeatExchangerConfigData& 
     }
 
     /// - Throw an exception if default heat transfer coefficient < FLT_EPSILON.
-    if (inputData.mHeatTransferCoefficient < FLT_EPSILON) {
+    if (inputData.mHeatTransferCoefficient < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Default heat transfer coefficient < FLT_EPSILON.");
     }
 
     /// - Throw an exception if default initial segment temperature < FLT_EPSILON.
-    if(inputData.mInitialSegmentTemperature < FLT_EPSILON) {
+    if(inputData.mInitialSegmentTemperature < static_cast<double>(FLT_EPSILON)) {
         GUNNS_ERROR(TsInitializationException, "Invalid Input Data",
                     "Default initial segment temperature < FLT_EPSILON.");
     }
@@ -315,7 +315,7 @@ void GunnsFluidHeatExchanger::updateSegments(const double dt, const double flowR
     mTotalEnergyGain = 0.0;
 
     /// - Skip if mass flow rate or time step are too small.
-    if (fabs(flowRate) > DBL_EPSILON && dt > DBL_EPSILON) {
+    if (std::fabs(flowRate) > DBL_EPSILON && dt > DBL_EPSILON) {
 
         /// - Set up indexing based on flow direction.
         int start    = 0;
@@ -356,7 +356,7 @@ void GunnsFluidHeatExchanger::updateSegments(const double dt, const double flowR
 ///           internal fluid.  If the override temperature value is zero, nothing is done.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidHeatExchanger::applyTemperatureOverride() {
-    if (FLT_EPSILON < mTemperatureOverride) {
+    if (static_cast<double>(FLT_EPSILON) < mTemperatureOverride) {
         mInternalFluid->setTemperature(mTemperatureOverride);
     }
 }
@@ -425,4 +425,19 @@ void GunnsFluidHeatExchanger::setMalfSegDegrade(const int segment, const bool fl
 void GunnsFluidHeatExchanger::setTemperatureOverride(double value)
 {
     mTemperatureOverride = std::max(0.0, value);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] segment (--) The segment number to apply the temperature to
+/// @param[in] value   (K)  Temperature
+///
+/// @details  Sets the segment temperature to given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void GunnsFluidHeatExchanger::setSegTemperature(const int segment, const double value)
+{
+    if (MsMath::isInRange(0, segment, mNumSegs-1)) {
+        mSegTemperature[segment] = std::max(0.0, value);
+    } else {
+        GUNNS_WARNING("ignored invalid segment " << segment << ".");
+    }
 }

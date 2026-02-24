@@ -2,7 +2,7 @@
 @file
 @brief    GUNNS Electrical Converter Input Link implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -261,7 +261,7 @@ void GunnsElectConverterInput::validate(const GunnsElectConverterInputConfigData
 {
     /// - Issue an error on backwards trip limits.
     if ( (configData.mInputUnderVoltageTripLimit > configData.mInputOverVoltageTripLimit) and
-         (configData.mInputOverVoltageTripLimit != 0.0) ) {
+         (configData.mInputOverVoltageTripLimit != 0.0F) ) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "input under-voltage trip limit > over-voltage limit.");
     }
@@ -301,13 +301,13 @@ void GunnsElectConverterInput::restartModel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in]  dt  (s)  Integration time step.
+/// @param[in]  dt  (s)  Integration time step (unused).
 ///
 /// @details  First step in a non-linear network.  We clear the overloaded state from last pass so
 ///           it can be re-checked this pass.  Update sensors with the timestep to advance their
 ///           drift malfunction.  Then call minorStep for the main update functions.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsElectConverterInput::step(const double dt)
+void GunnsElectConverterInput::step(const double dt __attribute__((unused)))
 {
     /// - Process user commands to dynamically re-map ports.
     processUserPortCommand();
@@ -452,12 +452,12 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         mInputVoltageValid = false;
     } else if (0 == convergedStep) {
         /// - We only check for solution rejection and state change after the network has converged.
-        ///   Until it has converged, we assume hte input voltage is valid.
+        ///   Until it has converged, we assume the input voltage is valid.
         mInputVoltageValid = true;
     } else {
         /// - Sensors are optional; if a sensor exists then the trip uses its sensed value of the
         ///   truth parameter, otherwise the trip looks directly at the truth parameter.
-        float sensedVin = MsMath::limitRange(-FLT_MAX, mPotentialVector[0], FLT_MAX);
+        float sensedVin = MsMath::limitRange(-FLT_MAX, static_cast<float>(mPotentialVector[0]), FLT_MAX);
 
         /// - Note that since we step the sensors without a time-step, its drift malfunction isn't
         ///   integrated.  This is because we don't have the time-step in this function, and we must
@@ -465,7 +465,7 @@ GunnsBasicLink::SolutionResult GunnsElectConverterInput::confirmSolutionAcceptab
         ///   integration too many times.  The result of all this is that drift lags behind by one
         ///   major step for causing trips.
         if (mInputVoltageSensor) {
-            sensedVin = mInputVoltageSensor->sense(0.0, true, sensedVin);
+            sensedVin = mInputVoltageSensor->sense(0.0, true, static_cast<double>(sensedVin));
         }
 
         /// - Check all trip logics for trips.  If any trip, reject the solution.
@@ -537,7 +537,7 @@ bool GunnsElectConverterInput::computeInputVoltage(double& inputVoltage)
             or (mMalfBlockageFlag and (mMalfBlockageValue >= 1.0)) ) {
         inputVoltage = 0.0;
     } else {
-        inputVoltage = fmax(0.0, mPotentialVector[0]);
+        inputVoltage = std::max(0.0, mPotentialVector[0]);
     }
     return mInputVoltageValid;
 }

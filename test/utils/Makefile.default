@@ -15,7 +15,7 @@
 # $ make clean
 # $ make
 #
-# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with asan output 
+# Update compiled objecs for changed gunns models, rebuild the test code, and run the tests with asan output
 # by assigning the ASAN variable to any non-empty value, such as:
 # $ make clean
 # $ make ASAN='anything'

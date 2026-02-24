@@ -1,5 +1,5 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -10,12 +10,14 @@
  PROGRAMMERS:
  ((Tim Caldwell) (GHG) (Initial) (2012-03))
 
-***************************************************************************************************/
+*/
+
 #include "GunnsFluidAccumGas.hh"
 #include "core/GunnsFluidUtils.hh"
 #include "software/exceptions/TsInitializationException.hh"
 
-    const int GunnsFluidAccumGas::GAS_PORT = 0;
+/// @details  Port zero of this link is always attached to a gas node.
+const int GunnsFluidAccumGas::GAS_PORT = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name                             (--)     Link name
@@ -197,7 +199,7 @@ void GunnsFluidAccumGas::buildGasConductance()
 {
     /// - Compute system conductance using effective conductivity.
     double gasSystemConductance = MsMath::limitRange(0.0, mGasEffectiveConductivity, mConductanceLimit);
-    if (fabs(mAdmittanceMatrix[0] - gasSystemConductance) > 0.0) {
+    if (std::fabs(mAdmittanceMatrix[0] - gasSystemConductance) > 0.0) {
         /// - Set mAdmittanceMatrix[0] to flow between port 0 node and accumulator gas chamber.
         mAdmittanceMatrix[0]   =  gasSystemConductance;
         mAdmittanceUpdate = true;
@@ -341,7 +343,7 @@ void GunnsFluidAccumGas::initialize(const GunnsFluidAccumGasConfigData &configDa
     TS_NEW_PRIM_OBJECT_EXT(mGasInternalFluid, PolyFluid,
                            (*(mNodes[GAS_PORT]->getContent()), std::string(mName) + ".mGasInternalFluid"),
                            std::string(mName) + ".mGasInternalFluid");
-    mGasInternalFluid->setMassAndMassFractions(FLT_EPSILON,
+    mGasInternalFluid->setMassAndMassFractions(static_cast<double>(FLT_EPSILON),
                                             inputData.mGasFluidInputData->mMassFraction);
     mGasInternalFluid->setPressure(inputData.mGasFluidInputData->mPressure);
     mGasInternalFluid->setTemperature(inputData.mGasFluidInputData->mTemperature);
@@ -458,7 +460,7 @@ void GunnsFluidAccumGas::updateCapacitance()
         ///   computed liquid capacitance. If mKSpring <=  DBL_EPSILON (no spring), use
         ///   computed capacitance.
         if (mSpringCoeff0 > DBL_EPSILON || mSpringCoeff1 > DBL_EPSILON ||mSpringCoeff2 > DBL_EPSILON) {
-            mLiqCapacitance = fmin(liqCapacitance, mSpringCapacitance);
+            mLiqCapacitance = std::min(liqCapacitance, mSpringCapacitance);
         } else {
             mLiqCapacitance = liqCapacitance;
         }

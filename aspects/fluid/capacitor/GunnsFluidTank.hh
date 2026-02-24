@@ -5,7 +5,7 @@
 @defgroup  TSM_GUNNS_FLUID_CAPACITOR_TANK  Tank Model
 @ingroup   TSM_GUNNS_FLUID_CAPACITOR
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -132,7 +132,13 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
         /// @brief  Returns the heat flux from the tank shell.
         virtual double getHeatFlux() const;
         /// @brief  Returns the bias heat flux from the tank shell.
-        virtual double getBiasHeatFlux() const;
+        virtual float  getBiasHeatFlux() const;
+        /// @brief  Returns the temperature of tank node (K).
+        double         getTemperature() const;
+        /// @brief  Returns the previous pressure of tank node (kPa).
+        double         getPreviousPressure() const;
+        /// @brief  Returns the density of the tank node (kg/m3).
+        double         getDensity() const;
         /// @brief  Returns the delta pressure/delta time.
         double         getDpdt() const;
         /// @brief  Returns the constituent partial pressures.
@@ -177,6 +183,7 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
         float   mSurfaceArea;                        /**<    (m2)       trick_chkpnt_io(**) Inner surface area of tank shell */
         float   mShellRadius;                        /**<    (m)        trick_chkpnt_io(**) Distance from tank shell to center */
         double  mPreviousPressure;                   /**<    (kPa)                          Previous pressure in the node */
+        double  mDensity;                            /**<    (kg/m3)                       Density in the node */
         double  mDpdt;                               /**<    (kPa/s)                        Delta-Pressure / delta-time */
         double  mDpdtFilterGain;                     /**<    (--)       trick_chkpnt_io(**) Gain for the dP/dt filter (0-1) */
         double* mPartialPressure;                    /**<    (kPa)      trick_chkpnt_io(**) Constituent partial pressures */
@@ -221,15 +228,15 @@ class GunnsFluidTank : public  GunnsFluidCapacitor
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsFluidTank::getHeatFlux() const
 {
-    return mHeatFluxFromShell + mBiasHeatFlux;
+    return mHeatFluxFromShell + static_cast<double>(mBiasHeatFlux);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @return   double (W) Bias heat flux.
+/// @return   float (W) Bias heat flux.
 ///
 /// @details  This method returns the bias heat flux.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-inline double GunnsFluidTank::getBiasHeatFlux() const
+inline float GunnsFluidTank::getBiasHeatFlux() const
 {
     return mBiasHeatFlux;
 }
@@ -243,6 +250,36 @@ inline double GunnsFluidTank::getBiasHeatFlux() const
 inline double GunnsFluidTank::getUndampedHeatFlux() const
 {
     return mHeatFluxFromShell;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double (K) Temperature.
+///
+/// @details  This method returns the bulk temperature of the tank node.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidTank::getTemperature() const
+{
+    return mTemperature;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double (kPa) Previous pressure.
+///
+/// @details  This method returns the previous pressure of the tank node.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidTank::getPreviousPressure() const
+{
+    return mPreviousPressure;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double (kg/m3) Density.
+///
+/// @details  This method returns the density of the tank node.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsFluidTank::getDensity() const
+{
+    return mDensity;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

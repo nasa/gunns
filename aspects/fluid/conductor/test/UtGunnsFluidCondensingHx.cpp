@@ -1,5 +1,5 @@
 /**
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -273,7 +273,7 @@ void UtGunnsFluidCondensingHx::testHtc()
     tArticle->mFlowRate = mdot;
     tArticle->mMalfHxDegradeFlag  = true;
     tArticle->mMalfHxDegradeValue = 0.5;
-    double dryHtc = tHxDryHtcCoeff0 + tHxDryHtcCoeff1 * powf(mdot, tHxDryHtcExponent);
+    double dryHtc = tHxDryHtcCoeff0 + tHxDryHtcCoeff1 * std::pow(mdot, tHxDryHtcExponent);
     double expectedHtc = dryHtc * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();
@@ -311,14 +311,14 @@ void UtGunnsFluidCondensingHx::testHtc()
     tArticle->mHtcCoeff0   = 100.0;
     tArticle->mHtcCoeff1   = 1.0E10;
     tArticle->mHtcLimit    = 2000.0;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0))) * 0.5 / tHxNumSegments;
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0))) * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegmentHtc, DBL_EPSILON);
 
     mdot = 10.0;
     tArticle->mFlowRate = mdot;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0))) * 0.5 / tHxNumSegments;
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0))) * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegmentHtc, DBL_EPSILON);
@@ -326,14 +326,14 @@ void UtGunnsFluidCondensingHx::testHtc()
     mdot = FLT_EPSILON;
     tArticle->mFlowRate    = mdot;
     tArticle->mHtcExponent = 0.05;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0))) * 0.5 / tHxNumSegments;
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0))) * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegmentHtc, DBL_EPSILON);
 
     mdot = 10.0;
     tArticle->mFlowRate = mdot;
-    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * powf(mdot, 20.0))) * 0.5 / tHxNumSegments;
+    expectedHtc = std::min(2000.0, (100.0 + 1.0E10 * std::pow(mdot, 20.0))) * 0.5 / tHxNumSegments;
     tArticle->computeHeatTransferCoefficient();
     tArticle->degradeHeatTransferCoefficient();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedHtc,   tArticle->mSegmentHtc, DBL_EPSILON);

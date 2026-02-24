@@ -1,6 +1,6 @@
 #!/bin/tcsh -f
 
-# Copyright 2019 United States Government as represented by the Administrator of the
+# Copyright 2025 United States Government as represented by the Administrator of the
 # National Aeronautics and Space Administration.  All Rights Reserved.
 #
 #TODO Clean this up and improve it to work on a list of test folders....
@@ -29,7 +29,7 @@ cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/fluid/potential/test
 cd $GUNNS_HOME/$FOLDER; make clean;
- 
+
 set FOLDER = aspects/fluid/source/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
@@ -60,16 +60,10 @@ cd $GUNNS_HOME/$FOLDER; make clean;
 set FOLDER = aspects/electrical/resistive/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
-set FOLDER = aspects/electrical/sar/test
-cd $GUNNS_HOME/$FOLDER; make clean;
-
 set FOLDER = aspects/electrical/SolarArray/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/electrical/Switch/test
-cd $GUNNS_HOME/$FOLDER; make clean;
-
-set FOLDER = aspects/electrical/SwitchCard/test
 cd $GUNNS_HOME/$FOLDER; make clean;
 
 set FOLDER = aspects/electrical/UserLoad/test
@@ -79,6 +73,9 @@ set FOLDER = math/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
 set FOLDER = math/approximation/test
+cd $MS_UTILS_HOME/$FOLDER; make clean;
+
+set FOLDER = math/elementary_functions/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
 set FOLDER = math/linear_algebra/test
@@ -108,6 +105,9 @@ cd $MS_UTILS_HOME/$FOLDER; make clean;
 set FOLDER = fileSearch/test
 cd $MS_UTILS_HOME/$FOLDER; make clean;
 
+set FOLDER = interop/test
+cd $MS_UTILS_HOME/$FOLDER; make clean;
+
 set FOLDER = aspects/signal/effectors/thermostat/test
 cd $TS_MODELS_HOME/$FOLDER; make clean;
 
@@ -125,4 +125,3 @@ cd $TS_MODELS_HOME/$FOLDER; make clean;
 
 # clean the test compiled lib
 cd $GUNNS_HOME/lib/test; make clean;
-

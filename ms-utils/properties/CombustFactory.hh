@@ -4,7 +4,7 @@
 @defgroup  TSM_UTILITIES_PROPERTIES_COMBUSTFACTORY Combustion Model Factory
 @ingroup   TSM_UTILITIES_PROPERTIES
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -35,7 +35,7 @@ ASSUMPTIONS AND LIMITATIONS:
 ///@brief       Combustion Model Factory
 ///
 ///@details     This model creates Combustion models. The program using these models calls
-///             CombustFactory()'s sole method, and receives a pointer to the desired combustion model
+///             CombustFactory()'s solve method, and receives a pointer to the desired combustion model
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CombustFactory {

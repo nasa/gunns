@@ -2,7 +2,7 @@
 @file     GunnsOptimMonteCarlo.cpp
 @brief    GUNNS Optimization Monte Carlo Manager implementation
 
-@copyright Copyright 2023 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -332,7 +332,7 @@ void GunnsOptimMonteCarlo::addInput(const std::string& varName, double* address,
 /// @details  This adds a model output variable for which we are trying to achieve its target
 ///           values by optimizing the input variables.  This function adds an optional scalar
 ///           target value, for optimizing a steady-state model.  A target trajectory for a non-
-///           steady-state model can be specified with teh addOutputDataRow function.
+///           steady-state model can be specified with the addOutputDataRow function.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsOptimMonteCarlo::addOutput(const std::string& varName, double* address, const double targetValue, const double costWeight)
 {
@@ -402,7 +402,7 @@ void GunnsOptimMonteCarlo::parseDataRow(std::vector<double>& data, const std::st
 {
     std::string s = values;
     std::string delimiter = ",";
-    size_t pos = 0;
+    std::size_t pos = 0;
     std::string token;
     std::vector<std::string> tokens;
     while ((pos = s.find(delimiter)) != std::string::npos) {

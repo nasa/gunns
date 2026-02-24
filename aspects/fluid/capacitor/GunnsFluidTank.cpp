@@ -1,25 +1,13 @@
-/************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2025 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
-
-PURPOSE:
-   (Classes for the Editable Thermal Fluid Volume Capacitor/Source Model.)
-
-REQUIREMENTS:
-   ()
-
-REFERENCE:
-   ()
-
-ASSUMPTIONS AND LIMITATIONS:
-   ()
 
 LIBRARY DEPENDENCY:
     ((core/GunnsFluidCapacitor.o))
 
 PROGRAMMERS:
    ((Kenneth McMurtrie) (Tietronix Software) (Initial) (2011-09))
-**************************************************************************************************/
+*/
 
 #include <cmath>
 
@@ -157,6 +145,7 @@ GunnsFluidTank::GunnsFluidTank()
     mSurfaceArea(0.0),
     mShellRadius(0.0),
     mPreviousPressure(0.0),
+    mDensity(0.0),
     mDpdt(0.0),
     mDpdtFilterGain(0.0),
     mPartialPressure(0),
@@ -235,9 +224,10 @@ void GunnsFluidTank::initialize(const GunnsFluidTankConfigData& configData,
     mHeatFluxFromShell = 0.0;
     mHeatFluxToShell   = 0.0;
     mTemperature       = mNodes[0]->getContent()->getTemperature();
-    mShellTemperature  = inputData.mShellTemperature;
+    mShellTemperature  = static_cast<double>(inputData.mShellTemperature);
     mBiasHeatFlux      = inputData.mBiasHeatFlux;
     mPreviousPressure  = mNodes[0]->getPotential();
+    mDensity           = mNodes[0]->getContent()->getDensity();
     mDpdt              = 0.0;
     mDpdtFilterGain    = configData.mDpdtFilterGain;
     mEditFluxTarget    = configData.mEditFluxTarget;
@@ -277,19 +267,19 @@ void GunnsFluidTank::validate(const GunnsFluidTankConfigData& configData,
     }
 
     /// - Throw an exception on surface area < 0.
-    if (0.0 > configData.mSurfaceArea) {
+    if (0.0F > configData.mSurfaceArea) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "surface area < 0.");
     }
 
     /// - Throw an exception on shell radius < 0.
-    if (0.0 > configData.mShellRadius) {
+    if (0.0F > configData.mShellRadius) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "shell radius < 0.");
     }
 
     /// - Throw an exception on shell temperature < 0.
-    if (0.0 > inputData.mShellTemperature) {
+    if (0.0F > inputData.mShellTemperature) {
         GUNNS_ERROR(TsInitializationException, "Invalid Configuration Data",
                     "shell temperature < 0.");
     }
@@ -330,7 +320,7 @@ void GunnsFluidTank::updateState(const double dt)
     mFlowRate                   = 0.0;
 
     /// Skip if time step too small.
-    if (dt < FLT_EPSILON) {
+    if (dt < static_cast<double>(FLT_EPSILON)) {
         GUNNS_WARNING("time step too small to perform partial pressure rate edit.");
         return;
     }
@@ -347,7 +337,7 @@ void GunnsFluidTank::updateState(const double dt)
         editComplete[i]         = true;
         if (mEditPartialPressureRateFlag[i]) {
 
-            const double rate = fabs(mEditPartialPressureRateValue[i]);
+            const double rate = std::fabs(mEditPartialPressureRateValue[i]);
             if (rate < DBL_EPSILON) {
                 mEditPartialPressureRateFlag[i] = false;
                 GUNNS_WARNING("partial pressure rate edit canceled, zero rate not allowed.");
@@ -478,7 +468,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
     if (mSurfaceArea > FLT_EPSILON && mShellRadius > FLT_EPSILON) {
         mHeatFluxFromShell = mNodes[0]->getContent()->getThermalConductivity()
                            * (mShellTemperature - mNodes[0]->getContent()->getTemperature())
-                           * mSurfaceArea / mShellRadius;
+                           * static_cast<double>(mSurfaceArea / mShellRadius);
         mHeatFluxToShell   = -mHeatFluxFromShell;
     }
 
@@ -488,7 +478,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
         checkEditTemperatureValue();
 
         mEditPressureValue = computeEditTargetPressure();
-        if (mEditPressureValue < FLT_EPSILON) {
+        if (mEditPressureValue < static_cast<double>(FLT_EPSILON)) {
             mEditPressureValue = 0.0;
             for (int i = 0; i < mNConstituents; ++i) {
                 mEditPartialPressureValue[i] =
@@ -504,9 +494,9 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
         ///   cause momentary mass flux in or out of the node as attached nodes come up to the edit
         ///   P - even non-cap nodes do this - so also check for net flux of the node approaching
         ///   zero.
-        if (fabs(mEditTemperatureValue - mNodes[0]->getContent()->getTemperature()) < FLT_EPSILON &&
-            fabs(mEditPressureValue    - mNodes[0]->getPotential()) < FLT_EPSILON &&
-            fabs(mNodes[0]->getNetFlux()) < mEditFluxTarget ) {
+        if (std::fabs(mEditTemperatureValue - mNodes[0]->getContent()->getTemperature()) < static_cast<double>(FLT_EPSILON) &&
+            std::fabs(mEditPressureValue    - mNodes[0]->getPotential()) < static_cast<double>(FLT_EPSILON) &&
+            std::fabs(mNodes[0]->getNetFlux()) < mEditFluxTarget ) {
             mEditTemperaturePartialPressureFlag = false;
             mEditTemperaturePressureFlag        = false;
             mOverrideVector[0]                  = false;
@@ -563,7 +553,7 @@ void GunnsFluidTank::updateFluid(const double dt, const double)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsFluidTank::checkEditTemperatureValue()
 {
-    if (mEditTemperatureValue < FLT_EPSILON) {
+    if (mEditTemperatureValue < static_cast<double>(FLT_EPSILON)) {
         mEditTemperatureValue = mNodes[0]->getContent()->getTemperature();
         GUNNS_WARNING("user attempted temperature edit to zero, using current temperature instead.");
     }
@@ -634,7 +624,7 @@ void GunnsFluidTank::computeDpdt(const double dt)
         mDpdt = mDpdt + mDpdtFilterGain *
                 ((mNodes[0]->getPotential() - mPreviousPressure) / dt - mDpdt);
         // Avoid arithmetic underflow when approaching zero.
-        if (fabs(mDpdt) < DBL_EPSILON) {
+        if (std::fabs(mDpdt) < DBL_EPSILON) {
             mDpdt = 0.0;
         }
     } else {
@@ -660,6 +650,7 @@ void GunnsFluidTank::processOutputs()
         mMassFraction[i] = mNodes[0]->getContent()->getMassFraction(mInternalFluid->getType(i));
         mMoleFraction[i] = mNodes[0]->getContent()->getMoleFraction(mInternalFluid->getType(i));
         mTemperature     = mNodes[0]->getContent()->getTemperature();
+        mDensity         = mNodes[0]->getContent()->getDensity();
     }
 }
 

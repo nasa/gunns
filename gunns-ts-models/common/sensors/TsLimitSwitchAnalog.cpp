@@ -1,5 +1,5 @@
-/****************************** TRICK HEADER ******************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -23,7 +23,7 @@
  (
   ((Chuck Sorensen) (LZT) (Dec 2, 2011) (TS21) (initial))
  )
- **************************************************************************************************/
+*/
 
 #include "TsLimitSwitchAnalog.hh"
 #include "simulation/hs/TsHsMsg.hh"
@@ -98,7 +98,7 @@ void TsLimitSwitchAnalog::initialize(
 
     TsLimitSwitch::initialize(configData, inputData);
 
-    if(configData.mTolerance < FLT_EPSILON) {
+    if(configData.mTolerance < static_cast<double>(FLT_EPSILON)) {
         hsSendMsg(TS_HS_FATAL, "SENSORS",
                 "TsLimitSwitchAnalog - initialization error: tolerance too small" );
         throw TsInitializationException("Invalid initialization - tolerance too small",
@@ -125,7 +125,7 @@ void TsLimitSwitchAnalog::update(
 
     /// - set local variable inRange true if realValue within tolerance of target
     bool inRange = false;
-    if(fabs(realValue - mTargetValue) < mTolerance) {
+    if(std::fabs(realValue - mTargetValue) < mTolerance) {
         inRange = true;
     }
 

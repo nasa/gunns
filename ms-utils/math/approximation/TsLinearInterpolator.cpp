@@ -1,8 +1,11 @@
-/************************** TRICK HEADER **********************************************************
+/*
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
  LIBRARY DEPENDENCY:
     ((TsApproximation.o)
      (simulation/hs/TsHsMsg.o))
- **************************************************************************************************/
+*/
 
 #include "GenericMacros.hh"
 #include "software/exceptions/TsHsException.hh"
@@ -100,7 +103,7 @@ void TsLinearInterpolator::validateOrdered(const int n, const double x[])
         TS_GENERIC_IF_ERREX(((x[i] <= x[i + 1]) && (x[i + 2] <= x[i + 1])), TsInitializationException,
                             "Invalid Input Argument", "independent variable (x) array not strictly ordered.");
         /// - Throw an exception if the difference between independent variable (x) array values aren't large enough.
-        TS_GENERIC_IF_ERREX(((fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
+        TS_GENERIC_IF_ERREX(((std::fabs(x[i]-x[i+1]) < DBL_EPSILON)), TsInitializationException,
                             "Invalid Input Argument", "difference between independent variable (x) array values not large enough.");
     }
 }
@@ -122,7 +125,7 @@ void TsLinearInterpolator::init(const double *x, const double *z, const int n,
                                 const double minX, const double maxX, const std::string &name)
 {
     /// - Initialize the parent
-    TsApproximation::init(minX, maxX, -FLT_EPSILON, +FLT_EPSILON, name);
+    TsApproximation::init(minX, maxX, -DBL_EPSILON, +DBL_EPSILON, name);
 
     /// - Reset the initialization complete flag.
     mInitFlag = false;
@@ -162,8 +165,8 @@ void TsLinearInterpolator::init(const double *x, const double *z, const int n,
 
     mMinX = minX;
     mMaxX = maxX;
-    mMinY = -FLT_EPSILON;
-    mMaxY =  FLT_EPSILON;
+    mMinY = -DBL_EPSILON;
+    mMaxY =  DBL_EPSILON;
 
     /// - Throw an exception if independent variable (x) array does not cover valid range.
     ///   mX is used to ensure input array is in strictly ascending order.
@@ -236,5 +239,3 @@ inline double TsLinearInterpolator::evaluate(const double x, const double y __at
     /// - Return the linearly interpolated value.
     return mZ[mI] + (mZ[mI+1] - mZ[mI]) * (x - mX[mI]) / (mX[mI+1] - mX[mI]);
 }
-
-

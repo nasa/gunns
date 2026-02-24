@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -131,7 +131,7 @@ void UtSimBusQutils::testIsPulseHigh()
     bool expectedBool = false;
     CPPUNIT_ASSERT_EQUAL(expectedBool,
                                  SimBusQutils::isPulseHigh(tQueueBool, tExtractionSize));
-    
+
     /// - Set just one boolean to true in boolean array
     tQueueBool[tExtractionSize - 1] = true;
 
@@ -141,4 +141,3 @@ void UtSimBusQutils::testIsPulseHigh()
 
     std::cout << "... Pass";
 }
-

@@ -1,6 +1,9 @@
 #ifndef SutherlandFit_EXISTS
 #define SutherlandFit_EXISTS
 /**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
+           National Aeronautics and Space Administration.  All Rights Reserved.
+
 @defgroup  TSM_UTILITIES_MATH_APPROXIMATION_SUTHERLAND Univariate Sutherland Curve Fit
 @ingroup   TSM_UTILITIES_MATH_APPROXIMATION
 
@@ -74,7 +77,7 @@ class SutherlandFit : public TsApproximation {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double SutherlandFit::evaluate(const double x, const double y __attribute__((unused)))
 {
-    return mA * sqrt(x * x * x) / (mB + x);
+    return mA * std::sqrt(x * x * x) / (mB + x);
 }
 
 #endif

@@ -1,5 +1,5 @@
-/*********************** TRICK HEADER *************************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+/**
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  PURPOSE:
@@ -27,7 +27,7 @@
   (
  (Carlo Bocatto) (L-3) (Initial Prototype) (5/2013)
   )
- **************************************************************************************************/
+*/
 #include <cfloat>
 #include <iostream>
 #include "PowerBusElect.hh"
@@ -228,6 +228,9 @@ void PowerBusElect::initialize(      PowerBusElectConfigData &configData,
 
     //set flag to true upon successful initialization
     mInitFlag = true;
+
+    /// - Warn of deprecation due to obsolescence.
+    GUNNS_WARNING("this link is deprecated!  It is obsoleted by placing instances of GunnsElectSwitch or GunnsElectUserLoadSwitch links in parallel.");
 }
 
 
@@ -369,7 +372,7 @@ void PowerBusElect::step(const double dt)
 /// @details  Method for updating the link for the network - non-linear link
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void PowerBusElect::minorStep(const double dt, const int minorStep __attribute__((unused))) {
-	step(dt);
+    step(dt);
 }
 
 
@@ -379,7 +382,7 @@ void PowerBusElect::minorStep(const double dt, const int minorStep __attribute__
 /// @details  Method for computing the flows across the link
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
-	mBusVoltage = mPotentialVector[0];
+    mBusVoltage = mPotentialVector[0];
     mFlux = mAdmittanceMatrix[0] * mBusVoltage;
 
     // use the total current to figure out the power used for all the device
@@ -388,7 +391,7 @@ void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
 
     //transport flux method for a one port link
     if (mFlux > 0.0 && mNodeMap[0] != getGroundNodeIndex()) {
-    	mNodes[0]->collectOutflux(mFlux);
+        mNodes[0]->collectOutflux(mFlux);
     } //else if (mNodeMap[0] == getGroundNodeIndex()){
 //        std::cout<<"PowerBusElect::computeFlows - node is connected to ground" << std::endl;
  //   }
@@ -401,7 +404,7 @@ void PowerBusElect::computeFlows(const double dt __attribute__((unused))) {
 /// @details  Updates the jumper's conductivity based on the plug connection states and whether the
 ///           plugs are self-sealing.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void PowerBusElect::updateState(const double)
+void PowerBusElect::updateState(const double dt __attribute__((unused)))
 {
     /// - Update the plugs and map ports to the connected nodes if they have changed.
     if (mPlug[0]) {
@@ -432,7 +435,7 @@ void PowerBusElect::checkResLoadConductance()
     }
 
     // if there's a big enough change in the resistive loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveResLoadsConductance - mResLoadsConductance) > mLoadChangeTolerance) {
         mActiveResLoadsConductance = mResLoadsConductance;
         mAdmittanceUpdate = true;
     }
@@ -453,7 +456,7 @@ void PowerBusElect::checkCPLoadConductance()
     }
 
     // if there's a big enough change in the constant power loads, flag to recalculate the admittance matrix
-    if (fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
+    if (std::fabs(mActiveCPowerLoadsConductance - mCPowerLoadsConductance) > mLoadChangeTolerance) {
         mActiveCPowerLoadsConductance = mCPowerLoadsConductance;
         mAdmittanceUpdate = true;
     }

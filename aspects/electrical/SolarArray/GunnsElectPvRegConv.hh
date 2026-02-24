@@ -8,7 +8,7 @@
 @defgroup  GUNNS_ELECTRICAL_PHOTOVOLTAIC_REG_CONV    Photovoltaic Array Converting Regulator Model
 @ingroup   GUNNS_ELECTRICAL_PHOTOVOLTAIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -325,7 +325,7 @@ inline double GunnsElectPvRegConv::getMaxRegCurrent() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline double GunnsElectPvRegConv::getVoltageSetpoint() const
 {
-	return mVoltageSetpoint;
+    return mVoltageSetpoint;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ inline double GunnsElectPvRegConv::getVoltageSetpoint() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 inline GunnsElectPvRegTrips* GunnsElectPvRegConv::getTrips()
 {
-	return &mTrips;
+    return &mTrips;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

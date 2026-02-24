@@ -1,5 +1,5 @@
 /************************** TRICK HEADER **********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:
@@ -336,8 +336,8 @@ void GunnsGasDisplacementPump::updateFluid(const double dt __attribute__((unused
     ///   Torque opposes motor spin so has opposite sign.  Motor speed units are converted to r/s
     ///   to relate to torque in N*m and power in Watts.  Torque on the shaft is zero if the drive
     ///   ratio is zero, i.e. impeller is disconnected from the motor.
-    mImpellerPower = UnitConversion::PA_PER_KPA * fabs(mVolFlowRate * mPotentialDrop);
-    if (fabs(mMotorSpeed ) > FLT_EPSILON and mDriveRatio > DBL_EPSILON) {
+    mImpellerPower = UnitConversion::PA_PER_KPA * std::fabs(mVolFlowRate * mPotentialDrop);
+    if (std::fabs(mMotorSpeed ) > static_cast<double>(FLT_EPSILON) and mDriveRatio > DBL_EPSILON) {
         mImpellerTorque = -mImpellerPower * UnitConversion::SEC_PER_MIN_PER_2PI / mMotorSpeed;
     } else {
         mImpellerTorque = 0.0;

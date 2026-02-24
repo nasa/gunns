@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_LINK_BASIC_SOURCE    GUNNS Basic Source Link
 @ingroup   TSM_GUNNS_CORE_LINK_BASIC
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 @details
@@ -120,7 +120,7 @@ class GunnsBasicSource : public GunnsBasicLink
         virtual void step(const double dt);
 
         /// @brief Calculates flow across the link
-        virtual void computeFlows(const double);
+        virtual void computeFlows(const double dt);
 
         /// @brief Sets the flux demand
         void setFluxDemand(const double toFlux);

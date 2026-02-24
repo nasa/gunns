@@ -806,10 +806,7 @@ void UtGunnsFluidReactor::testUpdateFluid()
         mArticle->mCompounds[NH42HPO4].mMass      =  0.0;
         mArticle->mCompounds[H3PO4].mMass         =  0.0;
         mArticle->mCompounds[NH3].mMass           =  0.0;
-        const double expectedNH3Mass              =  mArticle->mInternalFluid->
-                                                     getMassFraction(FluidProperties::GUNNS_NH3) *
-                                                     mArticle->mInternalFluid->getMass();
-        mArticle->mFlowRate                       = 0.0;
+        mArticle->mFlowRate                       =  0.0;
         mArticle->updateFluid(mTimeStep, mFlowRate);
         const double returnedNH42HPO4TotalMass    =  mArticle->mCompounds[NH42HPO4].mTotalMass;
         const double returnedH3PO4TotalMass       =  mArticle->mCompounds[H3PO4].mTotalMass;
@@ -882,7 +879,6 @@ void UtGunnsFluidReactor::testComputeFlows()
 
     /// - Compute expected results.
     mFlowRate = mArticle->mFlowRate;
-    const double maxRate          = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mMaxReactantRate;
     const double efficiency       = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mReactantEfficiency;
     const double moleRatioCO2     = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mProduct1MoleRatio;
     const double moleRatioH2O     = mReactions.getReaction(ChemicalReaction::CH4_REMOVAL)->mProduct2MoleRatio;
@@ -897,10 +893,10 @@ void UtGunnsFluidReactor::testComputeFlows()
     const int    indexH2O         = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_H2O);
     const int    indexO2          = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_O2);
     const int    indexCH4         = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_CH4);
-    const double availableMassCO2 = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexCO2)) * fabs(mFlowRate) * mTimeStep;
-    const double availableMassH2O = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2O)) * fabs(mFlowRate) * mTimeStep;
-    const double availableMassO2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexO2))  * fabs(mFlowRate) * mTimeStep;
-    const double availableMassCH4 = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexCH4)) * fabs(mFlowRate) * mTimeStep;
+    const double availableMassCO2 = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexCO2)) * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassH2O = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2O)) * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassO2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexO2))  * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassCH4 = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexCH4)) * std::fabs(mFlowRate) * mTimeStep;
 
     const double massRatioCO2     = moleRatioCO2 * mWeightCO2;
     const double massRatioH2O     = moleRatioH2O * mWeightH2O;
@@ -1036,7 +1032,6 @@ void UtGunnsFluidReactor::testComputeFlowsH2Removal()
 
     /// - Compute expected results.
     mFlowRate = mArticle->mFlowRate;
-    const double maxRate          = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mMaxReactantRate;
     const double efficiency       = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mReactantEfficiency;
     const double moleRatioH2O     = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mProduct1MoleRatio;
     const double moleRatioO2      = mReactions.getReaction(ChemicalReaction::H2_REMOVAL)->mReagentMoleRatio;
@@ -1048,9 +1043,9 @@ void UtGunnsFluidReactor::testComputeFlowsH2Removal()
     const int    indexH2O         = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_H2O);
     const int    indexO2          = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_O2);
     const int    indexH2          = mNodes[0].getOutflow()->find(FluidProperties::GUNNS_H2);
-    const double availableMassH2O = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2O)) * fabs(mFlowRate) * mTimeStep;
-    const double availableMassO2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexO2))  * fabs(mFlowRate) * mTimeStep;
-    const double availableMassH2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2))  * fabs(mFlowRate) * mTimeStep;
+    const double availableMassH2O = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2O)) * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassO2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexO2))  * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassH2  = mNodes[0].getOutflow()->getMassFraction(mNodes[0].getOutflow()->getType(indexH2))  * std::fabs(mFlowRate) * mTimeStep;
 
     const double massRatioH2O     = moleRatioH2O * mWeightH2O;
     const double massRatioO2      = moleRatioO2  * mWeightO2;
@@ -1159,8 +1154,8 @@ void UtGunnsFluidReactor::testHeatOfReaction()
 
     const int    indexH2          = mNodes[0].getContent()->find(FluidProperties::GUNNS_H2);
     const int    indexH2O         = mNodes[0].getContent()->find(FluidProperties::GUNNS_H2O);
-    const double availableMassH2  = mNodes[0].getContent()->getMassFraction(mNodes[0].getContent()->getType(indexH2))  * fabs(mFlowRate) * mTimeStep;
-    const double availableMassH2O = mNodes[0].getContent()->getMassFraction(mNodes[0].getContent()->getType(indexH2O)) * fabs(mFlowRate) * mTimeStep;
+    const double availableMassH2  = mNodes[0].getContent()->getMassFraction(mNodes[0].getContent()->getType(indexH2))  * std::fabs(mFlowRate) * mTimeStep;
+    const double availableMassH2O = mNodes[0].getContent()->getMassFraction(mNodes[0].getContent()->getType(indexH2O)) * std::fabs(mFlowRate) * mTimeStep;
 
     const double massRatioH2      = moleRatioH2  * mWeightH2;
     const double massRatioH2O     = moleRatioH2O * mWeightH2O;

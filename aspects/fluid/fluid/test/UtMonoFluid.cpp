@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -285,11 +285,11 @@ void UtMonoFluid::testPropertyAccessors()
     /// @test getType
     CPPUNIT_ASSERT(mType == mArticle->getType());
 
-    /// @test getPhase
-    FluidProperties::FluidPhase expected = mProperties->getProperties(mType)->getPhase();
-    CPPUNIT_ASSERT(expected == mArticle->getPhase());
-
     {
+        /// @test getPhase
+        FluidProperties::FluidPhase expected = mProperties->getProperties(mType)->getPhase();
+        CPPUNIT_ASSERT(expected == mArticle->getPhase());
+    } {
         /// @test getMWeight
         const double expected =
             mProperties->getProperties(mType)->getMWeight();
@@ -533,12 +533,12 @@ void UtMonoFluid::testConstructionExceptions()
             TsInitializationException);
     } {
         /// @test constructor for exception on temperature too small
-        MonoFluidInputData initData(FLT_EPSILON / 2.0, mPressure, mFlowRate, mMass);
+        MonoFluidInputData initData(static_cast<double>(FLT_EPSILON) / 2.0, mPressure, mFlowRate, mMass);
         CPPUNIT_ASSERT_THROW(new FriendlyMonoFluid(mProperties->getProperties(mType), initData),
             TsInitializationException);
     } {
         /// @test constructor for exception on pressure too small
-        MonoFluidInputData initData(mTemperature, FLT_EPSILON / 2.0, mFlowRate, mMass);
+        MonoFluidInputData initData(mTemperature, static_cast<double>(FLT_EPSILON) / 2.0, mFlowRate, mMass);
         CPPUNIT_ASSERT_THROW(new FriendlyMonoFluid(mProperties->getProperties(mType), initData),
             TsInitializationException);
     }
@@ -561,12 +561,12 @@ void UtMonoFluid::testInitializationExceptions()
             TsInitializationException);
     } {
         /// @test initialize for exception on temperature too small
-        MonoFluidInputData initData(FLT_EPSILON / 2.0, mPressure, mFlowRate, mMass);
+        MonoFluidInputData initData(static_cast<double>(FLT_EPSILON) / 2.0, mPressure, mFlowRate, mMass);
         FriendlyMonoFluid article;
         CPPUNIT_ASSERT_THROW(article.initialize(mProperties->getProperties(mType), initData), TsInitializationException);
     } {
         /// @test initialize for exception on pressure too small
-        MonoFluidInputData initData(mTemperature, FLT_EPSILON / 2.0, mFlowRate, mMass);
+        MonoFluidInputData initData(mTemperature, static_cast<double>(FLT_EPSILON) / 2.0, mFlowRate, mMass);
         FriendlyMonoFluid article;
         CPPUNIT_ASSERT_THROW(article.initialize(mProperties->getProperties(mType), initData), TsInitializationException);
     }

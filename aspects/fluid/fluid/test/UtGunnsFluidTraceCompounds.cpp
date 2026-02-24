@@ -1,5 +1,5 @@
 /*
-@copyright Copyright 2022 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
  LIBRARY DEPENDENCY:
@@ -175,7 +175,7 @@ void UtGunnsFluidTraceCompounds::testDefaultConstruction()
 {
     UT_RESULT;
 
-    double tMole = 42.0;
+    tMole = 42.0;
     FriendlyGunnsFluidTraceCompounds defaultArticle(tMole);
     CPPUNIT_ASSERT(""    == defaultArticle.mName);
     CPPUNIT_ASSERT(0     == defaultArticle.mConfig);
@@ -611,11 +611,13 @@ void UtGunnsFluidTraceCompounds::testFlowIn()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(mass, tArticle->mMass[i],         DBL_EPSILON);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(conc, tArticle->mMoleFraction[i], DBL_EPSILON);
     }
-    const double MW   = tProperties->getCompound(ChemicalCompound::CO)->mMWeight;
-    const double mass = oldMasses[6] + flowMole * flowConc[6] * MW;
-    const double conc = mass / tMole / MW;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mass, tArticle->mMass[6],         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(conc, tArticle->mMoleFraction[6], DBL_EPSILON);
+    {
+        const double MW   = tProperties->getCompound(ChemicalCompound::CO)->mMWeight;
+        const double mass = oldMasses[6] + flowMole * flowConc[6] * MW;
+        const double conc = mass / tMole / MW;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(mass, tArticle->mMass[6],         DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(conc, tArticle->mMoleFraction[6], DBL_EPSILON);
+    }
 
     /// @test very low concentrations are zeroed
     flowConc[6] = 0.0;

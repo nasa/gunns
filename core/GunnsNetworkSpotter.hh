@@ -8,7 +8,7 @@
 @defgroup  TSM_GUNNS_CORE_NETWORK_SPOTTER    GUNNS Network Spotter
 @ingroup   TSM_GUNNS_CORE
 
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 PURPOSE:   (Provides the classes for the GUNNS Network Spotter.)
@@ -100,8 +100,8 @@ class GunnsNetworkSpotter
         /// @brief  Default destructor.
         virtual     ~GunnsNetworkSpotter();
         /// @brief  Initializes the GUNNS Network Spotter with configuration and input data.
-        void initialize(const GunnsNetworkSpotterConfigData* configData,
-                        const GunnsNetworkSpotterInputData*  inputData);
+        virtual void initialize(const GunnsNetworkSpotterConfigData* configData,
+                                const GunnsNetworkSpotterInputData*  inputData);
         /// @brief  GUNNS Network Spotter processing performed before the GUNNS solver step.
         virtual void stepPreSolver(const double dt)  = 0;
         /// @brief  GUNNS Network Spotter processing performed after the GUNNS solver step.

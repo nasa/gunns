@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# @copyright Copyright 2019 United States Government as represented by the Administrator of the
+# @copyright Copyright 2024 United States Government as represented by the Administrator of the
 #            National Aeronautics and Space Administration.  All Rights Reserved.
 #
 # @revs_title
@@ -48,8 +48,20 @@ def loadShapeLibs(libFile, linksOnly):
         finJson = finData[len('<mxlibrary>'):-len('</mxlibrary>')]
         finList = json.loads(finJson)
         for shape in finList:
+            # Newer versions of draw.io no longer compress the shape's xml element
+            # when saving the library.  We need to determine whether the shape's
+            # xml element value is compressed and only decompress if it is.
+            # We'll do this by searching for 'mxGraphModel' in the value, which is
+            # unlikely to appear in compressed data.  The uncompressed format might
+            # have '&gt;' and '&lt;' instead of '>', '<', so replace if needed.
             compressedXml = shape['xml']
-            xmlStr = compression.decompress(compressedXml)
+            if 'mxGraphModel' in compressedXml:
+                if '&gt;' in compressedXml and '&lt;' in compressedXml:
+                    xmlStr = compressedXml.replace('&gt;', '>').replace('&lt;', '<')
+                else:
+                    xmlStr = compressedXml # it's already not compressed
+            else:
+                xmlStr = compression.decompress(compressedXml) # decompress it
             # we only want the <object> inside <mxGraphModel><root>
             root = ET.fromstring(xmlStr)
             obj  = root.findall('./root/object')

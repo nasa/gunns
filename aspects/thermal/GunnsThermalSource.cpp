@@ -1,5 +1,5 @@
 /************************** TRICK HEADER ***********************************************************
-@copyright Copyright 2019 United States Government as represented by the Administrator of the
+@copyright Copyright 2024 United States Government as represented by the Administrator of the
            National Aeronautics and Space Administration.  All Rights Reserved.
 
 LIBRARY DEPENDENCY:
@@ -173,7 +173,7 @@ void GunnsThermalSource::initialize(const GunnsThermalSourceConfigData& configDa
 {
     /// - Set number of ports based on portsVector parameter.
     ///   This will coincide with the network drawing.
-    mNumPorts = portsVector->size();
+    mNumPorts = static_cast<int>(portsVector->size());
     /// - Declare temporary ports array.
     int ports[mNumPorts];
     /// - Set members of ports array.
@@ -273,7 +273,7 @@ void GunnsThermalSource::validate(const GunnsThermalSourceConfigData& configData
         one += configData.cFluxDistributionFractions.at(i);
     }
     /// - Calculate error.
-    const double error = fabs(1.0 - one);
+    const double error = std::fabs(1.0 - one);
 
     /// - Throw exception if flux-distribution fractions do not add up to one.
     TS_PTCS_IF_ERREX(error > FRACTION_TOLERANCE, TsInitializationException,

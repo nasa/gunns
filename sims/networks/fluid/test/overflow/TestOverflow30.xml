@@ -4,7 +4,7 @@
     <mxCell id="1ltLheNkwucU49p7fQoI-1" parent="0" value="Notices" />
     <object About="Notice of Copyright" id="1ltLheNkwucU49p7fQoI-2" label="&lt;div&gt;Copyright 2019 United States Government as represented by the Administrator of the&amp;nbsp;&lt;span&gt;National Aeronautics and Space Administration.&amp;nbsp; All Rights Reserved.&lt;/span&gt;&lt;/div&gt;">
       <gunns subtype="copyright" type="Dox" />
-      <mxCell parent="1ltLheNkwucU49p7fQoI-1" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" vertex="1">
+      <mxCell parent="1ltLheNkwucU49p7fQoI-1" style="text;html=1;strokeColor=default;fillColor=default;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=default;autosize=1;" vertex="1">
         <mxGeometry as="geometry" height="20" width="840" x="20" y="20" />
       </mxCell>
     </object>
@@ -19,13 +19,13 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid0" id="lUWx5m8sZzbNUMN8p5y6-2" label="0">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=#000000;fontColor=#000000;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="280" y="130" />
       </mxCell>
     </object>
     <object About="Fluid State" id="lUWx5m8sZzbNUMN8p5y6-60" label="fluid3">
       <gunns subtype="State" type="Fluid" />
-      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
+      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="20" y="200">
           <mxRectangle as="alternateBounds" height="179" width="240" x="20" y="200" />
         </mxGeometry>
@@ -81,13 +81,13 @@
     </mxCell>
     <object About="Fluid Capacitor" Ports="0=node" c00.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialVolume="1.0" i03.initialFluidState="&amp;fluid0" id="lUWx5m8sZzbNUMN8p5y6-77" label="vol0">
       <gunns numPorts="2" reqPorts="0" subtype="core/GunnsFluidCapacitor" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=west;rotation=0;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=default;html=1;verticalAlign=top;strokeColor=default;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=default;direction=west;rotation=0;" vertex="1">
         <mxGeometry as="geometry" height="40" width="20" x="240" y="120" />
       </mxCell>
     </object>
     <object About="Link Port" id="lUWx5m8sZzbNUMN8p5y6-78" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-77" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="lUWx5m8sZzbNUMN8p5y6-2">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-77" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="lUWx5m8sZzbNUMN8p5y6-2">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="280" y="190" />
           <mxPoint as="targetPoint" x="280" y="100" />
@@ -99,13 +99,13 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid1" id="lUWx5m8sZzbNUMN8p5y6-81" label="1">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=#000000;fontColor=#000000;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="430" y="60" />
       </mxCell>
     </object>
     <object About="Link Port" id="lUWx5m8sZzbNUMN8p5y6-86" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-81" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="LZTsOdtA7Xbsm7jZCt2f-1">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-81" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LZTsOdtA7Xbsm7jZCt2f-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="320" y="315" />
           <mxPoint as="targetPoint" x="440" y="120" />
@@ -117,7 +117,7 @@
     </object>
     <object About="Fluid State" id="lUWx5m8sZzbNUMN8p5y6-43" label="fluid2">
       <gunns subtype="State" type="Fluid" />
-      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
+      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="20" y="160">
           <mxRectangle as="alternateBounds" height="179" width="240" x="20" y="160" />
         </mxGeometry>
@@ -173,7 +173,7 @@
     </mxCell>
     <object About="Fluid State" id="lUWx5m8sZzbNUMN8p5y6-26" label="fluid1">
       <gunns subtype="State" type="Fluid" />
-      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
+      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="20" y="120">
           <mxRectangle as="alternateBounds" height="179" width="240" x="20" y="120" />
         </mxGeometry>
@@ -229,7 +229,7 @@
     </mxCell>
     <object About="Fluid State" id="lUWx5m8sZzbNUMN8p5y6-9" label="fluid0">
       <gunns subtype="State" type="Fluid" />
-      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
+      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;strokeColor=#001DBC;fontColor=#ffffff;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="20" y="80">
           <mxRectangle as="alternateBounds" height="179" width="240" x="20" y="80" />
         </mxGeometry>
@@ -285,7 +285,7 @@
     </mxCell>
     <object About="Fluid Config" id="lUWx5m8sZzbNUMN8p5y6-3" isExternal="0" label="netInternalFluidConfig">
       <gunns subtype="Config" type="Fluid" />
-      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#cce5ff;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;align=center;strokeColor=#36393d;swimlaneFillColor=#ffffff;" vertex="1">
+      <mxCell collapsed="1" parent="lUWx5m8sZzbNUMN8p5y6-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#cce5ff;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;align=center;strokeColor=#36393d;swimlaneFillColor=default;fontColor=#000000;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="20" y="40">
           <mxRectangle as="alternateBounds" height="99" width="160" x="20" y="40" />
         </mxGeometry>
@@ -305,13 +305,13 @@
     </mxCell>
     <object About="Fluid Capacitor" Ports="0=node" c00.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialVolume="1.0e-4" i03.initialFluidState="&amp;fluid1" id="U4Pacg0Vc-VODUHHdPF1-5" label="vol1">
       <gunns numPorts="2" reqPorts="0" subtype="core/GunnsFluidCapacitor" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=south;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=default;html=1;verticalAlign=top;strokeColor=default;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=default;direction=south;" vertex="1">
         <mxGeometry as="geometry" height="20" width="40" x="465" y="100" />
       </mxCell>
     </object>
     <object About="Link Port" id="U4Pacg0Vc-VODUHHdPF1-6" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="U4Pacg0Vc-VODUHHdPF1-5" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitPerimeter=0;" target="lUWx5m8sZzbNUMN8p5y6-81">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="U4Pacg0Vc-VODUHHdPF1-5" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="lUWx5m8sZzbNUMN8p5y6-81">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="530" y="320" />
           <mxPoint as="targetPoint" x="530" y="350" />
@@ -320,13 +320,13 @@
     </object>
     <object About="Ground Node" id="-Cn7GFuhE2_FREJuuLHF-2" label="">
       <gunns subtype="Ground" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#eeeeee;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.signal_sources.signal_ground;strokeColor=#36393d;rotation=90;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=light-dark(#eeeeee,#1a1a1a);html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.signal_sources.signal_ground;strokeColor=light-dark(#36393d,#c9c6c2);rotation=90;fontColor=default;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="370" y="125" />
       </mxCell>
     </object>
     <object About="Link Port" id="-Cn7GFuhE2_FREJuuLHF-3" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="-Cn7GFuhE2_FREJuuLHF-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="LZTsOdtA7Xbsm7jZCt2f-1">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="-Cn7GFuhE2_FREJuuLHF-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LZTsOdtA7Xbsm7jZCt2f-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="210" y="335" />
           <mxPoint as="targetPoint" x="425" y="135" />
@@ -335,13 +335,13 @@
     </object>
     <object About="Fluid Conductor" Ports="0=in, 1=out" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="-Cn7GFuhE2_FREJuuLHF-4" label="cond01">
       <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsFluidConductor" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=#000000;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=default;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=default;strokeColor=default;" vertex="1">
         <mxGeometry as="geometry" height="20" width="50" x="325" y="60" />
       </mxCell>
     </object>
     <object About="Link Port" id="-Cn7GFuhE2_FREJuuLHF-5" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="-Cn7GFuhE2_FREJuuLHF-4">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="-Cn7GFuhE2_FREJuuLHF-4">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="239.80952380952374" y="150" />
           <mxPoint as="targetPoint" x="279.80952380952374" y="150" />
@@ -350,7 +350,7 @@
     </object>
     <object About="Link Port" id="-Cn7GFuhE2_FREJuuLHF-6" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-81" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="-Cn7GFuhE2_FREJuuLHF-4">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="lUWx5m8sZzbNUMN8p5y6-81" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="-Cn7GFuhE2_FREJuuLHF-4">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="470" y="140" />
           <mxPoint as="targetPoint" x="309.80952380952374" y="150" />
@@ -363,7 +363,7 @@
     </object>
     <object About="Link Port" id="-Cn7GFuhE2_FREJuuLHF-10" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="lUWx5m8sZzbNUMN8p5y6-81">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="lUWx5m8sZzbNUMN8p5y6-81">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="530" y="70" />
           <mxPoint as="targetPoint" x="650" y="80" />
@@ -373,25 +373,25 @@
     </object>
     <object About="Fluid Conductor" Ports="0=in, 1=out" c00.maxConductivity="1.0" c01.expansionScaleFactor="0.0" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" id="0mt1R3GNrJ2vH5lu-8SP-1" label="cond12">
       <gunns numPorts="2" reqPorts="0,1" subtype="core/GunnsFluidConductor" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=#000000;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=default;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=default;strokeColor=default;" vertex="1">
         <mxGeometry as="geometry" height="20" width="50" x="505" y="60" />
       </mxCell>
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid2" id="0mt1R3GNrJ2vH5lu-8SP-3" label="2">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=#000000;fontColor=#000000;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="600" y="130" />
       </mxCell>
     </object>
     <object About="Fluid Capacitor" Ports="0=node" c00.expansionScaleFactor="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialVolume="1.0" i03.initialFluidState="&amp;fluid2" id="0mt1R3GNrJ2vH5lu-8SP-4" label="vol2">
       <gunns numPorts="2" reqPorts="0" subtype="core/GunnsFluidCapacitor" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=0;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;align=center;fillColor=default;html=1;verticalAlign=top;strokeColor=default;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=default;direction=east;rotation=0;" vertex="1">
         <mxGeometry as="geometry" height="40" width="20" x="650" y="120" />
       </mxCell>
     </object>
     <object About="Link Port" id="0mt1R3GNrJ2vH5lu-8SP-5" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="0mt1R3GNrJ2vH5lu-8SP-3">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="0mt1R3GNrJ2vH5lu-8SP-3">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.4225">
           <mxPoint as="sourcePoint" x="630" y="170" />
           <mxPoint as="targetPoint" x="630" y="80" />
@@ -405,7 +405,7 @@
     </object>
     <object About="Link Port" id="0mt1R3GNrJ2vH5lu-8SP-2" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="0mt1R3GNrJ2vH5lu-8SP-3">
+      <mxCell edge="1" parent="lUWx5m8sZzbNUMN8p5y6-1" source="0mt1R3GNrJ2vH5lu-8SP-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="0mt1R3GNrJ2vH5lu-8SP-3">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="309.6896551724137" y="150.20689655172418" />
           <mxPoint as="targetPoint" x="640" y="110" />
@@ -414,7 +414,7 @@
     </object>
     <object About="Metabolics v2" Ports="1=node" i00.malfBlockageFlag="true" i01.malfBlockageValue="1.0" i02.flowDemand="0.1" i03.nNominal="0.0" i04.nSleep="0.0" i05.nRecovery0="0.0" i06.nRecovery1="0.0" i07.nRecovery2="0.0" i08.nRecovery3="0.0" i09.nExercise0="0.0" i10.nExercise1="0.0" id="LZTsOdtA7Xbsm7jZCt2f-1" label="v2met1">
       <gunns numPorts="2" reqPorts="1" subtype="aspects/fluid/source/GunnsFluidMetabolic2" type="Link" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=stencil(vVXJboMwEP0ajlRgspBjRdOemktU9ezQSbDi2Mh2gf59DTYKbnBWqVIkMm8888azOUgyWeASAhQxfIAgeQkQevtYrdYaeQeFN5ySXGqhQlqjv4U5s0iNWLsiliXkymAVFgRvKBiNVILvoSZfynogrABBVKtNlkH0rM+0vyTLOWPaCeFMOpqBXjvDhGnbqDHOoqepofmxspFKzXAABcJBjzdddcDr3TTxdTTrW2ncu/Skl2g+b6SJ76NZjtAkmUZ8hUuyDc73O8G/2ddocEApKSV4EzDaam4jjoTjIU2yLRdwJpotodR0qy+ZEldeXYnbBj9R9OoDrwb3jN0STCfeCvb2WOT6j7D2ic2FsA7Q3MhNiBsiQ8EVbsvhpJFisYNQ+wm3FO+cTpA1QDmArYUlS+fXBtul35MInb2zuRUgla6PN/WDNaJb4rhO4jPR3FaTmXtNv+PenhI2sP9jPr9o7tKn6DH6BbqW/5EqecswO0N3MuZo4sTad2/tJLJwyjLu+fLInnDP0n/jVtC0W1cfsg8jcuZqsnAjsS8pJTs7uDmwdht3cDXAFS99u+9kxXWoeeo74Bc=);strokeColor=#000000;strokeWidth=1;fillColor=#ffffff;fontSize=12;fontColor=#000000;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=stencil(vVZNT8MwDP01PQ5t6djHEZUBF3ZBiLNX3C0iS6okdOPf4zapaNiafSAhVWptN+85fq7TJM3MBkpM2FDCFpP0PmHs8XW5fCHPM1pYKcFzQ0bFKEL3jXtnPnPmLjTBlJhb56tAc1gJdBFjtfrAHX+3HoHLDWpu62i6SIZ39E59pVmupCQQrqQJIp04gQGXtHa4d2DDm1tH8+VtZ5XEsEWLOvD+7HTpHAl7uJppdB7TyxVM4Y5a3lNMb5czja5jWhxnSjPy9ImYZivIP9Zafcr3o/mhELw02FuGo233qymPZtTDm2aF0hhJqOBCuOaNVNVAFQuXUHf9QaANb1XV2fAolON2HBO0hQCd04P2EKkvhPYYbOrs/QD23Ay0slBLE5RUgF7jgHAGhYB10Bhmh1h23H6FJ5tNL8i3kaKnHFTGU3XWaCzJFVOiM2eoT37mzSie1mUSTcItR7FbCMFlB+IXwvQchDCJGftzEnN2QRZ/lK5XmEmc9GAgsHGQdNvbuwBtEwrVB37Wx32QwWT2zxkUStoCtlx8ke0fGvQnFBVansMJElqfK6E0me7erG55Y0st7uuTgl71pzoLPv7xPCyF/w0QfO2nS46yPkEad9XxW1VGhvXBTG687lelcXwD);strokeColor=default;strokeWidth=1;fillColor=default;fontSize=12;fontColor=default;" vertex="1">
         <mxGeometry as="geometry" height="30" width="30" x="425" y="120" />
       </mxCell>
     </object>

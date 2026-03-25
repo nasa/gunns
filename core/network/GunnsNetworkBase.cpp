@@ -15,6 +15,7 @@ LIBRARY DEPENDENCY:
 #include "GunnsNetworkBase.hh"
 #include "simulation/hs/TsHsMsg.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "GunnsMutexLock.hh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @param[in]  name     (--) Name of this network instance for H&S messages.
@@ -168,8 +169,10 @@ void GunnsNetworkBase::update(const double timeStep)
     ///   already updated by the super-network, and this solver isn't used.
     if (netIsSubNetwork) return;
 
+    GunnsMutexLock lockHelper(netMutex);
+
     if (netMutexEnabled) {
-        pthread_mutex_lock(&netMutex);
+        lockHelper.lock();
     }
 
     /// - Catch exceptions and send a non-fatal H&S error.
@@ -189,8 +192,6 @@ void GunnsNetworkBase::update(const double timeStep)
         msg << mName << " caught unexpected exception." << '\n' << tsStackTrace();
         hsSendMsg(msg);
     }
-
-    pthread_mutex_unlock(&netMutex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

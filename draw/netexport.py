@@ -565,9 +565,11 @@ def updateSpotterShapeData(spotter, master):
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + spotter_cell_attr['style'] + '.'))
         updated = True
-    # Do config & input data items
-    if updateConfigInputData(spotter_attr, master_attr, 'spotter'):
-        updated = True
+    # Do config & input data items only if the master spotter is not the empty spotter (from the GUNNS_Generic.xml library).
+    # This prevents any potential custom fields from being deleted from a custom spotter.
+    if master_attr['Class'] != '':
+        if updateConfigInputData(spotter_attr, master_attr, 'spotter'):
+            updated = True
     return updated
 
 # Performs shape updates for the given shape, returns True if

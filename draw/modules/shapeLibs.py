@@ -189,6 +189,7 @@ def getSpotterShapeMaster(spotter, allShapes):
     spotter_gunns_attr = spotter.find('./gunns').attrib
     spotter_class      = spotter_attr['Class']
     spotter_variant    = ''
+    empty_spotter = None
     if 'variant' in spotter_gunns_attr:
         spotter_variant = spotter_gunns_attr['variant']
     # Find the object's shape master in shapeTree, as the first match
@@ -203,7 +204,10 @@ def getSpotterShapeMaster(spotter, allShapes):
                 shape_variant = shape_gunns_attr['variant']
             if shape_class == spotter_class and shape_variant == spotter_variant:
                 return shape
-    return None
+            if shape_class == "":
+                empty_spotter = shape
+    # If there are no matching spotters, return the empty spotter.
+    return empty_spotter
 
 # Returns the Port shape master from the shapeTree, or None.
 # portNum is the port number label as a string.

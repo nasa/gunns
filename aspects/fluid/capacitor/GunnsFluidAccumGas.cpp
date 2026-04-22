@@ -121,9 +121,10 @@ GunnsFluidAccumGasInputData::GunnsFluidAccumGasInputData(const bool   malfBlocka
                                                    const double malfBlockageValue,
                                                    const double initialBellowsPosition,
                                                    PolyFluidInputData* liquidFluidInputData,
-                                                   PolyFluidInputData* gasFluidInputData)
+                                                   PolyFluidInputData* gasFluidInputData,
+                                                   const double initialLiquidHousingQ)
     :
-    GunnsFluidAccumInputData(malfBlockageFlag, malfBlockageValue, initialBellowsPosition, liquidFluidInputData),
+    GunnsFluidAccumInputData(malfBlockageFlag, malfBlockageValue, initialBellowsPosition, liquidFluidInputData, initialLiquidHousingQ),
     mGasFluidInputData(gasFluidInputData)
 {
     // Nothing to do

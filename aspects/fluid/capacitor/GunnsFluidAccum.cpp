@@ -147,11 +147,13 @@ GunnsFluidAccumConfigData::~GunnsFluidAccumConfigData()
 GunnsFluidAccumInputData::GunnsFluidAccumInputData(const bool   malfBlockageFlag,
                                                    const double malfBlockageValue,
                                                    const double initialBellowsPosition,
-                                                   PolyFluidInputData* liquidFluidInputData)
+                                                   PolyFluidInputData* liquidFluidInputData,
+                                                   const double initialLiquidHousingQ)
     :
     GunnsFluidLinkInputData(malfBlockageFlag, malfBlockageValue),
     mInitialBellowsPosition(initialBellowsPosition),
-    mLiquidFluidInputData(liquidFluidInputData)
+    mLiquidFluidInputData(liquidFluidInputData),
+    mInitialLiquidHousingQ(initialLiquidHousingQ)
 {
     // Nothing to do
 }
@@ -164,7 +166,8 @@ GunnsFluidAccumInputData::GunnsFluidAccumInputData(const GunnsFluidAccumInputDat
     :
     GunnsFluidLinkInputData(that),
     mInitialBellowsPosition(that.mInitialBellowsPosition),
-    mLiquidFluidInputData(that.mLiquidFluidInputData)
+    mLiquidFluidInputData(that.mLiquidFluidInputData),
+    mInitialLiquidHousingQ(that.mInitialLiquidHousingQ)
 {
     // Nothing to do
 }
@@ -695,7 +698,7 @@ void GunnsFluidAccum::initialize(const GunnsFluidAccumConfigData& configData,
     /// - Initialize accumulator chamber attributes.
     mBellowsPosition = inputData.mInitialBellowsPosition;
     mLiquidPressureReading = inputData.mLiquidFluidInputData->mPressure;
-    mLiquidHousingQ = 0.0;
+    mLiquidHousingQ = inputData.mInitialLiquidHousingQ;
 
     mMinChamberVol = configData.mAccumVolume * configData.mMinChamberVolPercent / UnitConversion::PERCENTAGE;
     mMaxChamberVol = configData.mAccumVolume;

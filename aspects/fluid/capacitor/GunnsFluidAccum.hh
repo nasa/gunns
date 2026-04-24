@@ -116,12 +116,14 @@ class GunnsFluidAccumInputData : public GunnsFluidLinkInputData
     public:
         double mInitialBellowsPosition;                 /**< (--)   Fraction of liquid chamber that is filled (0-1). */
         PolyFluidInputData* mLiquidFluidInputData;      /**< (--)   Input data for liquid fluid */
+        double mInitialLiquidHousingQ;                  /**< (J/s)  Initial heat from metal housing. */
 
         /// @brief    Default constructs this accumulator input data.
         GunnsFluidAccumInputData(const bool   malfBlockageFlag  = false,
-                                     const double malfBlockageValue = 0.0,
-                                     const double initialBellowsPosition = 0.0,
-                                     PolyFluidInputData* liquidFluidInputData = 0);
+                                 const double malfBlockageValue = 0.0,
+                                 const double initialBellowsPosition = 0.0,
+                                 PolyFluidInputData* liquidFluidInputData = 0,
+                                 const double initialLiquidHousingQ = 0.0);
         /// @brief    Copy constructs this accumulator input data.
         GunnsFluidAccumInputData(const GunnsFluidAccumInputData& that);
         /// @brief    Default destructs this accumulator input data.
@@ -201,6 +203,8 @@ class GunnsFluidAccum : public GunnsFluidLink {
         void setSpringCoeffs(const double coeff0 = 0.0, const double coeff1 = 0.0, const double coeff2 = 0.0);
         /// @brief Sets extra pressure at exit due to liquid column under acceleration.
         void setAccelPressureHead(const double pressure);
+        /// @brief Sets heat input from metal housing (from thermal aspect).
+        void setLiquidHousingQ(const double liquidHousingQ);
 
     protected:
         static const int LIQUID_PORT;        /**< (--)                      Liquid port number. */
@@ -440,4 +444,13 @@ inline void GunnsFluidAccum::setAccelPressureHead(const double pressure)
     mAccelPressureHead = pressure;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param[in] liquidHousingQ (J/s)   heat input from metal housing 
+///
+/// @details  Sets the mLiquidHousingQ attribute to the given value.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline void GunnsFluidAccum::setLiquidHousingQ(const double liquidHousingQ)
+{
+    mLiquidHousingQ = liquidHousingQ;
+}
 #endif  /* GunnsFluidAccum_EXISTS */

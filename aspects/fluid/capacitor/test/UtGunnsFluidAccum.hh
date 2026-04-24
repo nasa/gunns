@@ -137,6 +137,9 @@ class UtGunnsFluidAccum: public CppUnit::TestFixture
         /// --     Initial Bellows Position
         double                       tInitialBellowsPosition;
 
+        /// --     Initial Heat from liquid housing
+        double                       tInitialLiquidHousingQ;
+
         double tMinChamberVolPercent;
         double tMinChamberVolDeadBandPercent;
         double tForceBellowsMaxRate;

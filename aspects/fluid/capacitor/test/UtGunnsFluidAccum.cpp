@@ -36,6 +36,7 @@ UtGunnsFluidAccum::UtGunnsFluidAccum()
     tTimeStep(),
     tTolerance(),
     tInitialBellowsPosition(),
+    tInitialLiquidHousingQ(),
     tMinChamberVolPercent(),
     tMinChamberVolDeadBandPercent(),
     tForceBellowsMaxRate(),
@@ -114,6 +115,7 @@ void UtGunnsFluidAccum::setUp()
     tMassFractions[0] = 1.0;
     tMassFractions[1] = 0.0;
     tInitialBellowsPosition = 0.5;
+    tInitialLiquidHousingQ = 5.0; //J/s
 
     tLiquidFluidConfigData = new PolyFluidConfigData(tFluidProperties, types, 2);
 
@@ -121,7 +123,7 @@ void UtGunnsFluidAccum::setUp()
                                           200.0,                  //pressure
                                           0.0,                    //flowRate
                                           0.0,                    //mass
-                                          tMassFractions);               //massFractions
+                                          tMassFractions);        //massFractions
 
     /// - Have to initialize the nodes with the fluid configs (normally done by GUNNS)
     /// - because there are only 2 nodes. Node 1 is the vacuum boundary node, Node 0 is the
@@ -154,7 +156,7 @@ void UtGunnsFluidAccum::setUp()
             tFillModePressureThreshold,
             tEffCondScaleRate);
 
-    tInputData = new GunnsFluidAccumInputData (false, 0.0, tInitialBellowsPosition, tLiquidFluidInputData);
+    tInputData = new GunnsFluidAccumInputData (false, 0.0, tInitialBellowsPosition, tLiquidFluidInputData, tInitialLiquidHousingQ);
 
     tModel = new FriendlyGunnsFluidAccum;
 
@@ -244,12 +246,14 @@ void UtGunnsFluidAccum::testInput()
     CPPUNIT_ASSERT(0.0 == defaultInput.mMalfBlockageValue);
     CPPUNIT_ASSERT(0.0 == defaultInput.mInitialBellowsPosition);
     CPPUNIT_ASSERT(0 == defaultInput.mLiquidFluidInputData);
+    CPPUNIT_ASSERT(0.0 == defaultInput.mInitialLiquidHousingQ);
 
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT(false == tInputData->mMalfBlockageFlag);
     CPPUNIT_ASSERT(0.0 == tInputData->mMalfBlockageValue);
     CPPUNIT_ASSERT(tInitialBellowsPosition == tInputData->mInitialBellowsPosition);
     CPPUNIT_ASSERT(tLiquidFluidInputData->mPressure == tInputData->mLiquidFluidInputData->mPressure);
+    CPPUNIT_ASSERT(tInitialLiquidHousingQ == tInputData->mInitialLiquidHousingQ);
 
     /// @test    Input data copy construction.
     GunnsFluidAccumInputData copyInput(*tInputData);
@@ -257,6 +261,7 @@ void UtGunnsFluidAccum::testInput()
     CPPUNIT_ASSERT(tInputData->mMalfBlockageValue == copyInput.mMalfBlockageValue);
     CPPUNIT_ASSERT(tInputData->mInitialBellowsPosition == copyInput.mInitialBellowsPosition);
     CPPUNIT_ASSERT(tLiquidFluidInputData->mPressure == copyInput.mLiquidFluidInputData->mPressure);
+    CPPUNIT_ASSERT(tInputData->mInitialLiquidHousingQ == copyInput.mInitialLiquidHousingQ);
 
     UT_PASS;
 }
@@ -339,7 +344,7 @@ void UtGunnsFluidAccum::testNominalInitialization()
 
     CPPUNIT_ASSERT(tInitialBellowsPosition == accumModel.mBellowsPosition);
     CPPUNIT_ASSERT(tInputData->mLiquidFluidInputData->mPressure == accumModel.mLiquidPressureReading);
-    CPPUNIT_ASSERT(0.0 == accumModel.mLiquidHousingQ);
+    CPPUNIT_ASSERT(tInitialLiquidHousingQ == accumModel.mLiquidHousingQ);
     CPPUNIT_ASSERT(tAccumVolume * tMinChamberVolPercent / UnitConversion::PERCENTAGE == accumModel.mMinChamberVol);
     CPPUNIT_ASSERT(tAccumVolume == accumModel.mMaxChamberVol);
     CPPUNIT_ASSERT(tAccumVolume * tMinChamberVolDeadBandPercent / UnitConversion::PERCENTAGE == accumModel.mMinDeadBandVol);
@@ -1227,7 +1232,7 @@ void UtGunnsFluidAccum::testTemperatureInFlow()
     double deltaMass    = tModel->mFlowRate * tTimeStep;
     double expectedMass = previousMass + deltaMass;
     double expectedEnthalpy = (previousEnthalpy * previousMass
-            + deltaMass * tNodes[0].getOutflow()->getSpecificEnthalpy()) / expectedMass;
+            + deltaMass * tNodes[0].getOutflow()->getSpecificEnthalpy() + tInitialLiquidHousingQ*tTimeStep) / expectedMass;
     CPPUNIT_ASSERT(previousTemperature < tModel->mInternalFluid->getTemperature());
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,     tModel->mInternalFluid->getMass(),             FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedEnthalpy, tModel->mInternalFluid->getSpecificEnthalpy(), FLT_EPSILON);
@@ -1266,14 +1271,15 @@ void UtGunnsFluidAccum::testTemperatureOutFlow()
     tNodes[0].getContent()->setPressure(199.9);
     tNodes[0].getContent()->setTemperature(300.0);
 
-    double previousTemperature = tModel->mInternalFluid->getTemperature();
+    double expectedTemperature = tModel->mInternalFluid->getTemperature() + 
+                (tTimeStep*tInitialLiquidHousingQ/tModel->mInternalFluid->getMass()) / tModel->mInternalFluid->getSpecificHeat();
 
     tModel->updateEffectiveConductivity(tTimeStep);
     tModel->step(tTimeStep);
     tModel->computeFlows(tTimeStep);
     tModel->transportFlows(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(previousTemperature, tModel->mInternalFluid->getTemperature(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTemperature, tModel->mInternalFluid->getTemperature(), tTolerance);
 
     UT_PASS;
 }
@@ -1455,6 +1461,7 @@ void UtGunnsFluidAccum::testTemperatureEdit()
     UT_RESULT;
 
     // test normal case
+    tInputData->mInitialLiquidHousingQ = 0.0;
     tInputData->mLiquidFluidInputData->mTemperature = 283.0;
     tModel->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
 
@@ -1763,6 +1770,10 @@ void UtGunnsFluidAccum::testAccessMethods()
     /// @test   The acceleration pressure head setter.
     tModel->setAccelPressureHead(42.0);
     CPPUNIT_ASSERT(42.0 == tModel->mAccelPressureHead);
+
+    /// @test   The heat from liquid housing setter.
+    tModel->setLiquidHousingQ(-119.19);
+    CPPUNIT_ASSERT(-119.19 == tModel->mLiquidHousingQ);
 
     UT_PASS;
 }

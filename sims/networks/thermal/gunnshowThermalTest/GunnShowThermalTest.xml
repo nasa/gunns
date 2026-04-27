@@ -3,7 +3,7 @@
     <mxCell id="0" />
     <mxCell id="iWvG5RrHP02czaMeVaga-1" parent="0" value="Notices" />
     <mxCell id="DPS6XD0DOMXJ1O2LCIXP-1" parent="0" value="Notes" />
-    <mxCell id="DPS6XD0DOMXJ1O2LCIXP-71" parent="DPS6XD0DOMXJ1O2LCIXP-1" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;" value="NOTE: This network is used by SIM_test for Continuous Integration testing.  Do not change this network without adjusting the tests.&#10;" vertex="1">
+    <mxCell id="DPS6XD0DOMXJ1O2LCIXP-71" parent="DPS6XD0DOMXJ1O2LCIXP-1" style="text;html=1;strokeColor=light-dark(#B85450,#D7817E);fillColor=light-dark(#F8CECC,#512D2B);align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;" value="NOTE: This network is used by SIM_test for Continuous Integration testing.  Do not change this network without adjusting the tests.&#10;" vertex="1">
       <mxGeometry as="geometry" height="170" width="330" x="70" y="100" />
     </mxCell>
     <object About="Notice of Copyright" id="WujPAvP_dnmiRF5-MTNj-1" label="Copyright 2019 United States Government as represented by the Administrator of the&lt;br&gt;National Aeronautics and Space Administration. All Rights Reserved.">

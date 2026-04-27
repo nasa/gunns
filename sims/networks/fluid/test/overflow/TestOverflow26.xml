@@ -19,7 +19,7 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid0" id="lUWx5m8sZzbNUMN8p5y6-2" label="0">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="290" y="190" />
       </mxCell>
     </object>
@@ -40,13 +40,13 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid1" id="lUWx5m8sZzbNUMN8p5y6-81" label="1">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="450" y="110" />
       </mxCell>
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid2" id="lUWx5m8sZzbNUMN8p5y6-83" label="2">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="610" y="190" />
       </mxCell>
     </object>
@@ -104,7 +104,7 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid3" id="lUWx5m8sZzbNUMN8p5y6-82" label="3">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="290" y="368" />
       </mxCell>
     </object>
@@ -180,7 +180,7 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid4" id="ktXa2ATvYxuBEntdRqcg-50" label="4">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="450" y="302.5" />
       </mxCell>
     </object>
@@ -195,7 +195,7 @@
     </object>
     <object About="Fluid Node" i00.initialFluidState="fluid5" id="ktXa2ATvYxuBEntdRqcg-51" label="5">
       <gunns subtype="Fluid" type="Node" />
-      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#cce5ff,#001933);strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
+      <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#cce5ff;strokeColor=default;fontColor=default;fillOpacity=25;" vertex="1">
         <mxGeometry as="geometry" height="20" width="20" x="610" y="378" />
       </mxCell>
     </object>
@@ -212,7 +212,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object About="GunnsFluidAccum" Ports="1=liquid" c00.maxConductivity="1.0" c01.minConductivityScale="0.1" c02.accumVolume="1e-6" c03.minChamberVolPercent="5.0" c04.minChamberVolDeadBandPercent="10.0" c05.forceBellowsMaxRate="0.016" c06.editHoldTime="5.0" c07.minTemperature="273.15" c08.maxTemperature="373.15" c09.maxPressure="1000.0" c10.springCoeff0="100.0" c11.springCoeff1="0.0" c12.springCoeff2="0.0" c13.fillModePressureThreshold="0.0" c14.effCondScaleOneWayRate="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialBellowsPosition="0.85" i03.liquidFluidInputData="&amp;fluid2" i04.initialLiquidHousingQ="0.0" id="VJA3UTFN-TXAHRcwoZqj-1" label="liquidPool">
+    <object About="Accumulator, Spring" Ports="1=liquid" c00.maxConductivity="1.0" c01.minConductivityScale="0.1" c02.accumVolume="1e-6" c03.minChamberVolPercent="5.0" c04.minChamberVolDeadBandPercent="10.0" c05.forceBellowsMaxRate="0.016" c06.editHoldTime="5.0" c07.minTemperature="273.15" c08.maxTemperature="373.15" c09.maxPressure="1000.0" c10.springCoeff0="100.0" c11.springCoeff1="0.0" c12.springCoeff2="0.0" c13.fillModePressureThreshold="0.0" c14.effCondScaleOneWayRate="0.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.initialBellowsPosition="0.85" i03.liquidFluidInputData="&amp;fluid2" i04.initialLiquidHousingQ="0.0" id="VJA3UTFN-TXAHRcwoZqj-1" label="liquidPool">
       <gunns numPorts="2" reqPorts="1" subtype="aspects/fluid/capacitor/GunnsFluidAccum" type="Link" />
       <mxCell parent="lUWx5m8sZzbNUMN8p5y6-1" style="shape=stencil(tVXLbsMgEPwaH1352fYapU1vuUT9AOpsbFQMCEjs/H2xcdTgl4poJA7sLLM7uwsiSLeyQhyCJEKSQ6GC9C1IkgsSGH0RDSfaUxkwi4xJUQ0G+fjc7w8aOXCBaak3m6I41+aUVIJ9Q4OPaqBjWoHAyngbg732IdP3INposFvptmCUaiGYUWl57vw6NsJUWVoGcVznqEGBsNDWsq6D9ZT39m4kQCNLGtLtiQkoBTvT46w4jrpyJ46bu2YX+JWT2XoGc7fCJ5je8RNnPhKF3hAkSgj1PjwRVBpybEKJIXQ8hBZXO5VsAPiUNhLUhqjFMhRMoa6Hs813rDVzpReESZg/0o94YVJ6wpgQc3mX2D5Ddq372ZX+4BHf9PxhxM732f092K1+sfnuvc49+Xb+2JOfuvJzz/y5Z/7Ms3+j+a/w11/wP75ezxsVP7SinjP5kHrUfOo98AM=);html=1;align=center;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=default;strokeWidth=1;fillColor=#007FFF;fontSize=12;fontColor=default;" vertex="1">
         <mxGeometry as="geometry" height="40" width="80" x="470" y="40" />

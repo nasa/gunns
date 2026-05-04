@@ -81,6 +81,7 @@ class UtGunnsShortUtil: public CppUnit::TestFixture
         bool                     tMalfResistanceFlag;       /**< (--)  Nominal input data. */
         double                   tMalfResistanceValue;      /**< (ohm) Nominal input data. */
         GunnsShortUtilInputData* tInputData;                /**< (--)  Pointer to nominal input data. */
+        static int               TEST_ID;                   /**< (--) Test identification number. */
 };
 
 ///@}

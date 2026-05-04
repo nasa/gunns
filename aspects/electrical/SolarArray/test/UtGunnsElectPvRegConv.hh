@@ -118,6 +118,7 @@ class UtGunnsElectPvRegConv: public CppUnit::TestFixture
         double                         tVoltageSetpointDelta;  /**< (v)   Nominal input data. */
         bool                           tPowered;               /**< (--)  Nominal input data. */
         bool                           tEnabled;               /**< (--)  Nominal input data. */
+        double                         tTolerance;             /**< (--)  Nominal tolerance for comparison of expected and returned values. */
         static int                     TEST_ID;                /**< (--)  Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.

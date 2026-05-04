@@ -392,5 +392,5 @@ void UtGunnsFluidCondensingHx::testInitializationExceptions()
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1),
                          TsInitializationException);
 
-    UT_PASS;
+    UT_PASS_LAST;
 }

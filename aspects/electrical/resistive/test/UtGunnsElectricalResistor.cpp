@@ -9,6 +9,10 @@
 ***************************************************************************************************/
 #include "UtGunnsElectricalResistor.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtGunnsElectricalResistor::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsElectricalResistor class.
@@ -87,6 +91,9 @@ void UtGunnsElectricalResistor::setUp()
     /// - Declare the nominal test data
     mTolerance = 1.0e-08;
     mTimeStep = 0.1;
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,8 +101,7 @@ void UtGunnsElectricalResistor::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testConfig()
 {
-    std::cout << "\n -----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsElectricalResistor .. 01: testConfig ............................";
+    UT_RESULT_FIRST;
 
     /// - Check nominal config construction
     CPPUNIT_ASSERT(mLinkName            == mConfigData->mName);
@@ -117,7 +123,7 @@ void UtGunnsElectricalResistor::testConfig()
     CPPUNIT_ASSERT(mResistance == copyConfig.mResistance);
     CPPUNIT_ASSERT(mElectricalEfficiency == copyConfig.mElectricalEfficiency);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +131,7 @@ void UtGunnsElectricalResistor::testConfig()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testInput()
 {
-    std::cout << "\n UtGunnsElectricalResistor .. 02: testInput .............................";
+    UT_RESULT;
 
     /// - Check nominal input construction
     CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag);
@@ -141,7 +147,7 @@ void UtGunnsElectricalResistor::testInput()
     CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag == copyInput.mMalfBlockageFlag);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue, copyInput.mMalfBlockageValue, 0.0);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +155,7 @@ void UtGunnsElectricalResistor::testInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testDefaultConstruction()
 {
-    std::cout << "\n UtGunnsElectricalResistor .. 03: testDefaultConstruction ...............";
+    UT_RESULT;
 
     /// @test config data
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mResistance,   0.0);
@@ -169,7 +175,7 @@ void UtGunnsElectricalResistor::testDefaultConstruction()
     GunnsElectricalResistor* article = new GunnsElectricalResistor();
     delete article;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +183,7 @@ void UtGunnsElectricalResistor::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testNominalInitialization()
 {
-    std::cout << "\n UtGunnsElectricalResistor .. 04: testNominalInitialization .............";
+    UT_RESULT;
 
     /// - Default construct and initialize (with nominal data) a test article
     FriendlyGunnsElectricalResistor article;
@@ -195,7 +201,7 @@ void UtGunnsElectricalResistor::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mBlockage,            mArticle->mMalfBlockageValue,     0.0);
     CPPUNIT_ASSERT(article.mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +209,7 @@ void UtGunnsElectricalResistor::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsElectricalResistor .. 05: testInitializationExceptions ..........";
+    UT_RESULT;
 
     /// - Default construct a test article
     GunnsElectricalResistor article;
@@ -222,7 +228,7 @@ void UtGunnsElectricalResistor::testInitializationExceptions()
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,7 +236,7 @@ void UtGunnsElectricalResistor::testInitializationExceptions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testUpdateState()
 {
-    std::cout << "\n UtGunnsElectricalResistor 07: testUpdateState ......................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
@@ -244,7 +250,7 @@ void UtGunnsElectricalResistor::testUpdateState()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedResistance,   mArticle->mResistance, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedConductance,  mArticle->mEffectiveConductivity, DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +258,7 @@ void UtGunnsElectricalResistor::testUpdateState()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectricalResistor::testComputeFlows()
 {
-    std::cout << "\n UtGunnsElectricalResistor .. 07: testComputeFlows ......................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
@@ -269,8 +275,8 @@ void UtGunnsElectricalResistor::testComputeFlows()
     const double expectedVoltageOut    = mArticle->mPotentialVector[1];
     const double expectedVoltageDrop   = mArticle->mPotentialVector[0] - mArticle->mPotentialVector[1];
     const double expectedCurrent       = expectedVoltageDrop * (1.0/mResistance) * (1.0 - mBlockage);
-    const double expectedPower         = -expectedCurrent * expectedVoltageDrop;
-    const double expectedWasteHeat     = -(1.0 - mElectricalEfficiency) * expectedPower;
+    const double expectedPower         = expectedCurrent * expectedVoltageDrop;
+    const double expectedWasteHeat     = (1.0 - mElectricalEfficiency) * expectedPower;
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoltageIn,   mArticle->mVoltageIn,   DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedVoltageOut,  mArticle->mVoltageOut,  DBL_EPSILON);
@@ -279,5 +285,5 @@ void UtGunnsElectricalResistor::testComputeFlows()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,       mArticle->mPower,       DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedWasteHeat,   mArticle->mWasteHeat,   DBL_EPSILON);
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

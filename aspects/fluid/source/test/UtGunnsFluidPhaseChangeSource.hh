@@ -83,6 +83,7 @@ class UtGunnsFluidPhaseChangeSource: public CppUnit::TestFixture
         PolyFluidInputData*                    tFluidInput1;       /**< (--) Nominal input data. */
         PolyFluidInputData*                    tFluidInput2;       /**< (--) Nominal input data. */
         double*                                tFractions;         /**< (--) Nominal input data. */
+        double                                 tTolerance;         /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static int                             TEST_ID;            /**< (--) Test identification number. */
 
     public:

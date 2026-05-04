@@ -99,6 +99,8 @@ class UtGunnsFluidNode : public CppUnit::TestFixture
         GunnsFluidNodeUnitTest tNode2;
         GunnsFluidNodeUnitTest tNode3;
 
+        double tTolerance;
+
     public:
         UtGunnsFluidNode();
         virtual ~UtGunnsFluidNode();

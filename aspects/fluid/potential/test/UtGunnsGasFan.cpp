@@ -62,7 +62,8 @@ UtGunnsGasFan::UtGunnsGasFan()
     tInputData(0),
     tArticle(0),
     tReferenceQ(0.0),
-    tTimeStep(0.0)
+    tTimeStep(0.0),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -176,6 +177,9 @@ void UtGunnsGasFan::setUp()
 
     /// - Define the nominal time step.
     tTimeStep             = 0.1;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-13;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -390,8 +394,8 @@ void UtGunnsGasFan::testNominalInitialization()
 
     const double expectedArea   = tThermalLength * PI * tThermalDiameter;
     const double expectedROverD = tSurfaceRoughness / tThermalDiameter;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedArea,   article.mThermalSurfaceArea, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedROverD, article.mThermalROverD,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedArea,   article.mThermalSurfaceArea, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedROverD, article.mThermalROverD,      tTolerance);
 
     const double pressureBep = tReferenceCoeff0
                              + tReferenceCoeff1 * tReferenceQBep
@@ -439,7 +443,7 @@ void UtGunnsGasFan::testNominalInitialization()
 
     /// @test    Internal fluid initialization.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getOutflow()->getTemperature(),
-                                 article.getInternalFluid()->getTemperature(), DBL_EPSILON);
+                                 article.getInternalFluid()->getTemperature(), tTolerance);
 
     /// @test    Nominal initialization flag.
     CPPUNIT_ASSERT(article.mInitFlag);
@@ -472,8 +476,8 @@ void UtGunnsGasFan::testNominalInitialization()
     tConfigData->mThermalLength = 0.0;
     CPPUNIT_ASSERT_NO_THROW(article2.initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1));
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mThermalSurfaceArea, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mThermalROverD,      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mThermalSurfaceArea, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mThermalROverD,      tTolerance);
     CPPUNIT_ASSERT(article2.mInitFlag);
 
     // - Verify restartModel Functionality
@@ -488,14 +492,14 @@ void UtGunnsGasFan::testNominalInitialization()
 
     article2.restartModel();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mImpellerSpeed,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mImpellerPower,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[3], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[4], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[5], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mImpellerSpeed,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mImpellerPower,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[3], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[4], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, article2.mAffinityCoeffs[5], tTolerance);
 
     UT_PASS;
 }
@@ -698,8 +702,8 @@ void UtGunnsGasFan::testUpdateState()
     tArticle->mCheckValveActive = true;
     tArticle->updateState(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mCheckValvePosition, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEffectiveConductivity, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mCheckValvePosition, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mEffectiveConductivity, tTolerance);
     tArticle->mCheckValveActive = false;
 
     /// @test    Outputs under normal running condition.  Expected Q (flow rate) value is derived
@@ -727,10 +731,10 @@ void UtGunnsGasFan::testUpdateState()
                                  + tArticle->mAffinityCoeffs[3] * std::pow(expectedSourceQ, 3.0)
                                  + tArticle->mAffinityCoeffs[4] * std::pow(expectedSourceQ, 4.0)
                                  + tArticle->mAffinityCoeffs[5] * std::pow(expectedSourceQ, 5.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpellerSpeed, tArticle->mImpellerSpeed,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff0,        tArticle->mAffinityCoeffs[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff2,        tArticle->mAffinityCoeffs[2], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSystemConst,   tArticle->mSystemConstant,    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedImpellerSpeed, tArticle->mImpellerSpeed,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff0,        tArticle->mAffinityCoeffs[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCoeff2,        tArticle->mAffinityCoeffs[2], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSystemConst,   tArticle->mSystemConstant,    tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceQ,       tArticle->mSourceQ,           static_cast<double>(FLT_EPSILON));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedSourceP,       tArticle->mSourcePressure,    0.000001);
 
@@ -790,7 +794,7 @@ void UtGunnsGasFan::testUpdateFluid()
     tArticle->updateFluid(tTimeStep, 0.5 * DBL_EPSILON);
     CPPUNIT_ASSERT(0.0 == tArticle->mWallHeatFlux);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNodes[0].getOutflow()->getTemperature(),
-                                 tArticle->mInternalFluid->getTemperature(), DBL_EPSILON);
+                                 tArticle->mInternalFluid->getTemperature(), tTolerance);
 
     /// @test   Update fluid with nominal time step, flowrate and temperature.
     tArticle->updateFluid(tTimeStep, 0.01);
@@ -806,22 +810,22 @@ void UtGunnsGasFan::testUpdateFluid()
     /// - Motor speed converted from rpm to r/s to relate torque in N*m.
     double expectedTorque     = -expectedPower / tMotorSpeed * 60.0 / 2.0 / PI;
     tArticle->updateFluid(tTimeStep, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  tArticle->mImpellerPower,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  tArticle->mImpellerPower,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, tTolerance);
 
     /// @test   Impeller torque with zero drive ratio.
     tArticle->mDriveRatio     = 0.0;
     expectedTorque            = 0.0;
     tArticle->updateFluid(tTimeStep, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, tTolerance);
 
     /// @test   Impeller power & torque at zero speed.
     tArticle->mMotorSpeed     = 0.0;
     tArticle->mSourcePressure = 0.0;
     expectedPower             = 0.0;
     tArticle->updateFluid(tTimeStep, 0.01);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  tArticle->mImpellerPower,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  tArticle->mImpellerPower,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTorque, tArticle->mImpellerTorque, tTolerance);
 
     /// @test   Impeller shaft power for configured specific speed.
     FriendlyGunnsGasFan article2;
@@ -847,7 +851,7 @@ void UtGunnsGasFan::testUpdateFluid()
                                             + article2.mPowerCoeffs[1] * QQbep
                                             + article2.mPowerCoeffs[2] * QQbep * QQbep
                                             + article2.mPowerCoeffs[3] * QQbep * QQbep * QQbep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  article2.mImpellerPower,   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,  article2.mImpellerPower,   tTolerance);
 
     UT_PASS_LAST;
 }

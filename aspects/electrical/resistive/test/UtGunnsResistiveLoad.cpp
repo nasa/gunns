@@ -9,6 +9,10 @@
 ***************************************************************************************************/
 #include "UtGunnsResistiveLoad.hh"
 #include "software/exceptions/TsInitializationException.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtGunnsResistiveLoad::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsResistiveLoad class.
@@ -92,6 +96,9 @@ void UtGunnsResistiveLoad::setUp()
     /// - Declare the nominal test data
     mTolerance = 1.0e-08;
     mTimeStep = 0.1;
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,8 +106,7 @@ void UtGunnsResistiveLoad::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testConfig()
 {
-    std::cout << "\n -----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsResistiveLoad .. 01: testConfig ............................";
+    UT_RESULT_FIRST;
 
     /// - Check nominal config construction
     CPPUNIT_ASSERT(mLinkName             == mConfigData->mName);
@@ -140,7 +146,7 @@ void UtGunnsResistiveLoad::testConfig()
     CPPUNIT_ASSERT(mNegTripLimit         == copyConfig.mNegTripLimit);
     CPPUNIT_ASSERT(mTripPriority         == copyConfig.mTripPriority);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +154,7 @@ void UtGunnsResistiveLoad::testConfig()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testInput()
 {
-    std::cout << "\n UtGunnsResistiveLoad .. 02: testInput .............................";
+    UT_RESULT;
 
     /// - Check nominal input construction
     CPPUNIT_ASSERT(mInputData->mMalfBlockageFlag);
@@ -167,7 +173,7 @@ void UtGunnsResistiveLoad::testInput()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mInputData->mMalfBlockageValue, copyInput.mMalfBlockageValue, 0.0);
     CPPUNIT_ASSERT(mInputData->mInitialSwitchPosition == copyInput.mInitialSwitchPosition);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +181,7 @@ void UtGunnsResistiveLoad::testInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testDefaultConstruction()
 {
-    std::cout << "\n UtGunnsResistiveLoad .. 03: testDefaultConstruction ...............";
+    UT_RESULT;
 
     /// @test config data
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, mArticle->mUnderVoltageLimit, 0.0);
@@ -188,7 +194,7 @@ void UtGunnsResistiveLoad::testDefaultConstruction()
     GunnsResistiveLoad* article = new GunnsResistiveLoad();
     delete article;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +202,7 @@ void UtGunnsResistiveLoad::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testNominalInitialization()
 {
-    std::cout << "\n UtGunnsResistiveLoad .. 04: testNominalInitialization .............";
+    UT_RESULT;
 
     /// - Default construct and initialize (with nominal data) a test article
     FriendlyGunnsResistiveLoad article;
@@ -219,7 +225,7 @@ void UtGunnsResistiveLoad::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(mBlockage,            mArticle->mMalfBlockageValue,     0.0);
     CPPUNIT_ASSERT(article.mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +233,7 @@ void UtGunnsResistiveLoad::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsResistiveLoad .. 05: testInitializationExceptions ..........";
+    UT_RESULT;
 
     /// - Default construct a test article
     GunnsResistiveLoad article;
@@ -237,7 +243,7 @@ void UtGunnsResistiveLoad::testInitializationExceptions()
     CPPUNIT_ASSERT_THROW(article.initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1),
                          TsInitializationException);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +251,7 @@ void UtGunnsResistiveLoad::testInitializationExceptions()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testUpdateState()
 {
-    std::cout << "\n UtGunnsResistiveLoad 07: testUpdateState ......................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
@@ -262,7 +268,7 @@ void UtGunnsResistiveLoad::testUpdateState()
     mArticle->step(mTimeStep);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0E12,      mArticle->getResistance(), mTolerance);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +276,7 @@ void UtGunnsResistiveLoad::testUpdateState()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsResistiveLoad::testProcessOutputs()
 {
-    std::cout << "\n UtGunnsResistiveLoad 08: testProcessOutputs ......................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data
     mArticle->initialize(*mConfigData, *mInputData, mLinks, mPort0, mPort1);
@@ -297,5 +303,5 @@ void UtGunnsResistiveLoad::testProcessOutputs()
 
     CPPUNIT_ASSERT(!mArticle->mPowerValid);
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

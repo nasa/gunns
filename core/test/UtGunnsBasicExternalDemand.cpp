@@ -299,5 +299,5 @@ void UtGunnsBasicExternalDemand::testStep()
     tArticle->step(0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFilterMinConductivity, tArticle->mEffectiveConductivity, 0.0);
 
-    std::cout << "... Pass";
+    std::cout << "... Pass.\n";
 }

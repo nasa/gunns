@@ -2,14 +2,16 @@
               National Aeronautics and Space Administration.  All Rights Reserved. */
 
 #define MODELS_10HZ   0.1
+#define HS_RATE       1.0
+#define P_LOG         P1
 
 ##include "sims/networks/example_space_vehicle/HarveyFluid.hh"
 ##include "sims/networks/example_space_vehicle/HarveyThermal.hh"
 ##include "sims/networks/example_space_vehicle/models/HarveySignal.hh"
 ##include "sims/networks/example_space_vehicle/ExamplePowerElect.hh"
 
-// // Needed for sim bus multithreading
-// #include "../S_modules/ChildThreadHandler.sm"
+// Needed for sim bus multithreading
+#include "../S_modules/ChildThreadHandler.sm"
 // #include "thread_safe_bus/thread_map.sm"
 
 // // Simbus sim object
@@ -18,8 +20,8 @@
 // Default system classes
 #include "sim_objects/default_trick_sys.sm"
 
-// // Health and status sim object.
-// #include "../S_modules/hs.sm"
+// Health and status sim object.
+#include "../S_modules/hs.sm"
 
 #ifdef HLA
   #include "DistIf/THLA_interface.sm"

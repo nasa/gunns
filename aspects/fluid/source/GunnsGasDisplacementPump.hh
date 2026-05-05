@@ -136,6 +136,8 @@ class GunnsGasDisplacementPump : public GunnsFluidSource
         void   setThermalSurfaceArea(const double value);
         /// @brief    Sets the wall temperature of this Gas Displacement Pump model.
         void   setWallTemperature(const double value);
+        /// @brief    Sets the motor speed of this Gas Displacement Pump model.
+        void   setMotorSpeed(const double value);
         /// @brief    Turn on or off the check valve functionality
         void   setCheckValveFlag(const bool value);
 

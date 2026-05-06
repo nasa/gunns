@@ -376,7 +376,7 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
             /// - When there are bulk fluid flows, TC's are added to the bulk fluid, and will be
             ///   transported within the bulk fluid to the node in transportFluid() below.
             for (int i = 0; i < tcConfig.mNTypes; ++i) {
-                tc->setMass(i, mFlowRate * mTraceCompoundRates[i]);
+                tc->setMass(i, mInternalFluid->getMass() * mTraceCompoundRates[i]);
             }
             tc->updateMoleFractions();
         }

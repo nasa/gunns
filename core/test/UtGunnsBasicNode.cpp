@@ -289,7 +289,7 @@ void UtGunnsBasicNode::testPlaceholderMethods()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsBasicNode::testRestart()
 {
-    std::cout << "\n UtGunnsFluidNode ....... 08: testRestart ...........................";
+    std::cout << "\n UtGunnsBasicNode ....... 08: testRestart ...........................";
 
     /// - Load up the node with some non-zero values, then restart it and verify stuff got reset.
     tNode.initialize("TestNode");

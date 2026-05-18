@@ -90,6 +90,7 @@ class UtGunnsFluidEvaporation: public CppUnit::TestFixture
         PolyFluidInputData*              tFluidInput1;       /**< (--)      Nominal input data */
         PolyFluidInputData*              tFluidInput2;       /**< (--)      Nominal input data */
         double*                          tFractions;         /**< (--)      Nominal input data */
+        static int                       TEST_ID;            /**< (--)    Test identification number. */
 
     public:
         UtGunnsFluidEvaporation();

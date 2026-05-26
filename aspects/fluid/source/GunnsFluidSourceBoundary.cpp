@@ -183,6 +183,20 @@ void GunnsFluidSourceBoundary::initialize(const GunnsFluidSourceBoundaryConfigDa
             }
             mOverrideTcFlowRates[i] = 0.0;
         }
+
+        /////////////////////////////////////////////
+        /// - Report a change in this class's behavior from previous version.
+        bool isUsingTraceCompoundRates = false;
+        for (int i = 0; i < tcNtypes; ++i) {
+            if (std::fabs(mTraceCompoundRates[i]) > DBL_EPSILON) {
+                isUsingTraceCompoundRates = true;
+            }
+        }
+        if (!mTraceCompoundsOnly && isUsingTraceCompoundRates) {
+            GUNNS_INFO("GUNNS v19.6 fixed an issue (#179) with the introduction of trace compounds into the bulk flow.");
+            GUNNS_INFO("GunnsFluidTraceCompoundsInputData's mState now accurately represents the mass flow fraction of each TC relative to this link's bulk mass flow.");
+        }
+        /////////////////////////////////////////////
     }
 
     /// - Initialize the override rates arrays and fluid.
@@ -193,7 +207,7 @@ void GunnsFluidSourceBoundary::initialize(const GunnsFluidSourceBoundaryConfigDa
     }
 
     /// - Set init flag on successful validation.
-    mInitFlag           = true;
+    mInitFlag = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -387,7 +401,7 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @param[in] dt   (s)    Unused.
+/// @param[in] dt   (s)    Integration time step.
 /// @param[in] mdot (kg/s) Unused.
 ///
 /// @details  When in override mode, updates the internal fluid temperature, then adds the extra
@@ -396,7 +410,7 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
 ///           temperature.  If it is <= DBL_EPSILON (default), then the internal fluid will take the
 ///           temperature of the boundary node's contents.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void GunnsFluidSourceBoundary::updateFluid(const double dt __attribute__((unused)),
+void GunnsFluidSourceBoundary::updateFluid(const double dt,
                                            const double mdot __attribute__((unused)))
 {
     if (mOverrideMode) {
@@ -412,6 +426,10 @@ void GunnsFluidSourceBoundary::updateFluid(const double dt __attribute__((unused
             mNodes[0]->collectHeatFlux(mOverrideHeat);
         }
     }
+    /// - Set internal fluid mass as the bulk fluid mass that will be transferred during a single
+    ///   time step. Used only to determine the rate of trace compound flow alongside bulk flow, 
+    ///   since input data is provided as a concentration of mdotTC/mdotBulk.
+    mInternalFluid->setMass(mFlowRate * dt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

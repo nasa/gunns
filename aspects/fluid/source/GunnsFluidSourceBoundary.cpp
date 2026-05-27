@@ -429,7 +429,7 @@ void GunnsFluidSourceBoundary::updateFluid(const double dt,
     /// - Set internal fluid mass as the bulk fluid mass that will be transferred during a single
     ///   time step. Used only to determine the rate of trace compound flow alongside bulk flow, 
     ///   since input data is provided as a concentration of mdotTC/mdotBulk.
-    mInternalFluid->setMass(mFlowRate * dt);
+    mInternalFluid->setMass(std::fabs(mFlowRate * dt));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

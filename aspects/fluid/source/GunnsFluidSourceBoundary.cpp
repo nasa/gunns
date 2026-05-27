@@ -393,6 +393,9 @@ void GunnsFluidSourceBoundary::transportFlows(const double dt)
                 tc->setMass(i, mInternalFluid->getMass() * mTraceCompoundRates[i]);
             }
             tc->updateMoleFractions();
+            ///@note  If flow demand is negative, and therefore the bulk flow is *out* of the node,
+            ///       then the specified trace compound rates are basically ignored, since TCs will
+            ///       be pulled out at the same concentration that already exists in the node.
         }
     }
 

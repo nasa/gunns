@@ -525,6 +525,10 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsToNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[0] * -tInitialFlowDemand, mdotH2O, DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[1] * -tInitialFlowDemand, mdotCO2, DBL_EPSILON);
 
+    /// - Make sure the mState member is unaffected, so we're not double-counting.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
+
     UT_PASS;
 }
 
@@ -558,6 +562,12 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsFromNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFluidInput2->mTemperature, tNodes[0].getInflow()->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,                       tNodes[0].getOutflux(),                  DBL_EPSILON);
 
+    /// - FluidSourceBoundary does not affect the node's TC concentrations for flow out of the node.
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
+
     UT_PASS;
 }
 
@@ -589,6 +599,11 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsZeroFlow()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr, tArticle->mPower,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,         tNodes[0].getInflux(),    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,         tNodes[0].getOutflux(),   DBL_EPSILON);
+
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
 
     UT_PASS;
 }

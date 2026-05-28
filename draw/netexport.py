@@ -12,9 +12,6 @@ import sys
 import collections
 import re
 import unicodedata
-import zlib
-import base64
-from urllib.parse import unquote
 
 # Import Tkinter for Python 2.7 vs. 3 imports by feature detection.
 # Since Tkinter isn't installed on many platforms, and it's only needed
@@ -340,12 +337,6 @@ def getPortTargetName(port, links, nodes, gnds):
         result = getPortNodeName(port, links)
     return result
 
-# Returns uncompressed XML, used to decompress link shape data
-def decompress(compressed_string):
-    decoded_data = base64.b64decode(compressed_string)
-    inflated_data = zlib.decompress(decoded_data,-15)
-    return unquote(inflated_data.decode('utf-8'))
-
 # Convert style properties into a dictionary
 # start with form:
 # shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;etc...
@@ -382,11 +373,13 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                 to_style_properties   = stylePropsToDict(  to_attr[name])
                 from_style_properties = stylePropsToDict(from_attr[name])
                 
-                # check if from_attr has TypeLabel and to_addr doesn't
+                # check if from_attr has TypeLabel and to_addr doesn't. some shapes in old drawings
+                # have this property in the shape stencil, but now it's its own property.
+                # this logic captures that text and passes it outside the function to be set properly.
                 if 'shape' in to_style_properties and 'shape' in from_style_properties:
                     if to_style_properties['shape'].startswith('stencil(') and from_style_properties['shape'].startswith('stencil('):
-                        to_stencil   = decompress(  to_style_properties['shape'][len('stencil('):-1])
-                        from_stencil = decompress(from_style_properties['shape'][len('stencil('):-1])
+                        to_stencil   = compression.decompress(  to_style_properties['shape'][len('stencil('):-1])
+                        from_stencil = compression.decompress(from_style_properties['shape'][len('stencil('):-1])
 
                         if 'TypeLabel' not in to_stencil and 'TypeLabel' in from_stencil:
                             text_field = next((item for item in to_stencil.splitlines() if item.lstrip(' ').startswith("<text")), None)

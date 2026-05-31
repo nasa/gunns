@@ -425,6 +425,10 @@ void UtGunnsGasDisplacementPump::testModifiers()
     tArticle->setWallTemperature(-0.1);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mWallTemperature, 0.0);
 
+    /// @test    The motor speed setter with good value.
+    tArticle->setMotorSpeed(867.5309);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(867.5309, tArticle->mMotorSpeed, 0.0);
+
     /// @test    The wall temperature setter with out of range value.
     tArticle->setCheckValveFlag(true);
     CPPUNIT_ASSERT(tArticle->mCheckValveActive);

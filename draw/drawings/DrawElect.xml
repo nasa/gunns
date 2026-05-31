@@ -31,7 +31,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-21" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="cl184UrhjxjfbnMy3DYb-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="cl184UrhjxjfbnMy3DYb-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="480" y="390" />
           <mxPoint as="targetPoint" x="520" y="350" />
@@ -40,7 +40,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-23" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-43" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-17">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-43" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-17">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="350" y="350" />
           <mxPoint as="targetPoint" x="400" y="360" />
@@ -55,7 +55,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-25" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-43">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-43">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="220" y="310" />
           <mxPoint as="targetPoint" x="270" y="310" />
@@ -64,7 +64,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-27" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=0.05;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="3DoJPlzQJvClEkqTPRkA-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-24" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=0.05;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="3DoJPlzQJvClEkqTPRkA-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.2">
           <mxPoint as="sourcePoint" x="150" y="310" />
           <mxPoint as="targetPoint" x="220" y="320" />
@@ -80,7 +80,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-29" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="3DoJPlzQJvClEkqTPRkA-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=1;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.1667;exitDx=0;exitDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="ataEg6mMLeBhzGLL35He-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="3DoJPlzQJvClEkqTPRkA-2" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=1;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.1667;exitDx=0;exitDy=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="ataEg6mMLeBhzGLL35He-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="150" y="200" />
           <mxPoint as="targetPoint" x="190" y="140" />
@@ -89,7 +89,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-32" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-47" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-28">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-47" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-28">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="140" y="80" />
           <mxPoint as="targetPoint" x="180" y="130" />
@@ -98,7 +98,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-36" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="jRNEEjkk-1Uc3cU3PW3t-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-2" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="jRNEEjkk-1Uc3cU3PW3t-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="230" y="90" />
           <mxPoint as="targetPoint" x="510" y="50" />
@@ -107,7 +107,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-37" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="V4xHEeqqkjUf3fIBEIv2-4">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-4" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="V4xHEeqqkjUf3fIBEIv2-4">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="200" y="140" />
           <mxPoint as="targetPoint" x="510" y="120" />
@@ -122,7 +122,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-39" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="cl184UrhjxjfbnMy3DYb-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="cl184UrhjxjfbnMy3DYb-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.8182">
           <mxPoint as="sourcePoint" x="577" y="350" />
           <mxPoint as="targetPoint" x="630" y="300" />
@@ -136,7 +136,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-40" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="jRNEEjkk-1Uc3cU3PW3t-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="jRNEEjkk-1Uc3cU3PW3t-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6216">
           <mxPoint as="sourcePoint" x="590" y="50" />
           <mxPoint as="targetPoint" x="410" y="90" />
@@ -151,7 +151,7 @@
     </object>
     <object About="Link Port" id="LywFiYjkdyNcLrU4SWqD-41" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="V4xHEeqqkjUf3fIBEIv2-4" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="V4xHEeqqkjUf3fIBEIv2-4" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6216">
           <mxPoint as="sourcePoint" x="590" y="120" />
           <mxPoint as="targetPoint" x="500" y="170" />
@@ -183,7 +183,7 @@
     </object>
     <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-3" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-28" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-28" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="220" y="130" />
           <mxPoint as="targetPoint" x="250" y="110" />
@@ -205,7 +205,7 @@
     </object>
     <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-8" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.045;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-2">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.045;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-2">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6">
           <mxPoint as="sourcePoint" y="440" />
           <mxPoint as="targetPoint" x="20" y="420" />
@@ -219,7 +219,7 @@
     </object>
     <object About="Link Port" id="bKiglGiRuQQwRJoSfMuK-9" label="2">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.35;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-4">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.35;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="bKiglGiRuQQwRJoSfMuK-4">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.5556">
           <mxPoint as="sourcePoint" y="440" />
           <mxPoint as="targetPoint" x="20" y="420" />
@@ -235,7 +235,7 @@
     </object>
     <object About="Data Table" id="hpSgkVCZxBd9YCXxPIVF-1" label="batterySocVoc">
       <gunns subtype="2D" type="Data Table" />
-      <mxCell collapsed="1" parent="FsyXoUYgAMZMXtiNVPkq-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#e0e0e0;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;fontColor=#000000;strokeColor=default;" vertex="1">
+      <mxCell collapsed="1" parent="FsyXoUYgAMZMXtiNVPkq-1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=light-dark(#E0E0E0,#1F1F1F);horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=default;align=center;fontSize=12;fontColor=default;strokeColor=default;" vertex="1">
         <mxGeometry as="geometry" height="20" width="160" x="460" y="300">
           <mxRectangle as="alternateBounds" height="100" width="160" x="460" y="300" />
         </mxGeometry>
@@ -279,7 +279,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-4" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-2">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-2">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="480" y="210" />
           <mxPoint as="targetPoint" x="500" y="190" />
@@ -288,7 +288,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-5" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-2" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.7143">
           <mxPoint as="sourcePoint" x="580" y="250" />
           <mxPoint as="targetPoint" x="600" y="230" />
@@ -302,7 +302,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-6" label="3">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.65;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-3">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.65;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-3">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.6923">
           <mxPoint as="sourcePoint" x="360" y="210" />
           <mxPoint as="targetPoint" x="380" y="190" />
@@ -322,7 +322,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-8" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-9" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-7">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-9" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-7">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="310" y="260" />
           <mxPoint as="targetPoint" x="330" y="240" />
@@ -337,7 +337,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-10" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-7" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-7" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="LywFiYjkdyNcLrU4SWqD-38">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="-0.8095">
           <mxPoint as="sourcePoint" x="600" y="230" />
           <mxPoint as="targetPoint" x="20" y="420" />
@@ -351,7 +351,7 @@
     </object>
     <object About="Link Port" id="Fb2ymC6kozOyreSzJwYg-11" label="4">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.955;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-9">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="bKiglGiRuQQwRJoSfMuK-1" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.955;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-9">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" y="440" />
           <mxPoint as="targetPoint" x="20" y="420" />
@@ -376,7 +376,7 @@
     </object>
     <object About="Link Port" id="o404FeabMYnQmQ_9t9Wk-8" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-3">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;exitPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-3">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="460" y="210" />
           <mxPoint as="targetPoint" x="190" y="120" />
@@ -385,7 +385,7 @@
     </object>
     <object About="Link Port" id="o404FeabMYnQmQ_9t9Wk-10" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-9">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="wTAYamTjfO6LtjOPV6Xt-2" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="Fb2ymC6kozOyreSzJwYg-9">
         <mxGeometry as="geometry" height="50" relative="1" width="50">
           <mxPoint as="sourcePoint" x="460" y="220" />
           <mxPoint as="targetPoint" x="320" y="240" />
@@ -406,7 +406,7 @@
     </object>
     <object About="Link Port" id="V4xHEeqqkjUf3fIBEIv2-2" label="0">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="JmS6ekdguLnGR6STPLjl-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="LywFiYjkdyNcLrU4SWqD-17" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="JmS6ekdguLnGR6STPLjl-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.2308">
           <mxPoint as="sourcePoint" x="200" y="350" />
           <mxPoint as="targetPoint" x="350" y="323" />
@@ -416,7 +416,7 @@
     </object>
     <object About="Link Port" id="V4xHEeqqkjUf3fIBEIv2-3" label="1">
       <gunns type="Port" />
-      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="JmS6ekdguLnGR6STPLjl-1">
+      <mxCell edge="1" parent="FsyXoUYgAMZMXtiNVPkq-1" source="Fb2ymC6kozOyreSzJwYg-3" style="endArrow=none;html=1;fontSize=9;fontColor=light-dark(#99CCFF,#003366);jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;rounded=1;curved=0;labelBackgroundColor=default;strokeColor=default;fillColor=default;" target="JmS6ekdguLnGR6STPLjl-1">
         <mxGeometry as="geometry" height="50" relative="1" width="50" x="0.6471">
           <mxPoint as="sourcePoint" x="350" y="260" />
           <mxPoint as="targetPoint" x="330" y="220" />
@@ -436,7 +436,7 @@
     </object>
     <object About="Short Circuit" Ports="0=in, 1=out" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.malfMinimumVoltage="0.0" i03.malfConstantPowerFlag="false" i04.malfConstantPowerValue="0.0" i05.malfConstantCurrentFlag="false" i06.malfConstantCurrentValue="0.0" i07.malfInitialPowerFlag="false" i08.malfInitialPowerValue="0.0" i09.malfInitialCurrentFlag="false" i10.malfInitialCurrentValue="0.0" i11.malfResistanceFlag="true" i12.malfResistanceValue="1.0e8" id="JmS6ekdguLnGR6STPLjl-1" label="short1">
       <gunns numPorts="2" reqPorts="0,1" subtype="aspects/electrical/resistive/GunnsElectShort" type="Link" />
-      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=middle;shadow=0;align=right;fillColor=default;html=1;verticalAlign=middle;strokeWidth=2;shape=mxgraph.electrical.resistors.resistor_2;fontColor=default;strokeColor=#FF0000;direction=south;labelPosition=left;" vertex="1">
+      <mxCell parent="FsyXoUYgAMZMXtiNVPkq-1" style="verticalLabelPosition=middle;shadow=0;align=right;fillColor=default;html=1;verticalAlign=middle;strokeWidth=2;shape=mxgraph.electrical.resistors.resistor_2;fontColor=default;strokeColor=light-dark(#FF0000,#A50000);direction=south;labelPosition=left;" vertex="1">
         <mxGeometry as="geometry" height="40" width="20" x="390" y="280" />
       </mxCell>
     </object>

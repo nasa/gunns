@@ -335,7 +335,11 @@ def getDarkColor(light):
 
     h,s,v = rgb2hsv(r,g,b)
 
-    if s < 0.95 and v < 0.95:
+    if s >= 0.95 and v >= 0.95:
+        # for high saturation/value colors, just half the value
+        # TODO this will be tweaked.
+        v *=0.65
+    else:
         # invert colors
         r = 1.0-r
         g = 1.0-g
@@ -346,11 +350,6 @@ def getDarkColor(light):
 
         # rotate hue by 180 degrees
         h = (h+0.5)%1
-
-    else:
-        # for high saturation/value colors, just half the value
-        # TODO this will be tweaked.
-        v /= 2.0
 
     # convert to RGB
     r,g,b = hsv2rgb(h,s,v)

@@ -425,19 +425,8 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
     if name in from_attr:
         if name in to_attr:
             if to_attr[name] != from_attr[name]:
-                # the style field is of the form:
-                # shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;
-
-                # convert style properties into dictionary
-                # e.g. {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
-                to_style_properties   =   to_attr[name].split(';')[0:-1]
-                from_style_properties = from_attr[name].split(';')[0:-1]
-
-                to_style_properties   = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   to_style_properties)),
-                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   to_style_properties))))
-                from_style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 , from_style_properties)),
-                                                 list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '', from_style_properties))))
-
+                to_style_properties   = shapeLibs.stylePropsToDict(  to_attr[name])
+                from_style_properties = shapeLibs.stylePropsToDict(from_attr[name])
 
                 # add default colors to master dictionary in case we need to overwrite them
                 for prop in ['strokeColor','fontColor','fillColor','swimlaneFillColor']:
@@ -445,25 +434,23 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
                         from_style_properties[prop] = 'default'
 
                 # remove properies from master we don't want to ever overwrite
-                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction']:
+                for prop in ['labelPosition','verticalLabelPosition','align','verticalAlign','direction','flipV','flipH']:
                     if prop in from_style_properties:
                         del from_style_properties[prop]
 
                 # loop through master style properties
-                for style_property in from_style_properties:
-                    # overwrite style property if there's a mismatch between shape and master
-                    if style_property in to_style_properties:
-                        if to_style_properties[style_property] != from_style_properties[style_property]:
-                            to_style_properties[style_property] = from_style_properties[style_property]
-                    # if style propery doesn't exist in the shape, create it
-                    else:
-                        # list of style properies we want to overwrite only if it already exists in the shape
-                        if style_property not in ['swimlaneFillColor']:
-                            to_style_properties[style_property] = from_style_properties[style_property]
+                for prop in from_style_properties:
+                    if 'Color' not in prop or 'gradientColor' in from_style_properties:
+                        # overwrite style property if there's a mismatch between shape and master
+                        if prop in to_style_properties:
+                            if to_style_properties[prop] != from_style_properties[prop]:
+                                to_style_properties[prop] = from_style_properties[prop]
 
+                # make sure each color has a dark mode
+                shapeLibs.setLightDarkColors(to_style_properties)
 
                 # convert dictionary back to string
-                new_to_attr = ';'.join(list(map(lambda k: k if to_style_properties[k] == '' else k + '=' + to_style_properties[k], to_style_properties.keys()))) + ';'
+                new_to_attr = shapeLibs.dictToStyleProps(to_style_properties)
 
                 # check if there was an update
                 if to_attr[name] == new_to_attr:
@@ -527,6 +514,57 @@ def updateTableData(table, master):
 
                 print('        ' + console.note('updated table row data: style in ' + table_attr['About'] + ': ' + cell_attribs['style'] + '.'))
                 updated = True
+
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateNonGunnsData(shape):
+    updated = False
+    shape_attr = shape.attrib
+
+    if 'style' in shape_attr:
+        styleDict = shapeLibs.stylePropsToDict(shape_attr['style'])
+
+        shapeLibs.setLightDarkColors(styleDict)
+
+        # convert dictionary back to string
+        new_to_attr = shapeLibs.dictToStyleProps(styleDict)
+
+        # check if there was an update
+        if shape_attr['style'] == new_to_attr:
+            # shape style didn't change
+            return False
+        else:
+            shape_attr['style'] = new_to_attr
+            return False
+
+    else:
+        print('this shape has no style lol')
+
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateDiagramData(shape):
+    updated = False
+    shape_attr = shape.attrib
+
+    if 'background' in shape_attr:
+        light = shape_attr['background'].upper()
+        if light.startswith('#'):
+            if light == '#FFFFFF':
+                new_to_attr = 'default'
+            else:
+                new_to_attr = shapeLibs.getDarkColor(light)
+
+            # check if there was an update
+            if shape_attr['background'] == new_to_attr:
+                # shape style didn't change
+                return False
+            else:
+                shape_attr['background'] = new_to_attr
+                return False
 
     return updated
 
@@ -897,6 +935,7 @@ doxLicenses = []
 doxData = []
 doxReferences = []
 doxAssumptions = []
+nonGunnsElements = []
 
 # Make a list of all sub-networks and check for duplicate names.
 for obj in objects:
@@ -1010,6 +1049,11 @@ for obj in objects:
         elif 'assumptions' == gunnsSubtype:
             doxAssumptions.append(obj)
 
+for an_element in objects_and_cells:
+    gunns_tag = an_element.find('./gunns')
+    if None == gunns_tag:
+        nonGunnsElements.append(an_element)
+
 # Check for combination of super-ports and subnet interface connections: currently we don't
 # support both at the same time.
 if (len(superPorts) > 0 and len(subNetIfConnections) > 0):
@@ -1058,6 +1102,13 @@ for table in doxReferences+doxAssumptions:
     master = shapeLibs.getShapeMaster(allShapeMasters,getElemGunnsType(table),getElemGunnsSubtype(table))
     if updateTableData(table, master):
         contentsUpdated = True
+
+for nonGunnsElement in nonGunnsElements:
+    if updateNonGunnsData(nonGunnsElement):
+        contentsUpdated = True
+
+if updateDiagramData(root):
+    contentsUpdated = True
 
 # Re-number nodes and sub-network super node offsets to account for new or deleted sub-networks
 # that the user has manually added or removed in draw.io.  Note this won't fix gaps in node numbers

@@ -261,3 +261,125 @@ def getShapeType(shape):
 def getShapeSubtype(shape):
     gunns_attr = shape.find('./gunns').attrib
     return gunns_attr['subtype']
+
+# Convert style properties into a dictionary
+# start with form:
+# shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;etc...
+# end with form:
+# {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
+def stylePropsToDict(style_properties):
+    style_properties = style_properties.split(';')[0:-1]
+    style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   style_properties)),
+                                list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   style_properties))))
+    return style_properties
+
+# Convert dictionary back to style properties
+def dictToStyleProps(style_dict):
+    return ';'.join(list(map(lambda k: k if style_dict[k] == '' else k + '=' + style_dict[k], style_dict.keys()))) + ';'
+
+# convert normalized RGB to normalized HSV
+def rgb2hsv(r,g,b):
+    c_max = max(r,g,b)
+    c_min = min(r,g,b)
+    delta = c_max - c_min
+    # value
+    v = c_max
+    # saturation
+    if c_max == 0:
+        s = 0
+    else:
+        s = delta / c_max
+    # hue
+    if delta == 0:
+        h = 0
+    elif c_max == r:
+        h = ((g - b) / delta) % 6
+    elif c_max == g:
+        h = ((b - r) / delta) + 2
+    elif c_max == b:
+        h = ((r - g) / delta) + 4
+    h = h%6 / 6
+    return (h,s,v)
+
+# convert normalized HSV to normalized RGB
+def hsv2rgb(h,s,v):
+    chroma = v * s
+    h *= 6
+    x = chroma * (1 - abs(h%2 - 1))
+    if h < 1:
+        r,g,b = (chroma,x,0)
+    elif h < 2:
+        r,g,b = (x,chroma,0)
+    elif h < 3:
+        r,g,b = (0,chroma,x)
+    elif h < 4:
+        r,g,b = (0,x,chroma)
+    elif h < 5:
+        r,g,b = (x,0,chroma)
+    else:
+        r,g,b = (chroma,0,x)
+    m = v - chroma
+    return (r+m,g+m,b+m)
+
+# input is a color of from '#rrggbb' or '#rrggbbaa'
+def getDarkColor(light):
+    alpha = ''
+    if len(light) == len('#rrggbbaa'):
+        alpha = light[-2:]
+
+    dark = light
+    # convert RGB hex to RGB dec
+    r = int(dark[1:3],16)/255.0
+    g = int(dark[3:5],16)/255.0
+    b = int(dark[5:7],16)/255.0
+
+    h,s,v = rgb2hsv(r,g,b)
+
+    if s < 0.95 and v < 0.95:
+        # invert colors
+        r = 1.0-r
+        g = 1.0-g
+        b = 1.0-b
+
+        # convert to HSV
+        h,s,v = rgb2hsv(r,g,b)
+
+        # rotate hue by 180 degrees
+        h = (h+0.5)%1
+
+    else:
+        # for high saturation/value colors, just half the value
+        # TODO this will be tweaked.
+        v /= 2.0
+
+    # convert to RGB
+    r,g,b = hsv2rgb(h,s,v)
+    r = int(255*r)
+    g = int(255*g)
+    b = int(255*b)
+
+    # convert RGB dec to RGB hex
+    dark = '#' + f"{r:02X}{g:02X}{b:02X}" + alpha
+
+    if dark != light:
+        return 'light-dark(' + light + ',' + dark + ')'
+    else:
+        return light
+
+# loops through style dictionary (see stylePropsToDict()) and sets dark mode for color properties
+def setLightDarkColors(style_dict):
+    for prop in style_dict:
+        # filter for color properties of the form '#rrggbb(aa)'. this filters out colors
+        # that are set to 'default', 'none', or 'light-dark(#rrggbb(aa),#rrggbb(aa))'
+        if 'Color' in prop and style_dict[prop].startswith('#'):
+            light = style_dict[prop].upper()
+
+            if (light == '#FFFFFF' and (prop == 'fillColor' or prop == 'swimlaneFillColor' or prop == 'labelBackgroundColor')
+             or light == '#000000' and (prop == 'fontColor' or prop == 'strokeColor')):
+                    style_dict[prop] = 'default'
+
+            elif prop != 'fillColor' or prop == 'fillColor' and ('fillOpacity' not in style_dict or 'fillOpacity' in style_dict and int(style_dict['fillOpacity']) > 25):
+                style_dict[prop] = getDarkColor(light)
+            else:
+                style_dict[prop] = light
+    return

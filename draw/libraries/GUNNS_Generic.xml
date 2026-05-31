@@ -21,7 +21,7 @@
     "title": "Socket List"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"\" ConstructorArgs=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"\" ConstructorArgs=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",

@@ -1,62 +1,62 @@
 <mxlibrary>[
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsSensorAnalogWrapper\" ConstructorArgs=\"\" c00.minRange=\"0.0\" c01.maxRange=\"0.0\" c02.offValue=\"0.0\" c03.nominalBias=\"0.0\" c04.nominalScale=\"1.0\" c05.nominalNoiseScale=\"0.0\" c06.nominalResolution=\"0.0\" c07.noiseFunction=\"TsNoise::getNoise\" c08.unitConversion=\"UnitConversion::NO_CONVERSION\" c09.nominalNoiseMult=\"0.0\" i00.powerFlag=\"false\" i01.truthInput=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsSensorAnalogWrapper\" ConstructorArgs=\"\" c00.minRange=\"0.0\" c01.maxRange=\"0.0\" c02.offValue=\"0.0\" c03.nominalBias=\"0.0\" c04.nominalScale=\"1.0\" c05.nominalNoiseScale=\"0.0\" c06.nominalResolution=\"0.0\" c07.noiseFunction=\"TsNoise::getNoise\" c08.unitConversion=\"UnitConversion::NO_CONVERSION\" c09.nominalNoiseMult=\"0.0\" i00.powerFlag=\"false\" i01.truthInput=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Sensor Analog Wrapper"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsBasicIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsBasicIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Basic Island Analyzer"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectResistiveUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.resistanceNormal=\"0.0\" c02.resistanceStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectResistiveUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.resistanceNormal=\"0.0\" c02.resistanceStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Electrical Resistive User Load"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectConstantPowerUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.powerNormal=\"0.0\" c02.powerStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/electrical/UserLoad/GunnsElectConstantPowerUserLoad\" ConstructorArgs=\"&amp;amp;netConfig.THIS_NAME, &amp;amp;netInput.THIS_NAME\" c00.underVoltageLimit=\"0.0\" c01.powerNormal=\"0.0\" c02.powerStandby=\"0.0\" c03.fuseCurrentLimit=\"0.0\" c04.dutyCycleFraction=\"0.0\" c05.dutyCyclePeriod=\"0.0\" i00.initialMode=\"0\" i01.initialVoltage=\"0.0\" i02.dutyCycleTimer=\"0.0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Electrical Constant Power User Load"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidIslandAnalyzer\" ConstructorArgs=\"netNodeList\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Fluid Island Analyzer"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidFlowIntegrator\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidFlowIntegrator\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Fluid Flow Integrator"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidVolumeMonitor\" ConstructorArgs=\"netNodeList, &amp;lt;a network link&amp;gt;\" i00.linkPort=\"0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"core/GunnsFluidVolumeMonitor\" ConstructorArgs=\"netNodeList, &amp;lt;a network link&amp;gt;\" i00.linkPort=\"0\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Fluid Volume Monitor"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object About=\"Spotter\" Class=\"aspects/fluid/potential/GunnsFluidPressureHead\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" c00.fluidColumnX=\"0.0\" c01.fluidColumnY=\"0.0\" c02.fluidColumnZ=\"0.0\" c03.acceleration=\"0\" c04.reverseAcceleration=\"false\" c05.rotationDcm=\"0\" c06.transposeRotation=\"false\" label=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object About=\"Spotter\" Class=\"aspects/fluid/potential/GunnsFluidPressureHead\" ConstructorArgs=\"&amp;lt;a network link&amp;gt;\" c00.fluidColumnX=\"0.0\" c01.fluidColumnY=\"0.0\" c02.fluidColumnZ=\"0.0\" c03.acceleration=\"0\" c04.reverseAcceleration=\"false\" c05.rotationDcm=\"0\" c06.transposeRotation=\"false\" label=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",
     "title": "Fluid Pressure Head"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/thermal/GunnsThermalCapacitorHeatQueues\" ConstructorArgs=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=default;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Spotter\" Class=\"aspects/thermal/GunnsThermalCapacitorHeatQueues\" ConstructorArgs=\"\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Spotter\"/&gt;&lt;mxCell style=\"shape=mxgraph.flowchart.summing_function;html=1;fillColor=none;verticalLabelPosition=bottom;strokeWidth=1.4;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"20\" height=\"20\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 20,
     "h": 20,
     "aspect": "fixed",

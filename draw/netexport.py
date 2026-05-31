@@ -337,21 +337,6 @@ def getPortTargetName(port, links, nodes, gnds):
         result = getPortNodeName(port, links)
     return result
 
-# Convert style properties into a dictionary
-# start with form:
-# shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;etc...
-# end with form:
-# {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
-def stylePropsToDict(style_properties):
-    style_properties = style_properties.split(';')[0:-1]
-    style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   style_properties)),
-                                list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   style_properties))))
-    return style_properties
-
-# Convert dictionary back to style properties
-def dictToStyleProps(style_dict):
-    return ';'.join(list(map(lambda k: k if style_dict[k] == '' else k + '=' + style_dict[k], style_dict.keys()))) + ';'
-
 # Copies attributes from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
 def forceCopyAttrib(to_attr, from_attr, name):
@@ -366,17 +351,17 @@ def forceCopyAttrib(to_attr, from_attr, name):
     return False
 
 def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
-    type_label_text = ''
+    type_label_text = None
     if name in from_attr:
         if name in to_attr:
             if to_attr[name] != from_attr[name]:
-                to_style_properties   = stylePropsToDict(  to_attr[name])
-                from_style_properties = stylePropsToDict(from_attr[name])
-                
-                # check if from_attr has TypeLabel and to_addr doesn't. some shapes in old drawings
-                # have this property in the shape stencil, but now it's its own property.
-                # this logic captures that text and passes it outside the function to be set properly.
+                to_style_properties   = shapeLibs.stylePropsToDict(  to_attr[name])
+                from_style_properties = shapeLibs.stylePropsToDict(from_attr[name])
+
                 if 'shape' in to_style_properties and 'shape' in from_style_properties:
+                    # check if from_attr has TypeLabel and to_addr doesn't. some shapes in old drawings
+                    # have this property in the shape stencil, but now it's its own property outside of the stencil.
+                    # this logic captures that text from the stencil so it can be set properly elsewhere.
                     if to_style_properties['shape'].startswith('stencil(') and from_style_properties['shape'].startswith('stencil('):
                         to_stencil   = compression.decompress(  to_style_properties['shape'][len('stencil('):-1])
                         from_stencil = compression.decompress(from_style_properties['shape'][len('stencil('):-1])
@@ -387,6 +372,16 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                                 str_attr = next((item for item in text_field.split(' ') if item.startswith("str=")), None)
                                 if str_attr:
                                     type_label_text = str_attr.split('"')[1]
+
+                    # handle logic for updating a spotter shape
+                    if from_style_properties['shape'] == 'mxgraph.flowchart.summing_function' and to_style_properties['shape'] == 'mxgraph.signs.nature.earth':
+                        if 'fillColor' in to_style_properties:
+                            if 'strokeColor' in to_style_properties:
+                                # the old fillColor becomes the new strokeColor
+                                to_style_properties['strokeColor'] = to_style_properties['fillColor']
+                            if 'fillColor' in from_style_properties:
+                                # the new fillColor is set to the master fillColor (i.e. 'none')
+                                to_style_properties['fillColor'] = from_style_properties['fillColor']
 
 
                 # add default colors to master dictionary in case we need to overwrite them
@@ -400,20 +395,18 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                         del from_style_properties[prop]
 
                 # loop through master style properties
-                for style_property in from_style_properties:
-                    # overwrite style property if there's a mismatch between shape and master
-                    if style_property in to_style_properties:
-                        if to_style_properties[style_property] != from_style_properties[style_property]:
-                            to_style_properties[style_property] = from_style_properties[style_property]
-                    # if style propery doesn't exist in the shape, create it
-                    else:
-                        # list of style properies we want to overwrite only if it already exists in the shape
-                        if style_property not in ['swimlaneFillColor']:
-                            to_style_properties[style_property] = from_style_properties[style_property]
+                for prop in from_style_properties:
+                    if 'Color' not in prop or 'gradientColor' in from_style_properties:
+                        # overwrite style property if there's a mismatch between shape and master
+                        if prop in to_style_properties:
+                            if to_style_properties[prop] != from_style_properties[prop]:
+                                to_style_properties[prop] = from_style_properties[prop]
 
+                # make sure each color has a dark mode
+                shapeLibs.setLightDarkColors(to_style_properties)
 
                 # convert dictionary back to string
-                new_to_attr = dictToStyleProps(to_style_properties)
+                new_to_attr = shapeLibs.dictToStyleProps(to_style_properties)
 
                 # check if there was an update
                 if to_attr[name] == new_to_attr:
@@ -527,7 +520,7 @@ def updateLinkShapeData(link, master):
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + link_cell_attr['style'] + '.'))
         updated = True
-        if type_label_txt != '':
+        if type_label_txt != None:
             if forceCopyLabelAttrib(link_attr, type_label_txt):
                 print('    ' + console.note('updated shape data: TypeLabel in link: ' + link_attr['label'] + '.'))
     # Do config & input data items
@@ -617,6 +610,59 @@ def updateTableData(table, master):
 
                 print('    ' + console.note('updated table row data: style in ' + table_attr['About'] + ': ' + cell_attribs['style'] + '.'))
                 updated = True
+
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateNonGunnsData(shape):
+    updated = False
+    shape_attr = shape.attrib
+
+    if 'style' in shape_attr:
+        styleDict = shapeLibs.stylePropsToDict(shape_attr['style'])
+
+        # make sure each color has a dark mode
+        shapeLibs.setLightDarkColors(styleDict)
+
+        # convert dictionary back to string
+        new_to_attr = shapeLibs.dictToStyleProps(styleDict)
+
+        # check if there was an update
+        if shape_attr['style'] == new_to_attr:
+            # shape style didn't change
+            return False
+        else:
+            shape_attr['style'] = new_to_attr
+            return False
+
+    else:
+        print('this shape has no style lol')
+
+    return updated
+
+# Performs shape updates for the given table, returns True if
+# there were any changes.
+def updateDiagramData(shape):
+    updated = False
+    shape_attr = shape.attrib
+
+    if 'background' in shape_attr:
+        light = shape_attr['background'].upper()
+        if light.startswith('#'):
+            if light == '#FFFFFF':
+                new_to_attr = 'default'
+            else:
+                # make sure background color has a dark mode
+                new_to_attr = shapeLibs.getDarkColor(light)
+
+            # check if there was an update
+            if shape_attr['background'] == new_to_attr:
+                # shape style didn't change
+                return False
+            else:
+                shape_attr['background'] = new_to_attr
+                return False
 
     return updated
 
@@ -846,6 +892,7 @@ doxData = []
 doxReferences = []
 doxAssumptions = []
 subNetIfs = []
+nonGunnsElements = []
 
 # First find the network config object
 for an_object in objects:
@@ -961,6 +1008,11 @@ for an_object in objects:
     elif None != gunns_tag and an_object != netConfig[0] and not isDescendant(an_object, netConfig[0], objects_and_cells):
         if 'Dox' != gunns_tag.attrib['type']:
             print('    ' + console.warn('GUNNS ' + an_object.attrib['About'] + ' ' + an_object.attrib['label'] + ' is not a child of the network container, will be ignored.'))
+
+for an_element in objects_and_cells:
+    gunns_tag = an_element.find('./gunns')
+    if None == gunns_tag:
+        nonGunnsElements.append(an_element)
 
 # Check for required or conflicting objects.
 if not (basic_network or fluid_network):
@@ -1128,6 +1180,13 @@ for table in doxReferences+doxAssumptions+extFluidConfigs+intFluidConfigs+fluidS
     master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(table),shapeLibs.getShapeSubtype(table))
     if updateTableData(table, master):
         contentsUpdated = True
+
+for nonGunnsElement in nonGunnsElements:
+    if updateNonGunnsData(nonGunnsElement):
+        contentsUpdated = True
+
+if updateDiagramData(root):
+    contentsUpdated = True
 
 # Check the port connections, each must connect between a node and a link.
 for port in ports:

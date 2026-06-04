@@ -636,9 +636,6 @@ def updateNonGunnsData(shape):
             shape_attr['style'] = new_to_attr
             return False
 
-    else:
-        print('this shape has no style lol')
-
     return updated
 
 # Performs shape updates for the given table, returns True if

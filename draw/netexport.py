@@ -350,7 +350,10 @@ def forceCopyAttrib(to_attr, from_attr, name):
             return True
     return False
 
-def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
+# Copies style attributes from 'from_attr' to 'to_attr' and returns True if
+# there were any resulting changes to 'to_attr'. 'style_overrides' may be a list
+# of properties to force copy from the master shape (typically for color).
+def forceCopyStyleAttrib(to_attr, from_attr, name='style', style_overrides=[]):
     type_label_text = None
     if name in from_attr:
         if name in to_attr:
@@ -405,6 +408,11 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
                 # make sure each color has a dark mode
                 shapeLibs.setLightDarkColors(to_style_properties)
 
+                # force style_overrides if they haven't already been overwritten
+                for prop in style_overrides:
+                    if prop in from_style_properties:
+                        to_style_properties[prop] = from_style_properties[prop]
+
                 # convert dictionary back to string
                 new_to_attr = shapeLibs.dictToStyleProps(to_style_properties)
 
@@ -420,6 +428,8 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style'):
             return [True, type_label_text]
     return [False, type_label_text]
 
+# Copies TypeLabel attribute from 'from_attr' to 'to_attr' and returns True if
+# there were any resulting changes to 'to_attr'
 def forceCopyLabelAttrib(to_attr, new_label, name='TypeLabel'):
     to_attr[name] = new_label
     return True
@@ -490,7 +500,7 @@ def updateShapeDataTargets(obj, master):
 
 # Performs shape updates for the given link, returns True if
 # there were any changes.
-def updateLinkShapeData(link, master):
+def updateLinkShapeData(link, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -516,7 +526,7 @@ def updateLinkShapeData(link, master):
     if forceCopyAttrib(link_gunns_attr, master_gunns_attr, 'reqPorts'):
         print('    ' + console.note('updated shape data: reqPorts in link: ' + link_attr['label'] + '.'))
         updated = True
-    [style_updated, type_label_txt] = forceCopyStyleAttrib(link_cell_attr, master_cell_attr)
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(link_cell_attr, master_cell_attr, style_overrides=overwrite_list)
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + link_cell_attr['style'] + '.'))
         updated = True
@@ -530,7 +540,7 @@ def updateLinkShapeData(link, master):
 
 # Performs shape updates for the given spotter, returns True if
 # there were any changes.
-def updateSpotterShapeData(spotter, master):
+def updateSpotterShapeData(spotter, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -547,7 +557,7 @@ def updateSpotterShapeData(spotter, master):
     if forceCopyAttrib(spotter_attr, master_attr, 'About'):
         print('    ' + console.note('updated shape data: About in spotter: ' + spotter_attr['label'] + '.'))
         updated = True
-    [style_updated, type_label_txt] = forceCopyStyleAttrib(spotter_cell_attr, master_cell_attr)
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(spotter_cell_attr, master_cell_attr, style_overrides=overwrite_list)
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + spotter_cell_attr['style'] + '.'))
         updated = True
@@ -560,7 +570,7 @@ def updateSpotterShapeData(spotter, master):
 
 # Performs shape updates for the given shape, returns True if
 # there were any changes.
-def updateShapeData(shape, master):
+def updateShapeData(shape, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -569,7 +579,7 @@ def updateShapeData(shape, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    [style_updated, type_label_txt] = forceCopyStyleAttrib(shape_cell_attr, master_cell_attr)
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(shape_cell_attr, master_cell_attr, style_overrides=overwrite_list)
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + shape_cell_attr['style'] + '.'))
         updated = True
@@ -577,7 +587,7 @@ def updateShapeData(shape, master):
 
 # Performs shape updates for the given table, returns True if
 # there were any changes.
-def updateTableData(table, master):
+def updateTableData(table, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -586,7 +596,7 @@ def updateTableData(table, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    [style_updated, type_label_txt] = forceCopyStyleAttrib(table_cell_attr, master_cell_attr)
+    [style_updated, type_label_txt] = forceCopyStyleAttrib(table_cell_attr, master_cell_attr,style_overrides=overwrite_list)
     if style_updated:
         print('    ' + console.note('updated shape data: style in link: ' + table_cell_attr['style'] + '.'))
         updated = True
@@ -613,7 +623,7 @@ def updateTableData(table, master):
 
     return updated
 
-# Performs shape updates for the given table, returns True if
+# Performs shape updates for the given non-GUNNS shape, returns True if
 # there were any changes.
 def updateNonGunnsData(shape):
     updated = False
@@ -621,6 +631,9 @@ def updateNonGunnsData(shape):
 
     if 'style' in shape_attr:
         styleDict = shapeLibs.stylePropsToDict(shape_attr['style'])
+
+        if 'fontColor' not in styleDict:
+            styleDict['fontColor'] = 'default'
 
         # make sure each color has a dark mode
         shapeLibs.setLightDarkColors(styleDict)
@@ -1150,7 +1163,7 @@ if basic_network:
 if fluid_network:
     for netNode in netNodes:
         master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Fluid','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
-        if updateShapeData(netNode, master) or cleanLabel(netNode):
+        if updateShapeData(netNode, master, overwrite_list=['fillColor']) or cleanLabel(netNode):
             contentsUpdated = True
 
 for refNode in refNodes:
@@ -1165,7 +1178,7 @@ for gndNode in gndNodes:
 
 master = shapeLibs.getPortShapeMaster(allShapeMasters,'0')
 for port in ports:
-    if updateShapeData(port, master) or cleanLabel(port):
+    if updateShapeData(port, master, overwrite_list=['fontColor']) or cleanLabel(port):
         contentsUpdated = True
 
 for textBox in doxNotices+doxCopyrights+doxLicenses+doxData:

@@ -421,7 +421,7 @@ def generateSubNetIfSuperPorts(connection, subNets, allNodes, allObjects, links)
 
 # Copies attributes from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
-def forceCopyStyleAttrib(to_attr, from_attr, name):
+def forceCopyStyleAttrib(to_attr, from_attr, name, style_overrides=[]):
     if name in from_attr:
         if name in to_attr:
             if to_attr[name] != from_attr[name]:
@@ -449,6 +449,11 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
                 # make sure each color has a dark mode
                 shapeLibs.setLightDarkColors(to_style_properties)
 
+                # force style_overrides if they haven't already been overwritten
+                for prop in style_overrides:
+                    if prop in from_style_properties:
+                        to_style_properties[prop] = from_style_properties[prop]
+
                 # convert dictionary back to string
                 new_to_attr = shapeLibs.dictToStyleProps(to_style_properties)
 
@@ -466,7 +471,7 @@ def forceCopyStyleAttrib(to_attr, from_attr, name):
 
 # Performs shape updates for the given shape, returns True if
 # there were any changes.
-def updateShapeData(shape, master):
+def updateShapeData(shape, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -475,14 +480,14 @@ def updateShapeData(shape, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    if forceCopyStyleAttrib(shape_cell_attr, master_cell_attr, 'style'):
+    if forceCopyStyleAttrib(shape_cell_attr, master_cell_attr, 'style', style_overrides=overwrite_list):
         print('    ' + console.note('updated shape data: style in ' + shape_attr['About'] + ': ' + shape_cell_attr['style'] + '.'))
         updated = True
     return updated
 
 # Performs shape updates for the given table, returns True if
 # there were any changes.
-def updateTableData(table, master):
+def updateTableData(table, master, overwrite_list=[]):
     updated = False
     if None == master:
         return
@@ -491,7 +496,7 @@ def updateTableData(table, master):
     master_attr      = master.attrib
     master_cell_attr = master.find('./mxCell').attrib
     # Do the forced-sync items: <mxCell> style
-    if forceCopyStyleAttrib(table_cell_attr, master_cell_attr, 'style'):
+    if forceCopyStyleAttrib(table_cell_attr, master_cell_attr, 'style', style_overrides=overwrite_list):
         print('    ' + console.note('updated table data: style in ' + table_attr['About'] + ': ' + table_cell_attr['style'] + '.'))
         updated = True
 
@@ -517,7 +522,7 @@ def updateTableData(table, master):
 
     return updated
 
-# Performs shape updates for the given table, returns True if
+# Performs shape updates for the given non-GUNNS shape, returns True if
 # there were any changes.
 def updateNonGunnsData(shape):
     updated = False
@@ -526,6 +531,10 @@ def updateNonGunnsData(shape):
     if 'style' in shape_attr:
         styleDict = shapeLibs.stylePropsToDict(shape_attr['style'])
 
+        if 'fontColor' not in styleDict:
+            styleDict['fontColor'] = 'default'
+
+        # make sure each color has a dark mode
         shapeLibs.setLightDarkColors(styleDict)
 
         # convert dictionary back to string
@@ -1082,7 +1091,7 @@ for netContainer in netConfigs:
 
 master = shapeLibs.getSuperPortShapeMaster(allShapeMasters,'0')
 for superPort in superPorts:
-    if updateShapeData(superPort, master):
+    if updateShapeData(superPort, master, overwrite_list=['fontColor']):
         contentsUpdated = True
 
 master = shapeLibs.getSubNetworkIFConnectionShapeMaster(allShapeMasters)

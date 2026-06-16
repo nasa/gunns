@@ -293,11 +293,11 @@ def rgb2hsv(r,g,b):
     if delta == 0:
         h = 0
     elif c_max == r:
-        h = ((g - b) / delta) % 6
+        h = (g - b) / delta
     elif c_max == g:
-        h = ((b - r) / delta) + 2
+        h = (b - r) / delta + 2
     elif c_max == b:
-        h = ((r - g) / delta) + 4
+        h = (r - g) / delta + 4
     h = h%6 / 6
     return (h,s,v)
 
@@ -321,41 +321,51 @@ def hsv2rgb(h,s,v):
     m = v - chroma
     return (r+m,g+m,b+m)
 
+# convert normalized RGB to normalized CMYK
+def rgb2cmyk(r,g,b):
+    # key (black)
+    k = 1 - max(r,g,b)
+
+    # cyan, magenta, yellow
+    if k == 1:
+        c = m = y = 0
+    else:
+        c = (1 - r - k) / (1 - k)
+        m = (1 - g - k) / (1 - k)
+        y = (1 - b - k) / (1 - k)
+    return (c,m,y,k)
+
 # input is a color of from '#rrggbb' or '#rrggbbaa'
 def getDarkColor(light):
     alpha = ''
     if len(light) == len('#rrggbbaa'):
         alpha = light[-2:]
 
-    dark = light
     # convert RGB hex to RGB dec
-    r = int(dark[1:3],16)/255.0
-    g = int(dark[3:5],16)/255.0
-    b = int(dark[5:7],16)/255.0
+    r = int(light[1:3],16)/255.0
+    g = int(light[3:5],16)/255.0
+    b = int(light[5:7],16)/255.0
 
-    h,s,v = rgb2hsv(r,g,b)
+    # get CMYK values
+    c,m,y,k = rgb2cmyk(r,g,b)
 
-    if s >= 0.95 and v >= 0.95:
-        # for high saturation/value colors, just half the value
-        # TODO this will be tweaked.
-        v *=0.65
-    else:
-        # invert colors
-        r = 1.0-r
-        g = 1.0-g
-        b = 1.0-b
+    #### get dark color ####
+    # invert RGB channels then convert to HSV
+    h,s,v = rgb2hsv(1.0-r,1.0-g,1.0-b)
+    # rotate hue by 180 degrees
+    h = (h+0.5)%1
 
-        # convert to HSV
-        h,s,v = rgb2hsv(r,g,b)
-
-        # rotate hue by 180 degrees
-        h = (h+0.5)%1
+    #### make adjustments ####
+    # decrease the value depending on the magenta level and saturation (make yellows darker)
+    v *= (m+1)/2 * s + (1-s)
+    # decrease the saturation depending on the cyan level (make reds lighter)
+    s *= (c+4)/5
 
     # convert to RGB
     r,g,b = hsv2rgb(h,s,v)
-    r = int(255*r)
-    g = int(255*g)
-    b = int(255*b)
+    r = int(round(255*r))
+    g = int(round(255*g))
+    b = int(round(255*b))
 
     # convert RGB dec to RGB hex
     dark = '#' + f"{r:02X}{g:02X}{b:02X}" + alpha
@@ -377,7 +387,7 @@ def setLightDarkColors(style_dict):
              or light == '#000000' and (prop == 'fontColor' or prop == 'strokeColor')):
                     style_dict[prop] = 'default'
 
-            elif prop != 'fillColor' or prop == 'fillColor' and ('fillOpacity' not in style_dict or 'fillOpacity' in style_dict and int(style_dict['fillOpacity']) > 25):
+            elif prop != 'fillColor' or prop == 'fillColor':
                 style_dict[prop] = getDarkColor(light)
             else:
                 style_dict[prop] = light

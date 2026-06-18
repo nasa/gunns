@@ -387,7 +387,7 @@ def setLightDarkColors(style_dict):
              or light == '#000000' and (prop == 'fontColor' or prop == 'strokeColor')):
                     style_dict[prop] = 'default'
 
-            elif prop != 'fillColor' or prop == 'fillColor':
+            elif prop != 'fillColor' or prop == 'fillColor' and ('fillOpacity' not in style_dict or 'fillOpacity' in style_dict and int(style_dict['fillOpacity']) > 25):
                 style_dict[prop] = getDarkColor(light)
             else:
                 style_dict[prop] = light

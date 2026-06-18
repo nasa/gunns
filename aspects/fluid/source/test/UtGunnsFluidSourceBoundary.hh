@@ -81,7 +81,6 @@ class UtGunnsFluidSourceBoundary: public CppUnit::TestFixture
         std::string                         tLinkName;           /**< (--)   Nominal initialization data. */
         double                              tInitialFlowDemand;  /**< (kg/s) Nominal input data. */
         double*                             tTcRatesState;       /**< (--)   Nominal input data. */
-        GunnsFluidTraceCompoundsInputData*  tTcInput;            /**< (--)   Trace compounds input data for nodes. */
         GunnsFluidNode                      tNodes[2];           /**< (--)   Network nodes. */
         GunnsNodeList                       tNodeList;           /**< (--)   Network nodes list. */
         std::vector<GunnsBasicLink*>        tLinks;              /**< (--)   Network links. */
@@ -93,7 +92,8 @@ class UtGunnsFluidSourceBoundary: public CppUnit::TestFixture
         ChemicalCompound::Type              tTcTypes[2];         /**< (--)   Trace compounds config data for nodes. */
         GunnsFluidTraceCompoundsConfigData* tFluidTcConfig;      /**< (--)   Trace compounds config data for nodes. */
         PolyFluidConfigData*                tFluidConfig;        /**< (--)   Fluid config data. */
-        GunnsFluidTraceCompoundsInputData*  tFluidTcInput;       /**< (--)   Trace compounds input data for nodes. */
+        GunnsFluidTraceCompoundsInputData*  tTcInput1;           /**< (--)   Trace compounds input data for nodes. */
+        GunnsFluidTraceCompoundsInputData*  tTcInput2;           /**< (--)   Trace compounds input data for nodes. */
         PolyFluidInputData*                 tFluidInput1;        /**< (--)   Fluid 1 input data. */
         PolyFluidInputData*                 tFluidInput2;        /**< (--)   Fluid 2 input data. */
         double                              tFractions1[2];      /**< (--)   Array of fluid mass fractions for node 0. */

@@ -23,7 +23,6 @@ UtGunnsFluidSourceBoundary::UtGunnsFluidSourceBoundary()
     tLinkName(),
     tInitialFlowDemand(),
     tTcRatesState(),
-    tTcInput(),
     tNodes(),
     tNodeList(),
     tLinks(),
@@ -35,7 +34,8 @@ UtGunnsFluidSourceBoundary::UtGunnsFluidSourceBoundary()
     tTcTypes(),
     tFluidTcConfig(),
     tFluidConfig(),
-    tFluidTcInput(),
+    tTcInput1(),
+    tTcInput2(),
     tFluidInput1(),
     tFluidInput2(),
     tFractions1(),
@@ -63,12 +63,12 @@ void UtGunnsFluidSourceBoundary::tearDown()
     delete tConfigData;
     delete tFluidInput2;
     delete tFluidInput1;
-    delete tFluidTcInput;
+    delete tTcInput1;
     delete tFluidConfig;
     delete tFluidTcConfig;
     delete tCompoundProperties;
     delete tFluidProperties;
-    delete tTcInput;
+    delete tTcInput2;
     delete [] tTcRatesState;
 }
 
@@ -86,7 +86,7 @@ void UtGunnsFluidSourceBoundary::setUp()
     tTcRatesState       = new double[2];
     tTcRatesState[0]    = 1.0e-9;
     tTcRatesState[1]    = 2.0e-10;
-    tTcInput            = new GunnsFluidTraceCompoundsInputData(tTcRatesState);
+    tTcInput2            = new GunnsFluidTraceCompoundsInputData(tTcRatesState);
     tPort0              = 0;
     tTcTypes[0]         = ChemicalCompound::H2O;
     tTcTypes[1]         = ChemicalCompound::CO2;
@@ -108,14 +108,14 @@ void UtGunnsFluidSourceBoundary::setUp()
     double tcConcentrations[2];
     tcConcentrations[0] = 5.0e-5;
     tcConcentrations[1] = 6.0e-6;
-    tFluidTcInput = new GunnsFluidTraceCompoundsInputData(tcConcentrations);
+    tTcInput1 = new GunnsFluidTraceCompoundsInputData(tcConcentrations);
 
     tFluidInput1 = new PolyFluidInputData(283.15,                   //temperature
                                           700.728,                  //pressure
                                           0.0,                      //flowRate
                                           0.0,                      //mass
                                           tFractions1,              //massFractions
-                                          tFluidTcInput);           //trace compounds
+                                          tTcInput1);               //trace compounds
 
     tFractions2[0] = 0.0;
     tFractions2[1] = 1.0;
@@ -124,7 +124,7 @@ void UtGunnsFluidSourceBoundary::setUp()
                                           0.0,                      //flowRate
                                           0.0,                      //mass
                                           tFractions2,              //massFractions
-                                          tTcInput);                //trace compounds
+                                          tTcInput2);               //trace compounds
 
     /// - Have to initialize the nodes with the fluid configs (normally done by GUNNS)
     tNodes[0].initialize("UtTestNode0", tFluidConfig);
@@ -190,7 +190,7 @@ void UtGunnsFluidSourceBoundary::testInput()
     CPPUNIT_ASSERT(0.5                == tInputData->mMalfBlockageValue);
     CPPUNIT_ASSERT(tInitialFlowDemand == tInputData->mFlowDemand);
     CPPUNIT_ASSERT(tFluidInput2       == tInputData->mInternalFluid);
-    CPPUNIT_ASSERT(tTcInput           == tInputData->mInternalFluid->mTraceCompounds);
+    CPPUNIT_ASSERT(tTcInput2          == tInputData->mInternalFluid->mTraceCompounds);
     CPPUNIT_ASSERT(tTcRatesState[0]   == tInputData->mInternalFluid->mTraceCompounds->mState[0]);
     CPPUNIT_ASSERT(tTcRatesState[1]   == tInputData->mInternalFluid->mTraceCompounds->mState[1]);
 
@@ -207,7 +207,7 @@ void UtGunnsFluidSourceBoundary::testInput()
     CPPUNIT_ASSERT(0.5                == copyInput.mMalfBlockageValue);
     CPPUNIT_ASSERT(tInitialFlowDemand == copyInput.mFlowDemand);
     CPPUNIT_ASSERT(tFluidInput2       == copyInput.mInternalFluid);
-    CPPUNIT_ASSERT(tTcInput           == copyInput.mInternalFluid->mTraceCompounds);
+    CPPUNIT_ASSERT(tTcInput2          == copyInput.mInternalFluid->mTraceCompounds);
     CPPUNIT_ASSERT(tTcRatesState[0]   == copyInput.mInternalFluid->mTraceCompounds->mState[0]);
     CPPUNIT_ASSERT(tTcRatesState[1]   == copyInput.mInternalFluid->mTraceCompounds->mState[1]);
 
@@ -364,14 +364,14 @@ void UtGunnsFluidSourceBoundary::testInitializationExceptions()
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0),
                          TsInitializationException);
     tFluidConfig->mTraceCompounds = tFluidTcConfig;
-    tFluidInput1->mTraceCompounds = tFluidTcInput;
+    tFluidInput1->mTraceCompounds = tTcInput1;
     tNodeList.mNodes              = tNodes;
 
     /// @test exception thrown on trace compounds only flag but input data has no trace compounds.
     tInputData->mInternalFluid->mTraceCompounds = 0;
     CPPUNIT_ASSERT_THROW(tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0),
                          TsInitializationException);
-    tInputData->mInternalFluid->mTraceCompounds = tTcInput;
+    tInputData->mInternalFluid->mTraceCompounds = tTcInput2;
 
     /// @test init flag
     CPPUNIT_ASSERT(false == tArticle->mInitFlag);
@@ -518,6 +518,17 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsToNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFluidInput2->mTemperature, tNodes[0].getInflow()->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,                       tNodes[0].getOutflux(),                  DBL_EPSILON);
 
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+    const double mdotH2O = node->mInflow.getTraceCompounds()->getMasses()[0];
+    const double mdotCO2 = node->mInflow.getTraceCompounds()->getMasses()[1];
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[0] * -tInitialFlowDemand, mdotH2O, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mTraceCompoundRates[1] * -tInitialFlowDemand, mdotCO2, DBL_EPSILON);
+
+    /// - Make sure the mState member is unaffected, so we're not double-counting.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
+
     UT_PASS;
 }
 
@@ -551,6 +562,12 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsFromNode()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tFluidInput2->mTemperature, tNodes[0].getInflow()->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,                       tNodes[0].getOutflux(),                  DBL_EPSILON);
 
+    /// - FluidSourceBoundary does not affect the node's TC concentrations for flow out of the node.
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
+
     UT_PASS;
 }
 
@@ -582,6 +599,11 @@ void UtGunnsFluidSourceBoundary::testComputeFlowsZeroFlow()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr, tArticle->mPower,         DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,         tNodes[0].getInflux(),    DBL_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,         tNodes[0].getOutflux(),   DBL_EPSILON);
+
+    FriendlyGunnsFluidSourceBoundaryNode* node = static_cast<FriendlyGunnsFluidSourceBoundaryNode*>(&tNodes[0]);
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, node->mTcInflow.mState[1], DBL_EPSILON);
 
     UT_PASS;
 }

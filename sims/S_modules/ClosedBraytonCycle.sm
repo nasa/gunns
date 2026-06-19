@@ -4,7 +4,7 @@
 // ##include "sims/networks/brayton/xxxxxElect.hh"
 // ##include "sims/networks/brayton/xxxxxThermal.hh"
 // ##include "sims/networks/brayton/xxxxxHxThermal.hh"
-// ##include "sims/networks/brayton/xxxxxFluid.hh"
+##include "sims/networks/brayton/ClosedBraytonCycleFluid.hh"
 // ##include "sims/networks/brayton/xxxxxSignal.hh"
 
 class ClosedBraytonCycle: public Trick::SimObject
@@ -16,7 +16,7 @@ class ClosedBraytonCycle: public Trick::SimObject
         // xxxxxElect     elect;       /**< (--) GUNNS electrical network */
         // xxxxxThermal   thermal;     /**< (--) GUNNS thermal network */
         // xxxxxHxThermal hxThermal;   /**< (--) GUNNS thermal network */
-        // xxxxxFluid     fluid;       /**< (--) GUNNS fluid network */
+        ClosedBraytonCycleFluid     fluid;       /**< (--) GUNNS fluid network */
         // xxxxxSignal    signal;      /**< (--) Signal aspect model */
         ClosedBraytonCycle(int thread_id_fluid   = 0,
                            int thread_id_elect   = 0,
@@ -24,26 +24,26 @@ class ClosedBraytonCycle: public Trick::SimObject
             :
             threadIdFluid(thread_id_fluid),
             threadIdElect(thread_id_elect),
-            threadIdThermal(thread_id_thermal)
+            threadIdThermal(thread_id_thermal),
             // elect("brayton.elect"),
             // thermal("brayton.thermal"),
             // hxThermal("brayton.hxThermal"),
-            // fluid("brayton.fluid"),
+            fluid("brayton.fluid")
             // signal()
         {
             // ("initialization")      elect.initialize();
             // ("initialization")      thermal.initialize();
             // ("initialization")      hxThermal.initialize();
-            // ("initialization")      fluid.initialize();
+            ("initialization")      fluid.initialize();
             // ("initialization")      signal.init("brayton.signal");
             // ("restart")             elect.restart();
             // ("restart")             thermal.restart();
             // ("restart")             hxThermal.restart();
-            // ("restart")             fluid.restart();
+            ("restart")             fluid.restart();
             // CthreadIdElect  (MODELS_10HZ, "scheduled") elect.update(MODELS_10HZ);
             // CthreadIdThermal(MODELS_1HZ,  "scheduled") thermal.update(MODELS_1HZ);
             // CthreadIdFluid  (MODELS_10HZ, "scheduled") hxThermal.update(MODELS_10HZ);
-            // CthreadIdFluid  (MODELS_10HZ, "scheduled") fluid.update(MODELS_10HZ);
+            CthreadIdFluid  (MODELS_10HZ, "scheduled") fluid.update(MODELS_10HZ);
             // CthreadIdElect  (MODELS_10HZ, "scheduled") signal.step(MODELS_10HZ);
         }
 

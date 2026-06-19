@@ -3,10 +3,11 @@
 #
 # List of all GunnsDraw network drawings that are to be exported at build time:
 GUNNSDRAWINGS := \
+ $(GUNNS_HOME)/sims/networks/brayton/ClosedBraytonCycleFluid.xml
 #  $(GUNNS_HOME)/sims/networks/brayton/xxxxxElect.xml \
 #  $(GUNNS_HOME)/sims/networks/brayton/xxxxxThermal.xml \
-#  $(GUNNS_HOME)/sims/networks/brayton/xxxxxHxThermal.xml \
-#  $(GUNNS_HOME)/sims/networks/brayton/xxxxxFluid.xml
+#  $(GUNNS_HOME)/sims/networks/brayton/xxxxxHxThermal.xml 
+#  $(GUNNS_HOME)/sims/networks/brayton/ClosedBraytonCycleFluid.xml
 
 ####################################################################################################
 # Don't touch the rest of this...

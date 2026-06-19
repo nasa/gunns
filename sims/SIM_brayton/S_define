@@ -21,6 +21,6 @@
 
 // Closed Brayton Cycle Sim Object.
 #include "../S_modules/ClosedBraytonCycle.sm"
-ClosedBraytonCycle vehicle(CTH.getThreadId("FLUID_THREAD"),
+ClosedBraytonCycle brayton(CTH.getThreadId("FLUID_THREAD"),
                            CTH.getThreadId("ELECT_THREAD"),
                            CTH.getThreadId("THERMAL_THREAD"));

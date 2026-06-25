@@ -578,7 +578,7 @@ except NameError:
 cmd_parser = ArgumentParser(description='Auto-generate the GUNNS network code from a GunnsDraw drawing.')
 cmd_parser.add_argument('FILE', nargs='*', help="The drawing filename.  This is optional; if not supplied, the script will pop up a file selection window.")
 cmd_parser.add_argument("-d", action="store_true", help="Look in ~/Downloads for a newer version", dest="downloads", default="false")
-cmd_parser.add_argument("-m", action="store_true", help="Only do error checks and maintenance updates to the diagram file", dest="maintenance", default="false")
+cmd_parser.add_argument("-m", action="store_true", help="Only do error checks and maintenance updates to the diagram file", dest="maintenance", default=False)
 cmd_parser.add_argument("-g", action="store_true", help="Only do generation of the output network code", dest="generation", default="false")
 cmd_parser.add_argument("-p", action="store",      help="Use the provided environment variable for external paths", dest="ext_paths", default="GUNNS_EXT_PATH")
 options = cmd_parser.parse_args()
@@ -1211,12 +1211,15 @@ for label in set(updatedSubNetIfKeys):
 # Update the input file with the readable formatted tree.
 # Splitting the file into many lines like this makes merging easier.
 xmlUtils.formatXml(root)
-tree.write(outputPathFile, xml_declaration=False)
-print('  ...saved updates to ' + inputFile + '.')
 
 # Skip generating the network class code in the maintenance option.
-if 'false' != options.maintenance:
+if options.maintenance:
+    tree.write(outputPathFile, xml_declaration=False)
+    print('  ...saved updates to ' + inputFile + '.')
+    if contentsUpdated:
+        print (console.note('Remember to synchronize or re-load ' + inputFile + ' in draw.io to see the content updates from maintenance.'))
     quit()
+
 
 # Assemble the data model to pass to the template engine:
 print('  Building data model...')
@@ -1440,6 +1443,4 @@ with open(ccFileName, 'w') as fcc:
 END_TIME = datetime.now()
 dt = (END_TIME - START_TIME).total_seconds()
 console.success(dt)
-if contentsUpdated:
-    print (console.note('Remember to synchronize or re-load ' + inputFile + ' in draw.io to see the content updates from maintenance.'))
 print ('')

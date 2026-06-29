@@ -1033,7 +1033,7 @@ for obj in objects:
 if superConfig is None:
     sys.exit(console.abort('there is no super-network config object.'))
 
-# Once the super-network config is known, make a list fo all Doxygen objects that belong
+# Once the super-network config is known, make a list of all Doxygen objects that belong
 # to the super-network drawing, outside of the super-network container itself.  Note that
 # we ignore all doxygen objects within the super-network container or its contained sub-
 # network containers.

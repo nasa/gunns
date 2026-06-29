@@ -1,6 +1,6 @@
 <mxlibrary>[
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"Super-Network\" About=\"Super-Network\" c00.convergenceTolerance=\"0.001\" c01.minLinearizationPotential=\"0.001\" c02.minorStepLimit=\"1\" c03.decompositionLimit=\"1\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Network\" subtype=\"Super\"/&gt;&lt;mxCell style=\"swimlane;startSize=20;fillColor=#FFF4C3;fontColor=#000000;\" vertex=\"1\" collapsed=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"20\" as=\"geometry\"&gt;&lt;mxRectangle x=\"20\" y=\"100\" width=\"250\" height=\"260\" as=\"alternateBounds\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"Super-Network\" About=\"Super-Network\" c00.convergenceTolerance=\"0.001\" c01.minLinearizationPotential=\"0.001\" c02.minorStepLimit=\"1\" c03.decompositionLimit=\"1\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Network\" subtype=\"Super\"/&gt;&lt;mxCell style=\"swimlane;startSize=20;fillColor=light-dark(#FFF4C3,#3C3000);\" vertex=\"1\" collapsed=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"20\" as=\"geometry\"&gt;&lt;mxRectangle x=\"20\" y=\"100\" width=\"250\" height=\"260\" as=\"alternateBounds\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 120,
     "h": 20,
     "aspect": "fixed",
@@ -28,14 +28,14 @@
     "title": "Super Port 2"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"rename me\" About=\"Sub-Network Interface\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Network\" subtype=\"Subnet Interface\"/&gt;&lt;mxCell style=\"swimlane;startSize=20;strokeColor=#d79b00;fillColor=#ffe6cc;fontColor=#000000;\" vertex=\"1\" collapsed=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"20\" as=\"geometry\"&gt;&lt;mxRectangle x=\"240\" y=\"200\" width=\"250\" height=\"260\" as=\"alternateBounds\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"rename me\" About=\"Sub-Network Interface\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Network\" subtype=\"Subnet Interface\"/&gt;&lt;mxCell style=\"swimlane;startSize=20;strokeColor=light-dark(#D79B00,#FFC328);fillColor=light-dark(#FFE6CC,#331A00);\" vertex=\"1\" collapsed=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"20\" as=\"geometry\"&gt;&lt;mxRectangle x=\"240\" y=\"200\" width=\"250\" height=\"260\" as=\"alternateBounds\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 120,
     "h": 20,
     "aspect": "fixed",
     "title": "Sub-Network Interface"
   },
   {
-    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Sub-Network Interface Connection\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Subnet Interface Connection\"/&gt;&lt;mxCell style=\"endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;dashed=1;strokeWidth=3;jumpSize=12;fillColor=#ffe6cc;rounded=1;curved=0;\" edge=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;&lt;mxPoint as=\"sourcePoint\"/&gt;&lt;mxPoint x=\"50\" as=\"targetPoint\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;object label=\"\" About=\"Sub-Network Interface Connection\" id=\"2\"&gt;&amp;#xa;      &lt;gunns type=\"Subnet Interface Connection\"/&gt;&lt;mxCell style=\"endArrow=none;html=1;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;strokeColor=#D79B00;dashed=1;strokeWidth=3;jumpSize=12;rounded=1;\" edge=\"1\" parent=\"1\"&gt;&lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;&lt;mxPoint as=\"sourcePoint\"/&gt;&lt;mxPoint x=\"50\" as=\"targetPoint\"/&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/object&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
     "w": 50,
     "h": 1,
     "aspect": "fixed",

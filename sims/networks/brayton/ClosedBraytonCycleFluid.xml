@@ -1,4 +1,4 @@
-<mxGraphModel dx="1168" dy="859" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+<mxGraphModel dx="685" dy="725" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="KN7Ig62nXS6v7mEr8KCG-3" value="Notices" parent="0" />
@@ -39,7 +39,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <mxCell id="PhyYvlBPcs6vf5QNZ-3o-24" value="667.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PhyYvlBPcs6vf5QNZ-3o-23" vertex="1">
+    <mxCell id="PhyYvlBPcs6vf5QNZ-3o-24" value="500.0" style="shape=partialRectangle;top=0;left=0;right=0;bottom=0;align=left;verticalAlign=top;fillColor=none;spacingLeft=124;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;dropTarget=0;fontStyle=0;fontSize=11;" parent="PhyYvlBPcs6vf5QNZ-3o-23" vertex="1">
       <mxGeometry y="19" width="270" height="20" as="geometry" />
     </mxCell>
     <mxCell id="PhyYvlBPcs6vf5QNZ-3o-25" value="Pressure" style="shape=partialRectangle;fontStyle=0;top=0;left=0;bottom=0;fillColor=none;align=left;verticalAlign=top;spacingLeft=0;spacingRight=0;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;fontSize=11;" parent="PhyYvlBPcs6vf5QNZ-3o-24" connectable="0" vertex="1">
@@ -156,7 +156,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="turbine" About="Gas Turbine" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.referenceTemp="1200.0" c03.referencePress="2000" c04.maxFlowLowSpeed="22" c05.maxFlowHighSpeed="21" c06.coeffLowSpeed1="2.537" c07.coeffHighSpeed1="2.5" c08.coeffLowSpeed2="-0.642" c09.coeffHighSpeed2="-0.5" c10.efficiencyCoeffLow0="-21.87" c11.efficiencyCoeffLow1="59.26" c12.efficiencyCoeffLow2="-60.1744" c13.efficiencyCoeffLow3="29.884" c14.efficiencyCoeffLow4="-7.289" c15.efficiencyCoeffLow5="0.6995" c16.efficiencyCoeffHigh0="-1.656" c17.efficiencyCoeffHigh1="3.008" c18.efficiencyCoeffHigh2="-1.32" c19.efficiencyCoeffHigh3="0.266" c20.efficiencyCoeffHigh4="-0.0222" c21.efficiencyCoeffHigh5="0.00035" c22.minEffLimitLowSpeed="1" c23.minEffLimitHighSpeed="1" c24.maxEffLimitLowSpeed="2.8" c25.maxEffLimitHighSpeed="5.8" c26.correctedSpeedLow="85000" c27.correctedSpeedHigh="100000" c28.filterGain="0.5" c29.driveRatio="1.0" c30.thermalLength="0.1" c31.thermalDiameter="0.1" c32.surfaceRoughness="0.0000001" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.motorSpeed="90000" i03.wallTemperature="0.0" id="PhyYvlBPcs6vf5QNZ-3o-53">
+    <object label="turbine" About="Gas Turbine" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.referenceTemp="1150" c03.referencePress="964" c04.maxFlowLowSpeed="1.22" c05.maxFlowHighSpeed="1.21" c06.coeffLowSpeed1="2.537" c07.coeffHighSpeed1="2.5" c08.coeffLowSpeed2="-0.642" c09.coeffHighSpeed2="-0.5" c10.efficiencyCoeffLow0="-21.87" c11.efficiencyCoeffLow1="59.26" c12.efficiencyCoeffLow2="-60.1744" c13.efficiencyCoeffLow3="29.884" c14.efficiencyCoeffLow4="-7.289" c15.efficiencyCoeffLow5="0.6995" c16.efficiencyCoeffHigh0="-1.656" c17.efficiencyCoeffHigh1="3.008" c18.efficiencyCoeffHigh2="-1.32" c19.efficiencyCoeffHigh3="0.266" c20.efficiencyCoeffHigh4="-0.0222" c21.efficiencyCoeffHigh5="0.00035" c22.minEffLimitLowSpeed="1" c23.minEffLimitHighSpeed="1" c24.maxEffLimitLowSpeed="2.8" c25.maxEffLimitHighSpeed="5.8" c26.correctedSpeedLow="40000" c27.correctedSpeedHigh="50000" c28.filterGain="0.5" c29.driveRatio="1.0" c30.thermalLength="0.1" c31.thermalDiameter="0.1" c32.surfaceRoughness="0.0000001" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.motorSpeed="45000" i03.wallTemperature="0.0" id="PhyYvlBPcs6vf5QNZ-3o-53">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsGasTurbine" numPorts="2" reqPorts="0,1" />
       <mxCell style="shape=stencil(rVXBbsMgDP0arlMKrdrrxLbeetn6ASR1F1QCEZC2+/tRSKTRNFETJuXiZ/z8bByDCDUlqwHhjJkaCovIG8L4zDRnuXAwdp4ygMssmJJVEJDtfrf7dMhXo3Mu29PGanWCCz/YNo7LEjS3wXsJ2MZzkXeUvTrw9hFaKCmdAq6kiTx//I6bcWkjEVwG5tolqcCCDnAr9hpZP631svL2x5Q8qrFPJFo8kYhQhwxVS2jOitO3Vo08PJRXs1tje47OXakzDNW9WI8U3hEIf5MdweqfCfBkgnXMkKWFz6hgk9zEOwac3IR0huXUPt4JSB2EGRXMaGIhlIHxI/H/kjytM6qMFaTP65RZ8auot1E8OrCGCD0qDSP76ciFCG/Aw73Xi/ZoeIQ88As=);html=1;align=left;verticalLabelPosition=middle;verticalAlign=middle;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelPosition=right;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="560" y="280" width="50" height="40" as="geometry" />
@@ -190,7 +190,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="compressor" About="Gas Fan" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.referenceDensity="3.78" c03.referenceSpeed="90000.0" c04.referenceCoeff0="1333.0" c05.referenceCoeff1="0" c06.referenceCoeff2="0" c07.referenceCoeff3="0" c08.referenceCoeff4="0" c09.referenceCoeff5="0" c10.bestEfficiency="0.85" c11.referenceQBep="5.96" c12.filterGain="0.5" c13.driveRatio="1.0" c14.thermalLength="0.0" c15.thermalDiameter="0.0" c16.surfaceRoughness="2E-6" c17.checkValveActive="false" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.sourcePressure="0.0" i03.motorSpeed="90000" i04.wallTemperature="0.0" id="PhyYvlBPcs6vf5QNZ-3o-40">
+    <object label="compressor" About="Gas Fan" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.referenceDensity="6.014" c03.referenceSpeed="45000.0" c04.referenceCoeff0="636.0422577" c05.referenceCoeff1="0" c06.referenceCoeff2="-3305.781445" c07.referenceCoeff3="0" c08.referenceCoeff4="0" c09.referenceCoeff5="0" c10.bestEfficiency="0.85" c11.referenceQBep="2.029E-01" c12.filterGain="0.5" c13.driveRatio="1.0" c14.thermalLength="0.0" c15.thermalDiameter="0.0" c16.surfaceRoughness="2E-6" c17.checkValveActive="false" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.sourcePressure="0.0" i03.motorSpeed="45000" i04.wallTemperature="0.0" id="PhyYvlBPcs6vf5QNZ-3o-40">
       <gunns type="Link" subtype="aspects/fluid/potential/GunnsGasFan" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=middle;align=right;html=1;verticalAlign=middle;shape=stencil(7VbLbsIwEPyaHINCzKvHKoXeuKCq5yUsYGHsyHYJ/H0NTmisJNRBlVAlpBy8s7FnvGNrHZBEbSHDII5AZZjqgLwFcXwASWHJDBybzNaCL5ENOezRIu8f8/nCIDPgNqW0FDvM6UoXcyjfoqTaZvPqOmQaRK8GPH8kSQXnhp0KrpxMJW/WBsq1I2BuF84Mxx41SosWOo9F1Bva+FTNzrrQLO6g6Xen+fShcfdSkHaimXrQ9D1oSGKQNuNIsoR0t5Hii68axSFjNFNYP165Gzbvu01OCylJ1kLiDTVrypg9vG3FzOB8pmuJMr0XB/xRO3DPQrtJ5XSQqRkwkBsMzThcM9g4G5fFyqSMT26scsSsMq3vVK/UcwzhSFUohYazZU2lHTxAbHSv2MnvYl1jxqRH3Gs66o2f7nRw51owH7nXcvs7NBk+fMP/2J0/1frL1fEy92mOc3X85V5/bm5HBm/pSOZFd7OR1RrvKKj23ZFb39itYXxDUnsPvcitdeALal+fF+Ab);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#FFFFFF;labelPosition=left;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="80" y="280" width="40" height="40" as="geometry" />
@@ -227,7 +227,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxWithReactor" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="100.0" i03.initialSegmentTemperature="1200.0" id="PhyYvlBPcs6vf5QNZ-3o-46">
+    <object label="hxWithReactor" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="1150.0" id="PhyYvlBPcs6vf5QNZ-3o-46">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="420" y="160" width="80" height="40" as="geometry" />
@@ -280,7 +280,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxRecupLowT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="135.0" i03.initialSegmentTemperature="839.38" id="PhyYvlBPcs6vf5QNZ-3o-65">
+    <object label="hxRecupLowT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="902.0" id="PhyYvlBPcs6vf5QNZ-3o-65">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="180" y="200" width="80" height="40" as="geometry" />
@@ -304,7 +304,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxRecupHighT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="135.0" i03.initialSegmentTemperature="639.91" id="PhyYvlBPcs6vf5QNZ-3o-68">
+    <object label="hxRecupHighT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="4" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="569.0" id="PhyYvlBPcs6vf5QNZ-3o-68">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="420" y="360" width="80" height="40" as="geometry" />
@@ -351,7 +351,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxWithRadiator" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="130.0" i03.initialSegmentTemperature="400" id="PhyYvlBPcs6vf5QNZ-3o-74">
+    <object label="hxWithRadiator" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.1" c01.expansionScaleFactor="0.0" c02.numSegs="1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="400.0" id="PhyYvlBPcs6vf5QNZ-3o-74">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="180" y="400" width="80" height="40" as="geometry" />

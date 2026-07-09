@@ -17,6 +17,9 @@
         </mxGeometry>
       </mxCell>
     </object>
+    <mxCell id="_jqbaGen-2mzKYVIg4BP-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
+      <mxGeometry x="100" y="297" width="470" height="6" as="geometry" />
+    </mxCell>
     <object About="Fluid Config" isExternal="0" label="netInternalFluidConfig" id="PhyYvlBPcs6vf5QNZ-3o-1">
       <gunns subtype="Config" type="Fluid" />
       <mxCell style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=19;fillColor=#cce5ff;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;align=center;strokeColor=#36393d;swimlaneFillColor=#ffffff;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
@@ -373,6 +376,12 @@
           <mxPoint x="300" y="300" as="sourcePoint" />
           <mxPoint x="320" y="300" as="targetPoint" />
         </mxGeometry>
+      </mxCell>
+    </object>
+    <object label="driveShaft" About="Spotter" Class="aspects/fluid/conductor/GunnsDriveShaftSpotter" ConstructorArgs="" c00.frictionConstant="0.0" c01.frictionMinSpeed="0.0" c02.inertia="0.0" i00.motorSpeed="45000" id="_jqbaGen-2mzKYVIg4BP-1">
+      <gunns type="Spotter" />
+      <mxCell style="shape=mxgraph.signs.nature.earth;html=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
+        <mxGeometry x="330" y="290" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
     <mxCell id="KN7Ig62nXS6v7mEr8KCG-2" value="Notes" parent="0" />

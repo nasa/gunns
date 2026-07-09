@@ -645,7 +645,7 @@ if root.tag.startswith('mxfile'):
 if not root.tag.startswith('mxGraphModel'):
     sys.exit(console.abort('this is not a recognized file.'))
 
-print('  Doing maintenance updates...')
+print('  Checking for maintenance updates...')
 contentsUpdated = False
 # They have an element named root which isn't the actual root.  This is confusing.
 rootroot = root.find('./root')
@@ -1212,12 +1212,16 @@ for label in set(updatedSubNetIfKeys):
 # Splitting the file into many lines like this makes merging easier.
 xmlUtils.formatXml(root)
 
-# Skip generating the network class code in the maintenance option.
+# Re-write the xml file if not in the generation-only option.
 if not options.generation:
     tree.write(outputPathFile, xml_declaration=False)
     print('  ...saved updates to ' + inputFile + '.')
     if contentsUpdated:
         print (console.note('Remember to synchronize or re-load ' + inputFile + ' in draw.io to see the content updates from maintenance.'))
+
+# Skip generating the network class code in the maintenance-only option.
+if options.maintenance:
+    quit()
 
 # Assemble the data model to pass to the template engine:
 print('  Building data model...')

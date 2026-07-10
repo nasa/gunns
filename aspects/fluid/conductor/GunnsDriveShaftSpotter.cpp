@@ -129,6 +129,10 @@ void GunnsDriveShaftSpotter::initialize(const GunnsNetworkSpotterConfigData* con
     mFrictionMinSpeed = config->mFrictionMinSpeed;
     mInertia          = config->mInertia;
     mMotorSpeed       = input->mMotorSpeed;
+    mMalfJamFlag            = input->mMalfJamFlag;
+    mMalfJamValue           = input->mMalfJamValue;
+    mMalfSpeedOverrideFlag  = input->mMalfSpeedOverrideFlag;
+    mMalfSpeedOverrideValue = input->mMalfSpeedOverrideValue;
 
     mFrictionTorque    = 0.0;
 

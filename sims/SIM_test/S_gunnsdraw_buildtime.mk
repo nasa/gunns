@@ -26,4 +26,4 @@ endif
 # TODO add the -g option once I have that working.  This will skip the drawing maintenance and error
 # checks, should be a little faster...
 $(GUNNSDRAW_HEADERS) : %.hh : %.xml
-	@ echo $(shell $(PYTHON) $(GUNNS_HOME)/draw/netexport.py $<)
+	@ echo '$(shell $(PYTHON) $(GUNNS_HOME)/draw/netexport.py $<)'

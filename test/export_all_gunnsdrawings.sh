@@ -21,7 +21,6 @@ DEFAULT_XML_LIST=(
   "${GUNNS_HOME}/draw/drawings/DrawFluidTc.xml"
   "${GUNNS_HOME}/sims/networks/basic/test/TestBasicNetwork.xml"
   "${GUNNS_HOME}/sims/networks/electrical/PvArrayRegTest.xml"
-  "${GUNNS_HOME}/sims/networks/electrical/test/TestElectSarNetwork.xml"
   "${GUNNS_HOME}/sims/networks/example_space_vehicle/ExampleCabinFluid.xml"
   "${GUNNS_HOME}/sims/networks/example_space_vehicle/ExampleCoolantLoopFluid.xml"
   "${GUNNS_HOME}/sims/networks/example_space_vehicle/ExampleHxThermal.xml"

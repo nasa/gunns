@@ -330,7 +330,7 @@ netLayerCell.attrib['value'] = 'Network'
 netLayerCell.attrib['id'] = '1'
 gd_rootroot.append(netLayerCell)
 
-# Add a super-network container to hold its config data.  It's size and config data values
+# Add a super-network container to hold its config data.  Its size and config data values
 # will be set later.
 shapeLibs.loadShapeLibs(homepath + '/' + 'libraries/GUNNS_Super.xml', False)
 allShapeMasters = shapeLibs.shapeTree.findall('./object')

@@ -24,7 +24,8 @@ shapeLibs = ['libraries/GUNNS_Generic.xml',
              'libraries/GUNNS_Fluid.xml',
              'libraries/GUNNS_Super.xml',
              'libraries/GUNNS_Obsolete.xml',
-             'libraries/GUNNS_Spotters.xml']
+             'libraries/GUNNS_Spotters.xml',
+             'libraries/GUNNS_Doxygen.xml']
 shapeTree = ET.ElementTree()
 shapeTree._setroot(ET.fromstring('<shapeTree></shapeTree>'))
 
@@ -57,7 +58,7 @@ def loadShapeLibs(libFile, linksOnly):
             compressedXml = shape['xml']
             if 'mxGraphModel' in compressedXml:
                 if '&gt;' in compressedXml and '&lt;' in compressedXml:
-                    xmlStr = compressedXml.replace('&gt;', '>').replace('&lt;', '<')
+                    xmlStr = compressedXml.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;#xa;','')
                 else:
                     xmlStr = compressedXml # it's already not compressed
             else:
@@ -96,6 +97,14 @@ def getSuperNetworkShapeMaster(allShapes):
             return shape
     return None
 
+# Returns the Sub-Network Config shape master from the shapeTree, or None.
+def getSubNetworkShapeMaster(allShapes):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if 'Network' == shape_gunns_attr['type'] and 'Sub' == shape_gunns_attr['subtype']:
+            return shape
+    return None
+
 # Returns the Ground Node shape master from the shapeTree, or None.
 def getGroundShapeMaster(allShapes):
     for shape in allShapes:
@@ -116,6 +125,21 @@ def getNetNodeShapeMaster(allShapes, subtype, frame):
                         return shape
                 else:
                     if 'shape=mxgraph.basic.rounded_frame' not in mxcell_attr['style']:
+                        return shape
+    return None
+
+# Returns the given subtype reference node shape master from the shapeTree, or None.
+def getRefNodeShapeMaster(allShapes, subtype, vent):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if 'Node' == shape_gunns_attr['type']:
+            if subtype == shape_gunns_attr['subtype']:
+                mxcell_attr = shape.find('mxCell').attrib
+                if vent:
+                    if 'ellipse' not in mxcell_attr['style']:
+                        return shape
+                else:
+                    if 'ellipse' in mxcell_attr['style']:
                         return shape
     return None
 
@@ -165,6 +189,7 @@ def getSpotterShapeMaster(spotter, allShapes):
     spotter_gunns_attr = spotter.find('./gunns').attrib
     spotter_class      = spotter_attr['Class']
     spotter_variant    = ''
+    empty_spotter = None
     if 'variant' in spotter_gunns_attr:
         spotter_variant = spotter_gunns_attr['variant']
     # Find the object's shape master in shapeTree, as the first match
@@ -179,7 +204,10 @@ def getSpotterShapeMaster(spotter, allShapes):
                 shape_variant = shape_gunns_attr['variant']
             if shape_class == spotter_class and shape_variant == spotter_variant:
                 return shape
-    return None
+            if shape_class == "":
+                empty_spotter = shape
+    # If there are no matching spotters, return the empty spotter.
+    return empty_spotter
 
 # Returns the Port shape master from the shapeTree, or None.
 # portNum is the port number label as a string.
@@ -187,6 +215,23 @@ def getPortShapeMaster(allShapes, portNum):
     for shape in allShapes:
         shape_gunns_attr = shape.find('./gunns').attrib
         if ('Port' == shape_gunns_attr['type']) and (portNum == shape.attrib['label']):
+            return shape
+    return None
+
+# Returns the Super Port shape master from the shapeTree, or None.
+# portNum is the port number label as a string.
+def getSuperPortShapeMaster(allShapes, portNum):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if ('Super Port' == shape_gunns_attr['type']) and (portNum == shape.attrib['label']):
+            return shape
+    return None
+
+# Returns the Subnetwork Interface Connection shape master from the shapeTree, or None.
+def getSubNetworkIFConnectionShapeMaster(allShapes):
+    for shape in allShapes:
+        shape_gunns_attr = shape.find('./gunns').attrib
+        if ('Subnet Interface Connection' == shape_gunns_attr['type']):
             return shape
     return None
 
@@ -207,7 +252,143 @@ def getBlankSpotterShapeMaster(allShapes):
             return shape
     return None
 
+# Returns the type from the given shape.
+def getShapeType(shape):
+    gunns_attr = shape.find('./gunns').attrib
+    return gunns_attr['type']
+
 # Returns the subtype from the given shape.
 def getShapeSubtype(shape):
     gunns_attr = shape.find('./gunns').attrib
     return gunns_attr['subtype']
+
+# Convert style properties into a dictionary
+# start with form:
+# shape=mxgraph.basic.rounded_frame;fillColor=#000000;labelPosition=left;verticalLabelPosition=top;verticalAlign=bottom;align=right;etc...
+# end with form:
+# {'shape': 'mxgraph.basic.rounded_frame', 'fillColor': '#000000', 'labelPosition': 'left', etc...}
+def stylePropsToDict(style_properties):
+    style_properties = style_properties.split(';')[0:-1]
+    style_properties = dict(zip(list(map(lambda x : x.split('=',1)[0]                                 ,   style_properties)),
+                                list(map(lambda x : x.split('=',1)[1] if len(x.split('=',1))>1 else '',   style_properties))))
+    return style_properties
+
+# Convert dictionary back to style properties
+def dictToStyleProps(style_dict):
+    return ';'.join(list(map(lambda k: k if style_dict[k] == '' else k + '=' + style_dict[k], style_dict.keys()))) + ';'
+
+# convert normalized RGB to normalized HSV
+def rgb2hsv(r,g,b):
+    c_max = max(r,g,b)
+    c_min = min(r,g,b)
+    delta = c_max - c_min
+    # value
+    v = c_max
+    # saturation
+    if c_max == 0:
+        s = 0
+    else:
+        s = delta / c_max
+    # hue
+    if delta == 0:
+        h = 0
+    elif c_max == r:
+        h = (g - b) / delta
+    elif c_max == g:
+        h = (b - r) / delta + 2
+    elif c_max == b:
+        h = (r - g) / delta + 4
+    h = h%6 / 6
+    return (h,s,v)
+
+# convert normalized HSV to normalized RGB
+def hsv2rgb(h,s,v):
+    chroma = v * s
+    h *= 6
+    x = chroma * (1 - abs(h%2 - 1))
+    if h < 1:
+        r,g,b = (chroma,x,0)
+    elif h < 2:
+        r,g,b = (x,chroma,0)
+    elif h < 3:
+        r,g,b = (0,chroma,x)
+    elif h < 4:
+        r,g,b = (0,x,chroma)
+    elif h < 5:
+        r,g,b = (x,0,chroma)
+    else:
+        r,g,b = (chroma,0,x)
+    m = v - chroma
+    return (r+m,g+m,b+m)
+
+# convert normalized RGB to normalized CMYK
+def rgb2cmyk(r,g,b):
+    # key (black)
+    k = 1 - max(r,g,b)
+
+    # cyan, magenta, yellow
+    if k == 1:
+        c = m = y = 0
+    else:
+        c = (1 - r - k) / (1 - k)
+        m = (1 - g - k) / (1 - k)
+        y = (1 - b - k) / (1 - k)
+    return (c,m,y,k)
+
+# input is a color of from '#rrggbb' or '#rrggbbaa'
+def getDarkColor(light):
+    alpha = ''
+    if len(light) == len('#rrggbbaa'):
+        alpha = light[-2:]
+
+    # convert RGB hex to RGB dec
+    r = int(light[1:3],16)/255.0
+    g = int(light[3:5],16)/255.0
+    b = int(light[5:7],16)/255.0
+
+    # get CMYK values
+    c,m,y,k = rgb2cmyk(r,g,b)
+
+    #### get dark color ####
+    # invert RGB channels then convert to HSV
+    h,s,v = rgb2hsv(1.0-r,1.0-g,1.0-b)
+    # rotate hue by 180 degrees
+    h = (h+0.5)%1
+
+    #### make adjustments ####
+    # decrease the value depending on the magenta level and saturation (make yellows darker)
+    v *= (m+1)/2 * s + (1-s)
+    # decrease the saturation depending on the cyan level (make reds lighter)
+    s *= (c+4)/5
+
+    # convert to RGB
+    r,g,b = hsv2rgb(h,s,v)
+    r = int(round(255*r))
+    g = int(round(255*g))
+    b = int(round(255*b))
+
+    # convert RGB dec to RGB hex
+    dark = '#' + f"{r:02X}{g:02X}{b:02X}" + alpha
+
+    if dark != light:
+        return 'light-dark(' + light + ',' + dark + ')'
+    else:
+        return light
+
+# loops through style dictionary (see stylePropsToDict()) and sets dark mode for color properties
+def setLightDarkColors(style_dict):
+    for prop in style_dict:
+        # filter for color properties of the form '#rrggbb(aa)'. this filters out colors
+        # that are set to 'default', 'none', or 'light-dark(#rrggbb(aa),#rrggbb(aa))'
+        if 'Color' in prop and style_dict[prop].startswith('#'):
+            light = style_dict[prop].upper()
+
+            if (light == '#FFFFFF' and (prop == 'fillColor' or prop == 'swimlaneFillColor' or prop == 'labelBackgroundColor')
+             or light == '#000000' and (prop == 'fontColor' or prop == 'strokeColor')):
+                    style_dict[prop] = 'default'
+
+            elif prop != 'fillColor' or prop == 'fillColor' and ('fillOpacity' not in style_dict or 'fillOpacity' in style_dict and int(style_dict['fillOpacity']) > 25):
+                style_dict[prop] = getDarkColor(light)
+            else:
+                style_dict[prop] = light
+    return

@@ -131,6 +131,9 @@ void UtGunnsDriveShaftSpotter::testDefaultConstruction()
     UT_PASS;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This method tests the initialize method of the GunnsDriveShaftSpotter class.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsDriveShaftSpotter::testInitialize()
 {
     UT_RESULT;
@@ -204,6 +207,35 @@ void UtGunnsDriveShaftSpotter::testInitialize()
 
     UT_PASS;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @details  This method tests the addReference method of the GunnsDriveShaftSpotter class.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void UtGunnsDriveShaftSpotter::testAddReference()
+{
+    UT_RESULT;
+
+    GunnsGasFan testFan;
+    GunnsGasTurbine testTurbine;
+    GunnsFluidConductor badInput;
+
+    try{
+        tArticle.addImpeller(&testFan);
+        CPPUNIT_ASSERT(tArticle.mFanRef[0]);
+    } catch(TsInitializationException& e){
+        CPPUNIT_ASSERT(false);
+    }
+    try{
+        tArticle.addImpeller(&testTurbine);
+        CPPUNIT_ASSERT(tArticle.mTurbRef[0]);
+    } catch(TsInitializationException& e){
+        CPPUNIT_ASSERT(false);
+    }
+    CPPUNIT_ASSERT_THROW(tArticle.addImpeller(&badInput), TsInitializationException);
+
+    UT_PASS;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This method tests the stepPreSolver method of the GunnsDriveShaftSpotter class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,49 +270,61 @@ void UtGunnsDriveShaftSpotter::testPostSolver()
 {
     UT_RESULT;
 
-    tTurbine.mImpellerTorque = 10.0;
-    tFan.mImpellerTorque = 15.0;
+    // Initialize friendlies.
+    FriendlyGunnsFluidNode2 nodeFanIn;
+    FriendlyGunnsFluidNode2 nodeFanOut;
+    FriendlyGunnsFluidNode2 nodeTurbIn;
+    FriendlyGunnsFluidNode2 nodeTurbOut;
+    FriendlyPolyFluid2 testFluid;
 
+    // Set fan data.
+    tFan.mImpellerTorque = 15.0;
+    tFan.mFlowRate = 1.5; //(kg/s) arbitrary
+    testFluid.mSpecificEnthalpy = 10.0; //(J/kg) arbitrary
+    nodeFanIn.getContent()->setState(&testFluid);
+    testFluid.mSpecificEnthalpy = 60.0; //(J/kg) arbitrary
+    nodeFanOut.getContent()->setState(&testFluid);
+
+    // Set tubine data.
+    tTurbine.mImpellerTorque = 10.0;
+    tTurbine.mFlowRate = 2.5; //(kg/s) arbitrary
+    testFluid.mSpecificEnthalpy = 224.0; //(J/kg) arbitrary
+    nodeTurbIn.getContent()->setState(&testFluid);
+    testFluid.mSpecificEnthalpy =  24.0; //(J/kg) arbitrary
+    nodeTurbOut.getContent()->setState(&testFluid);
+
+    // Set up article for this test.
     tArticle.addImpeller(&tTurbine);
     tArticle.addImpeller(&tFan);
     tArticle.initialize(&tConfig, &tInput);
-    tArticle.stepPostSolver(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(25.0, tArticle.mTotalExternalLoad, DBL_EPSILON);
 
+    // Check load calculation, and also that 
+    // non-initialized turbines and fans don't cause an exception.
+    CPPUNIT_ASSERT_NO_THROW(tArticle.stepPostSolver(0.0));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 25.0, tArticle.mTotalExternalLoad, DBL_EPSILON);
+
+    // Pseudo-intialize link objects.
+    tFan.allocateMatrixAndVectors("test");
+    tFan.mNodes[0] = static_cast<GunnsBasicNode*>(&nodeFanIn);
+    tFan.mNodes[1] = static_cast<GunnsBasicNode*>(&nodeFanOut);
+    tFan.mInitFlag = true;
+    tTurbine.allocateMatrixAndVectors("test");
+    tTurbine.mNodes[0] = static_cast<GunnsBasicNode*>(&nodeTurbIn);
+    tTurbine.mNodes[1] = static_cast<GunnsBasicNode*>(&nodeTurbOut);
+    tTurbine.mInitFlag = true;
+
+    // Test excess power calculation.
+    tArticle.stepPostSolver(0.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 75.0, tArticle.mPowerInFan, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(500.0, tArticle.mPowerOutTurb, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(425.0, tArticle.getPowerExcess(), DBL_EPSILON);
+
+    // Test jam malfunction.
     tArticle.mMalfJamFlag = true;
     tArticle.mMalfJamValue = 1.0;
     tArticle.stepPostSolver(0.05);
     tArticle.initialize(&tConfig, &tInput);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle.mTotalExternalLoad, DBL_EPSILON);
 
-
     UT_PASS_LAST;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @details  This method tests the addReference method of the GunnsDriveShaftSpotter class.
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void UtGunnsDriveShaftSpotter::testAddReference()
-{
-    UT_RESULT;
-
-    GunnsGasFan testFan;
-    GunnsGasTurbine testTurbine;
-    GunnsFluidConductor badInput;
-
-    try{
-        tArticle.addImpeller(&testFan);
-        CPPUNIT_ASSERT(tArticle.mFanRef[0]);
-    } catch(TsInitializationException& e){
-        CPPUNIT_ASSERT(false);
-    }
-    try{
-        tArticle.addImpeller(&testTurbine);
-        CPPUNIT_ASSERT(tArticle.mTurbRef[0]);
-    } catch(TsInitializationException& e){
-        CPPUNIT_ASSERT(false);
-    }
-    CPPUNIT_ASSERT_THROW(tArticle.addImpeller(&badInput), TsInitializationException);
-
-    UT_PASS;
 }

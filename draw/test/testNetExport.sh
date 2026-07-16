@@ -7,13 +7,19 @@ mkdir -p output
 cp -aT test_files/ output/
 
 # Nominal cases
+echo "====== Nominal Tests ====================================================================="
 coverage run -a ../netexport.py output/NetExportBaseNominal.xml
 coverage run -a ../netexport.py output/NetExportThermalNominal.xml
 coverage run -a ../netexport.py output/NetExportPowerNominal.xml
 coverage run -a ../netexport.py output/NetExportFluidNominal.xml
 
 # Off nominal
-# TODO
+echo "====== Off Nominal Tests ================================================================="
+# coverage run -a ../netexport.py # this pops up a GUI
+coverage run -a ../netexport.py output/EmptyNetwork.xml
+coverage run -a ../netexport.py output/NetExportBaseOffNominal01.xml
+coverage run -a ../netexport.py output/NetExportBaseOffNominal02.xml
+coverage run -a ../netexport.py output/NetExportFluidOffNominal01.xml
 
 # Generate report in terminal
 coverage report -m

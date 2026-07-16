@@ -1,0 +1,1 @@
+Some of the drawings in the `test_files` folder contain intentionally outdated components. This is to demonstrate that the netexport script can update such components.

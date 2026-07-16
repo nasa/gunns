@@ -192,6 +192,8 @@ class GunnsGasTurbine : public GunnsFluidConductor
         double getImpellerSpeed();
         /// @brief  Returns the impeller shaft power.
         double getImpellerPower();
+        /// @brief  Returns the efficiency.
+        double getEfficiency();
         /// @brief  Sets the thermal surface area of this Gas Turbine.
         void   setThermalSurfaceArea(const double value);
         /// @brief  Sets the wall temperature of this Gas Turbine.
@@ -299,4 +301,13 @@ inline double GunnsGasTurbine::getImpellerPower()
     return mImpellerPower;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @returns  double (--) Turbine efficiency.
+///
+/// @details  Turbine efficiency.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsGasTurbine::getEfficiency()
+{
+    return mEfficiency;
+}
 #endif

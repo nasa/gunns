@@ -6,16 +6,16 @@ PUI     SYS     BUS     SUBSYS  VAR_NAME        ACTION  RATE            SIM_OBJE
 # Recuperator HX
 #####################################################################
 # Temperature from the thermal aspect
-xxxx  gunns  bus  subsys  hxRecupSeg0T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg0.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg1T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg1.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg2T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg2.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg3T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg3.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg4T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg4.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg5T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg5.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg6T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg6.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg7T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg7.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg8T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg8.mTemperature           double  (K)    Segment temperature
-xxxx  gunns  bus  subsys  hxRecupSeg9T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg9.mTemperature           double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg0T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg0.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg1T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg1.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg2T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg2.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg3T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg3.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg4T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg4.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg5T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg5.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg6T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg6.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg7T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg7.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg8T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg8.mTemperature   double  (K)    Segment temperature
+xxxx  gunns  bus  subsys  hxRecupSeg9T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg9.mTemperature   double  (K)    Segment temperature
 
 # Temperature to the fluid aspect, cold side
 xxxx  gunns  bus  subsys  hxRecupSeg0T      READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  fluid.hxRecupLowT.mSegTemperature[0]  double  (K)    Segment temperature
@@ -89,3 +89,14 @@ xxxx  gunns  bus  subsys  hxRecupSeg6HotQ   READ    MODELS_10HZ  ClosedBraytonCy
 xxxx  gunns  bus  subsys  hxRecupSeg7HotQ   READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg7.mExternalHeatFlux[1]   double  (W)    Segment heat flux
 xxxx  gunns  bus  subsys  hxRecupSeg8HotQ   READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg8.mExternalHeatFlux[1]   double  (W)    Segment heat flux
 xxxx  gunns  bus  subsys  hxRecupSeg9HotQ   READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxRecupSeg9.mExternalHeatFlux[1]   double  (W)    Segment heat flux
+
+
+#####################################################################
+# Heat Source HX (interface with Reactor)
+#####################################################################
+
+
+#####################################################################
+# Gas Cooler HX (interface with Radiator)
+#####################################################################
+

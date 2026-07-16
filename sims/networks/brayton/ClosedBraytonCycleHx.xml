@@ -1,4 +1,4 @@
-<mxGraphModel dx="1364" dy="859" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+<mxGraphModel dx="1113" dy="615" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="EuFa0Y_xt33JVJP5X-Yw-2" value="Notices" style="locked=1;" parent="0" />
@@ -552,7 +552,7 @@
         <mxGeometry x="320" y="230" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
-    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="1150.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithReactorSeg0" id="UNOxKFHC5y4wcTur_wtz-37">
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="1026.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithReactorSeg0" id="UNOxKFHC5y4wcTur_wtz-37">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
         <mxGeometry x="360" y="260" width="10" height="20" as="geometry" />

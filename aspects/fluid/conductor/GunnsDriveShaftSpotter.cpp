@@ -264,7 +264,8 @@ void GunnsDriveShaftSpotter::stepPostSolver(const double dt __attribute__((unuse
         {
             delta_h = mTurbRef[i]->getNodeContent(0)->getSpecificEnthalpy() - 
                       mTurbRef[i]->getNodeContent(1)->getSpecificEnthalpy();
-            mPowerOutTurb += mTurbRef[i]->getFlowRate() * delta_h;
+            mPowerOutTurb += mTurbRef[i]->getEfficiency() * mTurbRef[i]->getFlowRate() * delta_h
+                           - mTurbRef[i]->getWallHeatFlux();
         }
     }
     for (unsigned int i = 0; i < mFanRef.size(); i++)
@@ -274,7 +275,8 @@ void GunnsDriveShaftSpotter::stepPostSolver(const double dt __attribute__((unuse
         {
             delta_h = mFanRef[i]->getNodeContent(1)->getSpecificEnthalpy() - 
                       mFanRef[i]->getNodeContent(0)->getSpecificEnthalpy();
-            mPowerInFan += mFanRef[i]->getFlowRate() * delta_h; 
+            mPowerInFan += mFanRef[i]->getFlowRate() * delta_h 
+                         - mFanRef[i]->getWallHeatFlux(); 
         }
     }
     /// - Calculate excess power.

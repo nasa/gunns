@@ -279,6 +279,7 @@ void UtGunnsDriveShaftSpotter::testPostSolver()
 
     // Set fan data.
     tFan.mImpellerTorque = 15.0;
+    tFan.mWallHeatFlux = 5.0; //W
     tFan.mFlowRate = 1.5; //(kg/s) arbitrary
     testFluid.mSpecificEnthalpy = 10.0; //(J/kg) arbitrary
     nodeFanIn.getContent()->setState(&testFluid);
@@ -287,6 +288,8 @@ void UtGunnsDriveShaftSpotter::testPostSolver()
 
     // Set tubine data.
     tTurbine.mImpellerTorque = 10.0;
+    tTurbine.mEfficiency = 0.9; //--
+    tTurbine.mWallHeatFlux = 10.0; //W
     tTurbine.mFlowRate = 2.5; //(kg/s) arbitrary
     testFluid.mSpecificEnthalpy = 224.0; //(J/kg) arbitrary
     nodeTurbIn.getContent()->setState(&testFluid);
@@ -315,9 +318,9 @@ void UtGunnsDriveShaftSpotter::testPostSolver()
 
     // Test excess power calculation.
     tArticle.stepPostSolver(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 75.0, tArticle.mPowerInFan, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(500.0, tArticle.mPowerOutTurb, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(425.0, tArticle.getPowerExcess(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(     75.0- 5.0, tArticle.mPowerInFan, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.9*500.0-10.0, tArticle.mPowerOutTurb, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(370.0, tArticle.getPowerExcess(), DBL_EPSILON);
 
     // Test jam malfunction.
     tArticle.mMalfJamFlag = true;

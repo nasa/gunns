@@ -308,7 +308,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxRecupLowT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.009" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="902.0" id="PhyYvlBPcs6vf5QNZ-3o-65">
+    <object label="hxRecupLowT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.009" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="4000.0" i03.initialSegmentTemperature="902.0" id="PhyYvlBPcs6vf5QNZ-3o-65">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=top;align=center;fillColor=#ffffff;html=1;verticalAlign=bottom;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;labelPosition=center;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="380" y="280" width="80" height="40" as="geometry" />
@@ -334,7 +334,7 @@
         </mxGeometry>
       </mxCell>
     </object>
-    <object label="hxRecupHighT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.009" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="10000.0" i03.initialSegmentTemperature="569.0" id="PhyYvlBPcs6vf5QNZ-3o-68">
+    <object label="hxRecupHighT" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.009" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="4000.0" i03.initialSegmentTemperature="569.0" id="PhyYvlBPcs6vf5QNZ-3o-68">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#ffffff;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
         <mxGeometry x="380" y="320" width="80" height="40" as="geometry" />

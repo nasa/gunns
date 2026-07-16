@@ -1,0 +1,578 @@
+<mxGraphModel dx="1364" dy="859" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="EuFa0Y_xt33JVJP5X-Yw-2" value="Notices" style="locked=1;" parent="0" />
+    <object About="General Notice" label="&lt;b&gt;Notices (TBD)&lt;/b&gt;" id="EuFa0Y_xt33JVJP5X-Yw-4">
+      <gunns subtype="notice" type="Dox" />
+      <mxCell style="text;html=1;strokeColor=#000000;fillColor=#FFFF00;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#000000;autosize=1;" parent="EuFa0Y_xt33JVJP5X-Yw-2" vertex="1">
+        <mxGeometry x="20" y="20" width="860" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <mxCell id="EuFa0Y_xt33JVJP5X-Yw-1" value="Notes" style="" parent="0" />
+    <object About="List of assumptions and limitations" label="Assumptions and Limitations" id="EuFa0Y_xt33JVJP5X-Yw-18">
+      <gunns subtype="assumptions" type="Dox" />
+      <mxCell style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#ffffff;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;strokeColor=#000000;fontSize=12;fontColor=#000000;align=center;html=1;swimlaneFillColor=#ffffff;" parent="EuFa0Y_xt33JVJP5X-Yw-1" collapsed="1" vertex="1">
+        <mxGeometry x="20" y="100" width="200" height="20" as="geometry">
+          <mxRectangle x="20" y="100" width="720" height="40" as="alternateBounds" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="EuFa0Y_xt33JVJP5X-Yw-19" value="1. TBD" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="EuFa0Y_xt33JVJP5X-Yw-18" vertex="1">
+      <mxGeometry y="20" width="720" height="20" as="geometry" />
+    </mxCell>
+    <object About="List of references" label="References" id="EuFa0Y_xt33JVJP5X-Yw-14">
+      <gunns subtype="references" type="Dox" />
+      <mxCell style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#ffffff;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;strokeColor=#000000;fontSize=12;fontColor=#000000;align=center;html=1;swimlaneFillColor=#ffffff;" parent="EuFa0Y_xt33JVJP5X-Yw-1" collapsed="1" vertex="1">
+        <mxGeometry x="20" y="60" width="200" height="20" as="geometry">
+          <mxRectangle x="20" y="60" width="780" height="40" as="alternateBounds" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="1" value="Network" style="" parent="0" />
+    <object About="Network" c00.convergenceTolerance="0.001" c01.minLinearizationPotential="1.0e-8" c02.minorStepLimit="100" c03.decompositionLimit="50" label="ClosedBraytonCycleHx" id="EuFa0Y_xt33JVJP5X-Yw-61">
+      <gunns subtype="Sub" type="Network" />
+      <mxCell style="swimlane;startSize=20;strokeColor=#000000;" parent="1" vertex="1">
+        <mxGeometry x="20" y="140" width="730" height="1140" as="geometry">
+          <mxRectangle x="30" y="140" width="160" height="20" as="alternateBounds" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="UNOxKFHC5y4wcTur_wtz-1" value="Recuperator Heat Exchanger&lt;br&gt;(CBC Hi Temp / Low Temp Interface)" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+      <mxGeometry x="40" y="30" width="170" height="1070" as="geometry" />
+    </mxCell>
+    <mxCell id="qI6_p4ZRkxOHMfFDviIx-15" value="Gas Cooler Heat Exchanger&lt;br&gt;(CBC / Radiator Interface)" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+      <mxGeometry x="520" y="30" width="170" height="1070" as="geometry" />
+    </mxCell>
+    <object About="Basic Node" i00.potential="283.0" label="0" id="UNOxKFHC5y4wcTur_wtz-2">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="100" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="1" id="UNOxKFHC5y4wcTur_wtz-3">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="200" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="2" id="UNOxKFHC5y4wcTur_wtz-4">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="300" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="3" id="UNOxKFHC5y4wcTur_wtz-5">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="400" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="4" id="UNOxKFHC5y4wcTur_wtz-6">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="500" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="5" id="UNOxKFHC5y4wcTur_wtz-7">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="600" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="6" id="UNOxKFHC5y4wcTur_wtz-8">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="700" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="7" id="UNOxKFHC5y4wcTur_wtz-9">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="800" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="8" id="UNOxKFHC5y4wcTur_wtz-10">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="900" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="9" id="UNOxKFHC5y4wcTur_wtz-11">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="80" y="1000" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg0" id="UNOxKFHC5y4wcTur_wtz-12">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="130" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg1" id="UNOxKFHC5y4wcTur_wtz-13">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="230" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg2" id="UNOxKFHC5y4wcTur_wtz-14">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="330" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg3" id="UNOxKFHC5y4wcTur_wtz-15">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="430" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg4" id="UNOxKFHC5y4wcTur_wtz-16">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="530" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg5" id="UNOxKFHC5y4wcTur_wtz-17">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="630" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg6" id="UNOxKFHC5y4wcTur_wtz-18">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="730" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg7" id="UNOxKFHC5y4wcTur_wtz-19">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="830" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg8" id="UNOxKFHC5y4wcTur_wtz-20">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="930" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="735.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxRecupSeg9" id="UNOxKFHC5y4wcTur_wtz-21">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="120" y="1030" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-22">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-2" target="UNOxKFHC5y4wcTur_wtz-12" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="140" />
+            <mxPoint x="110" y="140" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-23">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-3" target="UNOxKFHC5y4wcTur_wtz-13" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="240" />
+            <mxPoint x="110" y="240" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-24">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-4" target="UNOxKFHC5y4wcTur_wtz-14" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="340" />
+            <mxPoint x="110" y="340" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-25">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-5" target="UNOxKFHC5y4wcTur_wtz-15" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="440" />
+            <mxPoint x="110" y="440" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-26">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-6" target="UNOxKFHC5y4wcTur_wtz-16" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="540" />
+            <mxPoint x="110" y="540" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-27">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-7" target="UNOxKFHC5y4wcTur_wtz-17" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="640" />
+            <mxPoint x="110" y="640" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-28">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-8" target="UNOxKFHC5y4wcTur_wtz-18" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="740" />
+            <mxPoint x="110" y="740" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-29">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-9" target="UNOxKFHC5y4wcTur_wtz-19" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="840" />
+            <mxPoint x="110" y="840" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-30">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-10" target="UNOxKFHC5y4wcTur_wtz-20" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="940" />
+            <mxPoint x="110" y="940" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-31">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-11" target="UNOxKFHC5y4wcTur_wtz-21" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-240" y="-210" as="sourcePoint" />
+          <mxPoint x="-220" y="-210" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="100" y="1040" />
+            <mxPoint x="110" y="1040" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="11" id="qI6_p4ZRkxOHMfFDviIx-16">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="100" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="12" id="qI6_p4ZRkxOHMfFDviIx-17">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="200" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="13" id="qI6_p4ZRkxOHMfFDviIx-18">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="300" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="14" id="qI6_p4ZRkxOHMfFDviIx-19">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="400" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="15" id="qI6_p4ZRkxOHMfFDviIx-20">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="500" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="16" id="qI6_p4ZRkxOHMfFDviIx-21">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="600" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="17" id="qI6_p4ZRkxOHMfFDviIx-22">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="700" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="18" id="qI6_p4ZRkxOHMfFDviIx-23">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="800" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="19" id="qI6_p4ZRkxOHMfFDviIx-24">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="900" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Basic Node" i00.potential="283.0" label="20" id="qI6_p4ZRkxOHMfFDviIx-25">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="560" y="1000" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg0" id="qI6_p4ZRkxOHMfFDviIx-26">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="130" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg1" id="qI6_p4ZRkxOHMfFDviIx-27">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="230" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg2" id="qI6_p4ZRkxOHMfFDviIx-28">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="330" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg3" id="qI6_p4ZRkxOHMfFDviIx-29">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="430" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg4" id="qI6_p4ZRkxOHMfFDviIx-30">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="530" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg5" id="qI6_p4ZRkxOHMfFDviIx-31">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="630" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg6" id="qI6_p4ZRkxOHMfFDviIx-32">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="730" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg7" id="qI6_p4ZRkxOHMfFDviIx-33">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="830" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg8" id="qI6_p4ZRkxOHMfFDviIx-34">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="930" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="484.5" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithRadiatorSeg9" id="qI6_p4ZRkxOHMfFDviIx-35">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="600" y="1030" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-36">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-16" target="qI6_p4ZRkxOHMfFDviIx-26" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="140" />
+            <mxPoint x="590" y="140" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-37">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-17" target="qI6_p4ZRkxOHMfFDviIx-27" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="240" />
+            <mxPoint x="590" y="240" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-38">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-18" target="qI6_p4ZRkxOHMfFDviIx-28" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="340" />
+            <mxPoint x="590" y="340" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-39">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-19" target="qI6_p4ZRkxOHMfFDviIx-29" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="440" />
+            <mxPoint x="590" y="440" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-40">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-20" target="qI6_p4ZRkxOHMfFDviIx-30" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="540" />
+            <mxPoint x="590" y="540" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-41">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-21" target="qI6_p4ZRkxOHMfFDviIx-31" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="640" />
+            <mxPoint x="590" y="640" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-42">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-22" target="qI6_p4ZRkxOHMfFDviIx-32" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="740" />
+            <mxPoint x="590" y="740" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-43">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-23" target="qI6_p4ZRkxOHMfFDviIx-33" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="840" />
+            <mxPoint x="590" y="840" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-44">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-24" target="qI6_p4ZRkxOHMfFDviIx-34" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="940" />
+            <mxPoint x="590" y="940" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="qI6_p4ZRkxOHMfFDviIx-45">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="qI6_p4ZRkxOHMfFDviIx-25" target="qI6_p4ZRkxOHMfFDviIx-35" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="210" y="-350" as="sourcePoint" />
+          <mxPoint x="230" y="-350" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="580" y="1040" />
+            <mxPoint x="590" y="1040" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="UNOxKFHC5y4wcTur_wtz-45" value="Heat Source Heat Exchanger&lt;div&gt;(CBC / Reactor Interface)&lt;/div&gt;" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+      <mxGeometry x="270" y="160" width="170" height="170" as="geometry" />
+    </mxCell>
+    <object About="Basic Node" i00.potential="283.0" label="10" id="UNOxKFHC5y4wcTur_wtz-33">
+      <gunns subtype="Basic" type="Node" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="320" y="230" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="1150.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithReactorSeg0" id="UNOxKFHC5y4wcTur_wtz-37">
+      <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
+      <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="360" y="260" width="10" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-41">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-33" target="UNOxKFHC5y4wcTur_wtz-37" edge="1">
+        <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="-30" y="-220" as="sourcePoint" />
+          <mxPoint x="-10" y="-220" as="targetPoint" />
+          <Array as="points">
+            <mxPoint x="340" y="270" />
+            <mxPoint x="350" y="270" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <mxCell id="UNOxKFHC5y4wcTur_wtz-32" value="This network should be run at the same rate as the fluid networks it interfaces with, and with the solver in DUMMY mode to save CPU.&#10;" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+      <mxGeometry x="270" y="50" width="170" height="100" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>

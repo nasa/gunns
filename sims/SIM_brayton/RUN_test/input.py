@@ -21,4 +21,3 @@ trick_sys.sched.set_freeze_command(True)
 ################################################################################
 brayton.fluid.driveShaft.addImpeller(brayton.fluid.compressor)
 brayton.fluid.driveShaft.addImpeller(brayton.fluid.turbine)
-brayton.hx.netSolver.setDummyMode()

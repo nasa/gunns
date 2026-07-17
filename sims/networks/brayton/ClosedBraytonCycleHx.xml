@@ -544,35 +544,98 @@
       </mxCell>
     </object>
     <mxCell id="UNOxKFHC5y4wcTur_wtz-45" value="Heat Source Heat Exchanger&lt;div&gt;(CBC / Reactor Interface)&lt;/div&gt;" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
-      <mxGeometry x="270" y="160" width="170" height="170" as="geometry" />
+      <mxGeometry x="280" y="250" width="170" height="170" as="geometry" />
     </mxCell>
     <object About="Basic Node" i00.potential="283.0" label="10" id="UNOxKFHC5y4wcTur_wtz-33">
       <gunns subtype="Basic" type="Node" />
       <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
-        <mxGeometry x="320" y="230" width="20" height="20" as="geometry" />
+        <mxGeometry x="330" y="320" width="20" height="20" as="geometry" />
       </mxCell>
     </object>
     <object About="Thermal Capacitor" Ports="0=node" c00.editCapacitanceGroup="-1" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.capacitance="200.0" i03.potential="1026.0" i04.temperatureOverrideFlag="false" i05.temperatureOverrideValue="GunnsThermalCapacitorInputData::DEFAULT_TEMPERATURE" label="hxWithReactorSeg0" id="UNOxKFHC5y4wcTur_wtz-37">
       <gunns numPorts="2" reqPorts="0" subtype="aspects/thermal/GunnsThermalCapacitor" type="Link" />
       <mxCell style="verticalLabelPosition=bottom;align=center;fillColor=#FFFFFF;html=1;verticalAlign=top;strokeColor=#000000;strokeWidth=1;shape=stencil(pVPbDsIgDP0aHjUT9APMvLwtJsYPqLM6ogPC8Pb3VphR5qYxvtFzOO2BtkykVQEGGU+gMpg7JiaM8xNYCesDwZyYIoDDJIQKSgzIfJVlS0IGvYW2jg4pGMil0zbcrJzVezzLjatTSFWglS6w54Bxn1ZMWTJm93PCRJprpciM1KqKmBeecoNULvJTGzRUo0SHNkIvUXSto/7Ix7OGAUK6PIh0qy3urD6qTas5A/fnvhEPutQnfNoZ8NhPi5tYfpCqWz78ro/LN7/jx/IN+c/lY/m/r/+g9x3taAytgJ/T1il467VHw8544AY=);fontSize=12;fontColor=#000000;direction=east;rotation=-0.0;flipH=0;flipV=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
-        <mxGeometry x="360" y="260" width="10" height="20" as="geometry" />
+        <mxGeometry x="370" y="350" width="10" height="20" as="geometry" />
       </mxCell>
     </object>
     <object About="Link Port" label="0" id="UNOxKFHC5y4wcTur_wtz-41">
       <gunns type="Port" />
       <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;entryX=0.0;entryY=0.5;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-33" target="UNOxKFHC5y4wcTur_wtz-37" edge="1">
         <mxGeometry x="0.8" width="50" height="50" relative="1" as="geometry">
-          <mxPoint x="-30" y="-220" as="sourcePoint" />
-          <mxPoint x="-10" y="-220" as="targetPoint" />
+          <mxPoint x="-20" y="-130" as="sourcePoint" />
+          <mxPoint y="-130" as="targetPoint" />
           <Array as="points">
-            <mxPoint x="340" y="270" />
-            <mxPoint x="350" y="270" />
+            <mxPoint x="350" y="360" />
+            <mxPoint x="360" y="360" />
           </Array>
         </mxGeometry>
       </mxCell>
     </object>
-    <mxCell id="UNOxKFHC5y4wcTur_wtz-32" value="This network should be run at the same rate as the fluid networks it interfaces with, and with the solver in DUMMY mode to save CPU.&#10;" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
-      <mxGeometry x="270" y="50" width="170" height="100" as="geometry" />
+    <mxCell id="UNOxKFHC5y4wcTur_wtz-32" value="This network should be run at the same rate as the fluid networks it interfaces with.&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;If a full fluid loop for the Reactor is modeled and the &quot;tempReactor&quot; potential is removed, then this network can be set to DUMMY mode to save CPU.&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 2;fontColor=#999999;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+      <mxGeometry x="280" y="50" width="170" height="170" as="geometry" />
     </mxCell>
+    <object label="21" About="Basic Node" i00.potential="283.0" id="ZZNDYT7ZHsK1Vyc4aiAZ-8">
+      <gunns type="Node" subtype="Basic" />
+      <mxCell style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="290" y="510" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object label="" About="Ground Node" id="ZZNDYT7ZHsK1Vyc4aiAZ-9">
+      <gunns type="Node" subtype="Ground" />
+      <mxCell style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;fillColor=#eeeeee;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.electrical.signal_sources.signal_ground;strokeColor=#36393d;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="290" y="660" width="20" height="20" as="geometry" />
+      </mxCell>
+    </object>
+    <object label="0" About="Link Port" id="ZZNDYT7ZHsK1Vyc4aiAZ-10">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="ZZNDYT7ZHsK1Vyc4aiAZ-6" target="ZZNDYT7ZHsK1Vyc4aiAZ-9" edge="1">
+        <mxGeometry width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="350" y="650" as="sourcePoint" />
+          <mxPoint x="230" y="410" as="targetPoint" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object label="tempReactor" About="Thermal Potential" Ports="1=node" c00.defaultConductivity="1.0E+15" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.sourcePotential="1100.0" id="ZZNDYT7ZHsK1Vyc4aiAZ-6">
+      <gunns type="Link" subtype="aspects/thermal/GunnsThermalPotential" numPorts="2" reqPorts="1" />
+      <mxCell style="verticalLabelPosition=middle;align=left;html=1;verticalAlign=middle;shape=stencil(pVTLboMwEPwarhXYJD1X9HGLKlX9AJdsi1VjW7YTkr/vhoUGl4dEI3HZGY9nGC0kvPCVsJCwVHgLZUj4Y8LYUTgpPhTCDJmKwDylUYsaCHl53+3eEHk1AXSQQtEBH5z5hkbuQ6eUugInA7ENYdv2Nv6UpA8IXh5elEZrzCCN9hEz4PFuIXWIYphDd7VFlxoCOMK7vCeaMprOHXe3aefnPxEQmUvBi0/j4MuZg95PxgOlpPUwbqyJxz5QGieayPNrLJWiVudOWHEpe0T0dG2OcHXexM4L1r1eST3Qb1frS2X8bHbEZ+Ljdi6+9XDTsObrxrGFMldVlfHbqmKr9bE/v7/NP1+tj/1zFumzqa9m0T/Ws3n9f/ag1Yy+yhal31oL/AA=);strokeColor=#000000;strokeWidth=1;fontSize=12;fontColor=#000000;fillColor=#FFFFFF;direction=north;labelPosition=right;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="280" y="570" width="40" height="60" as="geometry" />
+      </mxCell>
+    </object>
+    <object label="1" About="Link Port" id="ZZNDYT7ZHsK1Vyc4aiAZ-11">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="ZZNDYT7ZHsK1Vyc4aiAZ-6" target="ZZNDYT7ZHsK1Vyc4aiAZ-8" edge="1">
+        <mxGeometry x="-1" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="270" y="580" as="sourcePoint" />
+          <mxPoint x="290" y="580" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object label="condWithReactor" About="Basic Conductor" Ports="0=in, 1=out" c00.defaultConductivity="10.0" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" id="ZZNDYT7ZHsK1Vyc4aiAZ-7">
+      <gunns type="Link" subtype="core/GunnsBasicConductor" numPorts="2" reqPorts="0,1" />
+      <mxCell style="verticalLabelPosition=middle;shadow=0;dashed=0;align=left;fillColor=#ffffff;html=1;verticalAlign=middle;strokeWidth=1;shape=mxgraph.electrical.resistors.resistor_2;fontColor=#000000;direction=south;labelPosition=right;" parent="EuFa0Y_xt33JVJP5X-Yw-61" vertex="1">
+        <mxGeometry x="290" y="400" width="20" height="80" as="geometry" />
+      </mxCell>
+    </object>
+    <object label="0" About="Link Port" id="ZZNDYT7ZHsK1Vyc4aiAZ-12">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="ZZNDYT7ZHsK1Vyc4aiAZ-8" target="ZZNDYT7ZHsK1Vyc4aiAZ-7" edge="1">
+        <mxGeometry x="1" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="280" y="430" as="sourcePoint" />
+          <mxPoint x="300" y="430" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
+    <object label="1" About="Link Port" id="ZZNDYT7ZHsK1Vyc4aiAZ-13">
+      <gunns type="Port" />
+      <mxCell style="endArrow=none;html=1;fontSize=9;fontColor=#99CCFF;jumpStyle=arc;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="EuFa0Y_xt33JVJP5X-Yw-61" source="UNOxKFHC5y4wcTur_wtz-33" target="ZZNDYT7ZHsK1Vyc4aiAZ-7" edge="1">
+        <mxGeometry x="1" width="50" height="50" relative="1" as="geometry">
+          <mxPoint x="280" y="430" as="sourcePoint" />
+          <mxPoint x="300" y="430" as="targetPoint" />
+          <mxPoint as="offset" />
+        </mxGeometry>
+      </mxCell>
+    </object>
   </root>
 </mxGraphModel>

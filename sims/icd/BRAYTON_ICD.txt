@@ -94,9 +94,20 @@ xxxx  gunns  bus  subsys  hxRecupSeg9HotQ   READ    MODELS_10HZ  ClosedBraytonCy
 #####################################################################
 # Heat Source HX (interface with Reactor)
 #####################################################################
+# Temperature from the thermal aspect
+xxxx  gunns  bus  subsys  hxWithReactorSeg0T      WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxWithReactorSeg0.mTemperature   double  (K)    Segment temperature
 
+# Temperature to the fluid aspect
+xxxx  gunns  bus  subsys  hxWithReactorSeg0T      READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  fluid.hxWithReactor.mSegTemperature[0]  double  (K)    Segment temperature
+
+######## (Not used unless a separate fluid loop is modeled for the Reactor)
+# Heat flux from the fluid aspect
+#xxxx  gunns  bus  subsys  hxWithReactorSeg0Q  WRITE   MODELS_10HZ  ClosedBraytonCycleSimObject brayton  fluid.hxWithReactor.mSegEnergyGain[0]   double  (W)    Segment heat flux
+
+# Heat flux to the thermal aspect
+#xxxx  gunns  bus  subsys  hxWithReactorSeg0Q  READ    MODELS_10HZ  ClosedBraytonCycleSimObject brayton  hx.hxWithReactorSeg0.mExternalHeatFlux[0]   double  (W)    Segment heat flux
 
 #####################################################################
 # Gas Cooler HX (interface with Radiator)
 #####################################################################
-
+# TBD

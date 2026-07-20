@@ -77,8 +77,8 @@
     </mxCell>
     <mxCell id="PGxRPmco9iE6N51dd6LE-5" value="" style="endArrow=classic;html=1;rounded=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" edge="1">
       <mxGeometry width="50" height="50" relative="1" as="geometry">
-        <mxPoint x="410" y="220" as="sourcePoint" />
-        <mxPoint x="410" y="260" as="targetPoint" />
+        <mxPoint x="400" y="270" as="sourcePoint" />
+        <mxPoint x="400" y="310" as="targetPoint" />
       </mxGeometry>
     </mxCell>
     <mxCell id="PGxRPmco9iE6N51dd6LE-6" value="" style="endArrow=classic;html=1;rounded=0;" parent="KN7Ig62nXS6v7mEr8KCG-1" edge="1">
@@ -391,7 +391,7 @@
     <object label="hxWithRadiator" About="Heat Exchanger" Ports="0=in, 1=out" c00.maxConductivity="0.007" c01.expansionScaleFactor="0.0" c02.numSegs="10" i00.malfBlockageFlag="false" i01.malfBlockageValue="0.0" i02.heatTransferCoefficient="9000.0" i03.initialSegmentTemperature="400.0" id="PhyYvlBPcs6vf5QNZ-3o-74">
       <gunns type="Link" subtype="aspects/fluid/conductor/GunnsFluidHeatExchanger" numPorts="2" reqPorts="0,1" />
       <mxCell style="verticalLabelPosition=middle;align=right;fillColor=#ffffff;html=1;verticalAlign=middle;strokeColor=#000000;strokeWidth=1;shape=stencil(rVVNj4MgEP01XDcqYrw27tepl80me6UtXckqGKTt9t8XGU2q1kYCCZd5w+M9mMmAcNGWtGEoiWjbsL1G+BUlyZkqTneVgROTKQFMIwgFrRkgH9/b7ZdBPn8g02ol/9iFH3RP4aJkimvIXgDL7TH4DUUbA3YLF3sphBHnUrSjzF3enE250CN9LuDkxojUTDMFcO/zfxRd++iF2PjdRUee9AqheIUQLgyydFtcHKViv0qexOGhPdUVaFaP/l2ziZvJvZ/c+sirCkq3tKOhXUVniSFdyzNbevAnygO94uKOHmdB+bErv9sdkI+d+XlQvrN/nAblO/sf2joQ39l/6tk/E76zf+LZP8Szf4ln/xDP/s08+2fCd54f+er5ZYf5wmg0/+rDiWo5szFvUfiILXAD);fontSize=12;fontColor=#000000;direction=south;labelPosition=left;" parent="KN7Ig62nXS6v7mEr8KCG-1" vertex="1">
-        <mxGeometry x="250" y="220" width="40" height="80" as="geometry" />
+        <mxGeometry x="250" y="240" width="40" height="80" as="geometry" />
       </mxCell>
     </object>
     <object label="0" About="Link Port" id="PhyYvlBPcs6vf5QNZ-3o-75">

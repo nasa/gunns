@@ -538,7 +538,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     ************************************************************************/
     mDensityHe(mMWeightHe / mGasK, 2.1768, 1500.0, 1.0e-64, 1.0e+06),
     mViscosityHe(3.904441e-6, 5.985034e-8, -2.490652e-11, 7.095312e-15, 2.1768, 1500.0),
-    mSpecificHeatHe(2.079064e4, -6.270587e-3, 2.1768, 1500.0),
+    mSpecificHeatHe(5193.2, -0.0041, 50.0, 1500.0),
     mThermalConductivityHe(2.710026e-2, 4.852526e-4, -2.162608e-7, 6.251157e-11, 2.1768, 1500.0),
     mPrandtlNumberHe(2.808356, -7.476181e-4, 1.00141e-6, -3.774658e-10, 2.1768, 1500.0),
     mAdiabaticIndexHe(1.6667, 0.0, 2.1768, 1500.0),

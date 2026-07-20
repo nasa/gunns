@@ -543,7 +543,7 @@ DefinedFluidProperties::DefinedFluidProperties()
     mPrandtlNumberHe(2.808356, -7.476181e-4, 1.00141e-6, -3.774658e-10, 2.1768, 1500.0),
     mAdiabaticIndexHe(1.6667, 0.0, 2.1768, 1500.0),
     mPressureHe(mGasK / mMWeightHe, 2.1768, 1500.0, 1.0e-64, 1.0e+06),
-    mTemperatureHe(2.079064e4, -6.270587e-3, 1.0e+2, 1.0e+08),
+    mTemperatureHe(5193.2, -0.0041, 1.0e+2, 1.0e+08),
     mSaturationPressureHe(4.055375, -1.930662, 0.2191484, 1.0, mCriticalTemperatureHe/2.1768),
     mSaturationTemperatureHe(4.055375, -1.930662, 0.2191484, 4.964031e0, 2.207300e2),
     mHeatOfVaporizationHe(19.800, -0.927, 0.421274, 2.1768/mCriticalTemperatureHe, 1.0),

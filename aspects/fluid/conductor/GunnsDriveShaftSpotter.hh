@@ -23,7 +23,8 @@ LIBRARY DEPENDENCY:
 - ((GunnsDriveShaftSpotter.o))
 
 PROGRAMMERS:
-- ((Chris Brownschidle) (CACI) (2016-09) (Initial))
+- ((Chris Brownschidle) (CACI) (2016-09) (Initial)
+   (Joe Valerioti)      (CACI) (2026-07) (Added excess power calculation))
 
 @{
 */
@@ -124,6 +125,8 @@ class GunnsDriveShaftSpotter : public GunnsNetworkSpotter
         virtual void stepPostSolver(const double dt);
         /// @brief   Adds object pointers to the turbine and fan vectors
         void addImpeller(GunnsFluidConductor* object);
+        /// @brief   Gets net power out of the shaft
+        double getPowerExcess() const;
 
     protected:
         double                          mFrictionConstant;  /**< (N*m*min/revolution) trick_chkpnt_io(**) Dynamic friction torque constant      */
@@ -135,6 +138,9 @@ class GunnsDriveShaftSpotter : public GunnsNetworkSpotter
         std::vector<GunnsGasFan*>       mFanRef;            /**< (--)                 trick_chkpnt_io(**) vector of pointers to fans            */
         double                          mFrictionTorque;    /**< (N*m)                                    Dynamic friction torque               */
         double                          mTotalExternalLoad; /**< (N*m)                                    Total external torque load on shaft   */
+        double                          mPowerInFan;        /**< (W)                                      Power consumed by fans */
+        double                          mPowerOutTurb;      /**< (W)                                      Power delivered by turbines */
+        double                          mPowerExcess;       /**< (W)                                      Net power out of shaft */
 
         /// @brief   Validates the supplied configuration data.
         const GunnsDriveShaftSpotterConfigData* validateConfig(const GunnsNetworkSpotterConfigData* config);
@@ -145,9 +151,19 @@ class GunnsDriveShaftSpotter : public GunnsNetworkSpotter
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         GunnsDriveShaftSpotter(const GunnsDriveShaftSpotter& that);
         /// @brief  Assignment operator unavailable since declared private and not implemented.
-        GunnsDriveShaftSpotter& operator =(const GunnsDriveShaftSpotter& that);
+        GunnsDriveShaftSpotter& operator=(const GunnsDriveShaftSpotter& that);
 };
-
 /// @}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @return   double (W)   net power out of the shaft
+///
+/// @details  Gets the excess power out of shaft. Value is equivalent to the power produced from the
+///           turbines minus power consumed by the fans.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+inline double GunnsDriveShaftSpotter::getPowerExcess() const
+{
+    return mPowerExcess;
+}
 
 #endif

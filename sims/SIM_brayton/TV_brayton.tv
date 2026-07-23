@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<trickView>
+    <cyclePeriod>0.1</cyclePeriod>
+    <variable>
+        <name>brayton.hx.hxRecupSeg0.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">557.5940611120583</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg1.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">587.7315152594362</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg2.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">617.9810902716007</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg3.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">648.3457467206915</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg4.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">678.8284471663649</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg5.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">709.4321470609555</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg6.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">740.1597855861194</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg7.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">771.0142764543942</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg8.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">801.9984987096129</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.hxRecupSeg9.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">833.1152875607173</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[0].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">815.4000852935501</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[1].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">810.7568662712603</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[2].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">804.7308640638756</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[3].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">500.6096452615648</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[4].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">492.0701686029166</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[5].mContent.mPressure</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">486.0064492196618</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kPa</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[0].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">493.0865343893941</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[1].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">797.7977898843233</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[2].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">1092.893889029369</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[3].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">899.8661033605741</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[4].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">592.1871933967038</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.netNodes[5].mContent.mTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">400.0001440420031</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.compressor.mFlowRate</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">1.23051304710962</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kg/s</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.driveShaft.mPowerOutTurb</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">101.5448218849536</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kW</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.driveShaft.mPowerInFan</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">59.22370712266834</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kW</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.driveShaft.mPowerExcess</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">42.32111476228525</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>kW</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupLowT.mDeltaTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">304.737249919514</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupHighT.mDeltaTemperature</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">-307.6471795198543</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>K</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupLowT.mMalfHxDegradeValue</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupHighT.mMalfHxDegradeValue</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">0.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupLowT.mMalfHxDegradeFlag</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">false</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.hxRecupHighT.mMalfHxDegradeFlag</name>
+        <tvBoolean>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">false</value>
+            <format>Boolean</format>
+        </tvBoolean>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.compressor.mMotorSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">41886.06667359584</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.turbine.mMotorSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">41886.06667359584</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.driveShaft.mMotorSpeed</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">41886.06667359584</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>revolution/min</units>
+    </variable>
+    <variable>
+        <name>brayton.fluid.driveShaft.mFrictionConstant</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">7.37E-7</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>N*m*min/revolution</units>
+    </variable>
+    <variable>
+        <name>brayton.hx.tempReactor.mSourcePotential</name>
+        <tvDouble>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:double">1100.0</value>
+            <format>Decimal</format>
+        </tvDouble>
+        <state>Valid</state>
+        <units>--</units>
+    </variable>
+    <stripChart>
+        <domainVariable>Simulation Time (seconds)</domainVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg0.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg1.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg2.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg3.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg4.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg5.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg6.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg7.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg8.mTemperature</plottedVariable>
+        <plottedVariable>brayton.hx.hxRecupSeg9.mTemperature</plottedVariable>
+        <mode>Strip</mode>
+        <fixedAutoRange>30.0</fixedAutoRange>
+        <areLinesVisible>true</areLinesVisible>
+        <arePointsVisible>true</arePointsVisible>
+        <isLegendVisible>true</isLegendVisible>
+        <areSettingsVisible>true</areSettingsVisible>
+        <isAntiAliased>false</isAntiAliased>
+        <isBackgroundSet>false</isBackgroundSet>
+        <backgroundRgb>0</backgroundRgb>
+        <title>
+            <text>Strip Chart</text>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>20</size>
+            </font>
+            <rgb>-16777216</rgb>
+        </title>
+        <isHorizontal>false</isHorizontal>
+        <outlineRgb>-16777216</outlineRgb>
+        <plotBackgroundRgb>-1</plotBackgroundRgb>
+        <domainAxis>
+            <label>Simulation Time (seconds)</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>17.200000000000003</lower>
+                <upper>47.2</upper>
+            </range>
+        </domainAxis>
+        <rangeAxis>
+            <label>Value</label>
+            <font>
+                <name>Tahoma</name>
+                <style>1</style>
+                <size>14</size>
+            </font>
+            <rgb>-12566464</rgb>
+            <areTickMarksVisible>true</areTickMarksVisible>
+            <areTickLabelsVisible>true</areTickLabelsVisible>
+            <tickLabelFont>
+                <name>Tahoma</name>
+                <style>0</style>
+                <size>12</size>
+            </tickLabelFont>
+            <tickLabelRgb>-12566464</tickLabelRgb>
+            <range>
+                <lower>537.0420208260883</lower>
+                <upper>847.2140145480806</upper>
+            </range>
+        </rangeAxis>
+        <bounds>
+            <x>1920</x>
+            <y>0</y>
+            <width>804</width>
+            <height>1080</height>
+        </bounds>
+    </stripChart>
+</trickView>

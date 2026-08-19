@@ -131,7 +131,7 @@ class UtGunnsFluidSorptionBed: public CppUnit::TestFixture
         double                              tTimeStep;           /**< (s)    Time step. */
         DefinedFluidProperties*             tFluidProperties;    /**< (--)   Predefined fluid properties. */
         DefinedChemicalCompounds*           tCompoundProperties; /**< (--)   Predefined chemical compound properties. */
-        ChemicalCompound::Type              tTcTypes[2];         /**< (--)   Trace compounds config data for nodes. */
+        ChemicalCompound::Type              tTcTypes[3];         /**< (--)   Trace compounds config data for nodes. */
         GunnsFluidTraceCompoundsConfigData* tFluidTcConfig;      /**< (--)   Trace compounds config data for nodes. */
         PolyFluidConfigData*                tFluidConfig;        /**< (--)   Fluid config data. */
         GunnsFluidTraceCompoundsInputData*  tFluidTcInput;       /**< (--)   Trace compounds input data for nodes. */

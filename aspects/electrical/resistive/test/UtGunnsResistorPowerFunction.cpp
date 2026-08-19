@@ -36,7 +36,8 @@ UtGunnsResistorPowerFunction::UtGunnsResistorPowerFunction()
     tMalfBlockageValue(0.0),
     tInputData(0),
     tArticle(0),
-    tTimeStep(0.0)
+    tTimeStep(0.0),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -89,6 +90,9 @@ void UtGunnsResistorPowerFunction::setUp()
 
     /// - Define the nominal time step.
     tTimeStep           = 0.1;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-12;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -295,22 +299,22 @@ void UtGunnsResistorPowerFunction::testStep()
         ///   sqrt(X) != pow(X, 1/2).
         const double G         = (1.0 - tMalfBlockageValue) / tResistance;
         const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
         /// @test    Repeated system admittance.
         tArticle->step(tTimeStep);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Nominal potential and resistance within limits, without blockage malfunction.
@@ -319,8 +323,8 @@ void UtGunnsResistorPowerFunction::testStep()
         const double dP        = tNodes[0].getPotential() - tNodes[1].getPotential();
         const double G         = 1.0 / tResistance;
         const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Potential below minimum linearization.
@@ -329,8 +333,8 @@ void UtGunnsResistorPowerFunction::testStep()
         const double dP        = minLinP;
         const double G         = 1.0 / tResistance;
         const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Resistance below minimum.
@@ -341,15 +345,15 @@ void UtGunnsResistorPowerFunction::testStep()
         // Because of truncation, 1 / (1 / mConductanceLimit) != mConductanceLimit.
         const double G         = 1.0 / (1.0 / GunnsBasicLink::mConductanceLimit);
         const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Resistance above maximum.
         tArticle->setResistance(1.0e100);
         tArticle->step(tTimeStep);
         CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mAdmittanceMatrix[0]);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     }
 
@@ -364,12 +368,12 @@ void UtGunnsResistorPowerFunction::testStep()
         const double G         = (1.0 - tMalfBlockageValue) / tResistance;
         const double expectedA = (1.0 / tExponent) * std::pow(dP * G, (1.0 / tExponent - 1.0));
         const double expectedW = std::pow(dP * G, (1.0 / tExponent)) - expectedA * dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedW, tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedW, tArticle->mSourceVector[0],     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedW, tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Nominal potential and resistance within limits, without blockage malfunction.
@@ -379,8 +383,8 @@ void UtGunnsResistorPowerFunction::testStep()
         const double G         = 1.0 / tResistance;
         const double expectedA = (1.0 / tExponent) * std::pow(dP * G, (1.0 / tExponent - 1.0));
         const double expectedW = std::pow(dP * G, (1.0 / tExponent)) - expectedA * dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Potential below minimum linearization.
@@ -390,8 +394,8 @@ void UtGunnsResistorPowerFunction::testStep()
         const double G         = 1.0 / tResistance;
         const double expectedA = (1.0 / tExponent) * std::pow(dP * G, (1.0 / tExponent - 1.0));
         const double expectedW = std::pow(dP * G, (1.0 / tExponent)) - expectedA * dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Resistance below minimum.
@@ -403,8 +407,8 @@ void UtGunnsResistorPowerFunction::testStep()
         const double G         = 1.0 / (1.0 / GunnsBasicLink::mConductanceLimit);
         const double expectedA = (1.0 / tExponent) * std::pow(dP * G, (1.0 / tExponent - 1.0));
         const double expectedW = std::pow(dP * G, (1.0 / tExponent)) - expectedA * dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     } {
         /// @test    Resistance above maximum.
@@ -442,12 +446,12 @@ void UtGunnsResistorPowerFunction::testMinorStep()
         const double dP        = tNodes[0].getPotential() - tNodes[1].getPotential();
         const double G         = (1.0 - tMalfBlockageValue) / tResistance;
         const double expectedA = std::pow(dP * G, (1.0 / tExponent)) / dP;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[1], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedA, tArticle->mAdmittanceMatrix[2], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedA, tArticle->mAdmittanceMatrix[3], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[0],     tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,       tArticle->mSourceVector[1],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
     }
 
@@ -476,11 +480,11 @@ void UtGunnsResistorPowerFunction::testComputeFlows()
         const double expectedP = -dP * expectedI;
         tArticle->computeFlows(tTimeStep);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dP,        tArticle->mPotentialDrop, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPower,         DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tNodes[1].getInflux(),    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tNodes[0].getOutflux(),   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(dP,        tArticle->mPotentialDrop, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPower,         tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tNodes[1].getInflux(),    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tNodes[0].getOutflux(),   tTolerance);
     } {
         /// @test    Zero potential drop.
         tNodes[0].resetFlows();
@@ -489,11 +493,11 @@ void UtGunnsResistorPowerFunction::testComputeFlows()
         tArticle->step(tTimeStep);
         tArticle->computeFlows(tTimeStep);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPotentialDrop, DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mFlux,          DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPower,         DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[1].getInflux(),    DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[0].getOutflux(),   DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPotentialDrop, tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mFlux,          tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mPower,         tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[1].getInflux(),    tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[0].getOutflux(),   tTolerance);
     }
 
     UT_PASS;

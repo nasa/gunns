@@ -104,6 +104,7 @@ class UtGunnsResistorPowerFunction: public CppUnit::TestFixture
         GunnsResistorPowerFunctionInputData*  tInputData;         /**< (--) Pointer to nominal input data. */
         FriendlyGunnsResistorPowerFunction*   tArticle;           /**< (--) Pointer to the friendly Valve under test. */
         double                                tTimeStep;          /**< (s)  Nominal time step. */
+        double                                tTolerance;         /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static int                            TEST_ID;            /**< (--) Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.

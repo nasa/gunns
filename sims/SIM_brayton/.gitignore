@@ -1,0 +1,12 @@
+# Ignore the sim bus build products in this sim
+alloc_simbus.out
+icd_files.out
+thread_safe_bus
+
+# Ignore log files
+RUN*/_init_log.csv
+
+# Ignore any links generated in the HLA build
+FOMs/DistIf
+Modified_data/DistIf
+Modified_data/TrickHLA

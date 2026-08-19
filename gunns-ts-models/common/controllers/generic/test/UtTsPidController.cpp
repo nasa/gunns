@@ -37,7 +37,8 @@ UtTsPidController::UtTsPidController()
     tInputData(0),
     tName(""),
     tArticle(0),
-    tTimeStep(0.0)
+    tTimeStep(0.0),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -87,6 +88,9 @@ void UtTsPidController::setUp()
 
     /// - Define the time step.
     tTimeStep = 0.1;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-15;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -340,7 +344,7 @@ void UtTsPidController::testUpdate()
     /// @test    update with timer < interval, timer increments and output is unchanged.
     double expectedTimer = tTimer + tTimeStep;
     tArticle->update(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTimer, tArticle->mTimer,  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTimer, tArticle->mTimer,  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tOutput,       tArticle->mOutput, 0.0);
 
     /// @test    update with timer incrementing to interval, output is updated, timer is reset.
@@ -356,10 +360,10 @@ void UtTsPidController::testUpdate()
     double expectedDerivative = (expectedError_1 - expectedError_0) / tInterval;
     double expectedOutput     = tOutput + expectedError_1 * tGainP + expectedIntegral * tGainI
                               + expectedDerivative * tGainD;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_1,    tArticle->mError,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_1,    tArticle->mError,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     tTolerance);
 
     /// @test   update with timer past the interval.  This occurs if user manually overrides the
     ///         timer or if interval is not a multiple of dt.
@@ -374,10 +378,10 @@ void UtTsPidController::testUpdate()
     expectedDerivative     = (expectedError_2 - expectedError_1) / (timer + tTimeStep);
     expectedOutput        += expectedError_2 * tGainP + expectedIntegral * tGainI
                            + expectedDerivative * tGainD;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_2,    tArticle->mError,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_2,    tArticle->mError,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     tTolerance);
 
     /// @test   Protecting underflows in integral and output.
     input = tSetpoint;
@@ -429,10 +433,10 @@ void UtTsPidController::testUpdateWithInput()
     double expectedDerivative = (expectedError_1 - expectedError_0) / tInterval;
     double expectedOutput     = tOutput + expectedError_1 * tGainP + expectedIntegral * tGainI
                               + expectedDerivative * tGainD;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_1,    tArticle->mError,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedError_1,    tArticle->mError,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedIntegral,   tArticle->mIntegral,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDerivative, tArticle->mDerivative, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutput,     tArticle->mOutput,     tTolerance);
 
     UT_PASS;
 }

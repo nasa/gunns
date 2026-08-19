@@ -99,6 +99,7 @@ class UtGunnsElectShort: public CppUnit::TestFixture
         double                       tMalfResistanceValue;      /**< (ohm) Nominal input data. */
         GunnsElectShortInputData*    tInputData;                /**< (--)  Pointer to nominal input data. */
         FriendlyGunnsElectShort*     tArticle;                  /**< (--)  Pointer to the test article. */
+        static int                   TEST_ID;                   /**< (--)  Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.
         ////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,10 @@ LIBRARY DEPENDENCY:
 */
 
 #include "UtGunnsShortUtil.hh"
+#include "strings/UtResult.hh"
+
+/// @details  Test identification number.
+int UtGunnsShortUtil::TEST_ID = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  This is the default constructor for the UtGunnsShortUtil class.
@@ -79,6 +83,9 @@ void UtGunnsShortUtil::setUp()
 
     /// - Create the test article
     tArticle = new FriendlyGunnsShortUtil;
+
+    /// - Increment the test identification number.
+    ++TEST_ID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,8 +93,7 @@ void UtGunnsShortUtil::setUp()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsShortUtil::testInput()
 {
-    std::cout << "\n ----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsShortUtil ...... 01: testInput .............................";
+    UT_RESULT_FIRST;
 
     /// - Check nominal input construction
     CPPUNIT_ASSERT_EQUAL(tMalfMinimumVoltage,       tInputData->mMalfMinimumVoltage);
@@ -130,7 +136,7 @@ void UtGunnsShortUtil::testInput()
     CPPUNIT_ASSERT_EQUAL(tMalfResistanceFlag,       copyInput.mMalfResistanceFlag);
     CPPUNIT_ASSERT_EQUAL(tMalfResistanceValue,      copyInput.mMalfResistanceValue);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +144,7 @@ void UtGunnsShortUtil::testInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsShortUtil::testDefaultConstruction()
 {
-    std::cout << "\n UtGunnsShortUtil ...... 02: testDefaultConstruction ...............";
+    UT_RESULT;
 
     /// @test config data
     CPPUNIT_ASSERT_EQUAL(0.0,                       tArticle->mMalfMinimumVoltage);
@@ -160,7 +166,7 @@ void UtGunnsShortUtil::testDefaultConstruction()
     GunnsShortUtil* article = new GunnsShortUtil();
     delete article;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +174,7 @@ void UtGunnsShortUtil::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsShortUtil::testNominalInitialization()
 {
-    std::cout << "\n UtGunnsShortUtil ...... 03: testNominalInitialization .............";
+    UT_RESULT;
 
     /// - Initialize (with nominal data) the test article.
     tArticle->initialize(*tInputData);
@@ -191,7 +197,7 @@ void UtGunnsShortUtil::testNominalInitialization()
     CPPUNIT_ASSERT_EQUAL(0.0,                       tArticle->mPreviousCurrent);
     CPPUNIT_ASSERT_EQUAL(0.0,                       tArticle->mPreviousPower);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +205,7 @@ void UtGunnsShortUtil::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsShortUtil::testComputeShort()
 {
-    std::cout << "\n UtGunnsShortUtil ...... 04: testComputeShort ......................";
+    UT_RESULT;
 
     /// - Initialize (with nominal data) the test article.
     tArticle->initialize(*tInputData);
@@ -325,7 +331,7 @@ void UtGunnsShortUtil::testComputeShort()
         CPPUNIT_ASSERT(false == tArticle->isConstantLoad());
     }
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,7 +339,7 @@ void UtGunnsShortUtil::testComputeShort()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsShortUtil::testAccessors()
 {
-    std::cout << "\n UtGunnsShortUtil ...... 05: testAccessors .........................";
+    UT_RESULT;
 
     /// @test set the constant power malf.
     tArticle->setMalfConstantPower(true, 9.0, -1.0);
@@ -421,5 +427,5 @@ void UtGunnsShortUtil::testAccessors()
 //
 //    CPPUNIT_ASSERT(!mArticle->mPowerValid);
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

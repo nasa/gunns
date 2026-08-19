@@ -56,6 +56,7 @@ class UtGunnsElectricalResistor: public CppUnit::TestFixture
         CPPUNIT_TEST(testNominalInitialization);
         CPPUNIT_TEST(testInitializationExceptions);
         CPPUNIT_TEST(testUpdateState);
+        CPPUNIT_TEST(testComputeFlows);
 
         CPPUNIT_TEST_SUITE_END();
 
@@ -115,6 +116,8 @@ class UtGunnsElectricalResistor: public CppUnit::TestFixture
 
         /// --     Nominal tolerance for comparison of expected and returned values
         double                         mTolerance;
+
+        static int TEST_ID; /**< (--) Test identification number. */
 
     public:
         UtGunnsElectricalResistor();

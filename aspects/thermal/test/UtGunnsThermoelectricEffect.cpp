@@ -34,7 +34,8 @@ UtGunnsThermoelectricEffect::UtGunnsThermoelectricEffect()
     tMalfThermoelectricEffectsScalar(),
     tCurrent(),
     tTemperatureHot(),
-    tTemperatureCold()
+    tTemperatureCold(),
+    tTolerance()
 {
     // Nothing to do
 }
@@ -106,6 +107,9 @@ void UtGunnsThermoelectricEffect::setUp()
     /// - Define the test Article.
     tName    = "tArticle";
     tArticle = new FriendlyGunnsThermoelectricEffect();
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-15;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -230,14 +234,14 @@ void UtGunnsThermoelectricEffect::testInitialization()
     const double twoNG     = twoN * tGeometryFactor;
     const double twoNoverG = twoN / tGeometryFactor;
     const double K0 = 1.0 / (1.0/twoNG/tThermalConductivityCoeff[0] + 2.0/tEndPlateThermalConductance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNoverG * tElectricalResistivityCoeff[0], tArticle->mResistanceCoeffs[0],         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNoverG * tElectricalResistivityCoeff[1], tArticle->mResistanceCoeffs[1],         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[0],               tArticle->mSeebeckCoeffs[0],            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[1],               tArticle->mSeebeckCoeffs[1],            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[2],               tArticle->mSeebeckCoeffs[2],            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(K0,                                         tArticle->mThermalConductanceCoeffs[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[1],   tArticle->mThermalConductanceCoeffs[1], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[2],   tArticle->mThermalConductanceCoeffs[2], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNoverG * tElectricalResistivityCoeff[0], tArticle->mResistanceCoeffs[0],         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNoverG * tElectricalResistivityCoeff[1], tArticle->mResistanceCoeffs[1],         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[0],               tArticle->mSeebeckCoeffs[0],            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[1],               tArticle->mSeebeckCoeffs[1],            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoN      * tSeebeckCoeff[2],               tArticle->mSeebeckCoeffs[2],            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(K0,                                         tArticle->mThermalConductanceCoeffs[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[1],   tArticle->mThermalConductanceCoeffs[1], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[2],   tArticle->mThermalConductanceCoeffs[2], tTolerance);
     CPPUNIT_ASSERT(tMinTemperature == tArticle->mMinTemperature);
     CPPUNIT_ASSERT(tMaxTemperature == tArticle->mMaxTemperature);
 
@@ -257,7 +261,7 @@ void UtGunnsThermoelectricEffect::testInitialization()
     /// @test init of thermal conductance coeffs with zero end-plate conudctance.
     tConfigData->mEndPlateThermalConductance = 0.0;
     CPPUNIT_ASSERT_NO_THROW(tArticle->initialize(*tConfigData, *tInputData, tName));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[0],   tArticle->mThermalConductanceCoeffs[0], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(twoNG     * tThermalConductivityCoeff[0],   tArticle->mThermalConductanceCoeffs[0], tTolerance);
     CPPUNIT_ASSERT(tArticle->mInitFlag);
 
     UT_PASS;
@@ -381,12 +385,12 @@ void UtGunnsThermoelectricEffect::testUpdate()
     double V     = Savg * dT;
 
     CPPUNIT_ASSERT_NO_THROW(tArticle->update());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               tTolerance);
 
     /// @test update with dT & zero-limited malf, with cold & hot upper/lower limits.
     tArticle->mTemperatureHot                  =    0.0;
@@ -412,12 +416,12 @@ void UtGunnsThermoelectricEffect::testUpdate()
     V     = Savg * dT;
 
     CPPUNIT_ASSERT_NO_THROW(tArticle->update());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               tTolerance);
 
     /// @test update with zero dT, malf off.
     tArticle->mTemperatureHot                = tTemperatureCold;
@@ -440,12 +444,12 @@ void UtGunnsThermoelectricEffect::testUpdate()
     V     = 0.0;
 
     CPPUNIT_ASSERT_NO_THROW(tArticle->update());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Ke,    tArticle->mElectricalConductance, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Kt,    tArticle->mThermalConductance,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qthru, tArticle->mHeatFluxThru,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qhot,  tArticle->mHeatFluxHot,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(Qcold, tArticle->mHeatFluxCold,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(V,     tArticle->mVoltage,               tTolerance);
 
     UT_PASS;
 }

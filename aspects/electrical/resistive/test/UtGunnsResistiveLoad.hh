@@ -124,6 +124,8 @@ class UtGunnsResistiveLoad: public CppUnit::TestFixture
         /// --     Nominal tolerance for comparison of expected and returned values
         double                         mTolerance;
 
+        static int TEST_ID; /**< (--) Test identification number. */
+        
     public:
         UtGunnsResistiveLoad();
         virtual ~UtGunnsResistiveLoad();

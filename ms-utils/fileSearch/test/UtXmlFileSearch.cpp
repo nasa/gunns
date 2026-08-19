@@ -56,12 +56,12 @@ void UtXmlFileSearch::tearDown()
 void UtXmlFileSearch::DefaultConstructorTest()
 {
     std::cout << "\n-------------------------------------------------------------------------------";
-    std::cout << "\n Xml File Search: Default Constructor Test ";
+    std::cout << "\n Xml File Search: Default Constructor Test ..............................";
 
     CPPUNIT_ASSERT(0 == testArticle.fileList.size());
     CPPUNIT_ASSERT(std::string("Xml File Search: There were no files found.") == std::string(XmlFileSearch::NO_FILE_MSG));
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ void UtXmlFileSearch::DefaultConstructorTest()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void UtXmlFileSearch::TestExceptionThrownWhenMaxFilesIsZero()
 {
-    std::cout << "\n Xml File Search: Test exception thrown when max number of files is zero.";
+    std::cout << "\n Xml File Search: Test exception thrown when max number of files is zero ";
 
     int maxFiles = 0;
     try {
@@ -83,7 +83,7 @@ void UtXmlFileSearch::TestExceptionThrownWhenMaxFilesIsZero()
                 "Xml File Search: Max number of files must be greater than zero."), ne.getMessage());
     }
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ void UtXmlFileSearch::TestExceptionThrownWhenMaxFilesIsZero()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void UtXmlFileSearch::TestExceptionThrownFileFailedToLoad()
 {
-    std::cout << "\n Xml File Search: Test exception thrown when file failed to load.";
+    std::cout << "\n Xml File Search: Test exception thrown when file failed to load ........";
 
     try {
         testArticle.searchDirectory("./DoesNotExist");
@@ -104,7 +104,7 @@ void UtXmlFileSearch::TestExceptionThrownFileFailedToLoad()
                 "Xml File Search: Unable to load file, check file, file existence, ect."), ne.getMessage());
     }
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ void UtXmlFileSearch::TestExceptionThrownFileFailedToLoad()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void UtXmlFileSearch::TestExceptionThrownWhenNoFilesFound()
 {
-    std::cout << "\n Xml File Search: Test exception thrown when no files were found.";
+    std::cout << "\n Xml File Search: Test exception thrown when no files were found ........";
 
     try {
         testArticle.searchDirectory("./fileSearchFiles/noFiles");
@@ -125,7 +125,7 @@ void UtXmlFileSearch::TestExceptionThrownWhenNoFilesFound()
                                          ne.getMessage());
     }
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,14 +133,14 @@ void UtXmlFileSearch::TestExceptionThrownWhenNoFilesFound()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void UtXmlFileSearch::TestNumberOfFilesFound()
 {
-    std::cout << "\n Xml File Search: Test number of files found.";
+    std::cout << "\n Xml File Search: Test number of files found ............................";
 
     testArticle.searchDirectory("./fileSearchFiles");
     myFiles = testArticle.getFileList();
 
     CPPUNIT_ASSERT(2 == myFiles.size());
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ void UtXmlFileSearch::TestNumberOfFilesFound()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void UtXmlFileSearch::TestMaxNumberOfFilesExceptionThrown()
 {
-    std::cout << "\n Xml File Search: Test max number of files exception thrown.";
+    std::cout << "\n Xml File Search: Test max number of files exception thrown .............";
 
     try {
         testArticle.searchDirectory("./fileSearchFiles/101Files");
@@ -165,5 +165,5 @@ void UtXmlFileSearch::TestMaxNumberOfFilesExceptionThrown()
 
     CPPUNIT_ASSERT(101 == myFiles.size());
 
-    std::cout << "\t... Pass";
+    std::cout << "... Pass";
 }

@@ -34,7 +34,8 @@ UtGunnsFluidPhaseChangeSource::UtGunnsFluidPhaseChangeSource()
     tFluidConfig(),
     tFluidInput1(),
     tFluidInput2(),
-    tFractions()
+    tFractions(),
+    tTolerance()
 {
     //do nothing
 }
@@ -142,6 +143,9 @@ void UtGunnsFluidPhaseChangeSource::setUp()
                                                                   tPowerInput);
 
     tArticle = new FriendlyGunnsFluidPhaseChangeSource;
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1e-10;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -378,14 +382,14 @@ void UtGunnsFluidPhaseChangeSource::testStep()
 
     tArticle->step(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,  tArticle->mPower,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedTsat, tArticle->mTsat,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedDh,   tArticle->mDh,              DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedL,    tArticle->mL,               DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMdot, tArticle->mFlowRate,        DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mFlux,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tArticle->mSourceVector[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mSourceVector[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,  tArticle->mPower,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedTsat, tArticle->mTsat,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedDh,   tArticle->mDh,              tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedL,    tArticle->mL,               tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMdot, tArticle->mFlowRate,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mFlux,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tArticle->mSourceVector[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mSourceVector[1], tTolerance);
 
     /// @test nominal outputs for negative power direction: gas to liquid.
     tEfficiency *= -1.0;
@@ -402,27 +406,27 @@ void UtGunnsFluidPhaseChangeSource::testStep()
 
     tArticle->step(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,  tArticle->mPower,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedTsat, tArticle->mTsat,            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedPwr,  tArticle->mPower,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedTsat, tArticle->mTsat,            tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedDh,   tArticle->mDh,              FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedL,    tArticle->mL,               DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMdot, tArticle->mFlowRate,        DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mFlux,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tArticle->mSourceVector[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mSourceVector[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedL,    tArticle->mL,               tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedMdot, tArticle->mFlowRate,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mFlux,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tArticle->mSourceVector[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expectedFlux, tArticle->mSourceVector[1], tTolerance);
 
     /// @test nominal outputs for zero power.
     tArticle->mPowerInput = 0.0;
     tArticle->step(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mPower,           DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTsat, tArticle->mTsat,            DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mPower,           tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTsat, tArticle->mTsat,            tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDh,   tArticle->mDh,              FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedL,    tArticle->mL,               DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mFlowRate,        DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mFlux,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedL,    tArticle->mL,               tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mFlowRate,        tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mFlux,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,          tArticle->mSourceVector[1], tTolerance);
 
     UT_PASS;
 }
@@ -442,19 +446,19 @@ void UtGunnsFluidPhaseChangeSource::testComputeFlows()
     /// @test outputs with no flow.
     const double expectedDp = tFluidInput1->mPressure - tFluidInput2->mPressure;
     tArticle->computeFlows(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp, tArticle->mPotentialDrop, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedDp, tArticle->mPotentialDrop, tTolerance);
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), tTolerance);
 
     /// @test outputs with positive flow.
     tArticle->mFlux = 1.0;
     tArticle->computeFlows(tTimeStep);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tNodes[tPort0].getScheduledOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tNodes[tPort0].getScheduledOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), tTolerance);
 
     /// @test outputs with negative flow and the source node isn't 100% the gas type.
     tNodes[tPort0].resetFlows();
@@ -464,8 +468,8 @@ void UtGunnsFluidPhaseChangeSource::testComputeFlows()
     tArticle->computeFlows(tTimeStep);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::NONE == tArticle->mPortDirections[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort1].getScheduledOutflux(), tTolerance);
 
     /// @test outputs with negative flow and the source node is 100% the gas type.
     tArticle->mUserPortSelect     = 1;
@@ -477,8 +481,8 @@ void UtGunnsFluidPhaseChangeSource::testComputeFlows()
     tArticle->computeFlows(tTimeStep);
     CPPUNIT_ASSERT(GunnsBasicLink::SINK   == tArticle->mPortDirections[0]);
     CPPUNIT_ASSERT(GunnsBasicLink::SOURCE == tArticle->mPortDirections[1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tNodes[3].getScheduledOutflux(),      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tNodes[tPort0].getScheduledOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tNodes[3].getScheduledOutflux(),      tTolerance);
 
     UT_PASS;
 }
@@ -506,11 +510,11 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     double expectedT  = gasProps->getSaturationTemperature(tFluidInput2->mPressure);
     double expectedMW = gasProps->getMWeight();
     tArticle->transportFlows(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort0].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort0].getOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort1].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort1].getOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort0].getInflux(),  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort1].getInflux(),  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort1].getOutflux(), tTolerance);
     PolyFluid* influid = tNodes[tPort1].getInflow();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT,  influid->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, influid->getMWeight(),     FLT_EPSILON);
@@ -524,11 +528,11 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     expectedT = liqProps->getSaturationTemperature(tFluidInput1->mPressure);
     tArticle->transportFlows(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.001,    tNodes[tPort0].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,      tNodes[tPort0].getOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.001,    tNodes[tPort1].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,      tNodes[tPort1].getOutflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.001,    tNodes[tPort0].getInflux(),  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,      tNodes[tPort0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.001,    tNodes[tPort1].getInflux(),  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,      tNodes[tPort1].getOutflux(), tTolerance);
     influid = tNodes[tPort0].getInflow();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT,  influid->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, influid->getMWeight(),     FLT_EPSILON);
@@ -545,11 +549,11 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     expectedQ = -0.001 / tNodes[3].getContent()->getDensity();
     tArticle->transportFlows(tTimeStep);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort0].getInflux(),  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort0].getOutflux(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[3].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[3].getOutflux(),      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ, tArticle->mVolFlowRate,      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[tPort0].getInflux(),  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[tPort0].getOutflux(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,       tNodes[3].getInflux(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001,     tNodes[3].getOutflux(),      tTolerance);
     influid = tNodes[tPort0].getInflow();
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedT,  influid->getTemperature(), FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMW, influid->getMWeight(),     FLT_EPSILON);
@@ -557,7 +561,7 @@ void UtGunnsFluidPhaseChangeSource::testTransportFlows()
     /// @test volume flow rate with zero input density.
     tNodes[3].getOutflow()->resetState();
     tArticle->transportFlows(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mVolFlowRate, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->mVolFlowRate, tTolerance);
 
     UT_PASS;
 }

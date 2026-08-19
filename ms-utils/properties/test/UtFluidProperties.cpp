@@ -728,7 +728,7 @@ void UtFluidProperties::testInvalidRangeBounds()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtFluidProperties::testHeTable()
 {
-    std::cout << "\n Fluid Properties 8: He Density Table                                  ";
+    std::cout << "\n Fluid Properties 8: He Density Table                                   ";
 
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
@@ -787,7 +787,7 @@ void UtFluidProperties::testHeTable()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtFluidProperties::testXeTable()
 {
-    std::cout << "\n Fluid Properties 9: Xe Density Table                                  ";
+    std::cout << "\n Fluid Properties 9: Xe Density Table                                   ";
 
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
@@ -955,7 +955,7 @@ void UtFluidProperties::testO2Table()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtFluidProperties::testCH4Table()
 {
-    std::cout << "\n Fluid Properties 32: CH4 Density Table                                  ";
+    std::cout << "\n Fluid Properties 32: CH4 Density Table                                 ";
 
     /// @test A few specific points for good table data.  Table corners:
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
@@ -1138,5 +1138,5 @@ void UtFluidProperties::testSaturationCurveConsistency()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(temperature[i], Ts, static_cast<double>(FLT_EPSILON));
     }
 
-    std::cout << "... Pass" << std::endl;
+    std::cout << "... Pass";
 }

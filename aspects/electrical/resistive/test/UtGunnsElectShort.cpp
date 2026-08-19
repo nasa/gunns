@@ -10,6 +10,9 @@ LIBRARY DEPENDENCY:
 #include "strings/UtResult.hh"
 #include "UtGunnsElectShort.hh"
 
+/// @details  Test identification number.
+int UtGunnsElectShort::TEST_ID = 0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @details  Default constructs this GUNNS Electrical Short link model unit test.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,8 +125,7 @@ void UtGunnsElectShort::tearDown()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testConfig()
 {
-    std::cout << "\n ----------------------------------------------------------------------------";
-    std::cout << "\n UtGunnsElectShort ..... 01: testConfig ............................";
+    UT_RESULT_FIRST;
 
     /// @test    Configuration data nominal construction.
     CPPUNIT_ASSERT(tName                          == tConfigData->mName);
@@ -142,7 +144,7 @@ void UtGunnsElectShort::testConfig()
     CPPUNIT_ASSERT(tConfigData->mNodeList->mNodes == copyConfig.mNodeList->mNodes);
     CPPUNIT_ASSERT_EQUAL(0.0,                        copyConfig.mDefaultConductivity);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +152,7 @@ void UtGunnsElectShort::testConfig()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testInput()
 {
-    std::cout << "\n UtGunnsElectShort ..... 02: testInput .............................";
+    UT_RESULT;
 
     /// @test    Input data nominal construction.
     CPPUNIT_ASSERT_EQUAL(tMalfBlockageFlag,         tInputData->mMalfBlockageFlag);
@@ -199,7 +201,7 @@ void UtGunnsElectShort::testInput()
     CPPUNIT_ASSERT_EQUAL(tMalfResistanceFlag,       copyInput.mShort.mMalfResistanceFlag);
     CPPUNIT_ASSERT_EQUAL(tMalfResistanceValue,      copyInput.mShort.mMalfResistanceValue);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +209,7 @@ void UtGunnsElectShort::testInput()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testDefaultConstruction()
 {
-    std::cout << "\n UtGunnsElectShort ..... 03: testDefaultConstruction ...............";
+    UT_RESULT;
 
     /// @test    Default of attributes.
     CPPUNIT_ASSERT(""        == tArticle->mName);
@@ -226,7 +228,7 @@ void UtGunnsElectShort::testDefaultConstruction()
     GunnsElectShort* article = new GunnsElectShort();
     delete article;
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,7 +236,7 @@ void UtGunnsElectShort::testDefaultConstruction()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testNominalInitialization()
 {
-    std::cout << "\n UtGunnsElectShort ..... 04: testNominalInitialization .............";
+    UT_RESULT;
 
     /// - Initialize the test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -259,7 +261,7 @@ void UtGunnsElectShort::testNominalInitialization()
     /// @test    Nominal initialization flag.
     CPPUNIT_ASSERT(tArticle->mInitFlag);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +269,7 @@ void UtGunnsElectShort::testNominalInitialization()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testStep()
 {
-    std::cout << "\n UtGunnsElectShort ..... 05: testStep ..............................";
+    UT_RESULT;
 
     /// - Initialize the test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -295,7 +297,7 @@ void UtGunnsElectShort::testStep()
         CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(2, 2));
     }
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +305,7 @@ void UtGunnsElectShort::testStep()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testRestart()
 {
-    std::cout << "\n UtGunnsElectShort ..... 06: testRestart ...........................";
+    UT_RESULT;
 
     /// - Initialize default test article with nominal initialization data.
     tArticle->initialize(*tConfigData, *tInputData, tLinks, tPort0, tPort1);
@@ -313,7 +315,7 @@ void UtGunnsElectShort::testRestart()
     tArticle->restart();
     CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mEffectiveConductivity);
 
-    std::cout << "... Pass";
+    UT_PASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,9 +323,9 @@ void UtGunnsElectShort::testRestart()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void UtGunnsElectShort::testInitializationExceptions()
 {
-    std::cout << "\n UtGunnsElectShort ..... 07: testInitializationExceptions ..........";
+    UT_RESULT;
 
     /// - There is currently nothing to test.
 
-    std::cout << "... Pass";
+    UT_PASS_LAST;
 }

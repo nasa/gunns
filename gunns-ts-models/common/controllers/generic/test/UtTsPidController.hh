@@ -101,6 +101,7 @@ class UtTsPidController : public CppUnit::TestFixture
         std::string                tName;                    /**< (--)  Object name. */
         FriendlyTsPidController*   tArticle;                 /**< (--)  Pointer to article under test. */
         double                     tTimeStep;                /**< (s)   Nominal time step. */
+        double                     tTolerance;               /**< (--)  Nominal tolerance for comparison of expected and returned values. */
         static int                 TEST_ID;                  /**< (--)  Test identification number. */
         /// @brief  Copy constructor unavailable since declared private and not implemented.
         UtTsPidController(const UtTsPidController&);

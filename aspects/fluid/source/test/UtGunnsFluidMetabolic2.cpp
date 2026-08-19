@@ -39,7 +39,8 @@ UtGunnsFluidMetabolic2::UtGunnsFluidMetabolic2()
     tNExercise0(),
     tNExercise1(),
     tInputData(),
-    tArticle()
+    tArticle(),
+    tTolerance()
 {
     // nothing to do
 }
@@ -129,6 +130,9 @@ void UtGunnsFluidMetabolic2::setUp()
     /// - Create the nominal test article
     tArticle = new FriendlyGunnsFluidMetabolic2();
 
+    /// - Set tolerance for comparing doubles.
+    tTolerance = DBL_EPSILON;
+
     /// - Increment the test identification number.
     ++TEST_ID;
 }
@@ -176,32 +180,32 @@ void UtGunnsFluidMetabolic2::testConfigAndInput()
     GunnsFluidMetabolic2ConfigData defaultConfig;
     CPPUNIT_ASSERT(0                             == defaultConfig.mName.size());
     CPPUNIT_ASSERT(0                             == defaultConfig.mNodeList);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Nominal,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0e-6,            defaultConfig.mO2ConsumptionRate_Sleep,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery1,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery2,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery3,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  defaultConfig.mO2ConsumptionRate_Exercise0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  defaultConfig.mO2ConsumptionRate_Exercise1,  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Nominal,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0e-6,            defaultConfig.mO2ConsumptionRate_Sleep,       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery1,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery2,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   defaultConfig.mO2ConsumptionRate_Recovery3,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  defaultConfig.mO2ConsumptionRate_Exercise0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  defaultConfig.mO2ConsumptionRate_Exercise1,  tTolerance);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Nominal,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.5833333333e-6,   defaultConfig.mCO2ProductionRate_Sleep,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery1,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery2,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery3,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  defaultConfig.mCO2ProductionRate_Exercise0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  defaultConfig.mCO2ProductionRate_Exercise1,  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Nominal,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.5833333333e-6,   defaultConfig.mCO2ProductionRate_Sleep,       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery1,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery2,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            defaultConfig.mCO2ProductionRate_Recovery3,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  defaultConfig.mCO2ProductionRate_Exercise0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  defaultConfig.mCO2ProductionRate_Exercise1,  tTolerance);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.96166666667e-5,  defaultConfig.mH2OProductionRate_Nominal,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.05e-5,           defaultConfig.mH2OProductionRate_Sleep,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.649833333333e-4, defaultConfig.mH2OProductionRate_Recovery0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.775e-5,          defaultConfig.mH2OProductionRate_Recovery1,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.57333333333e-5,  defaultConfig.mH2OProductionRate_Recovery2,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.4e-5,            defaultConfig.mH2OProductionRate_Recovery3,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.95333333333e-5,  defaultConfig.mH2OProductionRate_Exercise0,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.699e-4,          defaultConfig.mH2OProductionRate_Exercise1,  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.96166666667e-5,  defaultConfig.mH2OProductionRate_Nominal,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.05e-5,           defaultConfig.mH2OProductionRate_Sleep,       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.649833333333e-4, defaultConfig.mH2OProductionRate_Recovery0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.775e-5,          defaultConfig.mH2OProductionRate_Recovery1,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.57333333333e-5,  defaultConfig.mH2OProductionRate_Recovery2,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.4e-5,            defaultConfig.mH2OProductionRate_Recovery3,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.95333333333e-5,  defaultConfig.mH2OProductionRate_Exercise0,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.699e-4,          defaultConfig.mH2OProductionRate_Exercise1,  tTolerance);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 91.3888889,       defaultConfig.mHeatProductionRate_Nominal,    FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 62.2222222,       defaultConfig.mHeatProductionRate_Sleep,      FLT_EPSILON);
@@ -212,20 +216,20 @@ void UtGunnsFluidMetabolic2::testConfigAndInput()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(142.7777778,       defaultConfig.mHeatProductionRate_Exercise0, FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(173.3333333,       defaultConfig.mHeatProductionRate_Exercise1, FLT_EPSILON);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-11, defaultConfig.mCH4OProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.97685185185e-11, defaultConfig.mC2H6OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-12, defaultConfig.mC4H10OProductionRate, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.62962962963e-12, defaultConfig.mCH2OProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, defaultConfig.mC2H4OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.54629629630e-11, defaultConfig.mC6H6ProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, defaultConfig.mC7H8ProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.31481481481e-12, defaultConfig.mC8H10ProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-12, defaultConfig.mCH2CL2ProductionRate, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.19907407407e-10, defaultConfig.mC3H6OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-10, defaultConfig.mNH3ProductionRate,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.08333333333e-10, defaultConfig.mCOProductionRate,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.86111111111e-10, defaultConfig.mH2ProductionRate,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.80787037037e-09, defaultConfig.mCH4ProductionRate,    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-11, defaultConfig.mCH4OProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.97685185185e-11, defaultConfig.mC2H6OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-12, defaultConfig.mC4H10OProductionRate, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.62962962963e-12, defaultConfig.mCH2OProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, defaultConfig.mC2H4OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.54629629630e-11, defaultConfig.mC6H6ProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, defaultConfig.mC7H8ProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.31481481481e-12, defaultConfig.mC8H10ProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-12, defaultConfig.mCH2CL2ProductionRate, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.19907407407e-10, defaultConfig.mC3H6OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-10, defaultConfig.mNH3ProductionRate,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.08333333333e-10, defaultConfig.mCOProductionRate,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.86111111111e-10, defaultConfig.mH2ProductionRate,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.80787037037e-09, defaultConfig.mCH4ProductionRate,    tTolerance);
 
     /// @test of input default construction
     GunnsFluidMetabolic2InputData defaultInput;
@@ -351,30 +355,30 @@ void UtGunnsFluidMetabolic2::testNominalInitialization()
     CPPUNIT_ASSERT(tNRecovery3 == tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_3]);
     CPPUNIT_ASSERT(tNExercise0 == tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_0]);
     CPPUNIT_ASSERT(tNExercise1 == tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_1]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::NOMINAL],     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0e-6,            tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::SLEEP],       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_2],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_3],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::EXERCISE_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::EXERCISE_1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::NOMINAL],     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.5833333333e-6,   tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::SLEEP],       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_2],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_3],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::EXERCISE_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::EXERCISE_1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.96166666667e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::NOMINAL],     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.05e-5,           tArticle->mH2OProductionRate[GunnsFluidMetabolic2::SLEEP],       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.649833333333e-4, tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.775e-5,          tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_1],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.57333333333e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_2],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.4e-5,            tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_3],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.95333333333e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::EXERCISE_0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.699e-4,          tArticle->mH2OProductionRate[GunnsFluidMetabolic2::EXERCISE_1],  DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::NOMINAL],     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.0e-6,            tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::SLEEP],       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_2],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.4666666667e-6,   tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::RECOVERY_3],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::EXERCISE_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.56666666667e-5,  tArticle->mO2ConsumptionRate[GunnsFluidMetabolic2::EXERCISE_1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::NOMINAL],     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.5833333333e-6,   tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::SLEEP],       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_2],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.2e-5,            tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::RECOVERY_3],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::EXERCISE_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(8.30833333333e-5,  tArticle->mCO2ProductionRate[GunnsFluidMetabolic2::EXERCISE_1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.96166666667e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::NOMINAL],     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.05e-5,           tArticle->mH2OProductionRate[GunnsFluidMetabolic2::SLEEP],       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.649833333333e-4, tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.775e-5,          tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_1],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.57333333333e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_2],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.4e-5,            tArticle->mH2OProductionRate[GunnsFluidMetabolic2::RECOVERY_3],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.95333333333e-5,  tArticle->mH2OProductionRate[GunnsFluidMetabolic2::EXERCISE_0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.699e-4,          tArticle->mH2OProductionRate[GunnsFluidMetabolic2::EXERCISE_1],  tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 91.3888889,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::NOMINAL],    FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 62.2222222,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::SLEEP],      FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(157.7777778,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::RECOVERY_0], FLT_EPSILON);
@@ -383,20 +387,20 @@ void UtGunnsFluidMetabolic2::testNominalInitialization()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(126.3888889,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::RECOVERY_3], FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(142.7777778,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::EXERCISE_0], FLT_EPSILON);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(173.3333333,       tArticle->mHeatProductionRate[GunnsFluidMetabolic2::EXERCISE_1], FLT_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-11, tArticle->mCH4OProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.97685185185e-11, tArticle->mC2H6OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-12, tArticle->mC4H10OProductionRate, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.62962962963e-12, tArticle->mCH2OProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, tArticle->mC2H4OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.54629629630e-11, tArticle->mC6H6ProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, tArticle->mC7H8ProductionRate,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.31481481481e-12, tArticle->mC8H10ProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-12, tArticle->mCH2CL2ProductionRate, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.19907407407e-10, tArticle->mC3H6OProductionRate,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-10, tArticle->mNH3ProductionRate,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.08333333333e-10, tArticle->mCOProductionRate,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.86111111111e-10, tArticle->mH2ProductionRate,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.80787037037e-09, tArticle->mCH4ProductionRate,    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-11, tArticle->mCH4OProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.97685185185e-11, tArticle->mC2H6OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-12, tArticle->mC4H10OProductionRate, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.62962962963e-12, tArticle->mCH2OProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, tArticle->mC2H4OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.54629629630e-11, tArticle->mC6H6ProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(6.94444444444e-12, tArticle->mC7H8ProductionRate,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.31481481481e-12, tArticle->mC8H10ProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.04166666667e-12, tArticle->mCH2CL2ProductionRate, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.19907407407e-10, tArticle->mC3H6OProductionRate,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.78703703704e-10, tArticle->mNH3ProductionRate,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.08333333333e-10, tArticle->mCOProductionRate,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.86111111111e-10, tArticle->mH2ProductionRate,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.80787037037e-09, tArticle->mCH4ProductionRate,    tTolerance);
     CPPUNIT_ASSERT(0.0         == tArticle->mConsumedO2);
     CPPUNIT_ASSERT(0.0         == tArticle->mProducedCO2);
     CPPUNIT_ASSERT(0.0         == tArticle->mProducedH2O);
@@ -584,8 +588,8 @@ void UtGunnsFluidMetabolic2::testModify()
 
     /// @test transition single crew member nominal -> sleep.
     tArticle->transition(1.0, GunnsFluidMetabolic2::NOMINAL, GunnsFluidMetabolic2::SLEEP);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal - 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNSleep   + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::SLEEP],      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal - 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNSleep   + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::SLEEP],      tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery0,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_0], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery1,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_1], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery2,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_2], 0.0);
@@ -595,8 +599,8 @@ void UtGunnsFluidMetabolic2::testModify()
 
     /// @test adding total # crew, new crew going into nominal.
     tArticle->transition(2.0, GunnsFluidMetabolic2::NO_METABOLIC, GunnsFluidMetabolic2::NOMINAL);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNSleep   + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::SLEEP],      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNSleep   + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::SLEEP],      tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery0,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_0], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery1,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_1], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery2,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_2], 0.0);
@@ -606,7 +610,7 @@ void UtGunnsFluidMetabolic2::testModify()
 
     /// @test removing total # crew, more than what is currently in sleep.
     tArticle->transition(tNSleep + 10, GunnsFluidMetabolic2::SLEEP, GunnsFluidMetabolic2::NO_METABOLIC);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tNNominal + 1.0, tArticle->mNCrew[GunnsFluidMetabolic2::NOMINAL],    tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0,               tArticle->mNCrew[GunnsFluidMetabolic2::SLEEP],      0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery0,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_0], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery1,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_1], 0.0);
@@ -625,7 +629,7 @@ void UtGunnsFluidMetabolic2::testModify()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery2,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_2], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery3,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_3], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNExercise0,     tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_0], 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,        tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,        tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_1], tTolerance);
 
     /// @test nothing happens if given a negative number.
     tArticle->transition(-1, GunnsFluidMetabolic2::EXERCISE_1, GunnsFluidMetabolic2::NOMINAL);
@@ -636,7 +640,7 @@ void UtGunnsFluidMetabolic2::testModify()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery2,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_2], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNRecovery3,     tArticle->mNCrew[GunnsFluidMetabolic2::RECOVERY_3], 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tNExercise0,     tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_0], 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,        tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_1], DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,        tArticle->mNCrew[GunnsFluidMetabolic2::EXERCISE_1], tTolerance);
 
     UT_PASS;
 }
@@ -719,25 +723,25 @@ void UtGunnsFluidMetabolic2::testUpdateState()
 
     tArticle->step(0.1);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2,     tArticle->mConsumedO2,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mProducedHeat,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO2,    tArticle->mProducedCO2,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2O,    tArticle->mProducedH2O,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNH3,    tArticle->mProducedNH3,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO,     tArticle->mProducedCO,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2,     tArticle->mProducedH2,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4,    tArticle->mProducedCH4,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4O,   tArticle->mProducedCH4O,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC2H6O,  tArticle->mProducedC2H6O,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC4H10O, tArticle->mProducedC4H10O, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH2O,   tArticle->mProducedCH2O,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC2H4O,  tArticle->mProducedC2H4O,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC6H6,   tArticle->mProducedC6H6,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC7H8,   tArticle->mProducedC7H8,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC8H10,  tArticle->mProducedC8H10,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH2CL2, tArticle->mProducedCH2CL2, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC3H6O,  tArticle->mProducedC3H6O,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2,     tArticle->mConsumedO2,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mProducedHeat,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO2,    tArticle->mProducedCO2,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2O,    tArticle->mProducedH2O,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNH3,    tArticle->mProducedNH3,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO,     tArticle->mProducedCO,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2,     tArticle->mProducedH2,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4,    tArticle->mProducedCH4,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4O,   tArticle->mProducedCH4O,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC2H6O,  tArticle->mProducedC2H6O,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC4H10O, tArticle->mProducedC4H10O, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH2O,   tArticle->mProducedCH2O,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC2H4O,  tArticle->mProducedC2H4O,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC6H6,   tArticle->mProducedC6H6,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC7H8,   tArticle->mProducedC7H8,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC8H10,  tArticle->mProducedC8H10,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH2CL2, tArticle->mProducedCH2CL2, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedC3H6O,  tArticle->mProducedC3H6O,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     tTolerance);
 
     /// @test production/consumption biases applied
     tArticle->mShouldApplyBias = true;
@@ -748,10 +752,10 @@ void UtGunnsFluidMetabolic2::testUpdateState()
 
     tArticle->step(0.1);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2,     tArticle->mConsumedO2,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mProducedHeat,   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO2,    tArticle->mProducedCO2,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2O,    tArticle->mProducedH2O,    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedO2,     tArticle->mConsumedO2,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedQ,      tArticle->mProducedHeat,   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO2,    tArticle->mProducedCO2,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2O,    tArticle->mProducedH2O,    tTolerance);
 
     /// @test when NH3, CO, H2, CH4 are fluids and O2 limited to available mass in the node
     tArticle->mNH3 = 0;
@@ -764,12 +768,12 @@ void UtGunnsFluidMetabolic2::testUpdateState()
 
     tArticle->step(0.1);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mConsumedO2,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNH3,    tArticle->mProducedNH3,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO,     tArticle->mProducedCO,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2,     tArticle->mProducedH2,     DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4,    tArticle->mProducedCH4,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mConsumedO2,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNH3,    tArticle->mProducedNH3,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCO,     tArticle->mProducedCO,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedH2,     tArticle->mProducedH2,     tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedCH4,    tArticle->mProducedCH4,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlow,   tArticle->mFlowDemand,     tTolerance);
 
     /// @test zero total flow rate, with no bias
     tArticle->mShouldApplyBias = false;
@@ -777,11 +781,11 @@ void UtGunnsFluidMetabolic2::testUpdateState()
         tArticle->mNCrew[i] = 0.0;
     }
     tArticle->step(0.1);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mFlowDemand,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mFlowDemand,     tTolerance);
 
     /// @test zero time step
     tArticle->step(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mFlowDemand,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,            tArticle->mFlowDemand,     tTolerance);
 
     UT_PASS;
 }
@@ -807,19 +811,19 @@ void UtGunnsFluidMetabolic2::testUpdateFluid()
     double     expectedNodeQ = tArticle->mProducedHeat
                              + tArticle->mFlowDemand * internal->getSpecificEnthalpy();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(content->getTemperature(), internal->getTemperature(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNodeQ,             tNodes[1].mInflowHeatFlux,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowDemand,     tNodes[1].getInflux(),      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(content->getTemperature(), internal->getTemperature(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNodeQ,             tNodes[1].mInflowHeatFlux,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowDemand,     tNodes[1].getInflux(),      tTolerance);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedH2O,
                                  tNodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_H2O),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedCO2,
                                  tNodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_CO2),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mConsumedO2,
                                 -tNodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_O2),
-                                 DBL_EPSILON);
+                                 tTolerance);
 
     verifyTraceCompoundInFlow(tArticle->mProducedCH4O,   ChemicalCompound::CH4O);
     verifyTraceCompoundInFlow(tArticle->mProducedC2H6O,  ChemicalCompound::C2H6O);
@@ -854,8 +858,8 @@ void UtGunnsFluidMetabolic2::verifyTraceCompoundInFlow(const double             
     const double                    inMoleRate = tNodes[1].getInflux() / inFlow->getMWeight();
     const double                    MW         = tCompoundProperties->getCompound(type)->mMWeight;
     const double                    mole       = mdot / MW / inMoleRate;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdot, inTc->getMass(type),         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(mole, inTc->getMoleFraction(type), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mdot, inTc->getMass(type),         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(mole, inTc->getMoleFraction(type), tTolerance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -908,31 +912,31 @@ void UtGunnsFluidMetabolic2::testUpdateFluidNoTc()
     double     expectedNodeQ = tArticle->mProducedHeat
                              + tArticle->mFlowDemand * internal->getSpecificEnthalpy();
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(content->getTemperature(), internal->getTemperature(), DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNodeQ,             nodes[1].mInflowHeatFlux,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowDemand,     nodes[1].getInflux(),      DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(content->getTemperature(), internal->getTemperature(), tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedNodeQ,             nodes[1].mInflowHeatFlux,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mFlowDemand,     nodes[1].getInflux(),      tTolerance);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedH2O,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_H2O),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedCO2,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_CO2),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mConsumedO2,
                                 -nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_O2),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedNH3,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_NH3),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedCO,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_CO),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedH2,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_H2),
-                                 DBL_EPSILON);
+                                 tTolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mProducedCH4,
                                  nodes[1].getInflux() * inFlow->getMassFraction(FluidProperties::GUNNS_CH4),
-                                 DBL_EPSILON);
+                                 tTolerance);
 
     UT_PASS;
 }

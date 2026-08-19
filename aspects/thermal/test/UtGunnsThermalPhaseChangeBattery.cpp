@@ -36,7 +36,8 @@ UtGunnsThermalPhaseChangeBattery::UtGunnsThermalPhaseChangeBattery()
     tMalfHotPhaseLeakFlag(),
     tMalfHotPhaseLeakRate(),
     tPort0(),
-    tTimeStep()
+    tTimeStep(),
+    tTolerance()
 {
     // Nothing to do
 }
@@ -102,6 +103,9 @@ void UtGunnsThermalPhaseChangeBattery::setUp()
 
     /// - Define the test Article.
     tArticle = new FriendlyGunnsThermalPhaseChangeBattery();
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-8;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -331,11 +335,11 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     double expectedA = tArticle->mIdealAdmittance;
     double expectedW = expectedP * expectedA;
     CPPUNIT_ASSERT_EQUAL(true,  tArticle->mAdmittanceUpdate);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// @test step with an external heat flux in mixed-phase.
     tArticle->mExternalHeatFlux[0] = 1.0;
@@ -346,11 +350,11 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     expectedP = tPhaseChangeTemperature + 2.0 / expectedA;
     expectedW = expectedP * expectedA;
     CPPUNIT_ASSERT_EQUAL(false, tArticle->mAdmittanceUpdate);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// @test step with all cold-phase, hot phase fraction lower-limited to zero.
     tArticle->mPotentialVector[0] = 200.0;
@@ -364,11 +368,11 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     expectedW = expectedP * expectedA;
     CPPUNIT_ASSERT_EQUAL(true,  tArticle->mAdmittanceUpdate);
     CPPUNIT_ASSERT_EQUAL(0.0,   tArticle->mHotPhaseFraction);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// @test step with all hot-phase, hot phase fraction upper-limited to 1.
     tArticle->mPotentialVector[0] = 300.0;
@@ -382,11 +386,11 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     expectedW = expectedP * expectedA;
     CPPUNIT_ASSERT_EQUAL(true,  tArticle->mAdmittanceUpdate);
     CPPUNIT_ASSERT_EQUAL(1.0,   tArticle->mHotPhaseFraction);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tNodes[0].getPotential(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// @test step attached to Ground node.
     tArticle->mUserPortSelect     = 0;
@@ -399,10 +403,10 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     CPPUNIT_ASSERT_EQUAL(1,     tArticle->mNodeMap[0]);
     CPPUNIT_ASSERT_EQUAL(0.0,   tNodes[1].getPotential());
     CPPUNIT_ASSERT_EQUAL(1.0,   tArticle->mHotPhaseFraction);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mTemperature,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// @test step with override vector active.
     tArticle->mUserPortSelect     = 0;
@@ -417,9 +421,9 @@ void UtGunnsThermalPhaseChangeBattery::testStep()
     expectedW = expectedP * expectedA;
     CPPUNIT_ASSERT_EQUAL(true,  tArticle->mAdmittanceUpdate);
     CPPUNIT_ASSERT_EQUAL(0,     tArticle->mNodeMap[0]);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP, tArticle->mPotentialVector[0],  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedA, tArticle->mAdmittanceMatrix[0], tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
 
     /// - Call these methods directly for line coverage because they're getting in-lined by the
     ///   compiler.
@@ -452,12 +456,13 @@ void UtGunnsThermalPhaseChangeBattery::testComputeFlows()
     double expectedFlux  = expectedP * expectedA - expectedW;
     double expectedPower = expectedFlux + 2.0;
     double expectedFrac  = tHotPhaseFraction + 0.001 * expectedPower * tTimeStep / tPhaseChangeHeat / tMass;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, DBL_EPSILON);
+    /// @note  extra tolerance allowed for the "zero flux" case.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             tTolerance * 100.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            tTolerance * 100.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    tTolerance * 100.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getInflux(),       tTolerance * 100.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      tTolerance * 100.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, tTolerance * 100.0);
 
     /// @test computeFlows in cold phase with positive flux, T < phase change T.
     double capacitance = tStructureCapacitance + tMass * tColdPhaseSpecificHeat * 1000.0;
@@ -475,12 +480,12 @@ void UtGunnsThermalPhaseChangeBattery::testComputeFlows()
     expectedFlux  = expectedP * expectedA - expectedW;
     expectedPower = expectedFlux + 2.0;
     expectedFrac  = 0.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getInflux(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, tTolerance);
 
     /// @test computeFlows in cold phase with positive flux, T > phase change T.
     expectedP = 273.0 + 2.0 * tTimeStep / capacitance;
@@ -494,12 +499,12 @@ void UtGunnsThermalPhaseChangeBattery::testComputeFlows()
     expectedFlux  = expectedP * expectedA - expectedW;
     expectedPower = expectedFlux + 2.0;
     expectedFrac  = tColdPhaseSpecificHeat * (expectedP - tPhaseChangeTemperature) / tPhaseChangeHeat;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getInflux(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tNodes[0].getOutflux(),      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, tTolerance);
 
     /// @test computeFlows in hot phase with negative flux, T > phase change T.
     tArticle->mExternalHeatFlux[0]  = -1.0;
@@ -519,12 +524,12 @@ void UtGunnsThermalPhaseChangeBattery::testComputeFlows()
     expectedFlux  = expectedP * expectedA - expectedW;
     expectedPower = expectedFlux + 2.0;
     expectedFrac  = 1.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tNodes[0].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getOutflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tNodes[0].getInflux(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getOutflux(),      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, tTolerance);
 
     /// @test computeFlows in hot phase with negative flux, T < phase change T.
     expectedP = 274.0 - 2.0 * tTimeStep / capacitance;
@@ -538,12 +543,12 @@ void UtGunnsThermalPhaseChangeBattery::testComputeFlows()
     expectedFlux  = expectedP * expectedA - expectedW;
     expectedPower = expectedFlux + 2.0;
     expectedFrac  = 1.0 + tHotPhaseSpecificHeat * (expectedP - tPhaseChangeTemperature) / tPhaseChangeHeat;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tNodes[0].getInflux(),       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getOutflux(),      DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,  tArticle->mFlux,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower, tArticle->mPower,            tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedP,     tArticle->mPotentialDrop,    tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-expectedFlux, tNodes[0].getInflux(),       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,           tNodes[0].getOutflux(),      tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,  tArticle->mHotPhaseFraction, tTolerance);
 
     UT_PASS;
 }
@@ -562,17 +567,17 @@ void UtGunnsThermalPhaseChangeBattery::testLeakMalf()
     tArticle->mMalfHotPhaseLeakRate = -1.0;
     tArticle->computeFlows(0.0);
     CPPUNIT_ASSERT_EQUAL(0.0, tArticle->mMalfHotPhaseLeakRate);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMass,             tArticle->mMass,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tHotPhaseFraction, tArticle->mHotPhaseFraction, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mActualLeakRate,   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMass,             tArticle->mMass,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tHotPhaseFraction, tArticle->mHotPhaseFraction, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mActualLeakRate,   tTolerance);
 
     /// - Test leak does nothing when there's no hot phase mass.
     tArticle->mMalfHotPhaseLeakRate = tMalfHotPhaseLeakRate;
     tArticle->mHotPhaseFraction     = 0.0;
     tArticle->computeFlows(tTimeStep);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMass,             tArticle->mMass,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mHotPhaseFraction, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mActualLeakRate,   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tMass,             tArticle->mMass,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mHotPhaseFraction, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,               tArticle->mActualLeakRate,   tTolerance);
 
     /// - Test normal leak.
     tArticle->mHotPhaseFraction = tHotPhaseFraction;
@@ -580,9 +585,9 @@ void UtGunnsThermalPhaseChangeBattery::testLeakMalf()
     double expectedRate = tMalfHotPhaseLeakRate;
     double expectedMass = tMass - expectedRate * tTimeStep;
     double expectedFrac = (tMass * tHotPhaseFraction - expectedRate * tTimeStep) / expectedMass;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,      tArticle->mMass,             DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,      tArticle->mHotPhaseFraction, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,      tArticle->mActualLeakRate,   DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedMass,      tArticle->mMass,             tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFrac,      tArticle->mHotPhaseFraction, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedRate,      tArticle->mActualLeakRate,   tTolerance);
 
     /// - Test leak limited to available hot mass.
     tArticle->mMass = 0.0001;

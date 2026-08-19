@@ -46,7 +46,8 @@ UtGunnsElectConverterOutput::UtGunnsElectConverterOutput()
     tSetpoint(0.0),
     tInputConfigData(0),
     tInputInputData(0),
-    tInputLink()
+    tInputLink(),
+    tTolerance(0.0)
 {
     // nothing to do
 }
@@ -135,6 +136,9 @@ void UtGunnsElectConverterOutput::setUp()
 
     /// - Define nominal input link input data.
     tInputInputData = new GunnsElectConverterInputInputData(false, 0.0, true, 0.0);
+
+    /// - Set tolerance for comparing doubles.
+    tTolerance = 1.0e-13;
 
     /// - Increment the test identification number.
     ++TEST_ID;
@@ -456,8 +460,8 @@ void UtGunnsElectConverterOutput::testStep()
         double expectedW = expectedG * tInputVoltage * tSetpoint;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(0    == tArticle->mReverseBiasFlips);
         CPPUNIT_ASSERT(0    == tArticle->mLimitStateFlips);
@@ -476,8 +480,8 @@ void UtGunnsElectConverterOutput::testStep()
         CPPUNIT_ASSERT(false == tArticle->mOutputOverVoltageTrip .isTripped());
         CPPUNIT_ASSERT(false == tArticle->mOutputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(false == tArticle->mOutputOverCurrentTrip .isTripped());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
 
@@ -495,8 +499,8 @@ void UtGunnsElectConverterOutput::testStep()
         CPPUNIT_ASSERT(true == tArticle->mOutputOverVoltageTrip .isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputUnderVoltageTrip.isTripped());
         CPPUNIT_ASSERT(true == tArticle->mOutputOverCurrentTrip .isTripped());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true  == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(false == tArticle->mResetTrips);
     } {
@@ -549,10 +553,10 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tInputLink.mPotentialVector[0] = nodeV;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
         CPPUNIT_ASSERT(true == tArticle->mOutputPowerAvailable);
 
@@ -568,10 +572,10 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tArticle->mSetpoint      = setpoint;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
 
         /// @test    Step and minorStep (CURRENT mode) with input voltage from the input link.
@@ -584,10 +588,10 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tArticle->mSetpoint      = setpoint;
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
         /// @test    Step and minorStep (POWER mode) with input voltage from the input link.
@@ -600,10 +604,10 @@ void UtGunnsElectConverterOutput::testMinorStep()
         expectedW = (1.0 - tMalfBlockageValue) * std::sqrt(setpoint / expectedR);
         tArticle->step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedI, tArticle->mFlux,                tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, tArticle->mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(false == tArticle->needAdmittanceUpdate());
 
         /// @test    minorStep (VOLTAGE mode) in the reverse bias state.
@@ -615,8 +619,8 @@ void UtGunnsElectConverterOutput::testMinorStep()
         tArticle->mReverseBiasState = true;
         tArticle->minorStep(0.0, 0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, tArticle->mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, tArticle->mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == tArticle->needAdmittanceUpdate());
 
         /// @test    minorStep when disabled.
@@ -658,9 +662,9 @@ void UtGunnsElectConverterOutput::testMinorStep()
         article2.setLimitingState(GunnsElectConverterOutput::LIMIT_OC);
         article2.step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, article2.mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, article2.mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true == article2.mOutputPowerAvailable);
 
@@ -670,9 +674,9 @@ void UtGunnsElectConverterOutput::testMinorStep()
         article2.mRegulatorType = GunnsElectConverterOutput::VOLTAGE;
         article2.step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, article2.mLoadResistance,      DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedR, article2.mLoadResistance,      tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(false == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true  == article2.mOutputPowerAvailable);
 
@@ -683,8 +687,8 @@ void UtGunnsElectConverterOutput::testMinorStep()
         expectedW               = expectedG * tOutOverVoltageTrip;
         article2.step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true == article2.mOutputPowerAvailable);
 
@@ -694,8 +698,8 @@ void UtGunnsElectConverterOutput::testMinorStep()
         expectedW               = expectedG * tOutUnderVoltageTrip;
         article2.step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(false == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true  == article2.mOutputPowerAvailable);
 
@@ -706,8 +710,8 @@ void UtGunnsElectConverterOutput::testMinorStep()
         expectedW = tOutOverCurrentTrip * (1.0 - tMalfBlockageValue);
         article2.step(0.0);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], DBL_EPSILON);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     DBL_EPSILON);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedG, article2.mAdmittanceMatrix[0], tTolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedW, article2.mSourceVector[0],     tTolerance);
         CPPUNIT_ASSERT(true == article2.needAdmittanceUpdate());
         CPPUNIT_ASSERT(true == article2.mOutputPowerAvailable);
     }
@@ -741,12 +745,12 @@ void UtGunnsElectConverterOutput::testComputeInputPower()
     tArticle->mPotentialVector[0]  = nodeV;
 
     CPPUNIT_ASSERT(true  == tArticle->computeInputPower(actualPower));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPowerIn,   actualPower,                   DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tInputPower,       tArticle->mInputPower,         DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,      tArticle->mFlux,               DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,     tArticle->mPower,              DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutLoss,   tArticle->mOutputChannelLoss,  DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTotalLoss, tArticle->mTotalPowerLoss,     DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPowerIn,   actualPower,                   tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tInputPower,       tArticle->mInputPower,         tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux,      tArticle->mFlux,               tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedPower,     tArticle->mPower,              tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedOutLoss,   tArticle->mOutputChannelLoss,  tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedTotalLoss, tArticle->mTotalPowerLoss,     tTolerance);
 
     /// @test    Power valid flag not set.
     tArticle->mInputPowerValid = false;
@@ -829,9 +833,9 @@ void UtGunnsElectConverterOutput::testAccessors()
     CPPUNIT_ASSERT(true == article2.isVoltageRegulator());
 
     article2.setMalfBlockage(true, 0.5);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, article2.applyBlockage(1.0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, article2.applyBlockage(1.0), tTolerance);
     article2.setMalfBlockage();
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, article2.applyBlockage(1.0), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, article2.applyBlockage(1.0), tTolerance);
 
     GunnsBasicLink::SolutionResult result = GunnsBasicLink::CONFIRM;
     article2.rejectWithLimitState(result, GunnsElectConverterOutput::LIMIT_OC);
@@ -907,7 +911,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionAcceptable()
     tSensorVout.mSensor.mMalfFailToFlag  = true;
     tSensorVout.mSensor.mMalfFailToValue = 120.0;
     CPPUNIT_ASSERT(GunnsBasicLink::CONFIRM == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(120.0, tSensorVout.mSensor.getSensedOutput(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(120.0, tSensorVout.mSensor.getSensedOutput(), tTolerance);
     CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     /// @test    Confirms when link is disabled.
@@ -933,7 +937,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionAcceptable()
     /// @test    Delays in trip-able condition but trip priority not yet met.
     CPPUNIT_ASSERT(GunnsBasicLink::DELAY  == tArticle->confirmSolutionAcceptable(tTripPriority-1, 1));
     CPPUNIT_ASSERT(!tArticle->mOutputOverVoltageTrip.isTripped());
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tSensorVout.mSensor.getSensedOutput(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, tSensorVout.mSensor.getSensedOutput(), tTolerance);
     CPPUNIT_ASSERT(true == tArticle->mInputPowerValid);
 
     /// @test    Rejects due to overvolt trip from sensor.
@@ -1064,7 +1068,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_UV == tArticle->mLimitState);
     CPPUNIT_ASSERT(1                                   == tArticle->mLimitStateFlips);
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Rejects due to switching to reverse bias due to output voltage restored.
     tArticle->mInputPowerValid     = true;
@@ -1090,7 +1094,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
     CPPUNIT_ASSERT(false                               == tArticle->mReverseBiasState);
     CPPUNIT_ASSERT(1                                   == tArticle->mReverseBiasFlips);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// - Re-enter under-voltage limit state.
     tArticle->mAdmittanceMatrix[0] = FLT_EPSILON;
@@ -1112,7 +1116,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsBasicLink::REJECT              == tArticle->confirmSolutionAcceptable(1, 1));
     CPPUNIT_ASSERT(GunnsElectConverterOutput::NO_LIMIT == tArticle->mLimitState);
     CPPUNIT_ASSERT(2                                   == tArticle->mLimitStateFlips);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Rejects due to entering over-voltage limiting state from no limit.
     tArticle->mPotentialVector[0]  = 200.0;
@@ -1174,7 +1178,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_UV == tArticle->mLimitState);
     CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Rejects due to entering the over-current limiting state from under-volt limit due
     ///          to excess output current.
@@ -1188,7 +1192,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_OC == tArticle->mLimitState);
     CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Rejects due to entering the over-voltage limiting state from over-current limit due
     ///          to excess output voltage.
@@ -1202,7 +1206,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsElectConverterOutput::LIMIT_OV == tArticle->mLimitState);
     CPPUNIT_ASSERT(4                                   == tArticle->mLimitStateFlips);
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Rejects due to entering the no-limiting state from over-current limit due
     ///          to excess output voltage.
@@ -1216,7 +1220,7 @@ void UtGunnsElectConverterOutput::testConfirmSolutionCurrentSource()
     CPPUNIT_ASSERT(GunnsElectConverterOutput::NO_LIMIT == tArticle->mLimitState);
     CPPUNIT_ASSERT(3                                   == tArticle->mLimitStateFlips);
     CPPUNIT_ASSERT(false                               == tArticle->mInputPowerValid);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux, tTolerance);
 
     /// @test    Can't enter limit state > 4 times.
     tArticle->mLimitState = GunnsElectConverterOutput::NO_LIMIT;
@@ -1263,9 +1267,9 @@ void UtGunnsElectConverterOutput::testComputeFlows()
     tArticle->mPotentialVector[0]  = nodeV;
 
     tArticle->computeFlows(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-nodeV,       tArticle->mPotentialDrop, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-nodeV,       tArticle->mPotentialDrop, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(),    tTolerance);
     tNodes[0].resetFlows();
 
     /// @test    Output as current source.
@@ -1279,9 +1283,9 @@ void UtGunnsElectConverterOutput::testComputeFlows()
     tArticle->mPotentialVector[0]  = nodeV;
 
     tArticle->computeFlows(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-nodeV,       tArticle->mPotentialDrop, DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,          DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(),    DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-nodeV,       tArticle->mPotentialDrop, tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,          tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(),    tTolerance);
     tNodes[0].resetFlows();
 
     /// @test    Negative flux gets limited to zero.
@@ -1290,8 +1294,8 @@ void UtGunnsElectConverterOutput::testComputeFlows()
     tArticle->mSourceVector[0] = source;
 
     tArticle->computeFlows(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,       DBL_EPSILON);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tArticle->mFlux,       tTolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedFlux, tNodes[0].getInflux(), tTolerance);
     tNodes[0].resetFlows();
 
     /// @test    On Ground node.
@@ -1322,44 +1326,44 @@ void UtGunnsElectConverterOutput::testControlVoltage()
     /// @test    Nominal control voltage output for a transformer.
     double expectedV = tInputVoltage * tSetpoint;
     tArticle->step(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), tTolerance);
 
     /// @test    Nominal control voltage output for a voltage regulator.
     tArticle->mRegulatorType = GunnsElectConverterOutput::VOLTAGE;
     tArticle->setSetpoint(tInputVoltage);
     expectedV = tInputVoltage;
     tArticle->step(0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(expectedV, tArticle->getControlVoltage(), tTolerance);
 
     /// @test    No control voltage when completely blocked.
     tArticle->setMalfBlockage(true, 1.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), tTolerance);
     tArticle->setMalfBlockage();
 
     /// @test    No control voltage with zero source voltage.
     tArticle->mSourceVoltage = 0.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), tTolerance);
     tArticle->mSourceVoltage = tInputVoltage;
 
     /// @test    No control voltage with zero output conductance.
     tArticle->mOutputConductance = 0.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, tArticle->getControlVoltage(), tTolerance);
     tArticle->mOutputConductance = tOutputConductance;
 
     /// @test    Control voltage for a current regulator that is limit enabled and can undervolt limit.
     tArticle->mRegulatorType = GunnsElectConverterOutput::CURRENT;
     tArticle->mSourceVoltage = tOutUnderVoltageTrip - 1.0;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tOutUnderVoltageTrip, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tOutUnderVoltageTrip, tArticle->getControlVoltage(), tTolerance);
 
     /// @test    Control voltage for a current regulator that is overvoltage limiting.
     tArticle->mSourceVoltage = tOutOverVoltageTrip;
     tArticle->mLimitState = GunnsElectConverterOutput::LIMIT_OV;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVoltage, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVoltage, tArticle->getControlVoltage(), tTolerance);
 
     /// @test    Control voltage for a current regulator that is undervoltage limiting.
     tArticle->mSourceVoltage = tOutUnderVoltageTrip + 0.001;
     tArticle->mLimitState = GunnsElectConverterOutput::LIMIT_UV;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVoltage, tArticle->getControlVoltage(), DBL_EPSILON);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(tArticle->mSourceVoltage, tArticle->getControlVoltage(), tTolerance);
 
     UT_PASS_FINAL;
 }

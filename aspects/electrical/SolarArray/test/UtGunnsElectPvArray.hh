@@ -127,6 +127,7 @@ class UtGunnsElectPvArray: public CppUnit::TestFixture
         double                       tSourceAngle;                 /**< (r)    Nominal input data. */
         double                       tSourceExposedFraction;       /**< (--)   Nominal input data. */
         double                       tTemperature;                 /**< (K)    Nominal input data. */
+        double                       tTolerance;                   /**< (--)   Nominal tolerance for comparison of expected and returned values. */
         static int                   TEST_ID;                      /**< (--)   Test identification number. */
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// @details  Copy constructor unavailable since declared private and not implemented.

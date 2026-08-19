@@ -123,6 +123,7 @@ class UtGunnsGasFan: public CppUnit::TestFixture
         FriendlyGunnsGasFan*         tArticle;              /**< (--) Pointer to test article */
         double                       tReferenceQ;           /**< (m3/s) Reference performance curve max flow rate */
         double                       tTimeStep;             /**< (--) Nominal time step */
+        double                       tTolerance;            /**< (--) Nominal tolerance for comparison of expected and returned values. */
         static const double          PI;                    /**< (--) Units conversion constant */
         static int                   TEST_ID;               /**< (--) Test identification number. */
 

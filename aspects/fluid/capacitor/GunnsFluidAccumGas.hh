@@ -93,7 +93,8 @@ class GunnsFluidAccumGasInputData : public GunnsFluidAccumInputData
                                      const double malfBlockageValue = 0.0,
                                      const double initialBellowsPosition = 0.0,
                                      PolyFluidInputData* liquidFluidInputData = 0,
-                                     PolyFluidInputData* gasFluidInputData = 0);
+                                     PolyFluidInputData* gasFluidInputData = 0,
+                                     const double liquidHousingQ = 0.0);
         /// @brief Copy constructs this accumulator input data.
         GunnsFluidAccumGasInputData(const GunnsFluidAccumGasInputData& that);
         /// @brief Default destucts this accumulator input data.

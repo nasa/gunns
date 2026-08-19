@@ -3,8 +3,8 @@
 #
 # List of all GunnsDraw network drawings that are to be exported at build time:
 GUNNSDRAWINGS := \
- $(GUNNS_HOME)/sims/networks/example_space_vehicle/HarveyFluid.xml \
- $(GUNNS_HOME)/sims/networks/example_space_vehicle/HarveyThermal.xml \
+ $(GUNNS_HOME)/sims/networks/harvey/HarveyFluid.xml \
+ $(GUNNS_HOME)/sims/networks/harvey/HarveyThermal.xml \
  $(GUNNS_HOME)/sims/networks/example_space_vehicle/ExamplePowerElect.hh
 
 ####################################################################################################

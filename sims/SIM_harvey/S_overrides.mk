@@ -11,6 +11,7 @@ export TRICK_GTE_EXT = GUNNS_HOME
 # This is the folder containing the SIM_ folder that this file resides in.
 # The thread_safe_bus/simbus_simobj.sm requires that the parent folder
 # be in the Trick include paths.
+TRICK_SFLAGS   += -I${GUNNS_HOME}/sims
 TRICK_CFLAGS   += -I${GUNNS_HOME}/sims
 TRICK_CXXFLAGS += -I${GUNNS_HOME}/sims
 

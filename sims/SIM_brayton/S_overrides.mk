@@ -4,7 +4,7 @@
 ifndef GUNNS_HOME
     $(error GUNNS_HOME is not set.)
 endif
-ifndef GUNNS_HOME
+ifndef SIMBUS_HOME
     $(error SIMBUS_HOME is not set.)
 endif
 

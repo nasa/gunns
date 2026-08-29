@@ -1136,49 +1136,67 @@ allShapeMasters = shapeLibs.shapeTree.findall('./object')
 
 for link in links:
     master = shapeLibs.getLinkShapeMaster(link, allShapeMasters)
-    if updateLinkShapeData(link, master) or cleanLabel(link):
+    if updateLinkShapeData(link, master):
+        contentsUpdated = True
+    if cleanLabel(link):
         contentsUpdated = True
 
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
-    if updateSpotterShapeData(spotter, master) or cleanLabel(spotter):
+    if updateSpotterShapeData(spotter, master):
+        contentsUpdated = True
+    if cleanLabel(spotter):
         contentsUpdated = True
 
 master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
 for netContainer in netConfig:
-    if updateShapeData(netContainer, master) or cleanLabel(netContainer):
+    if updateShapeData(netContainer, master):
+        contentsUpdated = True
+    if cleanLabel(netContainer):
         contentsUpdated = True
 
 for interface in subNetIfs:
     master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(interface),shapeLibs.getShapeSubtype(interface))
-    if updateShapeData(interface, master) or cleanLabel(interface):
+    if updateShapeData(interface, master):
+        contentsUpdated = True
+    if cleanLabel(interface):
         contentsUpdated = True
 
 if basic_network:
     for netNode in netNodes:
         master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Basic','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
-        if updateShapeData(netNode, master) or cleanLabel(netNode):
+        if updateShapeData(netNode, master):
+            contentsUpdated = True
+        if cleanLabel(netNode):
             contentsUpdated = True
 
 if fluid_network:
     for netNode in netNodes:
         master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Fluid','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
-        if updateShapeData(netNode, master, overwrite_list=['fillColor']) or cleanLabel(netNode):
+        if updateShapeData(netNode, master, overwrite_list=['fillColor']):
+            contentsUpdated = True
+        if cleanLabel(netNode):
             contentsUpdated = True
 
 for refNode in refNodes:
     master = shapeLibs.getRefNodeShapeMaster(allShapeMasters,'Reference','(Vent)' in refNode.attrib['About'])
-    if updateShapeData(refNode, master) or cleanLabel(refNode):
+    if updateShapeData(refNode, master):
+        contentsUpdated = True
+    if cleanLabel(refNode):
         contentsUpdated = True
 
 master = shapeLibs.getGroundShapeMaster(allShapeMasters)
 for gndNode in gndNodes:
-    if updateShapeData(gndNode, master) or cleanLabel(gndNode):
+    if updateShapeData(gndNode, master):
+        contentsUpdated = True
+    if cleanLabel(gndNode):
         contentsUpdated = True
 
 master = shapeLibs.getPortShapeMaster(allShapeMasters,'0')
 for port in ports:
-    if updateShapeData(port, master, overwrite_list=['fontColor']) or cleanLabel(port):
+    if updateShapeData(port, master, overwrite_list=['fontColor']):
+        contentsUpdated = True
+    if cleanLabel(port):
         contentsUpdated = True
 
 for textBox in doxNotices+doxCopyrights+doxLicenses+doxData:

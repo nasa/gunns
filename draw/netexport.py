@@ -966,6 +966,7 @@ for an_object in objects:
                 gndNodes.append(an_object)
         elif 'Link' == gunns_attribs['type']:
             checkName(an_object)
+            checkLabel(an_object)
             numLinks = numLinks + 1
             links_id.append(obj_attribs['id'])
             links.append(an_object)
@@ -999,6 +1000,7 @@ for an_object in objects:
             dataTables.append(an_object)
         elif 'Spotter' == gunns_attribs['type']:
             checkName(an_object)
+            checkLabel(an_object)
             spotters.append(an_object)
             spotter_source_paths.append(obj_attribs['Class'])
         elif 'Reactor' == gunns_attribs['type']:
@@ -1146,7 +1148,6 @@ for link in links:
         contentsUpdated = True
     if cleanLabel(link):
         contentsUpdated = True
-    checkLabel(link)
 
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
@@ -1154,7 +1155,6 @@ for spotter in spotters:
         contentsUpdated = True
     if cleanLabel(spotter):
         contentsUpdated = True
-    checkLabel(spotter)
 
 master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
 for netContainer in netConfig:

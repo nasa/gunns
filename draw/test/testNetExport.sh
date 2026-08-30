@@ -20,6 +20,10 @@ coverage run -a ../netexport.py output/EmptyNetwork.xml
 coverage run -a ../netexport.py output/NetExportBaseOffNominal01.xml
 coverage run -a ../netexport.py output/NetExportBaseOffNominal02.xml
 coverage run -a ../netexport.py output/NetExportFluidOffNominal01.xml
+coverage run -a ../netexport.py output/NetExportFluidOffNominal02.xml
+
+echo ""
+echo "====== Done Testing ======================================================================"
 
 # Generate report in terminal
 coverage report -m

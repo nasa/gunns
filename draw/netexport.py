@@ -169,6 +169,12 @@ def cleanLabel(object):
         return True
     return False
 
+# Make sure link & spotter labels can be valid c++ variable names
+def checkLabel(object):
+    label = object.attrib['label']
+    if (not label[0].isalpha()):
+        sys.exit(console.abort('object ' + label + ' does not start with an alphabetic character.'))
+
 # Returns as a string the given link's or spotter's config or input data constructor body
 # for loading vectors.
 # Note this works for links and spotters.
@@ -1140,6 +1146,7 @@ for link in links:
         contentsUpdated = True
     if cleanLabel(link):
         contentsUpdated = True
+    checkLabel(link)
 
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
@@ -1147,6 +1154,7 @@ for spotter in spotters:
         contentsUpdated = True
     if cleanLabel(spotter):
         contentsUpdated = True
+    checkLabel(spotter)
 
 master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
 for netContainer in netConfig:

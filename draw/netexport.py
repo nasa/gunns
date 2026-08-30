@@ -651,7 +651,7 @@ def updateNonGunnsData(shape):
 
     return updated
 
-# Performs shape updates for the given table, returns True if
+# Performs shape updates for the diagram, returns True if
 # there were any changes.
 def updateDiagramData(shape):
     updated = False

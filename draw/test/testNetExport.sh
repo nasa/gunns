@@ -6,24 +6,65 @@ mkdir -p output
 # Force copy test files to output
 cp -aT test_files/ output/
 
+divider="--------------------------------------------------------------------------------------------------"
+
+nominal_networks=(
+    "NetExportBaseNominal"
+    "NetExportThermalNominal"
+    "NetExportPowerNominal"
+    "NetExportFluidNominal"
+    )
+
+off_nominal_networks=(
+    "EmptyNetwork"
+    "NetExportBaseOffNominal01"
+    "NetExportBaseOffNominal02"
+    "NetExportFluidOffNominal01"
+    "NetExportFluidOffNominal02"
+    )
+
+# TODO: Handle the case for no input file, which pops up a GUI to
+# open a file. Need to figure out how to handle that, if possible.
+# If so, do the case of selecting a file and not selecting a file.
+
+
 # Nominal cases
-echo "====== Nominal Tests ====================================================================="
-coverage run -a ../netexport.py output/NetExportBaseNominal.xml
-coverage run -a ../netexport.py output/NetExportThermalNominal.xml
-coverage run -a ../netexport.py output/NetExportPowerNominal.xml
-coverage run -a ../netexport.py output/NetExportFluidNominal.xml
+echo "====== Nominal Tests ============================================================================="
+for network in "${nominal_networks[@]}"
+do
+    coverage run -a ../netexport.py output/$network.xml
+    echo $divider
+done
 
 # Off nominal
-echo "====== Off Nominal Tests ================================================================="
-# coverage run -a ../netexport.py # this pops up a GUI
-coverage run -a ../netexport.py output/EmptyNetwork.xml
-coverage run -a ../netexport.py output/NetExportBaseOffNominal01.xml
-coverage run -a ../netexport.py output/NetExportBaseOffNominal02.xml
-coverage run -a ../netexport.py output/NetExportFluidOffNominal01.xml
-coverage run -a ../netexport.py output/NetExportFluidOffNominal02.xml
+echo "====== Off Nominal Tests ========================================================================="
+for network in "${off_nominal_networks[@]}"
+do
+    coverage run -a ../netexport.py output/$network.xml
+    echo $divider
+done
 
-echo ""
-echo "====== Done Testing ======================================================================"
+echo "====== Compare C++ Output ========================================================================"
+for network in "${nominal_networks[@]}"
+do
+    for fileType in "hh" "cpp"
+    do
+        # The only difference between the test and output files should be the timestamp. The results in a
+        # diff output of 4 lines. If the diff output is longer than 4 lines, there are more differences.
+        diffout=$(diff test_files/$network.$fileType output/$network.$fileType)
+        numlines=$(echo "$diffout" | wc -l)
+        if [[ $numlines != "4" ]]; then
+            echo "FAILED: $network.$fileType"
+            echo "diff output:"
+            diff -u test_files/$network.$fileType output/$network.$fileType
+        else
+            echo "PASSED: $network.$fileType"
+        fi
+        echo $divider
+    done
+done
+
+echo "====== Line Coverage Report ======================================================================"
 
 # Generate report in terminal
 coverage report -m

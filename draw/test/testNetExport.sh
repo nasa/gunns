@@ -1,28 +1,24 @@
 # Script meant to test the nominal and off nominal cases for NetExport
-# Use input arg 'no-gui' (e.g. ./testnetExport.sh no-gui) to open result in terminal instead of firefox
+# Use input arg 'no-gui' (e.g. ./testnetExport.sh no-gui) to open result in terminal instead of browser
 
 # Create output dir if it doesn't exist
 mkdir -p output
 
 # Force copy test files to output
-cp -aT test_files/ output/
+cp -aT test_files/nominal_networks/ output/
+cp -aT test_files/off_nominal_networks/ output/
 
 divider="--------------------------------------------------------------------------------------------------"
 
-nominal_networks=(
-    "NetExportBaseNominal"
-    "NetExportThermalNominal"
-    "NetExportPowerNominal"
-    "NetExportFluidNominal"
-    )
+# get list of nominal networks and strip the path and extension
+nominal_networks=(test_files/nominal_networks/*.xml)
+nominal_networks=("${nominal_networks[@]#*test_files/nominal_networks/}")
+nominal_networks=("${nominal_networks[@]%.xml}")
 
-off_nominal_networks=(
-    "EmptyNetwork"
-    "NetExportBaseOffNominal01"
-    "NetExportBaseOffNominal02"
-    "NetExportFluidOffNominal01"
-    "NetExportFluidOffNominal02"
-    )
+# get list of off-nominal networks and strip the path and extension
+off_nominal_networks=(test_files/off_nominal_networks/*.xml)
+off_nominal_networks=("${off_nominal_networks[@]#*test_files/off_nominal_networks/}")
+off_nominal_networks=("${off_nominal_networks[@]%.xml}")
 
 # TODO: Handle the case for no input file, which pops up a GUI to
 # open a file. Need to figure out how to handle that, if possible.
@@ -33,7 +29,7 @@ off_nominal_networks=(
 echo "====== Nominal Tests ============================================================================="
 for network in "${nominal_networks[@]}"
 do
-    coverage run -a ../netexport.py output/$network.xml
+    coverage run -a ../netexport.py output/$network.xml 2>&1 | tee output/${network}_output.txt
     echo $divider
 done
 
@@ -41,16 +37,16 @@ done
 echo "====== Off Nominal Tests ========================================================================="
 for network in "${off_nominal_networks[@]}"
 do
-    coverage run -a ../netexport.py output/$network.xml
+    coverage run -a ../netexport.py output/$network.xml 2>&1 | tee output/${network}_output.txt
     echo $divider
 done
 
-echo "====== Compare C++ Output ========================================================================"
+echo "====== Compare C++ Output for Nominal Cases ======================================================"
 for network in "${nominal_networks[@]}"
 do
     for fileType in "hh" "cpp"
     do
-        # The only difference between the test and output files should be the timestamp. The results in a
+        # The only difference between the test and output files should be the timestamp. This results in a
         # diff output of 4 lines. If the diff output is longer than 4 lines, there are more differences.
         diffout=$(diff truth_output/$network.$fileType output/$network.$fileType)
         numlines=$(echo "$diffout" | wc -l)
@@ -64,6 +60,9 @@ do
         echo $divider
     done
 done
+
+echo "====== Compare netexport.py output ==============================================================="
+echo "TODO"
 
 echo "====== Line Coverage Report ======================================================================"
 

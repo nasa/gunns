@@ -1,0 +1,6 @@
+
+Processing NetExportBaseOffNominal01.xml...
+  Backup copy saved to NetExportBaseOffNominal01.xml.bak.
+  Checking for maintenance updates...
+    [33mWarning:[0m the network name NetExportBaseNominal differs from the file name NetExportBaseOffNominal01.
+[31mAborted:[0m node hello doesn't have an integer name.

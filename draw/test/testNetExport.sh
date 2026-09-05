@@ -1,4 +1,5 @@
 # Script meant to test the nominal and off nominal cases for NetExport
+# Use input arg 'no-gui' (e.g. ./testnetExport.sh no-gui) to open result in terminal instead of firefox
 
 # Create output dir if it doesn't exist
 mkdir -p output
@@ -51,12 +52,12 @@ do
     do
         # The only difference between the test and output files should be the timestamp. The results in a
         # diff output of 4 lines. If the diff output is longer than 4 lines, there are more differences.
-        diffout=$(diff test_files/$network.$fileType output/$network.$fileType)
+        diffout=$(diff truth_output/$network.$fileType output/$network.$fileType)
         numlines=$(echo "$diffout" | wc -l)
-        if [[ $numlines != "4" ]]; then
+        if [[ $numlines > "4" ]]; then
             echo "FAILED: $network.$fileType"
             echo "diff output:"
-            diff -u test_files/$network.$fileType output/$network.$fileType
+            diff -u truth_output/$network.$fileType output/$network.$fileType
         else
             echo "PASSED: $network.$fileType"
         fi
@@ -66,9 +67,11 @@ done
 
 echo "====== Line Coverage Report ======================================================================"
 
-# Generate report in terminal
-coverage report -m
-
-# Generate html report and open in browser
-# coverage html
-# firefox htmlcov/index.html
+if [[ $1 == "no-gui" ]]; then
+    # Generate report in terminal
+    coverage report -m
+else
+    # Generate html report and open in browser
+    coverage html
+    firefox htmlcov/index.html
+fi

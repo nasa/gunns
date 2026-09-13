@@ -437,8 +437,15 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style', style_overrides=[]):
 # Copies TypeLabel attribute from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
 def forceCopyLabelAttrib(to_attr, new_label, name='TypeLabel'):
-    to_attr[name] = new_label
-    return True
+    if name in to_attr:
+        if to_attr[name] != new_label:
+            to_attr[name] = new_label
+            return True
+        else:
+            return False
+    else:
+        to_attr[name] = new_label
+        return True
 
 # Updates the config and input data in to_attr to match the keys in from_attr.
 # Returns True if there were any changes.

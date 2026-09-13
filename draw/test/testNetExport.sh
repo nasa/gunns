@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script meant to test the nominal and off nominal cases for NetExport
+# Script meant to test the nominal and off nominal cases for netexport.py
 # Use input arg 'no-gui' (e.g. ./testnetExport.sh no-gui) to open result in terminal instead of browser
 
 # Create output dir if it doesn't exist

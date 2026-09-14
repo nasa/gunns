@@ -20,5 +20,5 @@ Each of them do the following:
 3. The resulting output files are compared to the files in [truth_output](truth_output).
 
 # Gererating Truth Data
-When [netexport.py](../netexport.py), [supexport.py](../supexport.py), or [supcreate.py](../supcreate.py) are updated, new truth data may need to be generated.
+When adding new test networks or when [netexport.py](../netexport.py), [supexport.py](../supexport.py), or [supcreate.py](../supcreate.py) are updated, new truth data may need to be generated.
 To do so, run the corresponding script ([generateNetExportTruthData.sh](generateNetExportTruthData.sh), [generateSupExportTruthData.sh](generateSupExportTruthData.sh), & [generateSupCreateTruthData.sh](../test/generateSupCreateTruthData.sh)), then commit the updated files in the [truth_output](truth_output) folder.

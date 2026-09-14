@@ -80,3 +80,9 @@ icds = [
     rdir+'/TEST_OVERFLOW.txt'
 ]
 icd_generate(icds, 'SIM_mass_overflow')
+
+# SIM_brayton
+icds = [
+    rdir+'/BRAYTON_ICD.txt'
+]
+icd_generate(icds, 'SIM_brayton')

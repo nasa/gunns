@@ -680,6 +680,10 @@ void UtGunnsGasTurbine::testAccessors()
     tArticle->mImpellerPower = 5.0;
     CPPUNIT_ASSERT( 5.0 == tArticle->getImpellerPower());
 
+    /// @test    The getEfficiency method.
+    tArticle->mEfficiency = 0.5;
+    CPPUNIT_ASSERT( 0.5 == tArticle->getEfficiency());
+
     UT_PASS;
 }
 

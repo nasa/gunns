@@ -81,6 +81,7 @@ Makefile.trick
 
 # DrawIO backup files
 *.xml.bkp
+*.xml.drawio.bkp
 
 # Mac-generated
 .DS_Store

@@ -95,6 +95,40 @@ inline FriendlyGunnsGasTurbine2::FriendlyGunnsGasTurbine2() : GunnsGasTurbine() 
 inline FriendlyGunnsGasTurbine2::~FriendlyGunnsGasTurbine2() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from GunnsFluidNode and befriend UtGunnsDriveShaftSpotter.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyGunnsFluidNode2 : public GunnsFluidNode
+{
+    public:
+        FriendlyGunnsFluidNode2();
+        virtual ~FriendlyGunnsFluidNode2();
+        friend class UtGunnsDriveShaftSpotter;
+};
+inline FriendlyGunnsFluidNode2::FriendlyGunnsFluidNode2() : GunnsFluidNode() {};
+inline FriendlyGunnsFluidNode2::~FriendlyGunnsFluidNode2() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief    Inherit from PolyFluid and befriend UtGunnsDriveShaftSpotter.
+///
+/// @details  Class derived from the unit under test. It just has a constructor with the same
+///           arguments as the parent and a default destructor, but it befriends the unit test case
+///           driver class to allow it access to protected data members.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class FriendlyPolyFluid2 : public PolyFluid
+{
+    public:
+        FriendlyPolyFluid2();
+        virtual ~FriendlyPolyFluid2();
+        friend class UtGunnsDriveShaftSpotter;
+};
+inline FriendlyPolyFluid2::FriendlyPolyFluid2() : PolyFluid() {};
+inline FriendlyPolyFluid2::~FriendlyPolyFluid2() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief    Gunns Drive Shaft Unit Tests.
 ///
 /// @details  This class provides the unit tests for the GunnsDriveShaftSpotter class within the
@@ -119,12 +153,12 @@ class UtGunnsDriveShaftSpotter : public CppUnit::TestFixture
         void testDefaultConstruction();
         /// @brief    Tests initialization.
         void testInitialize();
+        /// @brief    Tests the addReference method.
+        void testAddReference();
         /// @brief    Tests the stepPreSolver method.
         void testPreSolver();
         /// @brief    Tests the stepPostSolver method.
         void testPostSolver();
-        /// @brief    Tests the addReference method.
-        void testAddReference();
 
     private:
         CPPUNIT_TEST_SUITE(UtGunnsDriveShaftSpotter);

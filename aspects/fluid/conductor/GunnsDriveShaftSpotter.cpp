@@ -89,7 +89,10 @@ GunnsDriveShaftSpotter::GunnsDriveShaftSpotter()
     mTurbRef(),
     mFanRef(),
     mFrictionTorque(0.0),
-    mTotalExternalLoad(0.0)
+    mTotalExternalLoad(0.0),
+    mPowerInFan(0.0),
+    mPowerOutTurb(0.0),
+    mPowerExcess(0.0)
 {
     // nothing to do
 }
@@ -129,6 +132,10 @@ void GunnsDriveShaftSpotter::initialize(const GunnsNetworkSpotterConfigData* con
     mFrictionMinSpeed = config->mFrictionMinSpeed;
     mInertia          = config->mInertia;
     mMotorSpeed       = input->mMotorSpeed;
+    mMalfJamFlag            = input->mMalfJamFlag;
+    mMalfJamValue           = input->mMalfJamValue;
+    mMalfSpeedOverrideFlag  = input->mMalfSpeedOverrideFlag;
+    mMalfSpeedOverrideValue = input->mMalfSpeedOverrideValue;
 
     mFrictionTorque    = 0.0;
 
@@ -243,14 +250,41 @@ void GunnsDriveShaftSpotter::stepPreSolver(const double dt) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void GunnsDriveShaftSpotter::stepPostSolver(const double dt __attribute__((unused))) {
     mTotalExternalLoad = 0.0;
-    for (unsigned int i = 0; i < mTurbRef.size(); i++) {
-        mTotalExternalLoad += mTurbRef[i]->getImpellerTorque();
-    }
-    for (unsigned int i = 0; i < mFanRef.size(); i++) {
-        mTotalExternalLoad += mFanRef[i]->getImpellerTorque();
-    }
+    mPowerOutTurb = 0.0;
+    mPowerInFan = 0.0;
+    double delta_h;
 
-    if (mMalfJamFlag) {
+    /// - Loop over turbines and fans.
+    ///   Find load exerted on each impeller (for determining motor speed),
+    ///   and enthalpy upstream and downstream (for determing excess power).
+    for (unsigned int i = 0; i < mTurbRef.size(); i++)
+    {
+        mTotalExternalLoad += mTurbRef[i]->getImpellerTorque();
+        if(mTurbRef[i]->isInitialized())
+        {
+            delta_h = mTurbRef[i]->getNodeContent(0)->getSpecificEnthalpy() - 
+                      mTurbRef[i]->getNodeContent(1)->getSpecificEnthalpy();
+            mPowerOutTurb += mTurbRef[i]->getEfficiency() * mTurbRef[i]->getFlowRate() * delta_h
+                           - mTurbRef[i]->getWallHeatFlux();
+        }
+    }
+    for (unsigned int i = 0; i < mFanRef.size(); i++)
+    {
+        mTotalExternalLoad += mFanRef[i]->getImpellerTorque();
+        if(mFanRef[i]->isInitialized())
+        {
+            delta_h = mFanRef[i]->getNodeContent(1)->getSpecificEnthalpy() - 
+                      mFanRef[i]->getNodeContent(0)->getSpecificEnthalpy();
+            mPowerInFan += mFanRef[i]->getFlowRate() * delta_h 
+                         - mFanRef[i]->getWallHeatFlux(); 
+        }
+    }
+    /// - Calculate excess power.
+    mPowerExcess = mPowerOutTurb - mPowerInFan;
+
+    /// - Apply jam mulfunction.
+    if (mMalfJamFlag)
+    {
         mTotalExternalLoad -= mMalfJamValue * mTotalExternalLoad;
     }
 }

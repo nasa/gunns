@@ -1,0 +1,6 @@
+
+Processing NetExportFluidOffNominal01.xml...
+  Backup copy saved to NetExportFluidOffNominal01.xml.bak.
+  Checking for maintenance updates...
+    [33mWarning:[0m the network name NetExportFluidNominal differs from the file name NetExportFluidOffNominal01.
+[31mAborted:[0m there is no internal fluid config.

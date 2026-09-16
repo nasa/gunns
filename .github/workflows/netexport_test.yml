@@ -33,6 +33,8 @@ jobs:
 
     - name: Checkout repository
       uses: actions/checkout@80-gunnsdraw-regression-tests
+      with:
+        ref: 80-gunnsdraw-regression-tests
 
     - name: Run tests
       run: |

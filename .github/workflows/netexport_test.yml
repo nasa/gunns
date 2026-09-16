@@ -38,7 +38,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 -m pip install converage
+        python3 -m pip install --user converage
         # Set environment variables
         export GUNNS_HOME=`pwd`
         # Run tests

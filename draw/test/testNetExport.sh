@@ -77,7 +77,7 @@ for network in "${nominal[@]}"
 do
     for fileType in "hh" "cpp"
     do
-        rm output/$1
+        rm output/$network.$fileType
         checkFileDiff $network.$fileType
         echo $divider
     done

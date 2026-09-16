@@ -1,0 +1,46 @@
+name: Test Network Export Script
+
+# For more info and troubleshooting help for this workflow, see the Continuous Integration
+# page in the GUNNS Wiki.
+
+on:
+  push:
+    branches:
+    - 80-gunnsdraw-regression-tests
+    paths-ignore:
+    - 'README.md'
+    - 'bin/utils/simbus_icd_input_gen/**'
+    - '.github/workflows/**'
+    - '!.github/workflows/netexport_test.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  all_unit_tests:
+    runs-on: ubuntu-latest
+    container: docker://oraclelinux:8
+
+    steps:
+    - name: Update package manager
+      run: |
+        yum install -y yum-utils
+        dnf config-manager --set-enabled ol8_codeready_builder
+        yum repolist
+        yum install -y epel-release && yum update -y
+
+    - name: Install dependencies
+      run: yum install -y python3 
+
+    - name: Checkout repository
+      uses: actions/checkout@80-gunnsdraw-regression-tests
+
+    - name: Run tests
+      run: |
+        # Set environment variables
+        export GUNNS_HOME=`pwd`
+        # Run tests
+        cd draw/test
+        ./testNetExport.sh no-gui 2>&1 | tee testNetExport.out
+        # Scan results for pass/fail
+        # chmod +x scan_all_ut.py
+        # python3 ./scan_all_ut.py

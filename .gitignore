@@ -85,3 +85,6 @@ Makefile.trick
 
 # Mac-generated
 .DS_Store
+
+# Ignore line converage report
+.coverage

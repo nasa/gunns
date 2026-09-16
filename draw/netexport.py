@@ -169,6 +169,12 @@ def cleanLabel(object):
         return True
     return False
 
+# Make sure link & spotter labels can be valid c++ variable names
+def checkLabel(object):
+    label = object.attrib['label']
+    if (not label[0].isalpha()):
+        sys.exit(console.abort('object ' + label + ' does not start with an alphabetic character.'))
+
 # Returns as a string the given link's or spotter's config or input data constructor body
 # for loading vectors.
 # Note this works for links and spotters.
@@ -431,8 +437,15 @@ def forceCopyStyleAttrib(to_attr, from_attr, name='style', style_overrides=[]):
 # Copies TypeLabel attribute from 'from_attr' to 'to_attr' and returns True if
 # there were any resulting changes to 'to_attr'
 def forceCopyLabelAttrib(to_attr, new_label, name='TypeLabel'):
-    to_attr[name] = new_label
-    return True
+    if name in to_attr:
+        if to_attr[name] != new_label:
+            to_attr[name] = new_label
+            return True
+        else:
+            return False
+    else:
+        to_attr[name] = new_label
+        return True
 
 # Updates the config and input data in to_attr to match the keys in from_attr.
 # Returns True if there were any changes.
@@ -651,7 +664,7 @@ def updateNonGunnsData(shape):
 
     return updated
 
-# Performs shape updates for the given table, returns True if
+# Performs shape updates for the diagram, returns True if
 # there were any changes.
 def updateDiagramData(shape):
     updated = False
@@ -960,6 +973,7 @@ for an_object in objects:
                 gndNodes.append(an_object)
         elif 'Link' == gunns_attribs['type']:
             checkName(an_object)
+            checkLabel(an_object)
             numLinks = numLinks + 1
             links_id.append(obj_attribs['id'])
             links.append(an_object)
@@ -993,6 +1007,7 @@ for an_object in objects:
             dataTables.append(an_object)
         elif 'Spotter' == gunns_attribs['type']:
             checkName(an_object)
+            checkLabel(an_object)
             spotters.append(an_object)
             spotter_source_paths.append(obj_attribs['Class'])
         elif 'Reactor' == gunns_attribs['type']:
@@ -1136,49 +1151,67 @@ allShapeMasters = shapeLibs.shapeTree.findall('./object')
 
 for link in links:
     master = shapeLibs.getLinkShapeMaster(link, allShapeMasters)
-    if updateLinkShapeData(link, master) or cleanLabel(link):
+    if updateLinkShapeData(link, master):
+        contentsUpdated = True
+    if cleanLabel(link):
         contentsUpdated = True
 
 for spotter in spotters:
     master = shapeLibs.getSpotterShapeMaster(spotter, allShapeMasters)
-    if updateSpotterShapeData(spotter, master) or cleanLabel(spotter):
+    if updateSpotterShapeData(spotter, master):
+        contentsUpdated = True
+    if cleanLabel(spotter):
         contentsUpdated = True
 
 master = shapeLibs.getNetworkShapeMaster(allShapeMasters)
 for netContainer in netConfig:
-    if updateShapeData(netContainer, master) or cleanLabel(netContainer):
+    if updateShapeData(netContainer, master):
+        contentsUpdated = True
+    if cleanLabel(netContainer):
         contentsUpdated = True
 
 for interface in subNetIfs:
     master = shapeLibs.getShapeMaster(allShapeMasters,shapeLibs.getShapeType(interface),shapeLibs.getShapeSubtype(interface))
-    if updateShapeData(interface, master) or cleanLabel(interface):
+    if updateShapeData(interface, master):
+        contentsUpdated = True
+    if cleanLabel(interface):
         contentsUpdated = True
 
 if basic_network:
     for netNode in netNodes:
         master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Basic','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
-        if updateShapeData(netNode, master) or cleanLabel(netNode):
+        if updateShapeData(netNode, master):
+            contentsUpdated = True
+        if cleanLabel(netNode):
             contentsUpdated = True
 
 if fluid_network:
     for netNode in netNodes:
         master = shapeLibs.getNetNodeShapeMaster(allShapeMasters,'Fluid','shape=mxgraph.basic.rounded_frame' in netNode.find('./mxCell').attrib['style'])
-        if updateShapeData(netNode, master, overwrite_list=['fillColor']) or cleanLabel(netNode):
+        if updateShapeData(netNode, master, overwrite_list=['fillColor']):
+            contentsUpdated = True
+        if cleanLabel(netNode):
             contentsUpdated = True
 
 for refNode in refNodes:
     master = shapeLibs.getRefNodeShapeMaster(allShapeMasters,'Reference','(Vent)' in refNode.attrib['About'])
-    if updateShapeData(refNode, master) or cleanLabel(refNode):
+    if updateShapeData(refNode, master):
+        contentsUpdated = True
+    if cleanLabel(refNode):
         contentsUpdated = True
 
 master = shapeLibs.getGroundShapeMaster(allShapeMasters)
 for gndNode in gndNodes:
-    if updateShapeData(gndNode, master) or cleanLabel(gndNode):
+    if updateShapeData(gndNode, master):
+        contentsUpdated = True
+    if cleanLabel(gndNode):
         contentsUpdated = True
 
 master = shapeLibs.getPortShapeMaster(allShapeMasters,'0')
 for port in ports:
-    if updateShapeData(port, master, overwrite_list=['fontColor']) or cleanLabel(port):
+    if updateShapeData(port, master, overwrite_list=['fontColor']):
+        contentsUpdated = True
+    if cleanLabel(port):
         contentsUpdated = True
 
 for textBox in doxNotices+doxCopyrights+doxLicenses+doxData:

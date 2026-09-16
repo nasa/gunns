@@ -335,7 +335,7 @@ def rgb2cmyk(r,g,b):
         y = (1 - b - k) / (1 - k)
     return (c,m,y,k)
 
-# input is a color of from '#rrggbb' or '#rrggbbaa'
+# input is a color of form '#rrggbb' or '#rrggbbaa'
 def getDarkColor(light):
     alpha = ''
     if len(light) == len('#rrggbbaa'):

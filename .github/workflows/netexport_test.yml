@@ -46,5 +46,5 @@ jobs:
         cd draw/test
         ./testNetExport.sh no-gui 2>&1 | tee testNetExport.out
         # Scan results for pass/fail
-        # chmod +x scan_all_ut.py
-        # python3 ./scan_all_ut.py
+        chmod +x scan_all_ut_export.py
+        python3 ./scan_all_ut_export.py

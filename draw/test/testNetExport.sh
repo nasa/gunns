@@ -26,22 +26,26 @@ off_nominal=("${off_nominal[@]%.xml}")
 # Checks the difference between the test output and the truth output.
 # Input - the name of the file to be checked.
 checkFileDiff () {
-    # The only difference between the test and output files is the timestamp. This results in a
-    # diff output of 4 lines. If the diff output is longer than 4 lines, there are more differences.
-    diffout=$(diff truth_output/$1 output/$1)
+    if [[ -f "output/$1" ]]; then
+        # The only difference between the test and output files is the timestamp. This results in a
+        # diff output of 4 lines. If the diff output is longer than 4 lines, there are more differences.
+        diffout=$(diff truth_output/$1 output/$1)
 
-    if [[ $diffout == "" ]]; then
-        numlines="0"
-    else
-        numlines=$(echo "$diffout" | wc -l)
-    fi
+        if [[ $diffout == "" ]]; then
+            numlines="0"
+        else
+            numlines=$(echo "$diffout" | wc -l)
+        fi
 
-    if [[ $numlines > "4" ]]; then
-        echo "FAILED: $1"
-        echo "diff output:"
-        diff -u truth_output/$1 output/$1
+        if [[ $numlines > "4" ]]; then
+            echo "FAILED: $1"
+            echo "diff output:"
+            diff -u truth_output/$1 output/$1
+        else
+            echo "PASSED: $1"
+        fi
     else
-        echo "PASSED: $1"
+        echo "FAILED: output/$1 does not exist"
     fi
 }
 

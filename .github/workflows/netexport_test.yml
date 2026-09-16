@@ -38,7 +38,8 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 -m pip install --user coverage
+        python3 -m pip install --upgrade pip
+        pip install coverage
         # Set environment variables
         export GUNNS_HOME=`pwd`
         # Run tests

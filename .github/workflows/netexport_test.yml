@@ -6,7 +6,7 @@ name: Test Network Export Script
 on:
   push:
     branches:
-    - 80-gunnsdraw-regression-tests
+    - master
     paths-ignore:
     - 'README.md'
     - 'bin/utils/simbus_icd_input_gen/**'
@@ -32,7 +32,7 @@ jobs:
       run: yum install -y python3 
 
     - name: Checkout repository
-      uses: actions/checkout@80-gunnsdraw-regression-tests
+      uses: actions/checkout@master
       with:
         ref: 80-gunnsdraw-regression-tests
 
